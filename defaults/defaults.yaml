@@ -1,0 +1,8 @@
+defaults:
+  meraki:
+    organizations:
+      administrators:
+        authentication_method: Email
+        organization_access: full
+        networks:
+          access: full

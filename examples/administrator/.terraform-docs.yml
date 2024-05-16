@@ -1,0 +1,38 @@
+version: ">= 0.14.0"
+
+formatter: markdown table
+
+content: |-
+  # Meraki Organization Administrator Example
+
+  Set environment variables with the Meraki Dashboard API key:
+
+  ```bash
+  export MERAKI_DASHBOARD_API_KEY=ABC123
+  ```
+
+  To run this example you need to execute:
+
+  ```bash
+  $ terraform init
+  $ terraform plan
+  $ terraform apply
+  ```
+
+  Note that this example will create resources. Resources can be destroyed with `terraform destroy`.
+
+  #### `organization.yaml`
+
+  ```yaml
+  {{ include "./organization.yaml" }}
+  ```
+
+  #### `main.tf`
+
+  ```hcl
+  {{ include "./main.tf" }}
+  ```
+
+output:
+  file: README.md
+  mode: replace
