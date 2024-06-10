@@ -1,5 +1,5 @@
 data "meraki_organizations" "organizations" {
-  name = "dev"
+  organization_id = "1575199"
 }
 output "test" {
   value = data.meraki_organizations.organizations.item
