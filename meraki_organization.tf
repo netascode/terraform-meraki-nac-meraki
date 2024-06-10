@@ -19,7 +19,20 @@ locals {
     ]
   ])
 }
+output "meraki_domains_organizations" {
+    description = "Output the value of local.meraki.domains.organizations for debugging"
+    value       = local.meraki.domains.organizations
+}
 
+output "organization_map" {
+    description = "Output the value of local.organization_map for debugging"
+    value       = local.organization_map
+}
+
+output "networks" {
+    description = "Output the value of local.networks for debugging"
+    value       = local.networks
+}
 resource "meraki_networks" "networks" {
   for_each = { for network in local.networks : network.key => network }
 
