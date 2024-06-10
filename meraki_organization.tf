@@ -4,7 +4,7 @@ data "meraki_organizations" "organizations" {
 locals {
   organization_map = { for organization in data.meraki_organizations.organizations.items : organization.name => organization.id }
   networks = flatten([
-    for org in try(local.meraki.organizations, []) : [
+    for org in try(local.meraki.domains.organizations, []) : [
       for network in try(org.networks, []) : {
         key             = format("%s/%s", org.name, network.name)
         organization_id = local.organization_map[org.name]
