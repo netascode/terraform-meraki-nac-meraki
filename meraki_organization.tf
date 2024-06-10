@@ -34,16 +34,16 @@ output "test" {
 #     description = "Output the value of local.networks for debugging"
 #     value       = local.networks
 # }
-resource "meraki_networks" "networks" {
-  for_each = { for network in local.networks : network.key => network }
+# resource "meraki_networks" "networks" {
+#   for_each = { for network in local.networks : network.key => network }
 
-  name            = each.value.name
-  notes           = each.value.notes
-  organization_id = each.value.organization_id
-  product_types   = each.value.product_types
-  tags            = each.value.tags
-  time_zone       = each.value.time_zone
-}
+#   name            = each.value.name
+#   notes           = each.value.notes
+#   organization_id = each.value.organization_id
+#   product_types   = each.value.product_types
+#   tags            = each.value.tags
+#   time_zone       = each.value.time_zone
+# }
 
 # locals {
 #   admins = flatten([
