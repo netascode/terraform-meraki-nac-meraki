@@ -1,7 +1,8 @@
 data "meraki_organizations" "organizations" {
+  name = "dev"
 }
 output "test" {
-  value = data.meraki_organizations.organizations.items
+  value = data.meraki_organizations.organizations.item
 }
 locals {
   organization_map = { for organization in data.meraki_organizations.organizations.items : organization.name => organization.id }
