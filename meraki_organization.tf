@@ -1,6 +1,8 @@
 data "meraki_organizations" "organizations" {
 }
-
+output "test" {
+  value = data.meraki_organizations.organizations
+}
 locals {
   organization_map = { for organization in data.meraki_organizations.organizations.items : organization.name => organization.id }
   networks = flatten([
