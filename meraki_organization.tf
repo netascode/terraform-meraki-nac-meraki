@@ -4,22 +4,22 @@ data "meraki_organizations" "organizations" {
 output "test" {
   value = data.meraki_organizations.organizations.item.name
 }
-locals {
-  organization_map = { for organization in data.meraki_organizations.organizations.items : organization.name => organization.id }
-  networks = flatten([
-    for org in try(local.meraki.domains.organizations, []) : [
-      for network in try(org.networks, []) : {
-        key             = format("%s/%s", org.name, network.name)
-        organization_id = local.organization_map[org.name]
-        name            = try(network.name, local.defaults.meraki.organizations.networks.name)
-        notes           = try(network.notes, local.defaults.meraki.organizations.networks.notes)
-        product_types   = try(network.product_types, local.defaults.meraki.organizations.networks.product_types)
-        tags            = try(network.tags, local.defaults.meraki.organizations.networks.tags)
-        time_zone       = try(network.timezone, local.defaults.meraki.organizations.networks.timezone)
-      }
-    ]
-  ])
-}
+# locals {
+#   organization_map = { for organization in data.meraki_organizations.organizations.items : organization.name => organization.id }
+#   networks = flatten([
+#     for org in try(local.meraki.domains.organizations, []) : [
+#       for network in try(org.networks, []) : {
+#         key             = format("%s/%s", org.name, network.name)
+#         organization_id = local.organization_map[org.name]
+#         name            = try(network.name, local.defaults.meraki.organizations.networks.name)
+#         notes           = try(network.notes, local.defaults.meraki.organizations.networks.notes)
+#         product_types   = try(network.product_types, local.defaults.meraki.organizations.networks.product_types)
+#         tags            = try(network.tags, local.defaults.meraki.organizations.networks.tags)
+#         time_zone       = try(network.timezone, local.defaults.meraki.organizations.networks.timezone)
+#       }
+#     ]
+#   ])
+# }
 # output "meraki_domains_organizations" {
 #     description = "Output the value of local.meraki.domains.organizations for debugging"
 #     value       = local.meraki.domains.organizations
