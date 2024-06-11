@@ -1,49 +1,33 @@
 data "meraki_organizations" "organizations" {
-  organization_id = "1575199"
 }
-output "test" {
-  value = data.meraki_organizations.organizations.items
+
+locals {
+  organization_map = { for organization in data.meraki_organizations.organizations.items : organization.name => organization.id }
+  networks = flatten([
+  for domain in try(local.meraki.domains, []) : [
+    for org in try(domain.organizations, []) : [
+      for network in try(org.networks, []) : {
+        key             = format("%s/%s/%s", domain.name, org.name, network.name)
+        organization_id = local.organization_map[org.name]
+        name            = try(network.name, local.defaults.meraki.organizations.networks.name)
+        notes           = try(network.notes, local.defaults.meraki.organizations.networks.notes)
+        product_types   = try(network.product_types, local.defaults.meraki.organizations.networks.product_types)
+        tags            = try(network.tags, local.defaults.meraki.organizations.networks.tags)
+        time_zone       = try(network.timezone, local.defaults.meraki.organizations.networks.timezone)
+      }
+    ]
+  ]
+  ])
 }
-# locals {
-#   organization_map = { for organization in data.meraki_organizations.organizations.items : organization.name => organization.id }
-#   networks = flatten([
-#     for org in try(local.meraki.domains.organizations, []) : [
-#       for network in try(org.networks, []) : {
-#         key             = format("%s/%s", org.name, network.name)
-#         organization_id = local.organization_map[org.name]
-#         name            = try(network.name, local.defaults.meraki.organizations.networks.name)
-#         notes           = try(network.notes, local.defaults.meraki.organizations.networks.notes)
-#         product_types   = try(network.product_types, local.defaults.meraki.organizations.networks.product_types)
-#         tags            = try(network.tags, local.defaults.meraki.organizations.networks.tags)
-#         time_zone       = try(network.timezone, local.defaults.meraki.organizations.networks.timezone)
-#       }
-#     ]
-#   ])
-# }
-# output "meraki_domains_organizations" {
-#     description = "Output the value of local.meraki.domains.organizations for debugging"
-#     value       = local.meraki.domains.organizations
-# }
-
-# output "organization_map" {
-#     description = "Output the value of local.organization_map for debugging"
-#     value       = local.organization_map
-# }
-
-# output "networks" {
-#     description = "Output the value of local.networks for debugging"
-#     value       = local.networks
-# }
-# resource "meraki_networks" "networks" {
-#   for_each = { for network in local.networks : network.key => network }
-
-#   name            = each.value.name
-#   notes           = each.value.notes
-#   organization_id = each.value.organization_id
-#   product_types   = each.value.product_types
-#   tags            = each.value.tags
-#   time_zone       = each.value.time_zone
-# }
+resource "meraki_networks" "networks" {
+  for_each = { for network in local.networks : network.key => network }
+  name            = each.value.name
+  notes           = each.value.notes
+  organization_id = each.value.organization_id
+  product_types   = each.value.product_types
+  tags            = each.value.tags
+  time_zone       = each.value.time_zone
+}
 
 # locals {
 #   admins = flatten([
