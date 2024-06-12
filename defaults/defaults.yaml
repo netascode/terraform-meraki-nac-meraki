@@ -1,5 +1,6 @@
 defaults:
   meraki:
+    domains:
     organizations:
       administrators:
         authentication_method: Email
