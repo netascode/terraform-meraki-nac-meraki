@@ -12,9 +12,9 @@ output "model" {
 output "organization_map" {
   value = local.organization_map
 }
-# output "domains" {
-#   value = local.meraki.domains
-# }
+output "domains" {
+  value = local.login_security
+}
 output "test" {
   value = local.model_strings
 }

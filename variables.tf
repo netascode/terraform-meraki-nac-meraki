@@ -21,3 +21,9 @@ variable "write_default_values_file" {
   type        = string
   default     = ""
 }
+variable "base_url" {
+  description = "Base URL"
+  type        = string
+  default     = "https://api.meraki.com/"
+}
+

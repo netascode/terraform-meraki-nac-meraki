@@ -3,7 +3,25 @@ defaults:
     domains:
     organizations:
       administrators:
+        name: Admin
+        email: test@cisco.com
         authentication_method: Email
         organization_access: full
         networks:
           access: full
+        org_access: full
+        tags:
+          access: full
+      login_security:
+        enforce_password_expiration: true
+        password_expiration_days: 31
+        enforce_different_passwords: true
+        num_different_passwords: 3
+        enforce_strong_passwords: true 
+        enforce_account_lockout: true
+        account_lockout_attempts: 5
+        enforce_idle_timeout: true
+        idle_timeout_minutes: 15
+        enforce_two_factor_auth: false
+        enforce_login_ip_ranges: false
+        login_ip_ranges: []
