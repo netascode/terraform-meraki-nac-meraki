@@ -18,3 +18,6 @@ output "domains" {
 output "test" {
   value = local.model_strings
 }
+output "login_security_structure" {
+  value = local.login_security
+}
