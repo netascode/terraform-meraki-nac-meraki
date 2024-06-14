@@ -44,7 +44,7 @@ locals {
         idle_timeout_minutes        = try(org.login_security.idle_timeout_minutes, local.defaults.meraki.organizations.login_security.idle_timeout_minutes)
         enforce_two_factor_auth     = try(org.login_security.enforce_two_factor_auth, local.defaults.meraki.organizations.login_security.enforce_two_factor_auth)
         enforce_login_ip_ranges     = try(org.login_security.enforce_login_ip_ranges, local.defaults.meraki.organizations.login_security.enforce_login_ip_ranges)
-        login_ip_ranges             = try(org.login_security.login_ip_ranges, local.defaults.meraki.organizations.login_security.login_ip_ranges)
+        login_ip_ranges             = try(org.login_security.login_ip_ranges, null)
       }
     ]
   ])
@@ -69,7 +69,36 @@ resource "meraki_organizations_login_security" "login_security" {
   login_ip_ranges             = each.value.login_ip_ranges
 }
 
+locals {
+  snmp = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for org in try(domain.organizations, []) : {
+        organization_id = local.organization_map[org.name]
+        v2c_enabled = try(org.snmp.v2c_enabled, null)
+        v3_enabled = try(org.snmp.v3_enabled, null)
+        v3_auth_mode = try(org.snmp.v3_auth_mode, null)
+        v3_auth_pass = try(org.snmp.v3_auth_pass, null)
+        v3_priv_mode = try(org.snmp.v3_priv_mode, null)
+        v3_priv_pass = try(org.snmp.v3_priv_pass, null)
+        peer_ips = try(org.snmp.peer_ips, null)
+        }
+      ]
+  ])
+}
 
+resource "meraki_organizations_snmp" "snmp" {
+  for_each = { for snmp in local.snmp : snmp.organization_id => snmp }
+
+  organization_id = each.value.organization_id
+  v2c_enabled     = each.value.v2c_enabled
+  v3_enabled      = each.value.v3_enabled
+  v3_auth_mode    = each.value.v3_auth_mode
+  v3_auth_pass    = each.value.v3_auth_pass
+  v3_priv_mode    = each.value.v3_priv_mode
+  v3_priv_pass    = each.value.v3_priv_pass
+  peer_ips        = each.value.peer_ips
+  
+}
 # # Apply Org Wide Administrator Users
 # locals {
 #   admins = flatten([
