@@ -99,39 +99,39 @@ resource "meraki_organizations_snmp" "snmp" {
   peer_ips        = each.value.peer_ips
   
 }
-# Apply Org Wide Administrator Users
-locals {
-  admins = flatten([
-  for domain in try(local.meraki.domains, []) : [
-    for org in try(domain.organizations, []) : [
-      for admin in try(org.administrators, []) : {
-        key                   = format("%s/%s", org.name, admin.name)
-        organization_id       = local.organization_map[org.name]
-        name                  = try(admin.name, local.defaults.meraki.organizations.administrators.name, null)
-        email                 = try(admin.email, local.defaults.meraki.organizations.administrators.email, null)
-        authentication_method = try(admin.authentication_method, local.defaults.meraki.organizations.administrators.authentication_method, null)
-        org_access            = try(admin.organization_access, local.defaults.meraki.organizations.administrators.organization_access, null)
-        networks = [for network in try(admin.networks, []) : {
-          id     = meraki_networks.networks["${org.name}/${network.name}"].id
-          access = try(network.access, local.defaults.meraki.organizations.administrators.networks.access, null)
-        }]
-        tags = [for tag in try(admin.tags, []) : {
-          tag    = tag.name
-          access = try(tag.access, local.defaults.meraki.organizations.administrators.tags.access, null)
-        }]
-      }
-    ]
-  ]
-  ])
-}
+# # Apply Org Wide Administrator Users
+# locals {
+#   admins = flatten([
+#   for domain in try(local.meraki.domains, []) : [
+#     for org in try(domain.organizations, []) : [
+#       for admin in try(org.administrators, []) : {
+#         key                   = format("%s/%s", org.name, admin.name)
+#         organization_id       = local.organization_map[org.name]
+#         name                  = try(admin.name, local.defaults.meraki.organizations.administrators.name, null)
+#         email                 = try(admin.email, local.defaults.meraki.organizations.administrators.email, null)
+#         authentication_method = try(admin.authentication_method, local.defaults.meraki.organizations.administrators.authentication_method, null)
+#         org_access            = try(admin.organization_access, local.defaults.meraki.organizations.administrators.organization_access, null)
+#         networks = [for network in try(admin.networks, []) : {
+#           id     = meraki_networks.networks["${org.name}/${network.name}"].id
+#           access = try(network.access, local.defaults.meraki.organizations.administrators.networks.access, null)
+#         }]
+#         tags = [for tag in try(admin.tags, []) : {
+#           tag    = tag.name
+#           access = try(tag.access, local.defaults.meraki.organizations.administrators.tags.access, null)
+#         }]
+#       }
+#     ]
+#   ]
+#   ])
+# }
 
-resource "meraki_organizations_admins" "organizations_admins" {
-  for_each = { for admin in local.admins : admin.key => admin }
-  organization_id       = each.value.organization_id
-  name                  = each.value.name
-  email                 = each.value.email
-  authentication_method = each.value.authentication_method
-  org_access            = each.value.org_access
-  networks              = each.value.networks
-  tags                  = each.value.tags
-}
+# resource "meraki_organizations_admins" "organizations_admins" {
+#   for_each = { for admin in local.admins : admin.key => admin }
+#   organization_id       = each.value.organization_id
+#   name                  = each.value.name
+#   email                 = each.value.email
+#   authentication_method = each.value.authentication_method
+#   org_access            = each.value.org_access
+#   networks              = each.value.networks
+#   tags                  = each.value.tags
+# }
