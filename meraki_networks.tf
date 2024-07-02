@@ -11,7 +11,6 @@ locals {
       ]
     ]
   ])
-  marcin_debug = 5
 }
 
 resource "meraki_networks_group_policies" "net_group_policies" {
@@ -143,28 +142,28 @@ resource "meraki_networks_switch_alternate_management_interface" "net_switch_alt
 ### resource name: switch_dhcp_server_policy
 ### values: ['alerts', 'allowed_servers', 'arp_inspection', 'blocked_servers', 'default_policy']
 
-locals {
-  networks_switch_dhcp_server_policy = flatten([
-    for domain in try(local.meraki.domains, []) : [
-      for org in try(domain.organizations, []) : [
-        for network in try(org.networks, []) : {
-          network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
-          data       = network.switch_dhcp_server_policy
-        } if try(network.switch_dhcp_server_policy, null) != null
-      ]
-    ]
-  ])
-}
+# locals {
+#   networks_switch_dhcp_server_policy = flatten([
+#     for domain in try(local.meraki.domains, []) : [
+#       for org in try(domain.organizations, []) : [
+#         for network in try(org.networks, []) : {
+#           network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
+#           data       = network.switch_dhcp_server_policy
+#         } if try(network.switch_dhcp_server_policy, null) != null
+#       ]
+#     ]
+#   ])
+# }
 
-resource "meraki_networks_switch_dhcp_server_policy" "net_switch_dhcp_server_policy" {
-  for_each   = { for data in local.networks_switch_dhcp_server_policy : data.network_id => data.data }
-  network_id = each.key
-  alerts = try(each.value.alerts, null)
-  allowed_servers = try(each.value.allowed_servers, null)
-  arp_inspection = try(each.value.arp_inspection, null)
-  blocked_servers = try(each.value.blocked_servers, null)
-  default_policy = try(each.value.default_policy, null)
-}
+# resource "meraki_networks_switch_dhcp_server_policy" "net_switch_dhcp_server_policy" {
+#   for_each   = { for data in local.networks_switch_dhcp_server_policy : data.network_id => data.data }
+#   network_id = each.key
+#   alerts = try(each.value.alerts, null)
+#   allowed_servers = try(each.value.allowed_servers, null)
+#   arp_inspection = try(each.value.arp_inspection, null)
+#   blocked_servers = try(each.value.blocked_servers, null)
+#   default_policy = try(each.value.default_policy, null)
+# }
 
 
 
@@ -448,193 +447,6 @@ resource "meraki_networks_switch_settings" "net_switch_settings" {
   use_combined_power = try(each.value.use_combined_power, null)
   vlan = try(each.value.vlan, null)
 }
-
-
-
-### marcin generated
-### resource name: switch_stacks
-### values: ['id', 'name', 'serials', 'switch_stack_id']
-
-locals {
-  networks_switch_stacks = flatten([
-    for domain in try(local.meraki.domains, []) : [
-      for org in try(domain.organizations, []) : [
-        for network in try(org.networks, []) : {
-          network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
-          data       = network.switch_stacks
-        } if try(network.switch_stacks, null) != null
-      ]
-    ]
-  ])
-}
-
-resource "meraki_networks_switch_stacks" "net_switch_stacks" {
-  for_each   = { for data in local.networks_switch_stacks : data.network_id => data.data }
-  network_id = each.key
-  # id = try(each.value.id, null)
-  name = try(each.value.name, null)
-  serials = try(each.value.serials, null)
-  switch_stack_id = try(each.value.switch_stack_id, null)
-}
-
-
-
-### marcin generated
-### resource name: switch_stacks_add
-### values: ['item', 'parameters', 'switch_stack_id']
-
-locals {
-  networks_switch_stacks_add = flatten([
-    for domain in try(local.meraki.domains, []) : [
-      for org in try(domain.organizations, []) : [
-        for network in try(org.networks, []) : {
-          network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
-          data       = network.switch_stacks_add
-        } if try(network.switch_stacks_add, null) != null
-      ]
-    ]
-  ])
-}
-
-resource "meraki_networks_switch_stacks_add" "net_switch_stacks_add" {
-  for_each   = { for data in local.networks_switch_stacks_add : data.network_id => data.data }
-  network_id = each.key
-  # item = try(each.value.item, null)
-  parameters = try(each.value.parameters, null)
-  switch_stack_id = try(each.value.switch_stack_id, null)
-}
-
-
-
-### marcin generated
-### resource name: switch_stacks_remove
-### values: ['item', 'parameters', 'switch_stack_id']
-
-locals {
-  networks_switch_stacks_remove = flatten([
-    for domain in try(local.meraki.domains, []) : [
-      for org in try(domain.organizations, []) : [
-        for network in try(org.networks, []) : {
-          network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
-          data       = network.switch_stacks_remove
-        } if try(network.switch_stacks_remove, null) != null
-      ]
-    ]
-  ])
-}
-
-resource "meraki_networks_switch_stacks_remove" "net_switch_stacks_remove" {
-  for_each   = { for data in local.networks_switch_stacks_remove : data.network_id => data.data }
-  network_id = each.key
-  # item = try(each.value.item, null)
-  parameters = try(each.value.parameters, null)
-  switch_stack_id = try(each.value.switch_stack_id, null)
-}
-
-
-
-### marcin generated
-### resource name: switch_stacks_routing_interfaces
-### values: ['default_gateway', 'interface_id', 'interface_ip', 'ipv6', 'multicast_routing', 'name', 'ospf_settings', 'ospf_v3', 'subnet', 'switch_stack_id', 'vlan_id']
-
-locals {
-  networks_switch_stacks_routing_interfaces = flatten([
-    for domain in try(local.meraki.domains, []) : [
-      for org in try(domain.organizations, []) : [
-        for network in try(org.networks, []) : {
-          network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
-          data       = network.switch_stacks_routing_interfaces
-        } if try(network.switch_stacks_routing_interfaces, null) != null
-      ]
-    ]
-  ])
-}
-
-resource "meraki_networks_switch_stacks_routing_interfaces" "net_switch_stacks_routing_interfaces" {
-  for_each   = { for data in local.networks_switch_stacks_routing_interfaces : data.network_id => data.data }
-  network_id = each.key
-  default_gateway = try(each.value.default_gateway, null)
-  interface_id = try(each.value.interface_id, null)
-  interface_ip = try(each.value.interface_ip, null)
-  ipv6 = try(each.value.ipv6, null)
-  multicast_routing = try(each.value.multicast_routing, null)
-  name = try(each.value.name, null)
-  ospf_settings = try(each.value.ospf_settings, null)
-  # ospf_v3 = try(each.value.ospf_v3, null)
-  subnet = try(each.value.subnet, null)
-  switch_stack_id = try(each.value.switch_stack_id, null)
-  vlan_id = try(each.value.vlan_id, null)
-}
-
-
-
-### marcin generated
-### resource name: switch_stacks_routing_interfaces_dhcp
-### values: ['boot_file_name', 'boot_next_server', 'boot_options_enabled', 'dhcp_lease_time', 'dhcp_mode', 'dhcp_options', 'dhcp_relay_server_ips', 'dns_custom_nameservers', 'dns_nameservers_option', 'fixed_ip_assignments', 'interface_id', 'reserved_ip_ranges', 'switch_stack_id']
-
-locals {
-  networks_switch_stacks_routing_interfaces_dhcp = flatten([
-    for domain in try(local.meraki.domains, []) : [
-      for org in try(domain.organizations, []) : [
-        for network in try(org.networks, []) : {
-          network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
-          data       = network.switch_stacks_routing_interfaces_dhcp
-        } if try(network.switch_stacks_routing_interfaces_dhcp, null) != null
-      ]
-    ]
-  ])
-}
-
-resource "meraki_networks_switch_stacks_routing_interfaces_dhcp" "net_switch_stacks_routing_interfaces_dhcp" {
-  for_each   = { for data in local.networks_switch_stacks_routing_interfaces_dhcp : data.network_id => data.data }
-  network_id = each.key
-  boot_file_name = try(each.value.boot_file_name, null)
-  boot_next_server = try(each.value.boot_next_server, null)
-  boot_options_enabled = try(each.value.boot_options_enabled, null)
-  dhcp_lease_time = try(each.value.dhcp_lease_time, null)
-  dhcp_mode = try(each.value.dhcp_mode, null)
-  dhcp_options = try(each.value.dhcp_options, null)
-  dhcp_relay_server_ips = try(each.value.dhcp_relay_server_ips, null)
-  dns_custom_nameservers = try(each.value.dns_custom_nameservers, null)
-  dns_nameservers_option = try(each.value.dns_nameservers_option, null)
-  fixed_ip_assignments = try(each.value.fixed_ip_assignments, null)
-  interface_id = try(each.value.interface_id, null)
-  reserved_ip_ranges = try(each.value.reserved_ip_ranges, null)
-  switch_stack_id = try(each.value.switch_stack_id, null)
-}
-
-
-
-### marcin generated
-### resource name: switch_stacks_routing_static_routes
-### values: ['advertise_via_ospf_enabled', 'name', 'next_hop_ip', 'prefer_over_ospf_routes_enabled', 'static_route_id', 'subnet', 'switch_stack_id']
-
-locals {
-  networks_switch_stacks_routing_static_routes = flatten([
-    for domain in try(local.meraki.domains, []) : [
-      for org in try(domain.organizations, []) : [
-        for network in try(org.networks, []) : {
-          network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
-          data       = network.switch_stacks_routing_static_routes
-        } if try(network.switch_stacks_routing_static_routes, null) != null
-      ]
-    ]
-  ])
-}
-
-resource "meraki_networks_switch_stacks_routing_static_routes" "net_switch_stacks_routing_static_routes" {
-  for_each   = { for data in local.networks_switch_stacks_routing_static_routes : data.network_id => data.data }
-  network_id = each.key
-  advertise_via_ospf_enabled = try(each.value.advertise_via_ospf_enabled, null)
-  name = try(each.value.name, null)
-  next_hop_ip = try(each.value.next_hop_ip, null)
-  prefer_over_ospf_routes_enabled = try(each.value.prefer_over_ospf_routes_enabled, null)
-  static_route_id = try(each.value.static_route_id, null)
-  subnet = try(each.value.subnet, null)
-  switch_stack_id = try(each.value.switch_stack_id, null)
-}
-
-
 
 ### marcin generated
 ### resource name: switch_storm_control
