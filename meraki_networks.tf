@@ -149,7 +149,6 @@ resource "meraki_networks_switch_dhcp_server_policy" "net_switch_dhcp_server_pol
 }
 
 
-
 # locals {
 #   networks_switch_dhcp_server_policy_arp_inspection_trusted_servers = flatten([
 #     for domain in try(local.meraki.domains, []) : [
@@ -496,24 +495,24 @@ resource "meraki_networks_switch_stacks_routing_interfaces" "net_switch_stacks_r
 }
 
 
-locals {
-  networks_switch_stacks_routing_interfaces_dhcp = flatten([
-    for domain in try(local.meraki.domains, []) : [
-      for org in try(domain.organizations, []) : [
-        for network in try(org.networks, []) : [
-          for switch_stack in try(network.switch_stacks, []) : [
-            for interface in try(switch_stack.routing_interfaces, []) : {
-              network_id      = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
-              switch_stack_id = meraki_networks_switch_stacks.net_switch_stacks["${domain.name}/${org.name}/${network.name}/stacks/${switch_stack.name}"].id
-              interface_id    = meraki_networks_switch_stacks_routing_interfaces.net_switch_stacks_routing_interfaces["${domain.name}/${org.name}/${network.name}/stacks/${switch_stack.name}/interfaces/${interface.name}"].interface_id
-              data            = interface.dhcp
-            } if try(interface.dhcp, null) != null
-          ]
-        ]
-      ]
-    ]
-  ])
-}
+# locals {
+#   networks_switch_stacks_routing_interfaces_dhcp = flatten([
+#     for domain in try(local.meraki.domains, []) : [
+#       for org in try(domain.organizations, []) : [
+#         for network in try(org.networks, []) : [
+#           for switch_stack in try(network.switch_stacks, []) : [
+#             for interface in try(switch_stack.routing_interfaces, []) : {
+#               network_id      = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
+#               switch_stack_id = meraki_networks_switch_stacks.net_switch_stacks["${domain.name}/${org.name}/${network.name}/stacks/${switch_stack.name}"].id
+#               interface_id    = meraki_networks_switch_stacks_routing_interfaces.net_switch_stacks_routing_interfaces["${domain.name}/${org.name}/${network.name}/stacks/${switch_stack.name}/interfaces/${interface.name}"].interface_id
+#               data            = interface.dhcp
+#             } if try(interface.dhcp, null) != null
+#           ]
+#         ]
+#       ]
+#     ]
+#   ])
+# }
 
 # resource "meraki_networks_switch_stacks_routing_interfaces_dhcp" "net_switch_stacks_routing_interfaces_dhcp" {
 #   for_each               = { for data in local.networks_switch_stacks_routing_interfaces_dhcp : data.interface_id => data }
@@ -557,10 +556,10 @@ resource "meraki_networks_switch_stacks_routing_static_routes" "net_switch_stack
   for_each                        = { for data in local.networks_switch_stacks_routing_static_routes : data.switch_stack_id => data }
   network_id                      = each.value.network_id
   switch_stack_id                 = each.value.switch_stack_id
-  advertise_via_ospf_enabled      = try(each.value.data.advertise_via_ospf_enabled, null)
+  # advertise_via_ospf_enabled      = try(each.value.data.advertise_via_ospf_enabled, null)
   name                            = try(each.value.data.name, null)
   next_hop_ip                     = try(each.value.data.next_hop_ip, null)
-  prefer_over_ospf_routes_enabled = try(each.value.data.prefer_over_ospf_routes_enabled, null)
+  # prefer_over_ospf_routes_enabled = try(each.value.data.prefer_over_ospf_routes_enabled, null)
   subnet                          = try(each.value.data.subnet, null)
   # static_route_id                 = try(each.value.static_route_id, null)
 }
