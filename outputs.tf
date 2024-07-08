@@ -21,3 +21,7 @@ output "test" {
 output "login_security_structure" {
   value = local.login_security
 }
+
+output "marcin_debug" {
+  value = local.marcin_debug
+}
