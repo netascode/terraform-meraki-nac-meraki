@@ -42,5 +42,5 @@ with open("/Users/maparafi/test_meraki/schema.json") as f:
 j = json.loads(contents)
 
 for k, v in j["provider_schemas"]["registry.terraform.io/cisco-open/meraki"]["resource_schemas"].items():
-    if k.startswith("meraki_networks_switch"):
+    if k.startswith("meraki_networks_wireless"):
         print(generate_template(k[16:], [kk for kk, vv in v["block"]["attributes"].items() if kk != "network_id"]))
