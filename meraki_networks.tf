@@ -25,7 +25,7 @@ locals {
       for org in try(domain.organizations, []) : [
         for network in try(org.networks, []) : {
           network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
-          settings   = try(network.settings, {})
+          data   = try(network.settings, {})
         }
       ]
     ]
@@ -33,9 +33,9 @@ locals {
 }
 
 resource "meraki_networks_settings" "net_settings" {
-  for_each                  = { for settings in local.networks_settings : settings.network_id => settings.settings }
-  network_id                = each.key
-  local_status_page_enabled = try(each.value.local_status_page_enabled, false)
+  for_each                  = { for i, v in local.networks_settings : i => v }
+  network_id                = each.value.network_id
+  local_status_page_enabled = try(each.value.data.local_status_page_enabled, false)
 }
 
 
@@ -53,10 +53,10 @@ locals {
 }
 
 resource "meraki_networks_switch_access_control_lists" "net_switch_access_control_lists" {
-  for_each   = { for data in local.networks_switch_access_control_lists : data.network_id => data.data }
-  network_id = each.key
-  rules      = try(each.value.rules, null)
-  # rules_response = try(each.value.rules_response, null)
+  for_each   = { for i, v in local.networks_switch_access_control_lists : i => v }
+  network_id = each.value.network_id
+  rules      = try(each.value.data.rules, null)
+  # rules_response = try(each.value.data.rules_response, null)
 }
 
 
@@ -74,29 +74,29 @@ locals {
 }
 
 resource "meraki_networks_switch_access_policies" "net_switch_access_policies" {
-  for_each             = { for data in local.networks_switch_access_policies : data.network_id => data.data }
-  network_id           = each.key
-  access_policy_number = try(each.value.access_policy_number, null)
-  access_policy_type   = try(each.value.access_policy_type, null)
-  # counts = try(each.value.counts, null)
-  dot1x                     = try(each.value.dot1x, null)
-  guest_port_bouncing       = try(each.value.guest_port_bouncing, null)
-  guest_vlan_id             = try(each.value.guest_vlan_id, null)
-  host_mode                 = try(each.value.host_mode, null)
-  increase_access_speed     = try(each.value.increase_access_speed, null)
-  name                      = try(each.value.name, null)
-  radius                    = try(each.value.radius, null)
-  radius_accounting_enabled = try(each.value.radius_accounting_enabled, null)
-  radius_accounting_servers = try(each.value.radius_accounting_servers, null)
-  # radius_accounting_servers_response = try(each.value.radius_accounting_servers_response, null)
-  radius_coa_support_enabled = try(each.value.radius_coa_support_enabled, null)
-  radius_group_attribute     = try(each.value.radius_group_attribute, null)
-  radius_servers             = try(each.value.radius_servers, null)
-  # radius_servers_response = try(each.value.radius_servers_response, null)
-  radius_testing_enabled             = try(each.value.radius_testing_enabled, null)
-  url_redirect_walled_garden_enabled = try(each.value.url_redirect_walled_garden_enabled, null)
-  url_redirect_walled_garden_ranges  = try(each.value.url_redirect_walled_garden_ranges, null)
-  voice_vlan_clients                 = try(each.value.voice_vlan_clients, null)
+  for_each             = { for i, v in local.networks_switch_access_policies : i => v }
+  network_id           = each.value.network_id
+  access_policy_number = try(each.value.data.access_policy_number, null)
+  access_policy_type   = try(each.value.data.access_policy_type, null)
+  # counts = try(each.value.data.counts, null)
+  dot1x                     = try(each.value.data.dot1x, null)
+  guest_port_bouncing       = try(each.value.data.guest_port_bouncing, null)
+  guest_vlan_id             = try(each.value.data.guest_vlan_id, null)
+  host_mode                 = try(each.value.data.host_mode, null)
+  increase_access_speed     = try(each.value.data.increase_access_speed, null)
+  name                      = try(each.value.data.name, null)
+  radius                    = try(each.value.data.radius, null)
+  radius_accounting_enabled = try(each.value.data.radius_accounting_enabled, null)
+  radius_accounting_servers = try(each.value.data.radius_accounting_servers, null)
+  # radius_accounting_servers_response = try(each.value.data.radius_accounting_servers_response, null)
+  radius_coa_support_enabled = try(each.value.data.radius_coa_support_enabled, null)
+  radius_group_attribute     = try(each.value.data.radius_group_attribute, null)
+  radius_servers             = try(each.value.data.radius_servers, null)
+  # radius_servers_response = try(each.value.data.radius_servers_response, null)
+  radius_testing_enabled             = try(each.value.data.radius_testing_enabled, null)
+  url_redirect_walled_garden_enabled = try(each.value.data.url_redirect_walled_garden_enabled, null)
+  url_redirect_walled_garden_ranges  = try(each.value.data.url_redirect_walled_garden_ranges, null)
+  voice_vlan_clients                 = try(each.value.data.voice_vlan_clients, null)
 }
 
 
@@ -115,12 +115,12 @@ locals {
 }
 
 resource "meraki_networks_switch_alternate_management_interface" "net_switch_alternate_management_interface" {
-  for_each   = { for data in local.networks_switch_alternate_management_interface : data.network_id => data.data }
-  network_id = each.key
-  enabled    = try(each.value.enabled, null)
-  protocols  = try(each.value.protocols, null)
-  switches   = try(each.value.switches, null)
-  vlan_id    = try(each.value.vlan_id, null)
+  for_each   = { for i, v in local.networks_switch_alternate_management_interface : i => v }
+  network_id = each.value.network_id
+  enabled    = try(each.value.data.enabled, null)
+  protocols  = try(each.value.data.protocols, null)
+  switches   = try(each.value.data.switches, null)
+  vlan_id    = try(each.value.data.vlan_id, null)
 }
 
 
@@ -139,13 +139,13 @@ locals {
 }
 
 resource "meraki_networks_switch_dhcp_server_policy" "net_switch_dhcp_server_policy" {
-  for_each        = { for data in local.networks_switch_dhcp_server_policy : data.network_id => data.data }
-  network_id      = each.key
-  alerts          = try(each.value.alerts, null)
-  allowed_servers = try(each.value.allowed_servers, null)
-  arp_inspection  = try(each.value.arp_inspection, null)
-  blocked_servers = try(each.value.blocked_servers, null)
-  default_policy  = try(each.value.default_policy, null)
+  for_each        = { for i, v in local.networks_switch_dhcp_server_policy : i => v }
+  network_id      = each.value.network_id
+  alerts          = try(each.value.data.alerts, null)
+  allowed_servers = try(each.value.data.allowed_servers, null)
+  arp_inspection  = try(each.value.data.arp_inspection, null)
+  blocked_servers = try(each.value.data.blocked_servers, null)
+  default_policy  = try(each.value.data.default_policy, null)
 }
 
 
@@ -163,12 +163,12 @@ resource "meraki_networks_switch_dhcp_server_policy" "net_switch_dhcp_server_pol
 # }
 
 # resource "meraki_networks_switch_dhcp_server_policy_arp_inspection_trusted_servers" "net_switch_dhcp_server_policy_arp_inspection_trusted_servers" {
-#   for_each          = { for data in local.networks_switch_dhcp_server_policy_arp_inspection_trusted_servers : data.network_id => data.data }
-#   network_id        = each.key
-#   ipv4              = try(each.value.ipv4, null)
-#   mac               = try(each.value.mac, null)
-#   trusted_server_id = try(each.value.trusted_server_id, null)
-#   vlan              = try(each.value.vlan, null)
+#   for_each          = { for i, v in local.networks_switch_dhcp_server_policy_arp_inspection_trusted_servers : i => v }
+#   network_id        = each.value.network_id
+#   ipv4              = try(each.value.data.ipv4, null)
+#   mac               = try(each.value.data.mac, null)
+#   trusted_server_id = try(each.value.data.trusted_server_id, null)
+#   vlan              = try(each.value.data.vlan, null)
 # }
 
 
@@ -187,9 +187,9 @@ locals {
 }
 
 resource "meraki_networks_switch_dscp_to_cos_mappings" "net_switch_dscp_to_cos_mappings" {
-  for_each   = { for data in local.networks_switch_dscp_to_cos_mappings : data.network_id => data.data }
-  network_id = each.key
-  mappings   = try(each.value.mappings, null)
+  for_each   = { for i, v in local.networks_switch_dscp_to_cos_mappings : i => v }
+  network_id = each.value.network_id
+  mappings   = try(each.value.data.mappings, null)
 }
 
 
@@ -208,12 +208,12 @@ locals {
 }
 
 resource "meraki_networks_switch_link_aggregations" "net_switch_link_aggregations" {
-  for_each   = { for data in local.networks_switch_link_aggregations : data.network_id => data.data }
-  network_id = each.key
-  # id = try(each.value.id, null)
-  link_aggregation_id  = try(each.value.link_aggregation_id, null)
-  switch_ports         = try(each.value.switch_ports, null)
-  switch_profile_ports = try(each.value.switch_profile_ports, null)
+  for_each   = { for i, v in local.networks_switch_link_aggregations : i => v }
+  network_id = each.value.network_id
+  # id = try(each.value.data.id, null)
+  link_aggregation_id  = try(each.value.data.link_aggregation_id, null)
+  switch_ports         = try(each.value.data.switch_ports, null)
+  switch_profile_ports = try(each.value.data.switch_profile_ports, null)
 }
 
 
@@ -232,10 +232,10 @@ locals {
 }
 
 resource "meraki_networks_switch_mtu" "net_switch_mtu" {
-  for_each         = { for data in local.networks_switch_mtu : data.network_id => data.data }
-  network_id       = each.key
-  default_mtu_size = try(each.value.default_mtu_size, null)
-  overrides        = try(each.value.overrides, null)
+  for_each         = { for i, v in local.networks_switch_mtu : i => v }
+  network_id       = each.value.network_id
+  default_mtu_size = try(each.value.data.default_mtu_size, null)
+  overrides        = try(each.value.data.overrides, null)
 }
 
 
@@ -254,12 +254,12 @@ locals {
 }
 
 resource "meraki_networks_switch_port_schedules" "net_switch_port_schedules" {
-  for_each   = { for data in local.networks_switch_port_schedules : data.network_id => data.data }
-  network_id = each.key
-  # id = try(each.value.id, null)
-  name             = try(each.value.name, null)
-  port_schedule    = try(each.value.port_schedule, null)
-  port_schedule_id = try(each.value.port_schedule_id, null)
+  for_each   = { for i, v in local.networks_switch_port_schedules : i => v }
+  network_id = each.value.network_id
+  # id = try(each.value.data.id, null)
+  name             = try(each.value.data.name, null)
+  port_schedule    = try(each.value.data.port_schedule, null)
+  port_schedule_id = try(each.value.data.port_schedule_id, null)
 }
 
 
@@ -278,17 +278,17 @@ locals {
 }
 
 resource "meraki_networks_switch_qos_rules_order" "net_switch_qos_rules_order" {
-  for_each       = { for data in local.networks_switch_qos_rules_order : data.network_id => data.data }
-  network_id     = each.key
-  dscp           = try(each.value.dscp, null)
-  dst_port       = try(each.value.dst_port, null)
-  dst_port_range = try(each.value.dst_port_range, null)
-  # id = try(each.value.id, null)
-  protocol       = try(each.value.protocol, null)
-  qos_rule_id    = try(each.value.qos_rule_id, null)
-  src_port       = try(each.value.src_port, null)
-  src_port_range = try(each.value.src_port_range, null)
-  vlan           = try(each.value.vlan, null)
+  for_each       = { for i, v in local.networks_switch_qos_rules_order : i => v }
+  network_id     = each.value.network_id
+  dscp           = try(each.value.data.dscp, null)
+  dst_port       = try(each.value.data.dst_port, null)
+  dst_port_range = try(each.value.data.dst_port_range, null)
+  # id = try(each.value.data.id, null)
+  protocol       = try(each.value.data.protocol, null)
+  qos_rule_id    = try(each.value.data.qos_rule_id, null)
+  src_port       = try(each.value.data.src_port, null)
+  src_port_range = try(each.value.data.src_port_range, null)
+  vlan           = try(each.value.data.vlan, null)
 }
 
 
@@ -307,10 +307,10 @@ locals {
 }
 
 resource "meraki_networks_switch_routing_multicast" "net_switch_routing_multicast" {
-  for_each         = { for data in local.networks_switch_routing_multicast : data.network_id => data.data }
-  network_id       = each.key
-  default_settings = try(each.value.default_settings, null)
-  overrides        = try(each.value.overrides, null)
+  for_each         = { for i, v in local.networks_switch_routing_multicast : i => v }
+  network_id       = each.value.network_id
+  default_settings = try(each.value.data.default_settings, null)
+  overrides        = try(each.value.data.overrides, null)
 }
 
 
@@ -329,13 +329,13 @@ locals {
 }
 
 resource "meraki_networks_switch_routing_multicast_rendezvous_points" "net_switch_routing_multicast_rendezvous_points" {
-  for_each     = { for data in local.networks_switch_routing_multicast_rendezvous_points : data.network_id => data.data }
-  network_id   = each.key
-  interface_ip = try(each.value.interface_ip, null)
-  # interface_name = try(each.value.interface_name, null)
-  multicast_group     = try(each.value.multicast_group, null)
-  rendezvous_point_id = try(each.value.rendezvous_point_id, null)
-  # serial = try(each.value.serial, null)
+  for_each     = { for i, v in local.networks_switch_routing_multicast_rendezvous_points : i => v }
+  network_id   = each.value.network_id
+  interface_ip = try(each.value.data.interface_ip, null)
+  # interface_name = try(each.value.data.interface_name, null)
+  multicast_group     = try(each.value.data.multicast_group, null)
+  rendezvous_point_id = try(each.value.data.rendezvous_point_id, null)
+  # serial = try(each.value.data.serial, null)
 }
 
 
@@ -354,15 +354,15 @@ locals {
 }
 
 resource "meraki_networks_switch_routing_ospf" "net_switch_routing_ospf" {
-  for_each                   = { for data in local.networks_switch_routing_ospf : data.network_id => data.data }
-  network_id                 = each.key
-  areas                      = try(each.value.areas, null)
-  dead_timer_in_seconds      = try(each.value.dead_timer_in_seconds, null)
-  enabled                    = try(each.value.enabled, null)
-  hello_timer_in_seconds     = try(each.value.hello_timer_in_seconds, null)
-  md5_authentication_enabled = try(each.value.md5_authentication_enabled, null)
-  md5_authentication_key     = try(each.value.md5_authentication_key, null)
-  v3                         = try(each.value.v3, null)
+  for_each                   = { for i, v in local.networks_switch_routing_ospf : i => v }
+  network_id                 = each.value.network_id
+  areas                      = try(each.value.data.areas, null)
+  dead_timer_in_seconds      = try(each.value.data.dead_timer_in_seconds, null)
+  enabled                    = try(each.value.data.enabled, null)
+  hello_timer_in_seconds     = try(each.value.data.hello_timer_in_seconds, null)
+  md5_authentication_enabled = try(each.value.data.md5_authentication_enabled, null)
+  md5_authentication_key     = try(each.value.data.md5_authentication_key, null)
+  v3                         = try(each.value.data.v3, null)
 }
 
 
@@ -381,13 +381,13 @@ locals {
 }
 
 resource "meraki_networks_switch_settings" "net_switch_settings" {
-  for_each               = { for data in local.networks_switch_settings : data.network_id => data.data }
-  network_id             = each.key
-  mac_blocklist          = try(each.value.mac_blocklist, null)
-  power_exceptions       = try(each.value.power_exceptions, null)
-  uplink_client_sampling = try(each.value.uplink_client_sampling, null)
-  use_combined_power     = try(each.value.use_combined_power, null)
-  vlan                   = try(each.value.vlan, null)
+  for_each               = { for i, v in local.networks_switch_settings : i => v }
+  network_id             = each.value.network_id
+  mac_blocklist          = try(each.value.data.mac_blocklist, null)
+  power_exceptions       = try(each.value.data.power_exceptions, null)
+  uplink_client_sampling = try(each.value.data.uplink_client_sampling, null)
+  use_combined_power     = try(each.value.data.use_combined_power, null)
+  vlan                   = try(each.value.data.vlan, null)
 }
 
 locals {
@@ -404,11 +404,11 @@ locals {
 }
 
 resource "meraki_networks_switch_storm_control" "net_switch_storm_control" {
-  for_each                  = { for data in local.networks_switch_storm_control : data.network_id => data.data }
-  network_id                = each.key
-  broadcast_threshold       = try(each.value.broadcast_threshold, null)
-  multicast_threshold       = try(each.value.multicast_threshold, null)
-  unknown_unicast_threshold = try(each.value.unknown_unicast_threshold, null)
+  for_each                  = { for i, v in local.networks_switch_storm_control : i => v }
+  network_id                = each.value.network_id
+  broadcast_threshold       = try(each.value.data.broadcast_threshold, null)
+  multicast_threshold       = try(each.value.data.multicast_threshold, null)
+  unknown_unicast_threshold = try(each.value.data.unknown_unicast_threshold, null)
 }
 
 
@@ -427,11 +427,11 @@ locals {
 }
 
 resource "meraki_networks_switch_stp" "net_switch_stp" {
-  for_each            = { for data in local.networks_switch_stp : data.network_id => data.data }
-  network_id          = each.key
-  rstp_enabled        = try(each.value.rstp_enabled, null)
-  stp_bridge_priority = try(each.value.stp_bridge_priority, null)
-  # stp_bridge_priority_response = try(each.value.stp_bridge_priority_response, null)
+  for_each            = { for i, v in local.networks_switch_stp : i => v }
+  network_id          = each.value.network_id
+  rstp_enabled        = try(each.value.data.rstp_enabled, null)
+  stp_bridge_priority = try(each.value.data.stp_bridge_priority, null)
+  # stp_bridge_priority_response = try(each.value.data.stp_bridge_priority_response, null)
 }
 
 locals {
@@ -452,7 +452,7 @@ locals {
 
 resource "meraki_networks_switch_stacks" "net_switch_stacks" {
   for_each = { for switch_stack in local.networks_switch_stacks : switch_stack.stack_key => switch_stack }
-  # id = try(each.value.id, null)
+  # id = try(each.value.data.id, null)
   network_id = each.value.network_id
   name       = try(each.value.data.name, null)
   serials    = try(each.value.data.serials, null)
@@ -479,7 +479,7 @@ locals {
 }
 
 resource "meraki_networks_switch_stacks_routing_interfaces" "net_switch_stacks_routing_interfaces" {
-  for_each        = { for data in local.networks_switch_stacks_routing_interfaces : data.interface_key => data }
+  for_each        = { for i, v in local.networks_switch_stacks_routing_interfaces : i => v }
   switch_stack_id = each.value.switch_stack_id
   network_id      = each.value.network_id
   # default_gateway = try(each.value.data.default_gateway, null)
@@ -515,7 +515,7 @@ resource "meraki_networks_switch_stacks_routing_interfaces" "net_switch_stacks_r
 # }
 
 # resource "meraki_networks_switch_stacks_routing_interfaces_dhcp" "net_switch_stacks_routing_interfaces_dhcp" {
-#   for_each               = { for data in local.networks_switch_stacks_routing_interfaces_dhcp : data.interface_id => data }
+#   for_each               = { for i, v in local.i => v }
 #   network_id             = each.value.network_id
 #   switch_stack_id        = each.value.switch_stack_id
 #   interface_id           = each.value.interface_id
@@ -552,17 +552,17 @@ locals {
   ])
 }
 
-resource "meraki_networks_switch_stacks_routing_static_routes" "net_switch_stacks_routing_static_routes" {
-  for_each                        = { for data in local.networks_switch_stacks_routing_static_routes : data.switch_stack_id => data }
-  network_id                      = each.value.network_id
-  switch_stack_id                 = each.value.switch_stack_id
-  # advertise_via_ospf_enabled      = try(each.value.data.advertise_via_ospf_enabled, null)
-  name                            = try(each.value.data.name, null)
-  next_hop_ip                     = try(each.value.data.next_hop_ip, null)
-  # prefer_over_ospf_routes_enabled = try(each.value.data.prefer_over_ospf_routes_enabled, null)
-  subnet                          = try(each.value.data.subnet, null)
-  # static_route_id                 = try(each.value.static_route_id, null)
-}
+# resource "meraki_networks_switch_stacks_routing_static_routes" "net_switch_stacks_routing_static_routes" {
+#   for_each                        = { for i, v in local.i => v }
+#   network_id                      = each.value.network_id
+#   switch_stack_id                 = each.value.switch_stack_id
+#   # advertise_via_ospf_enabled      = try(each.value.data.advertise_via_ospf_enabled, null)
+#   name                            = try(each.value.data.name, null)
+#   next_hop_ip                     = try(each.value.data.next_hop_ip, null)
+#   # prefer_over_ospf_routes_enabled = try(each.value.data.prefer_over_ospf_routes_enabled, null)
+#   subnet                          = try(each.value.data.subnet, null)
+#   # static_route_id                 = try(each.value.data.static_route_id, null)
+# }
 
 locals {
   networks_syslog_servers = flatten([
@@ -578,9 +578,9 @@ locals {
 }
 
 resource "meraki_networks_syslog_servers" "net_syslog_servers" {
-  for_each   = { for data in local.networks_syslog_servers : data.network_id => data.data }
-  network_id = each.key
-  servers    = try(each.value.servers, null)
+  for_each   = { for i, v in local.networks_syslog_servers : i => v }
+  network_id = each.value.network_id
+  servers    = try(each.value.data.servers, null)
 }
 
 locals {
@@ -599,13 +599,13 @@ locals {
 }
 
 resource "meraki_networks_vlan_profiles" "net_vlan_profiles" {
-  for_each   = { for data in local.networks_vlan_profiles : data.network_id => data.data }
-  network_id = each.key
-  iname      = try(each.value.iname, null)
-  # is_default  = try(each.value.is_default, null)
-  name        = try(each.value.name, null)
-  vlan_groups = try(each.value.vlan_groups, null)
-  vlan_names  = try(each.value.vlan_names, null)
+  for_each   = { for i, v in local.networks_vlan_profiles : i => v }
+  network_id = each.value.network_id
+  iname      = try(each.value.data.iname, null)
+  # is_default  = try(each.value.data.is_default, null)
+  name        = try(each.value.data.name, null)
+  vlan_groups = try(each.value.data.vlan_groups, null)
+  vlan_names  = try(each.value.data.vlan_names, null)
 }
 
 locals {
@@ -625,7 +625,7 @@ locals {
 }
 
 resource "meraki_networks_wireless_rf_profiles" "net_wireless_rf_profiles" {
-  for_each                 = { for data in local.networks_wireless_rf_profiles : data.rf_profile_key => data }
+  for_each                 = { for i, v in local.networks_wireless_rf_profiles : i => v }
   network_id               = each.value.network_id
   ap_band_settings         = try(each.value.data.ap_band_settings, null)
   band_selection_type      = try(each.value.data.band_selection_type, null)
@@ -655,15 +655,15 @@ locals {
 }
 
 resource "meraki_networks_wireless_settings" "net_wireless_settings" {
-  for_each                   = { for data in local.networks_wireless_settings : data.network_id => data.data }
-  network_id                 = each.key
-  ipv6_bridge_enabled        = try(each.value.ipv6_bridge_enabled, null)
-  led_lights_on              = try(each.value.led_lights_on, null)
-  location_analytics_enabled = try(each.value.location_analytics_enabled, null)
-  meshing_enabled            = try(each.value.meshing_enabled, null)
-  named_vlans                = try(each.value.named_vlans, null)
-  # regulatory_domain          = try(each.value.regulatory_domain, null)
-  upgradestrategy = try(each.value.upgradestrategy, null)
+  for_each                   = { for i, v in local.networks_wireless_settings : i => v }
+  network_id                 = each.value.network_id
+  ipv6_bridge_enabled        = try(each.value.data.ipv6_bridge_enabled, null)
+  led_lights_on              = try(each.value.data.led_lights_on, null)
+  location_analytics_enabled = try(each.value.data.location_analytics_enabled, null)
+  meshing_enabled            = try(each.value.data.meshing_enabled, null)
+  named_vlans                = try(each.value.data.named_vlans, null)
+  # regulatory_domain          = try(each.value.data.regulatory_domain, null)
+  upgradestrategy = try(each.value.data.upgradestrategy, null)
 }
 
 locals {
@@ -683,9 +683,9 @@ locals {
 }
 
 resource "meraki_networks_wireless_ssids" "net_wireless_ssids" {
-  for_each                             = { for data in local.networks_wireless_ssids : data.wireless_ssid_key => data }
+  for_each                             = { for i, v in local.networks_wireless_ssids : i => v }
   network_id                           = each.value.network_id
-  number                               = each.value.data.number
+  number                               = each.value.number
   active_directory                     = try(each.value.data.active_directory, null)
   # admin_splash_url                     = try(each.value.data.admin_splash_url, null)
   adult_content_filtering_enabled      = try(each.value.data.adult_content_filtering_enabled, null)
