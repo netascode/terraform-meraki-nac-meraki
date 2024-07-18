@@ -340,30 +340,30 @@ resource "meraki_networks_switch_routing_multicast_rendezvous_points" "net_switc
 
 
 
-locals {
-  networks_switch_routing_ospf = flatten([
-    for domain in try(local.meraki.domains, []) : [
-      for org in try(domain.organizations, []) : [
-        for network in try(org.networks, []) : {
-          network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
-          data       = network.switch_routing_ospf
-        } if try(network.switch_routing_ospf, null) != null
-      ]
-    ]
-  ])
-}
+# locals {
+#   networks_switch_routing_ospf = flatten([
+#     for domain in try(local.meraki.domains, []) : [
+#       for org in try(domain.organizations, []) : [
+#         for network in try(org.networks, []) : {
+#           network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
+#           data       = network.switch_routing_ospf
+#         } if try(network.switch_routing_ospf, null) != null
+#       ]
+#     ]
+#   ])
+# }
 
-resource "meraki_networks_switch_routing_ospf" "net_switch_routing_ospf" {
-  for_each                   = { for i, v in local.networks_switch_routing_ospf : i => v }
-  network_id                 = each.value.network_id
-  areas                      = try(each.value.data.areas, null)
-  dead_timer_in_seconds      = try(each.value.data.dead_timer_in_seconds, null)
-  enabled                    = try(each.value.data.enabled, null)
-  hello_timer_in_seconds     = try(each.value.data.hello_timer_in_seconds, null)
-  md5_authentication_enabled = try(each.value.data.md5_authentication_enabled, null)
-  md5_authentication_key     = try(each.value.data.md5_authentication_key, null)
-  v3                         = try(each.value.data.v3, null)
-}
+# resource "meraki_networks_switch_routing_ospf" "net_switch_routing_ospf" {
+#   for_each                   = { for i, v in local.networks_switch_routing_ospf : i => v }
+#   network_id                 = each.value.network_id
+#   areas                      = try(each.value.data.areas, null)
+#   dead_timer_in_seconds      = try(each.value.data.dead_timer_in_seconds, null)
+#   enabled                    = try(each.value.data.enabled, null)
+#   hello_timer_in_seconds     = try(each.value.data.hello_timer_in_seconds, null)
+#   md5_authentication_enabled = try(each.value.data.md5_authentication_enabled, null)
+#   md5_authentication_key     = try(each.value.data.md5_authentication_key, null)
+#   v3                         = try(each.value.data.v3, null)
+# }
 
 
 
