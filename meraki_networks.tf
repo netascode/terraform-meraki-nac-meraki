@@ -56,6 +56,7 @@ resource "meraki_networks_switch_access_control_lists" "net_switch_access_contro
   for_each   = { for i, v in local.networks_switch_access_control_lists : i => v }
   network_id = each.value.network_id
   rules      = try(each.value.data.rules, null)
+
   # rules_response = try(each.value.data.rules_response, null)
 }
 
