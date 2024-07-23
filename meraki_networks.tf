@@ -176,7 +176,7 @@ resource "meraki_networks_group_policies" "net_group_policies" {
   }
 }
 
-
+#  marcin code
 # locals {
 #   networks_settings = flatten([
 #     for domain in try(local.meraki.domains, []) : [
@@ -243,6 +243,35 @@ resource "meraki_networks_settings" "net_settings" {
   named_vlans = {
     enabled = each.value.named_vlans.enabled
   }
+}
+
+locals {
+  network_snmp_settings = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for org in try(domain.organizations, []) : [
+        for network in try(org.networks, []) : {
+          network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
+          snmp = {
+            community_string = try(network.snmp.community_string, null)
+            access = try(network.snmp.access, null)
+            users = [for user in try(network.snmp.users, []) : {
+              username   = try(user.username, null)
+              passphrase = try(user.passphrase, null)
+            }]
+          }
+        }
+      ]
+    ]
+  ])
+}
+
+resource "meraki_networks_snmp" "snmp_settings" {
+  for_each = { for i, v in local.network_snmp_settings : i => v }
+
+  network_id       = each.value.network_id
+  community_string = each.value.snmp.community_string
+  access           = each.value.snmp.access
+  users            = each.value.snmp.users
 }
 
 
