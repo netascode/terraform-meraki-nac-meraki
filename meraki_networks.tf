@@ -196,6 +196,55 @@ resource "meraki_networks_group_policies" "net_group_policies" {
 #   local_status_page_enabled = try(each.value.data.local_status_page_enabled, false)
 # }
 
+locals {
+  network_settings = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for org in try(domain.organizations, []) : [
+        for network in try(org.networks, []) : {
+          network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
+          local_status_page_enabled = try(network.settings.local_status_page_enabled, null)
+          remote_status_page_enabled = try(network.settings.remote_status_page_enabled, null)
+          secure_port = {
+            enabled = try(network.settings.secure_port.enabled, null)
+          }
+          local_status_page = {
+            authentication = {
+              enabled = try(network.settings.local_status_page.authentication.enabled, null)
+              password = try(network.settings.local_status_page.authentication.password, null)
+            }
+          }
+          named_vlans = {
+            enabled = try(network.settings.named_vlans.enabled, null)
+          }
+        }
+      ]
+    ]
+  ])
+}
+
+resource "meraki_networks_settings" "net_settings" {
+  for_each = { for i, v in local.network_settings : i => v }
+
+  network_id                 = each.value.network_id
+  local_status_page_enabled  = each.value.local_status_page_enabled
+  remote_status_page_enabled = each.value.remote_status_page_enabled
+  
+  secure_port = {
+    enabled = each.value.secure_port.enabled
+  }
+
+  local_status_page = {
+    authentication = {
+      enabled  = each.value.local_status_page.authentication.enabled
+      password = each.value.local_status_page.authentication.password
+    }
+  }
+
+  named_vlans = {
+    enabled = each.value.named_vlans.enabled
+  }
+}
+
 
 # locals {
 #   networks_switch_access_control_lists = flatten([
