@@ -371,10 +371,12 @@ locals {
   networks_switch_access_policies = flatten([
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : [
-        for network in try(org.networks, []) : {
-          network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
-          data       = network.switch_access_policies
-        } if try(network.switch_access_policies, null) != null
+        for network in try(org.networks, []) : [
+          for policy in try(network.switch_access_policies, []) : {
+            network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
+            data       = policy
+          }
+        ]
       ]
     ]
   ])
@@ -399,19 +401,22 @@ resource "meraki_networks_switch_access_policies" "net_switch_access_policies" {
   }
   radius_accounting_enabled = try(each.value.data.radius_accounting_enabled, null)
   radius_accounting_servers = [for server in try(each.value.data.radius_accounting_servers, []) : {
-    host = server.host
-    port = server.port
+    host   = try(server.host, null)
+    port   = try(server.port, null)
+    secret = try(server.secret, null)
   }]
   radius_coa_support_enabled = try(each.value.data.radius_coa_support_enabled, null)
   radius_group_attribute     = try(each.value.data.radius_group_attribute, null)
   radius_servers = [for server in try(each.value.data.radius_servers, []) : {
-    host = server.host
-    port = server.port
+    host   = try(server.host, null)
+    port   = try(server.port, null)
+    secret = try(server.secret, null)
   }]
   radius_testing_enabled             = try(each.value.data.radius_testing_enabled, null)
   url_redirect_walled_garden_enabled = try(each.value.data.url_redirect_walled_garden_enabled, null)
   voice_vlan_clients                 = try(each.value.data.voice_vlan_clients, null)
 }
+
 
 
 # locals {
