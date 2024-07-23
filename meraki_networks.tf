@@ -1,23 +1,23 @@
-# locals {
-#   networks_group_policies = flatten([
-#     for domain in try(local.meraki.domains, []) : [
-#       for org in try(domain.organizations, []) : [
-#         for network in try(org.networks, []) : [
-#           for group_policy in try(network.group_policies, []) : {
-#             network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
-#             name       = group_policy.name
-#           }
-#         ]
-#       ]
-#     ]
-#   ])
-# }
+locals {
+  networks_group_policies = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for org in try(domain.organizations, []) : [
+        for network in try(org.networks, []) : [
+          for group_policy in try(network.group_policies, []) : {
+            network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
+            name       = group_policy.name
+          }
+        ]
+      ]
+    ]
+  ])
+}
 
-# resource "meraki_networks_group_policies" "net_group_policies" {
-#   for_each   = { for i, v in local.networks_group_policies : i => v }
-#   network_id = each.value.network_id
-#   name       = each.value.name
-# }
+resource "meraki_networks_group_policies" "net_group_policies" {
+  for_each   = { for i, v in local.networks_group_policies : i => v }
+  network_id = each.value.network_id
+  name       = each.value.name
+}
 
 # locals {
 #   networks_settings = flatten([
