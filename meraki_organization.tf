@@ -105,20 +105,20 @@ locals {
   admins = flatten([
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : [
-        for admin in try(org.administrators, []) : {
-          key                   = format("%s/%s", org.name, try(admin.name, local.defaults.meraki.organizations.administrators.name, null))
+        for admin in try(org.admins, []) : {
+          key                   = format("%s/%s", org.name, try(admin.name, local.defaults.meraki.organizations.admins.name, null))
           organization_id       = local.organization_map[org.name]
-          name                  = try(admin.name, local.defaults.meraki.organizations.administrators.name, null)
-          email                 = try(admin.email, local.defaults.meraki.organizations.administrators.email, null)
-          authentication_method = try(admin.authentication_method, local.defaults.meraki.organizations.administrators.authentication_method, null)
-          org_access            = try(admin.organization_access, local.defaults.meraki.organizations.administrators.organization_access, null)
+          name                  = try(admin.name, local.defaults.meraki.organizations.admins.name, null)
+          email                 = try(admin.email, local.defaults.meraki.organizations.admins.email, null)
+          authentication_method = try(admin.authentication_method, local.defaults.meraki.organizations.admins.authentication_method, null)
+          org_access            = try(admin.organization_access, local.defaults.meraki.organizations.admins.organization_access, null)
           networks = [for network in try(admin.networks, []) : {
             id     = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
-            access = try(network.access, local.defaults.meraki.organizations.administrators.networks.access, null)
+            access = try(network.access, local.defaults.meraki.organizations.admins.networks.access, null)
           }]
           tags = [for tag in try(admin.tags, []) : {
             tag    = tag.name
-            access = try(tag.access, local.defaults.meraki.organizations.administrators.tags.access, null)
+            access = try(tag.access, local.defaults.meraki.organizations.admins.tags.access, null)
           }]
         }
       ]
