@@ -12,7 +12,7 @@ locals {
           name            = try(network.name, local.defaults.meraki.organizations.networks.name)
           notes           = try(network.notes, local.defaults.meraki.organizations.networks.notes, "")
           product_types   = try(network.product_types, local.defaults.meraki.organizations.networks.product_types)
-          tags            = try(network.tags, local.defaults.meraki.organizations.networks.tags)
+          # tags            = try(network.tags, local.defaults.meraki.organizations.networks.tags)
           time_zone = try(network.timezone, local.defaults.meraki.organizations.networks.timezone, "Europe/Warsaw")
         }
       ]
