@@ -274,7 +274,7 @@ resource "meraki_networks_snmp" "snmp_settings" {
   users            = each.value.snmp.users
 }
 
-
+#  marcin code
 # locals {
 #   networks_switch_access_control_lists = flatten([
 #     for domain in try(local.meraki.domains, []) : [
@@ -367,6 +367,51 @@ resource "meraki_networks_switch_access_control_lists" "example" {
 #   voice_vlan_clients                 = try(each.value.data.voice_vlan_clients, null)
 # }
 
+locals {
+  networks_switch_access_policies = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for org in try(domain.organizations, []) : [
+        for network in try(org.networks, []) : {
+          network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
+          data       = network.switch_access_policies
+        } if try(network.switch_access_policies, null) != null
+      ]
+    ]
+  ])
+}
+
+resource "meraki_networks_switch_access_policies" "net_switch_access_policies" {
+  for_each                     = { for i, v in local.networks_switch_access_policies : i => v }
+  network_id                   = each.value.network_id
+  name                         = try(each.value.data.name, null)
+  access_policy_type           = try(each.value.data.access_policy_type, null)
+  dot1x = {
+    control_direction = try(each.value.data.dot1x.control_direction, null)
+  }
+  guest_port_bouncing       = try(each.value.data.guest_port_bouncing, null)
+  guest_vlan_id             = try(each.value.data.guest_vlan_id, null)
+  host_mode                 = try(each.value.data.host_mode, null)
+  increase_access_speed     = try(each.value.data.increase_access_speed, null)
+  radius = {
+    critical_auth = {
+      suspend_port_bounce = try(each.value.data.radius.critical_auth.suspend_port_bounce, null)
+    }
+  }
+  radius_accounting_enabled = try(each.value.data.radius_accounting_enabled, null)
+  radius_accounting_servers = [for server in try(each.value.data.radius_accounting_servers, []) : {
+    host = server.host
+    port = server.port
+  }]
+  radius_coa_support_enabled = try(each.value.data.radius_coa_support_enabled, null)
+  radius_group_attribute     = try(each.value.data.radius_group_attribute, null)
+  radius_servers = [for server in try(each.value.data.radius_servers, []) : {
+    host = server.host
+    port = server.port
+  }]
+  radius_testing_enabled             = try(each.value.data.radius_testing_enabled, null)
+  url_redirect_walled_garden_enabled = try(each.value.data.url_redirect_walled_garden_enabled, null)
+  voice_vlan_clients                 = try(each.value.data.voice_vlan_clients, null)
+}
 
 
 # locals {
