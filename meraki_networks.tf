@@ -1,37 +1,3 @@
-# locals {
-#   networks_group_policies = flatten([
-#     for domain in try(local.meraki.domains, []) : [
-#       for org in try(domain.organizations, []) : [
-#         for network in try(org.networks, []) : [
-#           for group_policy in try(network.group_policies, []) : {
-#             network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
-#             name       = try(group_policy.name, null)
-#             scheduling = try(group_policy.scheduling, null)
-#             bandwidth   = try(group_policy.bandwidth, null)
-#             firewall_and_traffic_shaping = try(group_policy.firewall_and_traffic_shaping, null)
-#             content_filtering = try(group_policy.content_filtering, null)
-#             splash_auth_settings = try(group_policy.splash_auth_settings, null)
-#             vlan_tagging = try(group_policy.vlan_tagging, null)
-#             bonjour_forwarding = try(group_policy.bonjour_forwarding, null)
-#           }
-#         ]
-#       ]
-#     ]
-#   ])
-# }
-
-# resource "meraki_networks_group_policies" "net_group_policies" {
-#   for_each   = { for i, v in local.networks_group_policies : i => v }
-#   network_id = each.value.network_id
-#   name       = each.value.name
-#   scheduling = each.value.scheduling
-#   bandwidth   = each.value.bandwidth
-#   firewall_and_traffic_shaping = each.value.firewall_and_traffic_shaping
-#   content_filtering = each.value.content_filtering
-#   splash_auth_settings = each.value.splash_auth_settings
-#   vlan_tagging = each.value.vlan_tagging
-#   bonjour_forwarding = each.value.bonjour_forwarding
-# }
 locals {
   networks_group_policies = flatten([
     for domain in try(local.meraki.domains, []) : [
