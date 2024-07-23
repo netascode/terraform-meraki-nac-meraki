@@ -125,7 +125,6 @@ locals {
     ]
   ])
 }
-
 resource "meraki_organizations_admins" "organizations_admins" {
   for_each              = { for admin in local.admins : admin.key => admin }
   organization_id       = each.value.organization_id
@@ -136,3 +135,4 @@ resource "meraki_organizations_admins" "organizations_admins" {
   networks              = each.value.networks
   tags                  = each.value.tags
 }
+
