@@ -42,18 +42,86 @@ locals {
             name       = try(group_policy.name, null)
             scheduling_enabled = try(group_policy.scheduling.enabled, false)
             scheduling = {
-              monday    = try(group_policy.scheduling.monday, {})
-              tuesday   = try(group_policy.scheduling.tuesday, {})
-              wednesday = try(group_policy.scheduling.wednesday, {})
-              thursday  = try(group_policy.scheduling.thursday, {})
-              friday    = try(group_policy.scheduling.friday, {})
-              saturday  = try(group_policy.scheduling.saturday, {})
-              sunday    = try(group_policy.scheduling.sunday, {})
+              monday = {
+                active = try(group_policy.scheduling.monday.active, null)
+                from   = try(group_policy.scheduling.monday.from, null)
+                to     = try(group_policy.scheduling.monday.to, null)
+              }
+              tuesday = {
+                active = try(group_policy.scheduling.tuesday.active, null)
+                from   = try(group_policy.scheduling.tuesday.from, null)
+                to     = try(group_policy.scheduling.tuesday.to, null)
+              }
+              wednesday = {
+                active = try(group_policy.scheduling.wednesday.active, null)
+                from   = try(group_policy.scheduling.wednesday.from, null)
+                to     = try(group_policy.scheduling.wednesday.to, null)
+              }
+              thursday = {
+                active = try(group_policy.scheduling.thursday.active, null)
+                from   = try(group_policy.scheduling.thursday.from, null)
+                to     = try(group_policy.scheduling.thursday.to, null)
+              }
+              friday = {
+                active = try(group_policy.scheduling.friday.active, null)
+                from   = try(group_policy.scheduling.friday.from, null)
+                to     = try(group_policy.scheduling.friday.to, null)
+              }
+              saturday = {
+                active = try(group_policy.scheduling.saturday.active, null)
+                from   = try(group_policy.scheduling.saturday.from, null)
+                to     = try(group_policy.scheduling.saturday.to, null)
+              }
+              sunday = {
+                active = try(group_policy.scheduling.sunday.active, null)
+                from   = try(group_policy.scheduling.sunday.from, null)
+                to     = try(group_policy.scheduling.sunday.to, null)
+              }
             }
             bandwidth = {
+              bandwidth_limits = {
+                limit_down = try(group_policy.bandwidth.bandwidth_limits.limit_down, null)
+                limit_up   = try(group_policy.bandwidth.bandwidth_limits.limit_up, null)
+              }
               settings = try(group_policy.bandwidth.settings, null)
             }
+            bonjour_forwarding = {
+              rules = [for rule in try(group_policy.bonjour_forwarding.rules, []) : {
+                description = try(rule.description, null)
+                services    = try(rule.services, [])
+                vlan_id     = try(rule.vlan_id, null)
+              }]
+              settings = try(group_policy.bonjour_forwarding.settings, null)
+            }
             firewall_and_traffic_shaping = {
+              l3_firewall_rules = [for rule in try(group_policy.firewall_and_traffic_shaping.l3_firewall_rules, []) : {
+                comment   = try(rule.comment, null)
+                dest_cidr = try(rule.dest_cidr, null)
+                dest_port = try(rule.dest_port, null)
+                policy    = try(rule.policy, null)
+                protocol  = try(rule.protocol, null)
+              }]
+              l7_firewall_rules = [for rule in try(group_policy.firewall_and_traffic_shaping.l7_firewall_rules, []) : {
+                policy = try(rule.policy, null)
+                type   = try(rule.type, null)
+                value  = try(rule.value, null)
+              }]
+              traffic_shaping_rules = [for rule in try(group_policy.firewall_and_traffic_shaping.traffic_shaping_rules, []) : {
+                definitions = [for definition in try(rule.definitions, []) : {
+                  type  = try(definition.type, null)
+                  value = try(definition.value, null)
+                }]
+                dscp_tag_value = try(rule.dscp_tag_value, null)
+                pcp_tag_value  = try(rule.pcp_tag_value, null)
+                per_client_bandwidth_limits = {
+                  bandwidth_limits = {
+                    limit_down = try(rule.per_client_bandwidth_limits.bandwidth_limits.limit_down, null)
+                    limit_up   = try(rule.per_client_bandwidth_limits.bandwidth_limits.limit_up, null)
+                  }
+                  settings = try(rule.per_client_bandwidth_limits.settings, null)
+                }
+                priority = try(rule.priority, null)
+              }]
               settings = try(group_policy.firewall_and_traffic_shaping.settings, null)
             }
             splash_auth_settings = try(group_policy.splash_auth_settings, null)
@@ -61,10 +129,6 @@ locals {
               settings = try(group_policy.vlan_tagging.settings, null)
               vlan_id  = try(group_policy.vlan_tagging.vlan_id, null)
             }
-            bonjour_forwarding = {
-              settings = try(group_policy.bonjour_forwarding.settings, null)
-            }
-          
           }
         ]
       ]
@@ -72,50 +136,80 @@ locals {
   ])
 }
 
-# Example of using the scheduling and bandwidth data in a resource
 resource "meraki_networks_group_policies" "net_group_policies" {
-  for_each = { for policy in local.networks_group_policies : policy.network_id => policy }
-  
-  network_id = each.value.network_id
+  for_each = { for i, v in local.networks_group_policies : i => v }
+
   name       = each.value.name
+  network_id = each.value.network_id
 
-  scheduling_enabled = each.value.scheduling_enabled
+  bandwidth = {
+    bandwidth_limits = {
+      limit_down = each.value.bandwidth.bandwidth_limits.limit_down
+      limit_up   = each.value.bandwidth.bandwidth_limits.limit_up
+    }
+    settings = each.value.bandwidth.settings
+  }
 
-  monday_active  = each.value.scheduling.monday.active
-  monday_from    = each.value.scheduling.monday.from
-  monday_to      = each.value.scheduling.monday.to
-  
-  tuesday_active = each.value.scheduling.tuesday.active
-  tuesday_from   = each.value.scheduling.tuesday.from
-  tuesday_to     = each.value.scheduling.tuesday.to
+  bonjour_forwarding = {
+    rules = [for rule in each.value.bonjour_forwarding.rules : {
+      description = rule.description
+      services    = rule.services
+      vlan_id     = rule.vlan_id
+    }]
+    settings = each.value.bonjour_forwarding.settings
+  }
 
-  wednesday_active = each.value.scheduling.wednesday.active
-  wednesday_from   = each.value.scheduling.wednesday.from
-  wednesday_to     = each.value.scheduling.wednesday.to
+  firewall_and_traffic_shaping = {
+    l3_firewall_rules = [for rule in each.value.firewall_and_traffic_shaping.l3_firewall_rules : {
+      comment   = rule.comment
+      dest_cidr = rule.dest_cidr
+      dest_port = rule.dest_port
+      policy    = rule.policy
+      protocol  = rule.protocol
+    }]
+    l7_firewall_rules = [for rule in each.value.firewall_and_traffic_shaping.l7_firewall_rules : {
+      policy = rule.policy
+      type   = rule.type
+      value  = rule.value
+    }]
+    settings = each.value.firewall_and_traffic_shaping.settings
+    traffic_shaping_rules = [for rule in each.value.firewall_and_traffic_shaping.traffic_shaping_rules : {
+      definitions = [for definition in rule.definitions : {
+        type  = definition.type
+        value = definition.value
+      }]
+      dscp_tag_value = rule.dscp_tag_value
+      pcp_tag_value  = rule.pcp_tag_value
+      per_client_bandwidth_limits = {
+        bandwidth_limits = {
+          limit_down = rule.per_client_bandwidth_limits.bandwidth_limits.limit_down
+          limit_up   = rule.per_client_bandwidth_limits.bandwidth_limits.limit_up
+        }
+        settings = rule.per_client_bandwidth_limits.settings
+      }
+      priority = rule.priority
+    }]
+  }
 
-  thursday_active = each.value.scheduling.thursday.active
-  thursday_from   = each.value.scheduling.thursday.from
-  thursday_to     = each.value.scheduling.thursday.to
+  scheduling = {
+    enabled  = each.value.scheduling_enabled
+    monday   = each.value.scheduling.monday
+    tuesday  = each.value.scheduling.tuesday
+    wednesday = each.value.scheduling.wednesday
+    thursday = each.value.scheduling.thursday
+    friday   = each.value.scheduling.friday
+    saturday = each.value.scheduling.saturday
+    sunday   = each.value.scheduling.sunday
+  }
 
-  friday_active = each.value.scheduling.friday.active
-  friday_from   = each.value.scheduling.friday.from
-  friday_to     = each.value.scheduling.friday.to
-
-  saturday_active = each.value.scheduling.saturday.active
-  saturday_from   = each.value.scheduling.saturday.from
-  saturday_to     = each.value.scheduling.saturday.to
-
-  sunday_active = each.value.scheduling.sunday.active
-  sunday_from   = each.value.scheduling.sunday.from
-  sunday_to     = each.value.scheduling.sunday.to
-
-  bandwidth_settings = each.value.bandwidth.settings
-  firewall_and_traffic_shaping_settings = each.value.firewall_and_traffic_shaping.settings
   splash_auth_settings = each.value.splash_auth_settings
-  vlan_tagging_settings = each.value.vlan_tagging.settings
-  vlan_tagging_vlan_id = each.value.vlan_tagging.vlan_id
-  bonjour_forwarding_settings = each.value.bonjour_forwarding.settings
+
+  vlan_tagging = {
+    settings = each.value.vlan_tagging.settings
+    vlan_id  = each.value.vlan_tagging.vlan_id
+  }
 }
+
 
 # locals {
 #   networks_settings = flatten([
