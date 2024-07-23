@@ -296,6 +296,37 @@ resource "meraki_networks_snmp" "snmp_settings" {
 #   # rules_response = try(each.value.data.rules_response, null)
 # }
 
+locals {
+  network_acls = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for org in try(domain.organizations, []) : [
+        for network in try(org.networks, []) : {
+          network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
+          switch_access_control_lists = {
+            rules = [for rule in try(network.switch_access_control_lists.rules, []) : {
+              comment    = try(rule.comment, null)
+              policy     = try(rule.policy, null)
+              ip_version = try(rule.ip_version, null)
+              protocol   = try(rule.protocol, null)
+              src_cidr   = try(rule.src_cidr, null)
+              src_port   = try(rule.src_port, null)
+              dst_cidr   = try(rule.dst_cidr, null)
+              dst_port   = try(rule.dst_port, null)
+              vlan       = try(rule.vlan, null)
+            }]
+          }
+        }
+      ]
+    ]
+  ])
+}
+
+resource "meraki_networks_switch_access_control_lists" "example" {
+  for_each = { for i, v in local.network_acls : i => v }
+
+  network_id = each.value.network_id
+  rules      = each.value.switch_access_control_lists.rules
+}
 
 # locals {
 #   networks_switch_access_policies = flatten([
