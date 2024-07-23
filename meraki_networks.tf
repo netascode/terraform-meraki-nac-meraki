@@ -1,3 +1,37 @@
+# locals {
+#   networks_group_policies = flatten([
+#     for domain in try(local.meraki.domains, []) : [
+#       for org in try(domain.organizations, []) : [
+#         for network in try(org.networks, []) : [
+#           for group_policy in try(network.group_policies, []) : {
+#             network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
+#             name       = try(group_policy.name, null)
+#             scheduling = try(group_policy.scheduling, null)
+#             bandwidth   = try(group_policy.bandwidth, null)
+#             firewall_and_traffic_shaping = try(group_policy.firewall_and_traffic_shaping, null)
+#             content_filtering = try(group_policy.content_filtering, null)
+#             splash_auth_settings = try(group_policy.splash_auth_settings, null)
+#             vlan_tagging = try(group_policy.vlan_tagging, null)
+#             bonjour_forwarding = try(group_policy.bonjour_forwarding, null)
+#           }
+#         ]
+#       ]
+#     ]
+#   ])
+# }
+
+# resource "meraki_networks_group_policies" "net_group_policies" {
+#   for_each   = { for i, v in local.networks_group_policies : i => v }
+#   network_id = each.value.network_id
+#   name       = each.value.name
+#   scheduling = each.value.scheduling
+#   bandwidth   = each.value.bandwidth
+#   firewall_and_traffic_shaping = each.value.firewall_and_traffic_shaping
+#   content_filtering = each.value.content_filtering
+#   splash_auth_settings = each.value.splash_auth_settings
+#   vlan_tagging = each.value.vlan_tagging
+#   bonjour_forwarding = each.value.bonjour_forwarding
+# }
 locals {
   networks_group_policies = flatten([
     for domain in try(local.meraki.domains, []) : [
@@ -6,13 +40,31 @@ locals {
           for group_policy in try(network.group_policies, []) : {
             network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
             name       = try(group_policy.name, null)
-            scheduling = try(group_policy.scheduling, null)
-            bandwidth   = try(group_policy.bandwidth, null)
-            firewall_and_traffic_shaping = try(group_policy.firewall_and_traffic_shaping, null)
-            content_filtering = try(group_policy.content_filtering, null)
+            scheduling_enabled = try(group_policy.scheduling.enabled, false)
+            scheduling = {
+              monday    = try(group_policy.scheduling.monday, {})
+              tuesday   = try(group_policy.scheduling.tuesday, {})
+              wednesday = try(group_policy.scheduling.wednesday, {})
+              thursday  = try(group_policy.scheduling.thursday, {})
+              friday    = try(group_policy.scheduling.friday, {})
+              saturday  = try(group_policy.scheduling.saturday, {})
+              sunday    = try(group_policy.scheduling.sunday, {})
+            }
+            bandwidth = {
+              settings = try(group_policy.bandwidth.settings, null)
+            }
+            firewall_and_traffic_shaping = {
+              settings = try(group_policy.firewall_and_traffic_shaping.settings, null)
+            }
             splash_auth_settings = try(group_policy.splash_auth_settings, null)
-            vlan_tagging = try(group_policy.vlan_tagging, null)
-            bonjour_forwarding = try(group_policy.bonjour_forwarding, null)
+            vlan_tagging = {
+              settings = try(group_policy.vlan_tagging.settings, null)
+              vlan_id  = try(group_policy.vlan_tagging.vlan_id, null)
+            }
+            bonjour_forwarding = {
+              settings = try(group_policy.bonjour_forwarding.settings, null)
+            }
+          
           }
         ]
       ]
@@ -20,17 +72,49 @@ locals {
   ])
 }
 
-resource "meraki_networks_group_policies" "net_group_policies" {
-  for_each   = { for i, v in local.networks_group_policies : i => v }
+# Example of using the scheduling and bandwidth data in a resource
+resource "example_resource" "group_policies" {
+  for_each = { for policy in local.networks_group_policies : policy.network_id => policy }
+  
   network_id = each.value.network_id
   name       = each.value.name
-  scheduling = each.value.scheduling
-  bandwidth   = each.value.bandwidth
-  firewall_and_traffic_shaping = each.value.firewall_and_traffic_shaping
-  content_filtering = each.value.content_filtering
+
+  scheduling_enabled = each.value.scheduling_enabled
+
+  monday_active  = each.value.scheduling.monday.active
+  monday_from    = each.value.scheduling.monday.from
+  monday_to      = each.value.scheduling.monday.to
+  
+  tuesday_active = each.value.scheduling.tuesday.active
+  tuesday_from   = each.value.scheduling.tuesday.from
+  tuesday_to     = each.value.scheduling.tuesday.to
+
+  wednesday_active = each.value.scheduling.wednesday.active
+  wednesday_from   = each.value.scheduling.wednesday.from
+  wednesday_to     = each.value.scheduling.wednesday.to
+
+  thursday_active = each.value.scheduling.thursday.active
+  thursday_from   = each.value.scheduling.thursday.from
+  thursday_to     = each.value.scheduling.thursday.to
+
+  friday_active = each.value.scheduling.friday.active
+  friday_from   = each.value.scheduling.friday.from
+  friday_to     = each.value.scheduling.friday.to
+
+  saturday_active = each.value.scheduling.saturday.active
+  saturday_from   = each.value.scheduling.saturday.from
+  saturday_to     = each.value.scheduling.saturday.to
+
+  sunday_active = each.value.scheduling.sunday.active
+  sunday_from   = each.value.scheduling.sunday.from
+  sunday_to     = each.value.scheduling.sunday.to
+
+  bandwidth_settings = each.value.bandwidth.settings
+  firewall_and_traffic_shaping_settings = each.value.firewall_and_traffic_shaping.settings
   splash_auth_settings = each.value.splash_auth_settings
-  vlan_tagging = each.value.vlan_tagging
-  bonjour_forwarding = each.value.bonjour_forwarding
+  vlan_tagging_settings = each.value.vlan_tagging.settings
+  vlan_tagging_vlan_id = each.value.vlan_tagging.vlan_id
+  bonjour_forwarding_settings = each.value.bonjour_forwarding.settings
 }
 
 # locals {
