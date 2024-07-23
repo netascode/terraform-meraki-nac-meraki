@@ -111,7 +111,7 @@ locals {
           name                  = try(admin.name, local.defaults.meraki.organizations.admins.name, null)
           email                 = try(admin.email, local.defaults.meraki.organizations.admins.email, null)
           authentication_method = try(admin.authentication_method, local.defaults.meraki.organizations.admins.authentication_method, null)
-          org_access            = try(admin.organization_access, local.defaults.meraki.organizations.admins.organization_access, null)
+          org_access            = try(admin.org_access, local.defaults.meraki.organizations.admins.org_access, null)
           networks = [for network in try(admin.networks, []) : {
             id     = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
             access = try(network.access, local.defaults.meraki.organizations.admins.networks.access, null)
