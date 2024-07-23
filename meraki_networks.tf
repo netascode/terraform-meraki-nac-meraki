@@ -149,27 +149,27 @@ resource "meraki_networks_switch_dhcp_server_policy" "net_switch_dhcp_server_pol
 }
 
 
-# locals {
-#   networks_switch_dhcp_server_policy_arp_inspection_trusted_servers = flatten([
-#     for domain in try(local.meraki.domains, []) : [
-#       for org in try(domain.organizations, []) : [
-#         for network in try(org.networks, []) : {
-#           network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
-#           data       = network.switch_dhcp_server_policy_arp_inspection_trusted_servers
-#         } if try(network.switch_dhcp_server_policy_arp_inspection_trusted_servers, null) != null
-#       ]
-#     ]
-#   ])
-# }
+locals {
+  networks_switch_dhcp_server_policy_arp_inspection_trusted_servers = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for org in try(domain.organizations, []) : [
+        for network in try(org.networks, []) : {
+          network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
+          data       = network.switch_dhcp_server_policy_arp_inspection_trusted_servers
+        } if try(network.switch_dhcp_server_policy_arp_inspection_trusted_servers, null) != null
+      ]
+    ]
+  ])
+}
 
-# resource "meraki_networks_switch_dhcp_server_policy_arp_inspection_trusted_servers" "net_switch_dhcp_server_policy_arp_inspection_trusted_servers" {
-#   for_each          = { for i, v in local.networks_switch_dhcp_server_policy_arp_inspection_trusted_servers : i => v }
-#   network_id        = each.value.network_id
-#   ipv4              = try(each.value.data.ipv4, null)
-#   mac               = try(each.value.data.mac, null)
-#   trusted_server_id = try(each.value.data.trusted_server_id, null)
-#   vlan              = try(each.value.data.vlan, null)
-# }
+resource "meraki_networks_switch_dhcp_server_policy_arp_inspection_trusted_servers" "net_switch_dhcp_server_policy_arp_inspection_trusted_servers" {
+  for_each          = { for i, v in local.networks_switch_dhcp_server_policy_arp_inspection_trusted_servers : i => v }
+  network_id        = each.value.network_id
+  ipv4              = try(each.value.data.ipv4, null)
+  mac               = try(each.value.data.mac, null)
+  trusted_server_id = try(each.value.data.trusted_server_id, null)
+  vlan              = try(each.value.data.vlan, null)
+}
 
 
 
@@ -459,40 +459,40 @@ resource "meraki_networks_switch_stacks" "net_switch_stacks" {
   # switch_stack_id = try(each.value.data.switch_stack_id, null)
 }
 
-# locals {
-#   networks_switch_stacks_routing_interfaces = flatten([
-#     for domain in try(local.meraki.domains, []) : [
-#       for org in try(domain.organizations, []) : [
-#         for network in try(org.networks, []) : [
-#           for switch_stack in try(network.switch_stacks, []) : [
-#             for interface in try(switch_stack.routing_interfaces, []) : {
-#               network_id      = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
-#               switch_stack_id = meraki_networks_switch_stacks.net_switch_stacks["${domain.name}/${org.name}/${network.name}/stacks/${switch_stack.name}"].id
-#               interface_key   = format("%s/%s/%s/stacks/%s/interfaces/%s", domain.name, org.name, network.name, switch_stack.name, interface.name)
-#               data            = interface
-#             }
-#           ]
-#         ]
-#       ]
-#     ]
-#   ])
-# }
+locals {
+  networks_switch_stacks_routing_interfaces = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for org in try(domain.organizations, []) : [
+        for network in try(org.networks, []) : [
+          for switch_stack in try(network.switch_stacks, []) : [
+            for interface in try(switch_stack.routing_interfaces, []) : {
+              network_id      = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
+              switch_stack_id = meraki_networks_switch_stacks.net_switch_stacks["${domain.name}/${org.name}/${network.name}/stacks/${switch_stack.name}"].id
+              interface_key   = format("%s/%s/%s/stacks/%s/interfaces/%s", domain.name, org.name, network.name, switch_stack.name, interface.name)
+              data            = interface
+            }
+          ]
+        ]
+      ]
+    ]
+  ])
+}
 
-# resource "meraki_networks_switch_stacks_routing_interfaces" "net_switch_stacks_routing_interfaces" {
-#   for_each        = { for i, v in local.networks_switch_stacks_routing_interfaces : i => v }
-#   switch_stack_id = each.value.switch_stack_id
-#   network_id      = each.value.network_id
-#   # default_gateway = try(each.value.data.default_gateway, null)
-#   # interface_id      = try(each.value.data.interface_id, null)
-#   interface_ip      = try(each.value.data.interface_ip, null)
-#   ipv6              = try(each.value.data.ipv6, null)
-#   multicast_routing = try(each.value.data.multicast_routing, null)
-#   name              = try(each.value.data.name, null)
-#   ospf_settings     = try(each.value.data.ospf_settings, null)
-#   # ospf_v3           = try(each.value.data.ospf_v3, null)
-#   subnet  = try(each.value.data.subnet, null)
-#   vlan_id = try(each.value.data.vlan_id, null)
-# }
+resource "meraki_networks_switch_stacks_routing_interfaces" "net_switch_stacks_routing_interfaces" {
+  for_each        = { for i, v in local.networks_switch_stacks_routing_interfaces : i => v }
+  switch_stack_id = each.value.switch_stack_id
+  network_id      = each.value.network_id
+  default_gateway = try(each.value.data.default_gateway, null)
+  # interface_id      = try(each.value.data.interface_id, null)
+  interface_ip      = try(each.value.data.interface_ip, null)
+  ipv6              = try(each.value.data.ipv6, null)
+  multicast_routing = try(each.value.data.multicast_routing, null)
+  name              = try(each.value.data.name, null)
+  ospf_settings     = try(each.value.data.ospf_settings, null)
+  # ospf_v3           = try(each.value.data.ospf_v3, null)
+  subnet  = try(each.value.data.subnet, null)
+  vlan_id = try(each.value.data.vlan_id, null)
+}
 
 
 # locals {
@@ -552,17 +552,17 @@ locals {
   ])
 }
 
-# resource "meraki_networks_switch_stacks_routing_static_routes" "net_switch_stacks_routing_static_routes" {
-#   for_each                        = { for i, v in local.i => v }
-#   network_id                      = each.value.network_id
-#   switch_stack_id                 = each.value.switch_stack_id
-#   # advertise_via_ospf_enabled      = try(each.value.data.advertise_via_ospf_enabled, null)
-#   name                            = try(each.value.data.name, null)
-#   next_hop_ip                     = try(each.value.data.next_hop_ip, null)
-#   # prefer_over_ospf_routes_enabled = try(each.value.data.prefer_over_ospf_routes_enabled, null)
-#   subnet                          = try(each.value.data.subnet, null)
-#   # static_route_id                 = try(each.value.data.static_route_id, null)
-# }
+resource "meraki_networks_switch_stacks_routing_static_routes" "net_switch_stacks_routing_static_routes" {
+  for_each                        = { for i, v in local.networks_switch_stacks_routing_static_routes : i => v }
+  network_id                      = each.value.network_id
+  switch_stack_id                 = each.value.switch_stack_id
+  # advertise_via_ospf_enabled      = try(each.value.data.advertise_via_ospf_enabled, null)
+  name                            = try(each.value.data.name, null)
+  next_hop_ip                     = try(each.value.data.next_hop_ip, null)
+  # prefer_over_ospf_routes_enabled = try(each.value.data.prefer_over_ospf_routes_enabled, null)
+  subnet                          = try(each.value.data.subnet, null)
+  # static_route_id                 = try(each.value.data.static_route_id, null)
+}
 
 locals {
   networks_syslog_servers = flatten([
