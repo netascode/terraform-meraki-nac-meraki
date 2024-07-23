@@ -12,7 +12,7 @@ locals {
           name            = try(network.name, local.defaults.meraki.organizations.networks.name)
           notes           = try(network.notes, local.defaults.meraki.organizations.networks.notes, "")
           product_types   = try(network.product_types, local.defaults.meraki.organizations.networks.product_types)
-          # tags            = try(network.tags, local.defaults.meraki.organizations.networks.tags)
+          tags            = try(network.tags, local.defaults.meraki.organizations.networks.tags)
           time_zone = try(network.timezone, local.defaults.meraki.organizations.networks.timezone, "Europe/Warsaw")
         }
       ]
@@ -52,23 +52,23 @@ locals {
 }
 
 
-# resource "meraki_organizations_login_security" "login_security" {
-#   for_each = { for login in local.login_security : login.organization_id => login }
+resource "meraki_organizations_login_security" "login_security" {
+  for_each = { for login in local.login_security : login.organization_id => login }
 
-#   organization_id             = each.value.organization_id
-#   enforce_password_expiration = each.value.enforce_password_expiration
-#   password_expiration_days    = each.value.password_expiration_days
-#   enforce_different_passwords = each.value.enforce_different_passwords
-#   num_different_passwords     = each.value.num_different_passwords
-#   enforce_strong_passwords    = each.value.enforce_strong_passwords
-#   enforce_account_lockout     = each.value.enforce_account_lockout
-#   account_lockout_attempts    = each.value.account_lockout_attempts
-#   enforce_idle_timeout        = each.value.enforce_idle_timeout
-#   idle_timeout_minutes        = each.value.idle_timeout_minutes
-#   enforce_two_factor_auth     = each.value.enforce_two_factor_auth
-#   enforce_login_ip_ranges     = each.value.enforce_login_ip_ranges
-#   login_ip_ranges             = each.value.login_ip_ranges
-# }
+  organization_id             = each.value.organization_id
+  enforce_password_expiration = each.value.enforce_password_expiration
+  password_expiration_days    = each.value.password_expiration_days
+  enforce_different_passwords = each.value.enforce_different_passwords
+  num_different_passwords     = each.value.num_different_passwords
+  enforce_strong_passwords    = each.value.enforce_strong_passwords
+  enforce_account_lockout     = each.value.enforce_account_lockout
+  account_lockout_attempts    = each.value.account_lockout_attempts
+  enforce_idle_timeout        = each.value.enforce_idle_timeout
+  idle_timeout_minutes        = each.value.idle_timeout_minutes
+  enforce_two_factor_auth     = each.value.enforce_two_factor_auth
+  enforce_login_ip_ranges     = each.value.enforce_login_ip_ranges
+  login_ip_ranges             = each.value.login_ip_ranges
+}
 
 locals {
   snmp = flatten([
@@ -87,19 +87,19 @@ locals {
   ])
 }
 
-# resource "meraki_organizations_snmp" "snmp" {
-#   for_each = { for snmp in local.snmp : snmp.organization_id => snmp }
+resource "meraki_organizations_snmp" "snmp" {
+  for_each = { for snmp in local.snmp : snmp.organization_id => snmp }
 
-#   organization_id = each.value.organization_id
-#   v2c_enabled     = each.value.v2c_enabled
-#   v3_enabled      = each.value.v3_enabled
-#   v3_auth_mode    = each.value.v3_auth_mode
-#   v3_auth_pass    = each.value.v3_auth_pass
-#   v3_priv_mode    = each.value.v3_priv_mode
-#   v3_priv_pass    = each.value.v3_priv_pass
-#   peer_ips        = each.value.peer_ips
+  organization_id = each.value.organization_id
+  v2c_enabled     = each.value.v2c_enabled
+  v3_enabled      = each.value.v3_enabled
+  v3_auth_mode    = each.value.v3_auth_mode
+  v3_auth_pass    = each.value.v3_auth_pass
+  v3_priv_mode    = each.value.v3_priv_mode
+  v3_priv_pass    = each.value.v3_priv_pass
+  peer_ips        = each.value.peer_ips
 
-# }
+}
 # Apply Org Wide Administrator Users
 locals {
   admins = flatten([
