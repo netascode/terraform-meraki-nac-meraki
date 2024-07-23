@@ -73,7 +73,7 @@ locals {
 }
 
 # Example of using the scheduling and bandwidth data in a resource
-resource "example_resource" "group_policies" {
+resource "meraki_networks_group_policies" "net_group_policies" {
   for_each = { for policy in local.networks_group_policies : policy.network_id => policy }
   
   network_id = each.value.network_id
