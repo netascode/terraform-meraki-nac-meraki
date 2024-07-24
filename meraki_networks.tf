@@ -708,7 +708,7 @@ locals {
 resource "meraki_networks_wireless_ssids" "net_wireless_ssids" {
   for_each         = { for i, v in local.networks_wireless_ssids : i => v }
   network_id       = each.value.network_id
-  # number           = each.value.data.number
+  number           = each.value.data.number
   active_directory = try(each.value.data.active_directory, null)
   # admin_splash_url                     = try(each.value.data.admin_splash_url, null)
   adult_content_filtering_enabled      = try(each.value.data.adult_content_filtering_enabled, null)
