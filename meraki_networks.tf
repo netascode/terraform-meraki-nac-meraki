@@ -343,15 +343,23 @@ locals {
   ])
 }
 
-resource "meraki_networks_switch_routing_multicast_rendezvous_points" "net_switch_routing_multicast_rendezvous_points" {
-  for_each     = { for i, v in local.networks_switch_routing_multicast_rendezvous_points : i => v }
-  network_id   = each.value.network_id
-  interface_ip = try(each.value.data.interface_ip, null)
-  # interface_name = try(each.value.data.interface_name, null)
-  multicast_group = try(each.value.data.multicast_group, null)
-  # rendezvous_point_id = try(each.value.data.rendezvous_point_id, null)
-  # serial = try(each.value.data.serial, null)
+data "meraki_networks_switch_routing_multicast_rendezvous_points" "data_rendezvous_points" {
+  for_each = { for i, v in meraki_networks.networks : i => v }
+  network_id = each.value.network_id
 }
+
+locals {
+  marcin_debug=data.meraki_networks_switch_routing_multicast_rendezvous_points.data_rendezvous_points
+}
+
+# resource "meraki_networks_switch_routing_multicast_rendezvous_points" "net_switch_routing_multicast_rendezvous_points" {
+#   for_each     = { for point in local.networks_switch_routing_multicast_rendezvous_points : point.point_key => point }
+#   network_id   = each.value.network_id
+#   interface_ip = try(each.value.data.interface_ip, null)
+#   # interface_name = try(each.value.data.interface_name, null)
+#   multicast_group = try(each.value.data.multicast_group, null)
+#   # serial = try(each.value.data.serial, null)
+# }
 
 
 
@@ -700,7 +708,7 @@ locals {
 resource "meraki_networks_wireless_ssids" "net_wireless_ssids" {
   for_each         = { for i, v in local.networks_wireless_ssids : i => v }
   network_id       = each.value.network_id
-  number           = each.value.number
+  number           = each.value.data.number
   active_directory = try(each.value.data.active_directory, null)
   # admin_splash_url                     = try(each.value.data.admin_splash_url, null)
   adult_content_filtering_enabled      = try(each.value.data.adult_content_filtering_enabled, null)
