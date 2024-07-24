@@ -160,10 +160,12 @@ locals {
   networks_switch_dhcp_server_policy_arp_inspection_trusted_servers = flatten([
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : [
-        for network in try(org.networks, []) : {
-          network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
-          data       = network.switch_dhcp_server_policy_arp_inspection_trusted_servers
-        } if try(network.switch_dhcp_server_policy_arp_inspection_trusted_servers, null) != null
+        for network in try(org.networks, []) : [
+          for trusted_server in try(network.switch_dhcp_server_policy_arp_inspection_trusted_servers, []) : {
+            data       = trusted_server
+            network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
+          }
+        ]
       ]
     ]
   ])
@@ -174,7 +176,6 @@ resource "meraki_networks_switch_dhcp_server_policy_arp_inspection_trusted_serve
   network_id        = each.value.network_id
   ipv4              = try(each.value.data.ipv4, null)
   mac               = try(each.value.data.mac, null)
-  trusted_server_id = try(each.value.data.trusted_server_id, null)
   vlan              = try(each.value.data.vlan, null)
 }
 
