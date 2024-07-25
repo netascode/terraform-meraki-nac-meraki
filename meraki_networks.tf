@@ -66,7 +66,7 @@ locals {
       for org in try(domain.organizations, []) : [
         for network in try(org.networks, []) : [
           for switch_access_policy in try(network.switch_access_policies, []) : {
-            policy_key  = format("%s/%s/%s/switch_access_policies/%s", domain.name, org.name, network.name, switch_access_policy.name)
+            policy_key = format("%s/%s/%s/switch_access_policies/%s", domain.name, org.name, network.name, switch_access_policy.name)
             data       = switch_access_policy
             network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
           }
@@ -172,11 +172,11 @@ locals {
 }
 
 resource "meraki_networks_switch_dhcp_server_policy_arp_inspection_trusted_servers" "net_switch_dhcp_server_policy_arp_inspection_trusted_servers" {
-  for_each          = { for i, v in local.networks_switch_dhcp_server_policy_arp_inspection_trusted_servers : i => v }
-  network_id        = each.value.network_id
-  ipv4              = try(each.value.data.ipv4, null)
-  mac               = try(each.value.data.mac, null)
-  vlan              = try(each.value.data.vlan, null)
+  for_each   = { for i, v in local.networks_switch_dhcp_server_policy_arp_inspection_trusted_servers : i => v }
+  network_id = each.value.network_id
+  ipv4       = try(each.value.data.ipv4, null)
+  mac        = try(each.value.data.mac, null)
+  vlan       = try(each.value.data.vlan, null)
 }
 
 
@@ -344,24 +344,28 @@ locals {
 }
 
 data "meraki_networks_switch_routing_multicast_rendezvous_points" "data_rendezvous_points" {
-  for_each = { for i, v in meraki_networks.networks : i => v }
+  for_each   = { for i, v in meraki_networks.networks : i => v }
   network_id = each.value.network_id
 }
 
 locals {
-  marcin_debug=data.meraki_networks_switch_routing_multicast_rendezvous_points.data_rendezvous_points
+  rendezvous_map = {
+    for net, val in data.meraki_networks_switch_routing_multicast_rendezvous_points.data_rendezvous_points :
+    "${net}" => {
+      for i in val.items : "${i.multicast_group}" => i.rendezvous_point_id
+    } if val.items != null
+  }
 }
 
-# resource "meraki_networks_switch_routing_multicast_rendezvous_points" "net_switch_routing_multicast_rendezvous_points" {
-#   for_each     = { for point in local.networks_switch_routing_multicast_rendezvous_points : point.point_key => point }
-#   network_id   = each.value.network_id
-#   interface_ip = try(each.value.data.interface_ip, null)
-#   # interface_name = try(each.value.data.interface_name, null)
-#   multicast_group = try(each.value.data.multicast_group, null)
-#   # serial = try(each.value.data.serial, null)
-# }
-
-
+resource "meraki_networks_switch_routing_multicast_rendezvous_points" "net_switch_routing_multicast_rendezvous_points" {
+  for_each     = { for point in local.networks_switch_routing_multicast_rendezvous_points : point.point_key => point }
+  network_id   = each.value.network_id
+  interface_ip = try(each.value.data.interface_ip, null)
+  # interface_name = try(each.value.data.interface_name, null)
+  multicast_group = try(each.value.data.multicast_group, null)
+  rendezvous_point_id = try(local.rendezvous_map[each.value.network_id][each.value.data.multicast_group], null)
+  # serial = try(each.value.data.serial, null)
+}
 
 locals {
   networks_switch_routing_ospf = flatten([
@@ -507,7 +511,7 @@ resource "meraki_networks_switch_stacks_routing_interfaces" "net_switch_stacks_r
   network_id      = each.value.network_id
   default_gateway = try(each.value.data.default_gateway, null)
   # interface_id      = try(each.value.data.interface_id, null)
-  interface_ip      = try(each.value.data.interface_ip, null)
+  interface_ip = try(each.value.data.interface_ip, null)
   # ipv6              = try(each.value.data.ipv6, null)
   multicast_routing = try(each.value.data.multicast_routing, null)
   name              = try(each.value.data.name, null)

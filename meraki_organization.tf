@@ -18,7 +18,7 @@ locals {
       ]
     ]
   ])
-  # marcin_debug = 5
+  marcin_debug = 5
 }
 resource "meraki_networks" "networks" {
   for_each        = { for network in local.networks : network.key => network }
