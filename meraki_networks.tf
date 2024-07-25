@@ -351,7 +351,7 @@ data "meraki_networks_switch_routing_multicast_rendezvous_points" "data_rendezvo
 locals {
   rendezvous_map = {
     for net, val in data.meraki_networks_switch_routing_multicast_rendezvous_points.data_rendezvous_points :
-    "${net}" => {
+    "${val.network_id}" => {
       for i in val.items : "${i.multicast_group}" => i.rendezvous_point_id
     } if val.items != null
   }
