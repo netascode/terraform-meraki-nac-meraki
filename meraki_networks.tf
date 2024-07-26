@@ -437,8 +437,19 @@ resource "meraki_networks_switch_storm_control" "net_switch_storm_control" {
   multicast_threshold       = try(each.value.data.multicast_threshold, null)
   unknown_unicast_threshold = try(each.value.data.unknown_unicast_threshold, null)
 }
+data "meraki_networks_switch_stacks" "data_switch_stacks" {
+  for_each   = { for i, v in meraki_networks.networks : i => v }
+  network_id = each.value.network_id
+}
 
-
+locals {
+  switch_stacks_map = {
+    for net, val in data.meraki_networks_switch_stacks.data_switch_stacks :
+    "${val.network_id}" => {
+      for i in val.items : "${i.name}" => i.id
+    } if val.items != null
+  }
+}
 
 locals {
   networks_switch_stp = flatten([
@@ -447,6 +458,11 @@ locals {
         for network in try(org.networks, []) : {
           network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
           data       = network.switch_stp
+          stp_bridge_priority = [for p in network.switch_stp.stp_bridge_priority : {
+            switches = try(p.switches, null)
+            stp_priority = try(p.stp_priority, null)
+            stacks = [for s in try(p.stacks, []) : local.switch_stacks_map[meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id][s]]
+          }]
         } if try(network.switch_stp, null) != null
       ]
     ]
@@ -457,8 +473,7 @@ resource "meraki_networks_switch_stp" "net_switch_stp" {
   for_each            = { for i, v in local.networks_switch_stp : i => v }
   network_id          = each.value.network_id
   rstp_enabled        = try(each.value.data.rstp_enabled, null)
-  stp_bridge_priority = try(each.value.data.stp_bridge_priority, null)
-  # stp_bridge_priority_response = try(each.value.data.stp_bridge_priority_response, null)
+  stp_bridge_priority = try(each.value.stp_bridge_priority, null)
 }
 
 locals {
