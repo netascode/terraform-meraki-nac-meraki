@@ -98,7 +98,6 @@ resource "meraki_organizations_snmp" "snmp" {
   v3_priv_mode    = each.value.v3_priv_mode
   v3_priv_pass    = each.value.v3_priv_pass
   peer_ips        = each.value.peer_ips
-
 }
 # Apply Org Wide Administrator Users
 locals {

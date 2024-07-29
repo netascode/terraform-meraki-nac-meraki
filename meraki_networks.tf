@@ -206,10 +206,12 @@ locals {
   networks_switch_link_aggregations = flatten([
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : [
-        for network in try(org.networks, []) : {
-          network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
-          data       = network.switch_link_aggregations
-        } if try(network.switch_link_aggregations, null) != null
+        for network in try(org.networks, []) : [
+          for link_aggregation in try(network.switch_link_aggregations, []) : {
+            data       = link_aggregation
+            network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
+          }
+        ]
       ]
     ]
   ])
@@ -252,10 +254,12 @@ locals {
   networks_switch_port_schedules = flatten([
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : [
-        for network in try(org.networks, []) : {
-          network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
-          data       = network.switch_port_schedules
-        } if try(network.switch_port_schedules, null) != null
+        for network in try(org.networks, []) : [
+          for port_schedule in try(network.switch_port_schedules, []) : {
+            data       = port_schedule
+            network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
+          }
+        ]
       ]
     ]
   ])
