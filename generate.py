@@ -33,7 +33,7 @@ resource "meraki_networks_{RESOURCE_NAME}" "net_{RESOURCE_NAME}" {{
 def generate_template(resource, values):
     values_render = ""
     for v in values:
-        values_render += "  {v} = try(each.value.{v}, null)\n".format(v=v)
+        values_render += "  {v} = try(each.value.{v}, local.defaults.meraki.networks.{r}.{v}, null)\n".format(v=v, r=resource)
     return template.format(RESOURCE_NAME=resource, VALUES=values, values_render=values_render.strip())
 
 with open("/Users/maparafi/test_meraki/schema.json") as f:
@@ -42,5 +42,5 @@ with open("/Users/maparafi/test_meraki/schema.json") as f:
 j = json.loads(contents)
 
 for k, v in j["provider_schemas"]["registry.terraform.io/cisco-open/meraki"]["resource_schemas"].items():
-    if k.startswith("meraki_networks_wireless"):
+    if k.startswith("meraki_networks"):
         print(generate_template(k[16:], [kk for kk, vv in v["block"]["attributes"].items() if kk != "network_id"]))
