@@ -368,8 +368,8 @@ data "meraki_networks_switch_routing_multicast_rendezvous_points" "data_rendezvo
 locals {
   rendezvous_map = {
     for net, val in data.meraki_networks_switch_routing_multicast_rendezvous_points.data_rendezvous_points :
-    "${val.network_id}" => {
-      for i in val.items : "${i.multicast_group}" => i.rendezvous_point_id
+    val.network_id => {
+      for i in val.items : i.multicast_group => i.rendezvous_point_id
     } if val.items != null
   }
 }
@@ -462,8 +462,8 @@ data "meraki_networks_switch_stacks" "data_switch_stacks" {
 locals {
   switch_stacks_map = {
     for net, val in data.meraki_networks_switch_stacks.data_switch_stacks :
-    "${val.network_id}" => {
-      for i in val.items : "${i.name}" => i.id
+    val.network_id => {
+      for i in val.items : i.name => i.id
     } if val.items != null
   }
 }
@@ -513,8 +513,8 @@ resource "meraki_networks_switch_stacks" "net_switch_stacks" {
   for_each = { for switch_stack in local.networks_switch_stacks : switch_stack.stack_key => switch_stack }
   # id = try(each.value.data.id, null)
   network_id = each.value.network_id
-  name = try(each.value.data.name, local.defaults.meraki.networks.switch_stacks.name, null)
-  serials = try(each.value.data.serials, local.defaults.meraki.networks.switch_stacks.serials, null)
+  name       = try(each.value.data.name, local.defaults.meraki.networks.switch_stacks.name, null)
+  serials    = try(each.value.data.serials, local.defaults.meraki.networks.switch_stacks.serials, null)
   # switch_stack_id = try(each.value.data.switch_stack_id, null)
 }
 
@@ -543,13 +543,13 @@ resource "meraki_networks_switch_stacks_routing_interfaces" "net_switch_stacks_r
   network_id      = each.value.network_id
   default_gateway = try(each.value.data.default_gateway, local.defaults.meraki.networks.switch_stacks_routing_interfaces.default_gateway, null)
   # interface_id = try(each.value.data.interface_id, local.defaults.meraki.networks.switch_stacks_routing_interfaces.interface_id, null)
-  interface_ip = try(each.value.data.interface_ip, local.defaults.meraki.networks.switch_stacks_routing_interfaces.interface_ip, null)
-  ipv6 = try(each.value.data.ipv6, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ipv6, null)
+  interface_ip      = try(each.value.data.interface_ip, local.defaults.meraki.networks.switch_stacks_routing_interfaces.interface_ip, null)
+  ipv6              = try(each.value.data.ipv6, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ipv6, null)
   multicast_routing = try(each.value.data.multicast_routing, local.defaults.meraki.networks.switch_stacks_routing_interfaces.multicast_routing, null)
-  name = try(each.value.data.name, local.defaults.meraki.networks.switch_stacks_routing_interfaces.name, null)
-  ospf_settings = try(each.value.data.ospf_settings, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ospf_settings, null)
+  name              = try(each.value.data.name, local.defaults.meraki.networks.switch_stacks_routing_interfaces.name, null)
+  ospf_settings     = try(each.value.data.ospf_settings, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ospf_settings, null)
   # ospf_v3 = try(each.value.data.ospf_v3, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ospf_v3, null)
-  subnet = try(each.value.data.subnet, local.defaults.meraki.networks.switch_stacks_routing_interfaces.subnet, null)
+  subnet  = try(each.value.data.subnet, local.defaults.meraki.networks.switch_stacks_routing_interfaces.subnet, null)
   vlan_id = try(each.value.data.vlan_id, local.defaults.meraki.networks.switch_stacks_routing_interfaces.vlan_id, null)
 }
 
@@ -616,7 +616,7 @@ resource "meraki_networks_switch_stacks_routing_static_routes" "net_switch_stack
   network_id      = each.value.network_id
   switch_stack_id = each.value.switch_stack_id
   # advertise_via_ospf_enabled = try(each.value.data.advertise_via_ospf_enabled, local.defaults.meraki.networks.switch_stacks_routing_static_routes.advertise_via_ospf_enabled, null)
-  name = try(each.value.data.name, local.defaults.meraki.networks.switch_stacks_routing_static_routes.name, null)
+  name        = try(each.value.data.name, local.defaults.meraki.networks.switch_stacks_routing_static_routes.name, null)
   next_hop_ip = try(each.value.data.next_hop_ip, local.defaults.meraki.networks.switch_stacks_routing_static_routes.next_hop_ip, null)
   # prefer_over_ospf_routes_enabled = try(each.value.data.prefer_over_ospf_routes_enabled, local.defaults.meraki.networks.switch_stacks_routing_static_routes.prefer_over_ospf_routes_enabled, null)
   subnet = try(each.value.data.subnet, local.defaults.meraki.networks.switch_stacks_routing_static_routes.subnet, null)
@@ -639,7 +639,7 @@ locals {
 resource "meraki_networks_syslog_servers" "net_syslog_servers" {
   for_each   = { for i, v in local.networks_syslog_servers : i => v }
   network_id = each.value.network_id
-  servers = try(each.value.data.servers, local.defaults.meraki.networks.syslog_servers.servers, null)
+  servers    = try(each.value.data.servers, local.defaults.meraki.networks.syslog_servers.servers, null)
 }
 
 locals {
@@ -660,11 +660,11 @@ locals {
 resource "meraki_networks_vlan_profiles" "net_vlan_profiles" {
   for_each   = { for i, v in local.networks_vlan_profiles : i => v }
   network_id = each.value.network_id
-  iname = try(each.value.data.iname, local.defaults.meraki.networks.vlan_profiles.iname, null)
+  iname      = try(each.value.data.iname, local.defaults.meraki.networks.vlan_profiles.iname, null)
   # is_default = try(each.value.data.is_default, local.defaults.meraki.networks.vlan_profiles.is_default, null)
-  name = try(each.value.data.name, local.defaults.meraki.networks.vlan_profiles.name, null)
+  name        = try(each.value.data.name, local.defaults.meraki.networks.vlan_profiles.name, null)
   vlan_groups = try(each.value.data.vlan_groups, local.defaults.meraki.networks.vlan_profiles.vlan_groups, null)
-  vlan_names = try(each.value.data.vlan_names, local.defaults.meraki.networks.vlan_profiles.vlan_names, null)
+  vlan_names  = try(each.value.data.vlan_names, local.defaults.meraki.networks.vlan_profiles.vlan_names, null)
 }
 
 locals {
@@ -686,18 +686,18 @@ locals {
 resource "meraki_networks_wireless_rf_profiles" "net_wireless_rf_profiles" {
   for_each                 = { for i, v in local.networks_wireless_rf_profiles : i => v }
   network_id               = each.value.network_id
-  ap_band_settings = try(each.value.data.ap_band_settings, local.defaults.meraki.networks.wireless_rf_profiles.ap_band_settings, null)
-  band_selection_type = try(each.value.data.band_selection_type, local.defaults.meraki.networks.wireless_rf_profiles.band_selection_type, null)
+  ap_band_settings         = try(each.value.data.ap_band_settings, local.defaults.meraki.networks.wireless_rf_profiles.ap_band_settings, null)
+  band_selection_type      = try(each.value.data.band_selection_type, local.defaults.meraki.networks.wireless_rf_profiles.band_selection_type, null)
   client_balancing_enabled = try(each.value.data.client_balancing_enabled, local.defaults.meraki.networks.wireless_rf_profiles.client_balancing_enabled, null)
-  five_ghz_settings = try(each.value.data.five_ghz_settings, local.defaults.meraki.networks.wireless_rf_profiles.five_ghz_settings, null)
-  flex_radios = try(each.value.data.flex_radios, local.defaults.meraki.networks.wireless_rf_profiles.flex_radios, null)
-  min_bitrate_type = try(each.value.data.min_bitrate_type, local.defaults.meraki.networks.wireless_rf_profiles.min_bitrate_type, null)
-  name = try(each.value.data.name, local.defaults.meraki.networks.wireless_rf_profiles.name, null)
-  per_ssid_settings = try(each.value.data.per_ssid_settings, local.defaults.meraki.networks.wireless_rf_profiles.per_ssid_settings, null)
-  rf_profile_id = try(each.value.data.rf_profile_id, local.defaults.meraki.networks.wireless_rf_profiles.rf_profile_id, null)
-  six_ghz_settings = try(each.value.data.six_ghz_settings, local.defaults.meraki.networks.wireless_rf_profiles.six_ghz_settings, null)
-  transmission = try(each.value.data.transmission, local.defaults.meraki.networks.wireless_rf_profiles.transmission, null)
-  two_four_ghz_settings = try(each.value.data.two_four_ghz_settings, local.defaults.meraki.networks.wireless_rf_profiles.two_four_ghz_settings, null)
+  five_ghz_settings        = try(each.value.data.five_ghz_settings, local.defaults.meraki.networks.wireless_rf_profiles.five_ghz_settings, null)
+  flex_radios              = try(each.value.data.flex_radios, local.defaults.meraki.networks.wireless_rf_profiles.flex_radios, null)
+  min_bitrate_type         = try(each.value.data.min_bitrate_type, local.defaults.meraki.networks.wireless_rf_profiles.min_bitrate_type, null)
+  name                     = try(each.value.data.name, local.defaults.meraki.networks.wireless_rf_profiles.name, null)
+  per_ssid_settings        = try(each.value.data.per_ssid_settings, local.defaults.meraki.networks.wireless_rf_profiles.per_ssid_settings, null)
+  rf_profile_id            = try(each.value.data.rf_profile_id, local.defaults.meraki.networks.wireless_rf_profiles.rf_profile_id, null)
+  six_ghz_settings         = try(each.value.data.six_ghz_settings, local.defaults.meraki.networks.wireless_rf_profiles.six_ghz_settings, null)
+  transmission             = try(each.value.data.transmission, local.defaults.meraki.networks.wireless_rf_profiles.transmission, null)
+  two_four_ghz_settings    = try(each.value.data.two_four_ghz_settings, local.defaults.meraki.networks.wireless_rf_profiles.two_four_ghz_settings, null)
 }
 
 locals {
@@ -716,11 +716,11 @@ locals {
 resource "meraki_networks_wireless_settings" "net_wireless_settings" {
   for_each                   = { for i, v in local.networks_wireless_settings : i => v }
   network_id                 = each.value.network_id
-  ipv6_bridge_enabled = try(each.value.data.ipv6_bridge_enabled, local.defaults.meraki.networks.wireless_settings.ipv6_bridge_enabled, null)
-  led_lights_on = try(each.value.data.led_lights_on, local.defaults.meraki.networks.wireless_settings.led_lights_on, null)
+  ipv6_bridge_enabled        = try(each.value.data.ipv6_bridge_enabled, local.defaults.meraki.networks.wireless_settings.ipv6_bridge_enabled, null)
+  led_lights_on              = try(each.value.data.led_lights_on, local.defaults.meraki.networks.wireless_settings.led_lights_on, null)
   location_analytics_enabled = try(each.value.data.location_analytics_enabled, local.defaults.meraki.networks.wireless_settings.location_analytics_enabled, null)
-  meshing_enabled = try(each.value.data.meshing_enabled, local.defaults.meraki.networks.wireless_settings.meshing_enabled, null)
-  named_vlans = try(each.value.data.named_vlans, local.defaults.meraki.networks.wireless_settings.named_vlans, null)
+  meshing_enabled            = try(each.value.data.meshing_enabled, local.defaults.meraki.networks.wireless_settings.meshing_enabled, null)
+  named_vlans                = try(each.value.data.named_vlans, local.defaults.meraki.networks.wireless_settings.named_vlans, null)
   # regulatory_domain = try(each.value.data.regulatory_domain, local.defaults.meraki.networks.wireless_settings.regulatory_domain, null)
   upgradestrategy = try(each.value.data.upgradestrategy, local.defaults.meraki.networks.wireless_settings.upgradestrategy, null)
 }
@@ -747,67 +747,67 @@ resource "meraki_networks_wireless_ssids" "net_wireless_ssids" {
   number           = each.key
   active_directory = try(each.value.data.active_directory, local.defaults.meraki.networks.wireless_ssids.active_directory, null)
   # admin_splash_url = try(each.value.data.admin_splash_url, local.defaults.meraki.networks.wireless_ssids.admin_splash_url, null)
-  adult_content_filtering_enabled = try(each.value.data.adult_content_filtering_enabled, local.defaults.meraki.networks.wireless_ssids.adult_content_filtering_enabled, null)
-  ap_tags_and_vlan_ids = try(each.value.data.ap_tags_and_vlan_ids, local.defaults.meraki.networks.wireless_ssids.ap_tags_and_vlan_ids, null)
-  auth_mode = try(each.value.data.auth_mode, local.defaults.meraki.networks.wireless_ssids.auth_mode, null)
-  availability_tags = try(each.value.data.availability_tags, local.defaults.meraki.networks.wireless_ssids.availability_tags, null)
-  available_on_all_aps = try(each.value.data.available_on_all_aps, local.defaults.meraki.networks.wireless_ssids.available_on_all_aps, null)
-  band_selection = try(each.value.data.band_selection, local.defaults.meraki.networks.wireless_ssids.band_selection, null)
-  concentrator_network_id = try(each.value.data.concentrator_network_id, local.defaults.meraki.networks.wireless_ssids.concentrator_network_id, null)
-  default_vlan_id = try(each.value.data.default_vlan_id, local.defaults.meraki.networks.wireless_ssids.default_vlan_id, null)
+  adult_content_filtering_enabled      = try(each.value.data.adult_content_filtering_enabled, local.defaults.meraki.networks.wireless_ssids.adult_content_filtering_enabled, null)
+  ap_tags_and_vlan_ids                 = try(each.value.data.ap_tags_and_vlan_ids, local.defaults.meraki.networks.wireless_ssids.ap_tags_and_vlan_ids, null)
+  auth_mode                            = try(each.value.data.auth_mode, local.defaults.meraki.networks.wireless_ssids.auth_mode, null)
+  availability_tags                    = try(each.value.data.availability_tags, local.defaults.meraki.networks.wireless_ssids.availability_tags, null)
+  available_on_all_aps                 = try(each.value.data.available_on_all_aps, local.defaults.meraki.networks.wireless_ssids.available_on_all_aps, null)
+  band_selection                       = try(each.value.data.band_selection, local.defaults.meraki.networks.wireless_ssids.band_selection, null)
+  concentrator_network_id              = try(each.value.data.concentrator_network_id, local.defaults.meraki.networks.wireless_ssids.concentrator_network_id, null)
+  default_vlan_id                      = try(each.value.data.default_vlan_id, local.defaults.meraki.networks.wireless_ssids.default_vlan_id, null)
   disassociate_clients_on_vpn_failover = try(each.value.data.disassociate_clients_on_vpn_failover, local.defaults.meraki.networks.wireless_ssids.disassociate_clients_on_vpn_failover, null)
-  dns_rewrite = try(each.value.data.dns_rewrite, local.defaults.meraki.networks.wireless_ssids.dns_rewrite, null)
-  dot11r = try(each.value.data.dot11r, local.defaults.meraki.networks.wireless_ssids.dot11r, null)
-  dot11w = try(each.value.data.dot11w, local.defaults.meraki.networks.wireless_ssids.dot11w, null)
-  enabled = try(each.value.data.enabled, local.defaults.meraki.networks.wireless_ssids.enabled, null)
-  encryption_mode = try(each.value.data.encryption_mode, local.defaults.meraki.networks.wireless_ssids.encryption_mode, null)
-  enterprise_admin_access = try(each.value.data.enterprise_admin_access, local.defaults.meraki.networks.wireless_ssids.enterprise_admin_access, null)
-  gre = try(each.value.data.gre, local.defaults.meraki.networks.wireless_ssids.gre, null)
-  ip_assignment_mode = try(each.value.data.ip_assignment_mode, local.defaults.meraki.networks.wireless_ssids.ip_assignment_mode, null)
-  lan_isolation_enabled = try(each.value.data.lan_isolation_enabled, local.defaults.meraki.networks.wireless_ssids.lan_isolation_enabled, null)
-  ldap = try(each.value.data.ldap, local.defaults.meraki.networks.wireless_ssids.ldap, null)
+  dns_rewrite                          = try(each.value.data.dns_rewrite, local.defaults.meraki.networks.wireless_ssids.dns_rewrite, null)
+  dot11r                               = try(each.value.data.dot11r, local.defaults.meraki.networks.wireless_ssids.dot11r, null)
+  dot11w                               = try(each.value.data.dot11w, local.defaults.meraki.networks.wireless_ssids.dot11w, null)
+  enabled                              = try(each.value.data.enabled, local.defaults.meraki.networks.wireless_ssids.enabled, null)
+  encryption_mode                      = try(each.value.data.encryption_mode, local.defaults.meraki.networks.wireless_ssids.encryption_mode, null)
+  enterprise_admin_access              = try(each.value.data.enterprise_admin_access, local.defaults.meraki.networks.wireless_ssids.enterprise_admin_access, null)
+  gre                                  = try(each.value.data.gre, local.defaults.meraki.networks.wireless_ssids.gre, null)
+  ip_assignment_mode                   = try(each.value.data.ip_assignment_mode, local.defaults.meraki.networks.wireless_ssids.ip_assignment_mode, null)
+  lan_isolation_enabled                = try(each.value.data.lan_isolation_enabled, local.defaults.meraki.networks.wireless_ssids.lan_isolation_enabled, null)
+  ldap                                 = try(each.value.data.ldap, local.defaults.meraki.networks.wireless_ssids.ldap, null)
   # local_auth = try(each.value.data.local_auth, local.defaults.meraki.networks.wireless_ssids.local_auth, null)
-  local_radius = try(each.value.data.local_radius, local.defaults.meraki.networks.wireless_ssids.local_radius, null)
-  mandatory_dhcp_enabled = try(each.value.data.mandatory_dhcp_enabled, local.defaults.meraki.networks.wireless_ssids.mandatory_dhcp_enabled, null)
-  min_bitrate = try(each.value.data.min_bitrate, local.defaults.meraki.networks.wireless_ssids.min_bitrate, null)
-  name = try(each.value.data.name, local.defaults.meraki.networks.wireless_ssids.name, null)
-  named_vlans = try(each.value.data.named_vlans, local.defaults.meraki.networks.wireless_ssids.named_vlans, null)
-  oauth = try(each.value.data.oauth, local.defaults.meraki.networks.wireless_ssids.oauth, null)
-  per_client_bandwidth_limit_down = try(each.value.data.per_client_bandwidth_limit_down, local.defaults.meraki.networks.wireless_ssids.per_client_bandwidth_limit_down, null)
-  per_client_bandwidth_limit_up = try(each.value.data.per_client_bandwidth_limit_up, local.defaults.meraki.networks.wireless_ssids.per_client_bandwidth_limit_up, null)
-  per_ssid_bandwidth_limit_down = try(each.value.data.per_ssid_bandwidth_limit_down, local.defaults.meraki.networks.wireless_ssids.per_ssid_bandwidth_limit_down, null)
-  per_ssid_bandwidth_limit_up = try(each.value.data.per_ssid_bandwidth_limit_up, local.defaults.meraki.networks.wireless_ssids.per_ssid_bandwidth_limit_up, null)
-  psk = try(each.value.data.psk, local.defaults.meraki.networks.wireless_ssids.psk, null)
-  radius_accounting_enabled = try(each.value.data.radius_accounting_enabled, local.defaults.meraki.networks.wireless_ssids.radius_accounting_enabled, null)
-  radius_accounting_interim_interval = try(each.value.data.radius_accounting_interim_interval, local.defaults.meraki.networks.wireless_ssids.radius_accounting_interim_interval, null)
-  radius_accounting_servers = try(each.value.data.radius_accounting_servers, local.defaults.meraki.networks.wireless_ssids.radius_accounting_servers, null)
+  local_radius                        = try(each.value.data.local_radius, local.defaults.meraki.networks.wireless_ssids.local_radius, null)
+  mandatory_dhcp_enabled              = try(each.value.data.mandatory_dhcp_enabled, local.defaults.meraki.networks.wireless_ssids.mandatory_dhcp_enabled, null)
+  min_bitrate                         = try(each.value.data.min_bitrate, local.defaults.meraki.networks.wireless_ssids.min_bitrate, null)
+  name                                = try(each.value.data.name, local.defaults.meraki.networks.wireless_ssids.name, null)
+  named_vlans                         = try(each.value.data.named_vlans, local.defaults.meraki.networks.wireless_ssids.named_vlans, null)
+  oauth                               = try(each.value.data.oauth, local.defaults.meraki.networks.wireless_ssids.oauth, null)
+  per_client_bandwidth_limit_down     = try(each.value.data.per_client_bandwidth_limit_down, local.defaults.meraki.networks.wireless_ssids.per_client_bandwidth_limit_down, null)
+  per_client_bandwidth_limit_up       = try(each.value.data.per_client_bandwidth_limit_up, local.defaults.meraki.networks.wireless_ssids.per_client_bandwidth_limit_up, null)
+  per_ssid_bandwidth_limit_down       = try(each.value.data.per_ssid_bandwidth_limit_down, local.defaults.meraki.networks.wireless_ssids.per_ssid_bandwidth_limit_down, null)
+  per_ssid_bandwidth_limit_up         = try(each.value.data.per_ssid_bandwidth_limit_up, local.defaults.meraki.networks.wireless_ssids.per_ssid_bandwidth_limit_up, null)
+  psk                                 = try(each.value.data.psk, local.defaults.meraki.networks.wireless_ssids.psk, null)
+  radius_accounting_enabled           = try(each.value.data.radius_accounting_enabled, local.defaults.meraki.networks.wireless_ssids.radius_accounting_enabled, null)
+  radius_accounting_interim_interval  = try(each.value.data.radius_accounting_interim_interval, local.defaults.meraki.networks.wireless_ssids.radius_accounting_interim_interval, null)
+  radius_accounting_servers           = try(each.value.data.radius_accounting_servers, local.defaults.meraki.networks.wireless_ssids.radius_accounting_servers, null)
   radius_attribute_for_group_policies = try(each.value.data.radius_attribute_for_group_policies, local.defaults.meraki.networks.wireless_ssids.radius_attribute_for_group_policies, null)
-  radius_authentication_nas_id = try(each.value.data.radius_authentication_nas_id, local.defaults.meraki.networks.wireless_ssids.radius_authentication_nas_id, null)
-  radius_called_station_id = try(each.value.data.radius_called_station_id, local.defaults.meraki.networks.wireless_ssids.radius_called_station_id, null)
-  radius_coa_enabled = try(each.value.data.radius_coa_enabled, local.defaults.meraki.networks.wireless_ssids.radius_coa_enabled, null)
+  radius_authentication_nas_id        = try(each.value.data.radius_authentication_nas_id, local.defaults.meraki.networks.wireless_ssids.radius_authentication_nas_id, null)
+  radius_called_station_id            = try(each.value.data.radius_called_station_id, local.defaults.meraki.networks.wireless_ssids.radius_called_station_id, null)
+  radius_coa_enabled                  = try(each.value.data.radius_coa_enabled, local.defaults.meraki.networks.wireless_ssids.radius_coa_enabled, null)
   # radius_enabled = try(each.value.data.radius_enabled, local.defaults.meraki.networks.wireless_ssids.radius_enabled, null)
-  radius_failover_policy = try(each.value.data.radius_failover_policy, local.defaults.meraki.networks.wireless_ssids.radius_failover_policy, null)
-  radius_fallback_enabled = try(each.value.data.radius_fallback_enabled, local.defaults.meraki.networks.wireless_ssids.radius_fallback_enabled, null)
-  radius_guest_vlan_enabled = try(each.value.data.radius_guest_vlan_enabled, local.defaults.meraki.networks.wireless_ssids.radius_guest_vlan_enabled, null)
-  radius_guest_vlan_id = try(each.value.data.radius_guest_vlan_id, local.defaults.meraki.networks.wireless_ssids.radius_guest_vlan_id, null)
+  radius_failover_policy       = try(each.value.data.radius_failover_policy, local.defaults.meraki.networks.wireless_ssids.radius_failover_policy, null)
+  radius_fallback_enabled      = try(each.value.data.radius_fallback_enabled, local.defaults.meraki.networks.wireless_ssids.radius_fallback_enabled, null)
+  radius_guest_vlan_enabled    = try(each.value.data.radius_guest_vlan_enabled, local.defaults.meraki.networks.wireless_ssids.radius_guest_vlan_enabled, null)
+  radius_guest_vlan_id         = try(each.value.data.radius_guest_vlan_id, local.defaults.meraki.networks.wireless_ssids.radius_guest_vlan_id, null)
   radius_load_balancing_policy = try(each.value.data.radius_load_balancing_policy, local.defaults.meraki.networks.wireless_ssids.radius_load_balancing_policy, null)
-  radius_override = try(each.value.data.radius_override, local.defaults.meraki.networks.wireless_ssids.radius_override, null)
-  radius_proxy_enabled = try(each.value.data.radius_proxy_enabled, local.defaults.meraki.networks.wireless_ssids.radius_proxy_enabled, null)
+  radius_override              = try(each.value.data.radius_override, local.defaults.meraki.networks.wireless_ssids.radius_override, null)
+  radius_proxy_enabled         = try(each.value.data.radius_proxy_enabled, local.defaults.meraki.networks.wireless_ssids.radius_proxy_enabled, null)
   radius_server_attempts_limit = try(each.value.data.radius_server_attempts_limit, local.defaults.meraki.networks.wireless_ssids.radius_server_attempts_limit, null)
-  radius_server_timeout = try(each.value.data.radius_server_timeout, local.defaults.meraki.networks.wireless_ssids.radius_server_timeout, null)
-  radius_servers = try(each.value.data.radius_servers, local.defaults.meraki.networks.wireless_ssids.radius_servers, null)
+  radius_server_timeout        = try(each.value.data.radius_server_timeout, local.defaults.meraki.networks.wireless_ssids.radius_server_timeout, null)
+  radius_servers               = try(each.value.data.radius_servers, local.defaults.meraki.networks.wireless_ssids.radius_servers, null)
   # radius_servers_response = try(each.value.data.radius_servers_response, local.defaults.meraki.networks.wireless_ssids.radius_servers_response, null)
-  radius_testing_enabled = try(each.value.data.radius_testing_enabled, local.defaults.meraki.networks.wireless_ssids.radius_testing_enabled, null)
+  radius_testing_enabled            = try(each.value.data.radius_testing_enabled, local.defaults.meraki.networks.wireless_ssids.radius_testing_enabled, null)
   secondary_concentrator_network_id = try(each.value.data.secondary_concentrator_network_id, local.defaults.meraki.networks.wireless_ssids.secondary_concentrator_network_id, null)
-  speed_burst = try(each.value.data.speed_burst, local.defaults.meraki.networks.wireless_ssids.speed_burst, null)
-  splash_guest_sponsor_domains = try(each.value.data.splash_guest_sponsor_domains, local.defaults.meraki.networks.wireless_ssids.splash_guest_sponsor_domains, null)
-  splash_page = try(each.value.data.splash_page, local.defaults.meraki.networks.wireless_ssids.splash_page, null)
+  speed_burst                       = try(each.value.data.speed_burst, local.defaults.meraki.networks.wireless_ssids.speed_burst, null)
+  splash_guest_sponsor_domains      = try(each.value.data.splash_guest_sponsor_domains, local.defaults.meraki.networks.wireless_ssids.splash_guest_sponsor_domains, null)
+  splash_page                       = try(each.value.data.splash_page, local.defaults.meraki.networks.wireless_ssids.splash_page, null)
   # splash_timeout = try(each.value.data.splash_timeout, local.defaults.meraki.networks.wireless_ssids.splash_timeout, null)
   # ssid_admin_accessible = try(each.value.data.ssid_admin_accessible, local.defaults.meraki.networks.wireless_ssids.ssid_admin_accessible, null)
-  use_vlan_tagging = try(each.value.data.use_vlan_tagging, local.defaults.meraki.networks.wireless_ssids.use_vlan_tagging, null)
-  visible = try(each.value.data.visible, local.defaults.meraki.networks.wireless_ssids.visible, null)
-  vlan_id = try(each.value.data.vlan_id, local.defaults.meraki.networks.wireless_ssids.vlan_id, null)
+  use_vlan_tagging      = try(each.value.data.use_vlan_tagging, local.defaults.meraki.networks.wireless_ssids.use_vlan_tagging, null)
+  visible               = try(each.value.data.visible, local.defaults.meraki.networks.wireless_ssids.visible, null)
+  vlan_id               = try(each.value.data.vlan_id, local.defaults.meraki.networks.wireless_ssids.vlan_id, null)
   walled_garden_enabled = try(each.value.data.walled_garden_enabled, local.defaults.meraki.networks.wireless_ssids.walled_garden_enabled, null)
-  walled_garden_ranges = try(each.value.data.walled_garden_ranges, local.defaults.meraki.networks.wireless_ssids.walled_garden_ranges, null)
-  wpa_encryption_mode = try(each.value.data.wpa_encryption_mode, local.defaults.meraki.networks.wireless_ssids.wpa_encryption_mode, null)
+  walled_garden_ranges  = try(each.value.data.walled_garden_ranges, local.defaults.meraki.networks.wireless_ssids.walled_garden_ranges, null)
+  wpa_encryption_mode   = try(each.value.data.wpa_encryption_mode, local.defaults.meraki.networks.wireless_ssids.wpa_encryption_mode, null)
 }
