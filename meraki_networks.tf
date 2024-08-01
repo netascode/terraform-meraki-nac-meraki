@@ -7,7 +7,7 @@ locals {
             network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
             data       = group_policy
           }
-        ]
+        ] if try(network.group_policy, null) != null
       ]
     ]
   ])
@@ -33,7 +33,7 @@ locals {
         for network in try(org.networks, []) : {
           network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
           data       = try(network.settings, {})
-        }
+        } if try(network.settings, null) != null
       ]
     ]
   ])
@@ -82,7 +82,7 @@ locals {
             data       = switch_access_policy
             network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
           }
-        ]
+        ] if try(network.switch_access_policies, null) != null
         # for network in try(org.networks, []) : {
         #   network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
         #   data       = network.switch_access_policies
@@ -177,7 +177,7 @@ locals {
             data       = trusted_server
             network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
           }
-        ]
+        ] if try(network.switch_dhcp_server_policy_arp_inspection_trusted_servers, null) != null
       ]
     ]
   ])
@@ -224,7 +224,7 @@ locals {
             data       = link_aggregation
             network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
           }
-        ]
+        ] if try(network.switch_link_aggregations, null) != null
       ]
     ]
   ])
@@ -272,7 +272,7 @@ locals {
             data       = port_schedule
             network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
           }
-        ]
+        ] if try(network.switch_port_schedules, null) != null
       ]
     ]
   ])
@@ -350,7 +350,7 @@ locals {
             data       = multicast_rendezvous_point
             network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
           }
-        ]
+        ] if try(network.switch_routing_multicast_rendezvous_points, null) != null
         # for network in try(org.networks, []) : {
         #   network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
         #   data       = network.switch_routing_multicast_rendezvous_points
@@ -503,7 +503,7 @@ locals {
             data       = switch_stack
             network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
           }
-        ]
+        ] if try(network.switch_stacks, null) != null
       ]
     ]
   ])
@@ -530,8 +530,8 @@ locals {
               interface_key   = format("%s/%s/%s/stacks/%s/interfaces/%s", domain.name, org.name, network.name, switch_stack.name, interface.name)
               data            = interface
             }
-          ]
-        ]
+          ] if try(switch_stack.routing_interfaces, null) != null
+        ] if try(network.switch_stacks, null) != null
       ]
     ]
   ])
@@ -604,8 +604,8 @@ locals {
               switch_stack_id = meraki_networks_switch_stacks.net_switch_stacks["${domain.name}/${org.name}/${network.name}/stacks/${switch_stack.name}"].id
               data            = static_route
             }
-          ]
-        ]
+          ] if try(switch_stack.routing_static_routes, null) != null
+        ] if try(network.switch_stacks, null) != null
       ]
     ]
   ])
@@ -651,7 +651,7 @@ locals {
             network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
             data       = vlan_profile
           }
-        ]
+        ] if try(network.vlan_profiles, null) != null
       ]
     ]
   ])
@@ -677,7 +677,7 @@ locals {
             rf_profile_key = format("%s/%s/%s/wireless_rf_profiles/%s", domain.name, org.name, network.name, wireless_rf_profile.name)
             data           = wireless_rf_profile
           }
-        ]
+        ] if try(network.wireless_rf_profiles, null) != null
       ]
     ]
   ])
@@ -735,7 +735,7 @@ locals {
             data              = wireless_ssid
             network_id        = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
           }
-        ]
+        ] if try(network.wireless_ssids, null) != null
       ]
     ]
   ])
