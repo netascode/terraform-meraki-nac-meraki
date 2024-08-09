@@ -4,7 +4,7 @@ terraform {
   required_providers {
     meraki = {
       source  = "cisco-open/meraki"
-      version = "0.2.4-alpha"
+      version = "0.2.10-alpha"
     }
     utils = {
       source  = "netascode/utils"
@@ -12,13 +12,13 @@ terraform {
     }
     local = {
       source  = "hashicorp/local"
-      version = ">= 2.3.0"
+      version = ">= 2.5.1"
     }
   }
 }
 provider "meraki" {
-  meraki_debug = true
+  meraki_debug               = true
   meraki_requests_per_second = 2
-  meraki_base_url = var.base_url
+  meraki_base_url            = var.base_url
   // Add other provider-specific options if needed
 }
