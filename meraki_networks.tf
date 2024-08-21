@@ -382,6 +382,8 @@ resource "meraki_networks_switch_routing_multicast_rendezvous_points" "net_switc
   multicast_group     = try(each.value.data.multicast_group, local.defaults.meraki.networks.switch_routing_multicast_rendezvous_points.multicast_group, null)
   rendezvous_point_id = try(local.rendezvous_map[each.value.network_id][each.value.data.multicast_group], null)
   # serial = try(each.value.data.serial, null)
+
+  depends_on = [ meraki_networks.switch_stacks_routing_interfaces ]
 }
 
 locals {
@@ -621,6 +623,8 @@ resource "meraki_networks_switch_stacks_routing_static_routes" "net_switch_stack
   # prefer_over_ospf_routes_enabled = try(each.value.data.prefer_over_ospf_routes_enabled, local.defaults.meraki.networks.switch_stacks_routing_static_routes.prefer_over_ospf_routes_enabled, null)
   subnet = try(each.value.data.subnet, local.defaults.meraki.networks.switch_stacks_routing_static_routes.subnet, null)
   # static_route_id                 = try(each.value.data.static_route_id, null)
+
+  depends_on = [ meraki_networks.switch_stacks_routing_interfaces ]
 }
 
 locals {
