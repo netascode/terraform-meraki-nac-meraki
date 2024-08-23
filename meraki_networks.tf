@@ -351,10 +351,6 @@ locals {
             network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
           }
         ] if try(network.switch_routing_multicast_rendezvous_points, null) != null
-        # for network in try(org.networks, []) : {
-        #   network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
-        #   data       = network.switch_routing_multicast_rendezvous_points
-        # } if try(network.switch_routing_multicast_rendezvous_points, null) != null
       ]
     ]
   ])
@@ -363,6 +359,8 @@ locals {
 data "meraki_networks_switch_routing_multicast_rendezvous_points" "data_rendezvous_points" {
   for_each   = { for i, v in meraki_networks.networks : i => v }
   network_id = each.value.network_id
+
+  depends_on = [ meraki_networks_switch_stacks_routing_interfaces.net_switch_stacks_routing_interfaces_not_first ]
 }
 
 locals {
