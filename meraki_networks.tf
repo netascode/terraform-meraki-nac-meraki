@@ -50,6 +50,27 @@ resource "meraki_networks_settings" "net_settings" {
   secure_port                = try(each.value.data.secure_port, local.defaults.meraki.networks.networks_settings.secure_port, null)
 }
 
+locals {
+  networks_switch_serials = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for org in try(domain.organizations, []) : [
+        for network in try(org.networks, []) : {
+          network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
+          data       = network.switch_serials
+        } if try(network.switch_serials, null) != null
+      ]
+    ]
+  ])
+  marcin_debug = 5#local.networks_switch_serials.data
+}
+
+resource "meraki_networks_devices_claim" "net_device_claims" {
+  for_each   = { for i, v in local.networks_switch_serials : i => v }
+  network_id = each.value.network_id
+  parameters = {
+    serials = each.value.data
+    }
+}
 
 locals {
   networks_switch_access_control_lists = flatten([

@@ -11,14 +11,14 @@ locals {
           organization_id = local.organization_map[org.name]
           name            = try(network.name, local.defaults.meraki.organizations.networks.name)
           notes           = try(network.notes, local.defaults.meraki.organizations.networks.notes, "")
-          product_types   = try(network.product_types, local.defaults.meraki.organizations.networks.product_types)
+          product_types   = try(network.product_types, local.defaults.meraki.organizations.networks.product_types, ["appliance", "switch", "wireless"])
           # tags            = try(network.tags, local.defaults.meraki.organizations.networks.tags)
-          time_zone = try(network.time_zone, local.defaults.meraki.organizations.networks.time_zone)
+          time_zone = try(network.time_zone, local.defaults.meraki.organizations.networks.time_zone, "America/Los_Angeles")
         }
       ]
     ]
   ])
-  marcin_debug = 5
+  # marcin_debug = 5
 }
 resource "meraki_networks" "networks" {
   for_each        = { for network in local.networks : network.key => network }
