@@ -181,6 +181,9 @@ resource "meraki_networks_switch_link_aggregations" "net_switch_link_aggregation
   link_aggregation_id  = try(each.value.data.link_aggregation_id, local.defaults.meraki.networks.switch_link_aggregations.link_aggregation_id, null)
   switch_ports         = try(each.value.data.switch_ports, local.defaults.meraki.networks.switch_link_aggregations.switch_ports, null)
   switch_profile_ports = try(each.value.data.switch_profile_ports, local.defaults.meraki.networks.switch_link_aggregations.switch_profile_ports, null)
+
+  depends_on = [ meraki_networks_devices_claim.net_device_claims ]
+
 }
 
 
@@ -203,6 +206,9 @@ resource "meraki_networks_switch_mtu" "net_switch_mtu" {
   network_id       = each.value.network_id
   default_mtu_size = try(each.value.data.default_mtu_size, local.defaults.meraki.networks.switch_mtu.default_mtu_size, null)
   overrides        = try(each.value.data.overrides, local.defaults.meraki.networks.switch_mtu.overrides, null)
+  
+  depends_on = [ meraki_networks_devices_claim.net_device_claims ]
+
 }
 
 
@@ -304,7 +310,7 @@ data "meraki_networks_switch_routing_multicast_rendezvous_points" "data_rendezvo
   for_each   = { for i, v in meraki_networks.networks : i => v }
   network_id = each.value.network_id
 
-  depends_on = [ meraki_networks_switch_stacks_routing_interfaces.net_switch_stacks_routing_interfaces_not_first ]
+  depends_on = [ meraki_networks_devices_claim.net_device_claims,meraki_networks_switch_stacks_routing_interfaces.net_switch_stacks_routing_interfaces_not_first ]
 }
 
 locals {
@@ -325,7 +331,7 @@ resource "meraki_networks_switch_routing_multicast_rendezvous_points" "net_switc
   rendezvous_point_id = try(local.rendezvous_map[each.value.network_id][each.value.data.multicast_group], null)
   # serial = try(each.value.data.serial, null)
 
-  depends_on = [ meraki_networks_switch_stacks_routing_interfaces.net_switch_stacks_routing_interfaces_not_first ]
+  depends_on = [ meraki_networks_devices_claim.net_device_claims,meraki_networks_switch_stacks_routing_interfaces.net_switch_stacks_routing_interfaces_not_first ]
 }
 
 locals {
@@ -351,6 +357,8 @@ resource "meraki_networks_switch_routing_ospf" "net_switch_routing_ospf" {
   md5_authentication_enabled = try(each.value.data.md5_authentication_enabled, local.defaults.meraki.networks.switch_routing_ospf.md5_authentication_enabled, null)
   md5_authentication_key     = try(each.value.data.md5_authentication_key, local.defaults.meraki.networks.switch_routing_ospf.md5_authentication_key, null)
   v3                         = try(each.value.data.v3, local.defaults.meraki.networks.switch_routing_ospf.v3, null)
+  
+  depends_on = [ meraki_networks_devices_claim.net_device_claims ]
 }
 
 
@@ -376,6 +384,8 @@ resource "meraki_networks_switch_settings" "net_switch_settings" {
   uplink_client_sampling = try(each.value.data.uplink_client_sampling, local.defaults.meraki.networks.switch_settings.uplink_client_sampling, null)
   use_combined_power     = try(each.value.data.use_combined_power, local.defaults.meraki.networks.switch_settings.use_combined_power, null)
   vlan                   = try(each.value.data.vlan, local.defaults.meraki.networks.switch_settings.vlan, null)
+
+  depends_on = [ meraki_networks_devices_claim.net_device_claims ]
 }
 
 locals {

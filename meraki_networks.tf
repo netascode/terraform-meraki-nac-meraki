@@ -1,3 +1,5 @@
+
+// All resources and data sources are reliant on the meraki_networks data source and are reffered to via variable network_id
 locals {
   networks_group_policies = flatten([
     for domain in try(local.meraki.domains, []) : [
@@ -64,6 +66,11 @@ locals {
   marcin_debug = 5#local.networks_switch_serials.data
 }
 
+# Consider Depends on logic for the following resource
+# May split this so we have a depends on if switches are claimed
+#  and then duplicate this for wireless or securtiy appliances etc
+#  For example meraki_networks_devices_claim "net_device_switches" "net_device_wireless"
+  
 resource "meraki_networks_devices_claim" "net_device_claims" {
   for_each   = { for i, v in local.networks_switch_serials : i => v }
   network_id = each.value.network_id
