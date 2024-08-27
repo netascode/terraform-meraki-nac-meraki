@@ -407,6 +407,9 @@ resource "meraki_networks_switch_storm_control" "net_switch_storm_control" {
   broadcast_threshold       = try(each.value.data.broadcast_threshold, local.defaults.meraki.networks.switch_storm_control.broadcast_threshold, null)
   multicast_threshold       = try(each.value.data.multicast_threshold, local.defaults.meraki.networks.switch_storm_control.multicast_threshold, null)
   unknown_unicast_threshold = try(each.value.data.unknown_unicast_threshold, local.defaults.meraki.networks.switch_storm_control.unknown_unicast_threshold, null)
+  
+  depends_on = [ meraki_networks_devices_claim.net_device_claims ]
+
 }
 data "meraki_networks_switch_stacks" "data_switch_stacks" {
   for_each   = { for i, v in meraki_networks.networks : i => v }
@@ -445,6 +448,9 @@ resource "meraki_networks_switch_stp" "net_switch_stp" {
   network_id          = each.value.network_id
   rstp_enabled        = try(each.value.data.rstp_enabled, local.defaults.meraki.networks.switch_stp.rstp_enabled, null)
   stp_bridge_priority = try(each.value.stp_bridge_priority, null)
+  
+  depends_on = [ meraki_networks_devices_claim.net_device_claims ]
+
 }
 
 locals {
@@ -470,6 +476,9 @@ resource "meraki_networks_switch_stacks" "net_switch_stacks" {
   name       = try(each.value.data.name, local.defaults.meraki.networks.switch_stacks.name, null)
   serials    = try(each.value.data.serials, local.defaults.meraki.networks.switch_stacks.serials, null)
   # switch_stack_id = try(each.value.data.switch_stack_id, null)
+
+  depends_on = [ meraki_networks_devices_claim.net_device_claims ]
+
 }
 
 locals {
@@ -521,6 +530,8 @@ resource "meraki_networks_switch_stacks_routing_interfaces" "net_switch_stacks_r
   # ospf_v3 = try(each.value.data.ospf_v3, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ospf_v3, null)
   subnet  = try(each.value.data.subnet, local.defaults.meraki.networks.switch_stacks_routing_interfaces.subnet, null)
   vlan_id = try(each.value.data.vlan_id, local.defaults.meraki.networks.switch_stacks_routing_interfaces.vlan_id, null)
+
+  depends_on = [ meraki_networks_switch_stacks.net_switch_stacks ]
 }
 
 resource "meraki_networks_switch_stacks_routing_interfaces" "net_switch_stacks_routing_interfaces_not_first" {
@@ -608,7 +619,7 @@ resource "meraki_networks_switch_stacks_routing_static_routes" "net_switch_stack
   subnet = try(each.value.data.subnet, local.defaults.meraki.networks.switch_stacks_routing_static_routes.subnet, null)
   # static_route_id                 = try(each.value.data.static_route_id, null)
 
-  depends_on = [ meraki_networks_switch_stacks_routing_interfaces.net_switch_stacks_routing_interfaces_not_first ]
+  depends_on = [ meraki_networks_switch_stacks_routing_interfaces.net_switch_stacks_routing_interfaces_first, meraki_networks_switch_stacks_routing_interfaces.net_switch_stacks_routing_interfaces_not_first ]
 }
 
 

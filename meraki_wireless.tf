@@ -29,6 +29,8 @@ resource "meraki_networks_wireless_rf_profiles" "net_wireless_rf_profiles" {
   six_ghz_settings         = try(each.value.data.six_ghz_settings, local.defaults.meraki.networks.wireless_rf_profiles.six_ghz_settings, null)
   transmission             = try(each.value.data.transmission, local.defaults.meraki.networks.wireless_rf_profiles.transmission, null)
   two_four_ghz_settings    = try(each.value.data.two_four_ghz_settings, local.defaults.meraki.networks.wireless_rf_profiles.two_four_ghz_settings, null)
+
+  depends_on = [ meraki_networks_devices_claim.net_device_claims ]
 }
 
 locals {
@@ -54,6 +56,9 @@ resource "meraki_networks_wireless_settings" "net_wireless_settings" {
   named_vlans                = try(each.value.data.named_vlans, local.defaults.meraki.networks.wireless_settings.named_vlans, null)
   # regulatory_domain = try(each.value.data.regulatory_domain, local.defaults.meraki.networks.wireless_settings.regulatory_domain, null)
   upgradestrategy = try(each.value.data.upgradestrategy, local.defaults.meraki.networks.wireless_settings.upgradestrategy, null)
+
+  depends_on = [ meraki_networks_devices_claim.net_device_claims ]
+
 }
 
 locals {
@@ -141,4 +146,7 @@ resource "meraki_networks_wireless_ssids" "net_wireless_ssids" {
   walled_garden_enabled = try(each.value.data.walled_garden_enabled, local.defaults.meraki.networks.wireless_ssids.walled_garden_enabled, null)
   walled_garden_ranges  = try(each.value.data.walled_garden_ranges, local.defaults.meraki.networks.wireless_ssids.walled_garden_ranges, null)
   wpa_encryption_mode   = try(each.value.data.wpa_encryption_mode, local.defaults.meraki.networks.wireless_ssids.wpa_encryption_mode, null)
+
+  depends_on = [ meraki_networks_devices_claim.net_device_claims ]
+
 }
