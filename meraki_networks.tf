@@ -7,7 +7,7 @@ locals {
             network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
             data       = group_policy
           }
-        ] if try(network.group_policy, null) != null
+        ] if try(network.group_policies, null) != null
       ]
     ]
   ])
