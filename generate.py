@@ -58,7 +58,7 @@ locals {{
   ])
 }}
 
-resource "meraki_networks_{RESOURCE_NAME}" "net_{RESOURCE_NAME}" {{
+resource "meraki_{RESOURCE_NAME}" "net_{RESOURCE_NAME}" {{
   for_each   = {{ for i, v in local.networks_{RESOURCE_NAME} : i => v }}
   network_id = each.value.network_id
 {keys_render}
@@ -96,18 +96,19 @@ def fields(d, p):
         ret.append(copy.deepcopy(p))
     return ret
 
+METHOD = "put"
+
 for k, v in j["paths"].items():
     path = [to_snake_case(x) for x in k.split("/") if not x.startswith("{")][1:]
-    if URL == "_".join(path) and "put" in v:
+    if URL == "_".join(path) and METHOD in v:
         res = v
         spec_url = k
 
-path = [to_snake_case(x) for x in spec_url.split("/") if not x.startswith("{")][1:]
-res_name = "_".join(path[1:])
-if spec_url[-1] == "}":
-    path += [""]
+path = [x.split("}")[-1].strip("/").replace("/", "_") for x in spec_url.split("{")]
+res_name = "_".join([to_snake_case(x) for x in spec_url.split("/") if not x.startswith("{")][1:])
 path = ["domains", "organizations"] + path
 path_from_networks = path[3:-1]
-res_fields = fields(res["put"]["requestBody"]["content"]["application/json"]["schema"], [])
+print(path_from_networks)
+res_fields = fields(res[METHOD]["requestBody"]["content"]["application/json"]["schema"], [])
 content, ret_resource_keys = generate_loop(path, 0, "local.meraki", path_from_networks)
 print(generate_template(res_name, res_fields, content, ret_resource_keys))

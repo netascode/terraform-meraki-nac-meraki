@@ -179,3 +179,26 @@ resource "meraki_network_vlan_profile" "net_vlan_profiles" {
   vlan_groups = try(each.value.data.vlan_groups, local.defaults.meraki.networks.vlan_profiles.vlan_groups, [])
 
 }
+
+locals {
+  networks_networks_device_claims = flatten([
+
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : {
+          network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+
+          data = network.device_claim
+        } if try(network.device_claim, null) != null
+      ] if try(domain.organizations, null) != null
+    ] if try(local.meraki.domains, null) != null
+  ])
+}
+
+resource "meraki_network_device_claim" "net_device_claim" {
+  for_each   = { for i, v in local.networks_networks_device_claims : i => v }
+  network_id = each.value.network_id
+
+  serials = try(each.value.data.serials, local.defaults.meraki.networks.networks_switch_stacks.serials, null)
+
+}
