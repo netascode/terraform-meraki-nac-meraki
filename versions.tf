@@ -3,8 +3,7 @@ terraform {
 
   required_providers {
     meraki = {
-      source  = "cisco-open/meraki"
-      version = "0.2.11-alpha"
+      source = "github.com/netascode/meraki"
     }
     utils = {
       source  = "netascode/utils"
@@ -16,9 +15,7 @@ terraform {
     }
   }
 }
+
 provider "meraki" {
-  meraki_debug               = true
-  meraki_requests_per_second = 2
-  meraki_base_url            = var.base_url
-  // Add other provider-specific options if needed
+  api_key = var.MERAKI_API_KEY
 }
