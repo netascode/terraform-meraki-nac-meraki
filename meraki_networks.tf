@@ -148,7 +148,7 @@ resource "meraki_network_syslog_servers" "net_syslog_servers" {
   for_each   = { for i, v in local.networks_syslog_servers : i => v }
   network_id = each.value.network_id
 
-  servers = try(each.value.data.servers, local.defaults.meraki.networks.syslog_servers.servers, null)
+  servers = try(each.value.data.servers, local.defaults.meraki.networks.syslog_servers.servers, [])
 
 }
 

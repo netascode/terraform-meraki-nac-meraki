@@ -190,7 +190,7 @@ resource "meraki_switch_link_aggregation" "net_networks_switch_link_aggregation"
   switch_ports = try(each.value.data.switch_ports, local.defaults.meraki.networks.networks_switch_link_aggregations.switch_ports, null)
   switch_profile_ports = try(each.value.data.switch_profile_ports, local.defaults.meraki.networks.networks_switch_link_aggregations.switch_profile_ports, null)
 
-  # depends on claims
+  depends_on = [ meraki_network_device_claim.net_device_claim ]
 }
 
 
@@ -217,6 +217,7 @@ resource "meraki_switch_mtu" "net_networks_switch_mtu" {
   default_mtu_size = try(each.value.data.default_mtu_size, local.defaults.meraki.networks.networks_switch_mtu.default_mtu_size, null)
   overrides = try(each.value.data.overrides, local.defaults.meraki.networks.networks_switch_mtu.overrides, null)
 
+  depends_on = [ meraki_network_device_claim.net_device_claim ]
 }
 
 
@@ -264,7 +265,6 @@ resource "meraki_switch_port_schedule" "net_networks_switch_port_schedules" {
   port_schedule_sunday_active = try(each.value.data.port_schedule.sunday.active, local.defaults.meraki.networks.networks_switch_port_schedules.port_schedule.sunday.active, null)
   port_schedule_sunday_from = try(each.value.data.port_schedule.sunday.from, local.defaults.meraki.networks.networks_switch_port_schedules.port_schedule.sunday.from, null)
   port_schedule_sunday_to = try(each.value.data.port_schedule.sunday.to, local.defaults.meraki.networks.networks_switch_port_schedules.port_schedule.sunday.to, null)
-
 }
 
 
@@ -349,6 +349,7 @@ resource "meraki_switch_routing_multicast_rendezvous_point" "net_networks_switch
   interface_ip = try(each.value.data.interface_ip, local.defaults.meraki.networks.networks_switch_routing_multicast_rendezvous_points.interface_ip, null)
   multicast_group = try(each.value.data.multicast_group, local.defaults.meraki.networks.networks_switch_routing_multicast_rendezvous_points.multicast_group, null)
 
+  depends_on = [ meraki_network_device_claim.net_device_claim ]
 }
 
 locals {
@@ -382,6 +383,7 @@ resource "meraki_switch_routing_ospf" "net_networks_switch_routing_ospf" {
   md5_authentication_key_id = try(each.value.data.md5_authentication_key.id, local.defaults.meraki.networks.networks_switch_routing_ospf.md5_authentication_key.id, null)
   md5_authentication_key_passphrase = try(each.value.data.md5_authentication_key.passphrase, local.defaults.meraki.networks.networks_switch_routing_ospf.md5_authentication_key.passphrase, null)
 
+  depends_on = [ meraki_network_device_claim.net_device_claim ]
 }
 
 locals {
@@ -409,6 +411,7 @@ resource "meraki_switch_settings" "net_networks_switch_settings" {
   uplink_client_sampling_enabled = try(each.value.data.uplink_client_sampling.enabled, local.defaults.meraki.networks.networks_switch_settings.uplink_client_sampling.enabled, null)
   mac_blocklist_enabled = try(each.value.data.mac_blocklist.enabled, local.defaults.meraki.networks.networks_switch_settings.mac_blocklist.enabled, null)
 
+  depends_on = [ meraki_network_device_claim.net_device_claim ]
 }
 locals {
   networks_networks_switch_storm_control = flatten([
@@ -433,52 +436,44 @@ resource "meraki_switch_storm_control" "net_networks_switch_storm_control" {
   multicast_threshold = try(each.value.data.multicast_threshold, local.defaults.meraki.networks.networks_switch_storm_control.multicast_threshold, null)
   unknown_unicast_threshold = try(each.value.data.unknown_unicast_threshold, local.defaults.meraki.networks.networks_switch_storm_control.unknown_unicast_threshold, null)
 
+  depends_on = [ meraki_network_device_claim.net_device_claim ]
 }
+
+locals {
+  switch_stack_map = {
+    for i, s in meraki_switch_stack.net_switch_stacks : i => s.id
+  }
+}
+
+locals {
+  networks_switch_stp = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for org in try(domain.organizations, []) : [
+        for network in try(org.networks, []) : {
+          network_id = meraki_network.network["${domain.name}/${org.name}/${network.name}"].id
+          data       = network.switch_stp
+          stp_bridge_priority = [for p in network.switch_stp.stp_bridge_priority : {
+            switches     = try(p.switches, null)
+            stp_priority = try(p.stp_priority, null)
+            stacks       = [for s in try(p.stacks, []) : try(local.switch_stack_map["${domain.name}/${org.name}/${network.name}/switch_stacks/${s}"], null)]
+          }]
+        } if try(network.switch_stp, null) != null
+      ]
+    ]
+  ])
+  # marcin_debug = local.networks_switch_stp
+}
+
+resource "meraki_switch_stp" "net_switch_stp" {
+  for_each            = { for i, v in local.networks_switch_stp : i => v }
+  network_id          = each.value.network_id
+  rstp_enabled        = try(each.value.data.rstp_enabled, local.defaults.meraki.networks.switch_stp.rstp_enabled, null)
+  stp_bridge_priority = try(each.value.stp_bridge_priority, null)
   
-#   depends_on = [ meraki_networks_devices_claim.net_device_claims ]
+  depends_on = [ meraki_network_device_claim.net_device_claim ]
 
-# }
-# data "meraki_networks_switch_stacks" "data_switch_stacks" {
-#   for_each   = { for i, v in meraki_networks.networks : i => v }
-#   network_id = each.value.network_id
-# }
+}
 
-# locals {
-#   switch_stacks_map = {
-#     for net, val in data.meraki_networks_switch_stacks.data_switch_stacks :
-#     val.network_id => {
-#       for i in val.items : i.name => i.id
-#     } if val.items != null
-#   }
-# }
-
-# locals {
-#   networks_switch_stp = flatten([
-#     for domain in try(local.meraki.domains, []) : [
-#       for org in try(domain.organizations, []) : [
-#         for network in try(org.networks, []) : {
-#           network_id = meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id
-#           data       = network.switch_stp
-#           stp_bridge_priority = [for p in network.switch_stp.stp_bridge_priority : {
-#             switches     = try(p.switches, null)
-#             stp_priority = try(p.stp_priority, null)
-#             stacks       = [for s in try(p.stacks, []) : try(local.switch_stacks_map[meraki_networks.networks["${domain.name}/${org.name}/${network.name}"].id][s], null)]
-#           }]
-#         } if try(network.switch_stp, null) != null
-#       ]
-#     ]
-#   ])
-# }
-
-# resource "meraki_networks_switch_stp" "net_switch_stp" {
-#   for_each            = { for i, v in local.networks_switch_stp : i => v }
-#   network_id          = each.value.network_id
-#   rstp_enabled        = try(each.value.data.rstp_enabled, local.defaults.meraki.networks.switch_stp.rstp_enabled, null)
-#   stp_bridge_priority = try(each.value.stp_bridge_priority, null)
-  
-#   depends_on = [ meraki_networks_devices_claim.net_device_claims ]
-
-# }
 locals {
   networks_networks_switch_stacks = flatten([
 
@@ -503,6 +498,7 @@ resource "meraki_switch_stack" "net_switch_stacks" {
   name = try(each.value.data.name, local.defaults.meraki.networks.networks_switch_stacks.name, null)
   serials = try(each.value.data.serials, local.defaults.meraki.networks.networks_switch_stacks.serials, null)
 
+  depends_on = [ meraki_network_device_claim.net_device_claim ]
 }
 
 locals {
@@ -561,6 +557,7 @@ resource "meraki_switch_stack_routing_interface" "net_networks_switch_stack_rout
   ipv6_address = try(each.value.data.ipv6.address, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.ipv6.address, null)
   ipv6_gateway = try(each.value.data.ipv6.gateway, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.ipv6.gateway, null)
 
+  depends_on = [ meraki_switch_stack.net_switch_stacks ]
 }
 resource "meraki_switch_stack_routing_interface" "net_networks_switch_stack_routing_interface_not_first" {
   for_each   = { for i in local.networks_networks_switch_stacks_routing_interfaces_not_first : i.interface_key => i }
@@ -694,4 +691,5 @@ resource "meraki_switch_stack_routing_static_route" "net_networks_switch_stacks_
   advertise_via_ospf_enabled = try(each.value.data.advertise_via_ospf_enabled, local.defaults.meraki.networks.networks_switch_stacks_routing_static_routes.advertise_via_ospf_enabled, null)
   prefer_over_ospf_routes_enabled = try(each.value.data.prefer_over_ospf_routes_enabled, local.defaults.meraki.networks.networks_switch_stacks_routing_static_routes.prefer_over_ospf_routes_enabled, null)
 
+  depends_on = [ meraki_switch_stack_routing_interface.net_networks_switch_stack_routing_interface_first, meraki_switch_stack_routing_interface.net_networks_switch_stack_routing_interface_not_first ]
 }
