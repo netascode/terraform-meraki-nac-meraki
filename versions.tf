@@ -1,9 +1,9 @@
 terraform {
-  required_version = ">= 1.3.0"
+  # required_version = ">= 1.3.0"
 
   required_providers {
     meraki = {
-      source = "github.com/netascode/meraki"
+      source  = "local/cisco/meraki"
     }
     utils = {
       source  = "netascode/utils"

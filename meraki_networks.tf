@@ -117,18 +117,6 @@ resource "meraki_network_snmp" "net_snmp" {
 
 }
 
-# Consider Depends on logic for the following resource
-# May split this so we have a depends on if switches are claimed
-#  and then duplicate this for wireless or securtiy appliances etc
-#  For example meraki_networks_devices_claim "net_device_switches" "net_device_wireless"
-  
-# resource "meraki_networks_devices_claim" "net_device_claims" {
-#   for_each   = { for i, v in local.networks_switch_serials : i => v }
-#   network_id = each.value.network_id
-#   parameters = {
-#     serials = each.value.data
-#     }
-# }
 locals {
   networks_syslog_servers = flatten([
 
@@ -180,25 +168,31 @@ resource "meraki_network_vlan_profile" "net_vlan_profiles" {
 
 }
 
+//TODO: @mcparaf discuss with @jon-humphries how to handle claim for multiple device types.
 locals {
-  networks_networks_device_claims = flatten([
+  networks_devices_claim = flatten([
 
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
 
-          data = network.device_claim
-        } if try(network.device_claim, null) != null
+          data = network.devices_claim
+        } if try(network.devices_claim, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
 }
 
 resource "meraki_network_device_claim" "net_device_claim" {
-  for_each   = { for i, v in local.networks_networks_device_claims : i => v }
+  for_each   = { for i, v in local.networks_devices_claim : i => v }
   network_id = each.value.network_id
 
   serials = try(each.value.data.serials, local.defaults.meraki.networks.networks_switch_stacks.serials, null)
 
 }
+
+
+//TODO: Add the following resources @mcparaf
+// networks_floor_plans
+// 
