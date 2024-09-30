@@ -1,3 +1,6 @@
+
+//TODO: @jon-humphries need to ensure that this data model is correct as its currently not validating
+
 locals {
   networks_networks_wireless_rf_profiles = flatten([
 

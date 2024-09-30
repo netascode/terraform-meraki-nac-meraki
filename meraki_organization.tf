@@ -11,7 +11,7 @@ data "meraki_organization" "organization" {
   name     = each.key
 }
 
-locals {
+locals { //TODO @mcparaf: This should be removed.
   marcin_debug = 5
 }
 
@@ -42,6 +42,8 @@ resource "meraki_network" "network" {
   tags            = each.value.tags
   time_zone       = each.value.time_zone
 }
+
+# Apply Organization Login Security Settings
 locals {
   login_security = flatten([
     for domain in try(local.meraki.domains, []) : [
@@ -87,6 +89,8 @@ resource "meraki_organization_login_security" "login_security" {
   api_authentication_ip_restrictions_for_keys_ranges  = each.value.api_authentication_ip_restrictions_for_keys_ranges
 }
 
+# Apply Organization SNMP Settings
+
 locals {
   snmp = flatten([
     for domain in try(local.meraki.domains, []) : [
@@ -103,7 +107,6 @@ locals {
     ]
   ])
 }
-
 resource "meraki_organization_snmp" "snmp" {
   for_each = { for snmp in local.snmp : snmp.organization_id => snmp }
 
@@ -117,7 +120,8 @@ resource "meraki_organization_snmp" "snmp" {
   peer_ips        = each.value.peer_ips
 }
 
-# # Apply Org Wide Administrator Users
+# Apply Organization Admins
+//TODO @mcparaf: The logic of this Module is not correct, Networks is nested under Tags in the Data Model.
 locals {
   admins = flatten([
     for domain in try(local.meraki.domains, []) : [
@@ -152,4 +156,10 @@ resource "meraki_organization_admin" "organization_admin" {
   networks              = each.value.networks
   tags                  = each.value.tags
 }
+
+//TODO @mcparaf: Missing Organization Inventory Claim
+//TODO @mcparaf: Missing Organization Adaptive Policy
+//TODO @mcparaf: Missing Organization Appliance VPN Settings
+//TODO @mcparaf: Missing Organization Early Opt-in
+//TODO @mcparaf: Missing Organization Policy Objects
 
