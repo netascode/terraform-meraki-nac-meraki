@@ -6,4 +6,4 @@ defaults:
         authentication_method: Email
         organization_access: full
         networks:
-          access: full
+          access: fullaccess
