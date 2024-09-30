@@ -18,4 +18,5 @@ terraform {
   }
 }
 provider "meraki" {
+  api_key = var.MERAKI_API_KEY
 }
