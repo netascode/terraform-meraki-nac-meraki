@@ -3,8 +3,8 @@ terraform {
 
   required_providers {
     meraki = {
-      source  = "cisco-open/meraki"
-      version = "0.2.4-alpha"
+      source  = "CiscoDevNet/meraki"
+      version = "0.1.0"
     }
     utils = {
       source  = "netascode/utils"
