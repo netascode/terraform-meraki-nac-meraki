@@ -27,6 +27,6 @@ variable "base_url" {
   default     = "https://api.meraki.com/"
 }
 
-variable "MERAKI_API_KEY" {
+variable "api_key" {
   type = string
 }
