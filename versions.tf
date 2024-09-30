@@ -17,8 +17,5 @@ terraform {
   }
 }
 provider "meraki" {
-  meraki_debug = true
-  meraki_requests_per_second = 2
-  meraki_base_url = var.base_url
   // Add other provider-specific options if needed
 }
