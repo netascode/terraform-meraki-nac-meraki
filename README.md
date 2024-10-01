@@ -28,7 +28,7 @@ meraki:
 
 ```hcl
 module "meraki" {
-  source  = "netascode/nac-meraki/meraki"
+  source = "CiscoDevNet/meraki"
   version = ">= 0.1.0"
 
   yaml_files = ["organization.yaml"]
@@ -41,7 +41,7 @@ module "meraki" {
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.5.1 |
-| <a name="requirement_meraki"></a> [meraki](#requirement\_meraki) | 0.2.9-alpha |
+| <a name="requirement_meraki"></a> [meraki](#requirement\_meraki) | >= 0.1.0 |
 | <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 0.2.5 |
 ## Inputs
 
