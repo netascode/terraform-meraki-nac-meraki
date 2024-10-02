@@ -467,7 +467,12 @@ locals {
           stp_bridge_priority = [for p in network.switch_stp.stp_bridge_priority : {
             switches     = try(p.switches, null)
             stp_priority = try(p.stp_priority, null)
-            stacks       = [for s in try(p.stacks, []) : try(local.switch_stack_map["${domain.name}/${org.name}/${network.name}/switch_stacks/${s}"], null)]
+            stacks       = length(try(p.stacks, [])) > 0 ? [
+                for s in p.stacks : try(
+                  local.switch_stack_map["${domain.name}/${org.name}/${network.name}/switch_stacks/${s}"],
+                  null
+                )
+              ] : null
           }]
         } if try(network.switch_stp, null) != null
       ]
@@ -492,7 +497,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
-          for switch_stack in try(network.switch_stacks) : {
+          for switch_stack in try(network.switch_stacks, []) : {
           network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
           stack_key  = format("%s/%s/%s/switch_stacks/%s", domain.name, organization.name, network.name, switch_stack.name)
           data = switch_stack
