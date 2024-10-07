@@ -185,7 +185,7 @@ locals {
 }
 
 //TODO @jon-humphries need to test with data model
-resource "meraki_switch_link_aggregation" "net_networks_switch_link_aggregation" {
+resource "meraki_switch_link_aggregation" "net_switch_link_aggregation" {
   for_each   = { for i, v in local.networks_switch_link_aggregations : i => v }
   network_id = each.value.network_id
 
@@ -212,7 +212,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_mtu" "net_networks_switch_mtu" {
+resource "meraki_switch_mtu" "net_switch_mtu" {
   for_each   = { for i, v in local.networks_switch_mtu : i => v }
   network_id = each.value.network_id
 
@@ -242,7 +242,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_port_schedule" "net_networks_switch_port_schedules" {
+resource "meraki_switch_port_schedule" "net_switch_port_schedules" {
   for_each   = { for i, v in local.networks_switch_port_schedules : i => v }
   network_id = each.value.network_id
 
@@ -291,7 +291,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_qos_rule" "net_networks_switch_qos_rule" {
+resource "meraki_switch_qos_rule" "net_switch_qos_rule" {
   for_each   = { for i, v in local.networks_switch_qos_rules : i => v }
   network_id = each.value.network_id
 
@@ -323,7 +323,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_routing_multicast" "net_networks_switch_routing_multicast" {
+resource "meraki_switch_routing_multicast" "net_switch_routing_multicast" {
   for_each   = { for i, v in local.networks_switch_routing_multicast : i => v }
   network_id = each.value.network_id
 
@@ -352,14 +352,14 @@ locals {
   ])
 }
 
-resource "meraki_switch_routing_multicast_rendezvous_point" "net_networks_switch_routing_multicast_rendezvous_point" {
+resource "meraki_switch_routing_multicast_rendezvous_point" "net_switch_routing_multicast_rendezvous_point" {
   for_each   = { for i, v in local.networks_switch_routing_multicast_rendezvous_points : i => v }
   network_id = each.value.network_id
 
   interface_ip = try(each.value.data.interface_ip, local.defaults.meraki.networks.networks_switch_routing_multicast_rendezvous_points.interface_ip, null)
   multicast_group = try(each.value.data.multicast_group, local.defaults.meraki.networks.networks_switch_routing_multicast_rendezvous_points.multicast_group, null)
 
-  depends_on = [ meraki_switch_stack_routing_interface.net_networks_switch_stack_routing_interface_not_first ]
+  depends_on = [ meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_not_first ]
   # when add devices switch routing interface logic will need an additional depends on if possible to have multiple
 }
 
@@ -378,7 +378,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_routing_ospf" "net_networks_switch_routing_ospf" {
+resource "meraki_switch_routing_ospf" "net_switch_routing_ospf" {
   for_each   = { for i, v in local.networks_switch_routing_ospf : i => v }
   network_id = each.value.network_id
 
@@ -412,7 +412,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_settings" "net_networks_switch_settings" {
+resource "meraki_switch_settings" "net_switch_settings" {
   for_each   = { for i, v in local.networks_switch_settings : i => v }
   network_id = each.value.network_id
 
@@ -439,7 +439,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_storm_control" "net_networks_switch_storm_control" {
+resource "meraki_switch_storm_control" "net_switch_storm_control" {
   for_each   = { for i, v in local.networks_switch_storm_control : i => v }
   network_id = each.value.network_id
 
@@ -485,7 +485,7 @@ resource "meraki_switch_stp" "net_switch_stp" {
   for_each            = { for i, v in local.networks_switch_stp : i => v }
   network_id          = each.value.network_id
   rstp_enabled        = try(each.value.data.rstp_enabled, local.defaults.meraki.networks.switch_stp.rstp_enabled, null)
-  stp_bridge_priority = try(each.value.stp_bridge_priority, null)
+  stp_bridge_priority = try(each.value.stp_bridge_priority, [])
   
   depends_on = [ meraki_network_device_claim.net_device_claim ]
 
@@ -556,7 +556,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_stack_routing_interface" "net_networks_switch_stack_routing_interface_first" {
+resource "meraki_switch_stack_routing_interface" "net_switch_stack_routing_interface_first" {
   for_each   = { for i in local.networks_switch_stacks_routing_interfaces_first : i.interface_key => i }
   network_id = each.value.network_id
   switch_stack_id = each.value.switch_stack_id
@@ -578,7 +578,7 @@ resource "meraki_switch_stack_routing_interface" "net_networks_switch_stack_rout
 depends_on = [ meraki_network_device_claim.net_device_claim ]
 
 }
-resource "meraki_switch_stack_routing_interface" "net_networks_switch_stack_routing_interface_not_first" {
+resource "meraki_switch_stack_routing_interface" "net_switch_stack_routing_interface_not_first" {
   for_each   = { for i in local.networks_switch_stacks_routing_interfaces_not_first : i.interface_key => i }
   network_id = each.value.network_id
   switch_stack_id = each.value.switch_stack_id
@@ -597,7 +597,7 @@ resource "meraki_switch_stack_routing_interface" "net_networks_switch_stack_rout
   ipv6_address = try(each.value.data.ipv6.address, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.ipv6.address, null)
   ipv6_gateway = try(each.value.data.ipv6.gateway, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.ipv6.gateway, null)
 
-  depends_on = [ meraki_switch_stack_routing_interface.net_networks_switch_stack_routing_interface_first ]
+  depends_on = [ meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_first ]
 }
 
 locals {
@@ -610,7 +610,7 @@ locals {
             for routing_interface in try(switch_stack.routing_interfaces, []) : {
               network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
               switch_stack_id = meraki_switch_stack.net_switch_stacks["${domain.name}/${organization.name}/${network.name}/switch_stacks/${switch_stack.name}"].id
-              interface_id = meraki_switch_stack_routing_interface.net_networks_switch_stack_routing_interface_first["${domain.name}/${organization.name}/${network.name}/switch_stacks/${switch_stack.name}/routing_interfaces/${routing_interface.name}"].id
+              interface_id = meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_first["${domain.name}/${organization.name}/${network.name}/switch_stacks/${switch_stack.name}/routing_interfaces/${routing_interface.name}"].id
               data = routing_interface.dhcp
             } if try(routing_interface.default_gateway, null) != null
           ] if try(network.switch_stacks, null) != null
@@ -620,7 +620,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_stack_routing_interface_dhcp" "net_networks_switch_stacks_routing_interfaces_dhcp_first" {
+resource "meraki_switch_stack_routing_interface_dhcp" "net_switch_stacks_routing_interfaces_dhcp_first" {
   for_each   = { for i, v in local.networks_switch_stacks_routing_interfaces_dhcp_first : i => v }
   network_id = each.value.network_id
   switch_stack_id = each.value.switch_stack_id
@@ -638,7 +638,7 @@ resource "meraki_switch_stack_routing_interface_dhcp" "net_networks_switch_stack
   reserved_ip_ranges = try(each.value.data.reserved_ip_ranges, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.reserved_ip_ranges, null)
   fixed_ip_assignments = try(each.value.data.fixed_ip_assignments, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.fixed_ip_assignments, null)
 
-  depends_on = [ meraki_switch_stack_routing_interface.net_networks_switch_stack_routing_interface_first ]
+  depends_on = [ meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_first ]
 
 }
 
@@ -652,7 +652,7 @@ locals {
             for routing_interface in try(switch_stack.routing_interfaces, []) : {
               network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
               switch_stack_id = meraki_switch_stack.net_switch_stacks["${domain.name}/${organization.name}/${network.name}/switch_stacks/${switch_stack.name}"].id
-              interface_id = meraki_switch_stack_routing_interface.net_networks_switch_stack_routing_interface_not_first["${domain.name}/${organization.name}/${network.name}/switch_stacks/${switch_stack.name}/routing_interfaces/${routing_interface.name}"].id
+              interface_id = meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_not_first["${domain.name}/${organization.name}/${network.name}/switch_stacks/${switch_stack.name}/routing_interfaces/${routing_interface.name}"].id
               data = routing_interface.dhcp
             } if try(routing_interface.default_gateway, null) == null
           ] if try(network.switch_stacks, null) != null
@@ -662,7 +662,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_stack_routing_interface_dhcp" "net_networks_switch_stacks_routing_interfaces_dhcp_not_first" {
+resource "meraki_switch_stack_routing_interface_dhcp" "net_switch_stacks_routing_interfaces_dhcp_not_first" {
   for_each   = { for i, v in local.networks_switch_stacks_routing_interfaces_dhcp_not_first : i => v }
   network_id = each.value.network_id
   switch_stack_id = each.value.switch_stack_id
@@ -680,7 +680,7 @@ resource "meraki_switch_stack_routing_interface_dhcp" "net_networks_switch_stack
   reserved_ip_ranges = try(each.value.data.reserved_ip_ranges, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.reserved_ip_ranges, null)
   fixed_ip_assignments = try(each.value.data.fixed_ip_assignments, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.fixed_ip_assignments, null)
 
-  depends_on = [ meraki_switch_stack_routing_interface.net_networks_switch_stack_routing_interface_not_first ]
+  depends_on = [ meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_not_first ]
 
 }
 
@@ -702,7 +702,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_stack_routing_static_route" "net_networks_switch_stacks_routing_static_route" {
+resource "meraki_switch_stack_routing_static_route" "net_switch_stacks_routing_static_route" {
   for_each   = { for i, v in local.networks_switch_stacks_routing_static_routes : i => v }
   network_id = each.value.network_id
   switch_stack_id = each.value.switch_stack_id
@@ -713,6 +713,6 @@ resource "meraki_switch_stack_routing_static_route" "net_networks_switch_stacks_
   advertise_via_ospf_enabled = try(each.value.data.advertise_via_ospf_enabled, local.defaults.meraki.networks.networks_switch_stacks_routing_static_routes.advertise_via_ospf_enabled, null)
   prefer_over_ospf_routes_enabled = try(each.value.data.prefer_over_ospf_routes_enabled, local.defaults.meraki.networks.networks_switch_stacks_routing_static_routes.prefer_over_ospf_routes_enabled, null)
 
-  depends_on = [ meraki_switch_stack_routing_interface.net_networks_switch_stack_routing_interface_not_first ]
+  depends_on = [ meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_not_first ]
 
 }
