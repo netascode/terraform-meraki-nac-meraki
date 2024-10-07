@@ -11,10 +11,6 @@ data "meraki_organization" "organization" {
   name     = each.key
 }
 
-locals { //TODO @mcparaf: This should be removed.
-  marcin_debug = 5
-}
-
 #  Create a Network
 locals {
   networks = flatten([
