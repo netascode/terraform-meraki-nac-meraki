@@ -129,12 +129,12 @@ locals {
           email                 = try(admin.email, local.defaults.meraki.organizations.admins.email, null)
           authentication_method = try(admin.authentication_method, local.defaults.meraki.organizations.admins.authentication_method, null)
           org_access            = try(admin.org_access, local.defaults.meraki.organizations.admins.org_access, null)
-
-          # Collect the network names (ASCII) for dynamic lookup
-          networks = [for network in try(admin.networks, []) : network.id] # Network names (ASCII)
-
+          networks = [for network in try(admin.networks, []) : {
+            id     = meraki_network.network["${domain.name}/${org.name}/${network.name}"].id
+            access = try(network.access, local.defaults.meraki.organizations.admins.networks.access, null)
+          }]
           tags = [for tag in try(admin.tags, []) : {
-            tag    = try(tag.tag, local.defaults.meraki.organizations.admins.tags.tag, null)
+            tag    = tag.name
             access = try(tag.access, local.defaults.meraki.organizations.admins.tags.access, null)
           }]
         }
@@ -142,38 +142,15 @@ locals {
     ]
   ])
 }
-data "meraki_network" "networks" {
-  for_each = { for admin in local.admins : admin.key => flatten([for network in try(admin.networks, []) : network.id]) }
-
-  organization_id = each.value.organization_id
-  name            = each.value
-}
-resource "meraki_organization_admin" "organization_admin_no_networks" {
+resource "meraki_organization_admin" "organization_admin" {
   for_each              = { for admin in local.admins : admin.key => admin }
   organization_id       = each.value.organization_id
   name                  = each.value.name
   email                 = each.value.email
   authentication_method = each.value.authentication_method
   org_access            = each.value.org_access
+  networks              = each.value.networks
   tags                  = each.value.tags
-}
-resource "meraki_organization_admin" "organization_admin_with_networks" {
-  for_each              = { for admin in local.admins : admin.key => admin }
-  organization_id       = each.value.organization_id
-  name                  = each.value.name
-  email                 = each.value.email
-  authentication_method = each.value.authentication_method
-  org_access            = each.value.org_access
-  tags                  = each.value.tags
-
-  networks = [
-    for network in try(each.value.networks, []) : {
-      id     = data.meraki_network.networks[network].id
-      access = try(network.access, local.defaults.meraki.organizations.admins.networks.access, null)
-    }
-  ]
-
-  depends_on = [meraki_network.network]
 }
 # Apply Organization Inventory Claim
 locals {
