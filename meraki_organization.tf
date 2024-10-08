@@ -213,7 +213,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for policy in try(organization.adaptive_policy_policies, []) : {
-          org_id                 = meraki_organization.organization[organization.name].id
+          org_id                 = data.meraki_organization.organization[organization.name].id
           policy_name            = policy.name
           source_group_name      = policy.source_group.name
           source_group_sgt       = policy.source_group.sgt
@@ -250,7 +250,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for group in try(organization.adaptive_policy_groups, []) : {
-          org_id         = meraki_organization.organization[organization.name].id
+          org_id         = data.meraki_organization.organization[organization.name].id
           group_name     = group.name
           sgt            = group.sgt
           description    = group.description
@@ -280,7 +280,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for acl in try(organization.adaptive_policy_acls, []) : {
-          org_id      = meraki_organization.organization[organization.name].id
+          org_id      = data.meraki_organization.organization[organization.name].id
           acl_name    = acl.name
           description = acl.description
           rules       = acl.rules
