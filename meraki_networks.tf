@@ -189,7 +189,57 @@ resource "meraki_network_device_claim" "net_device_claim" {
 
 }
 
+locals {
+  floor_plans = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for org in try(domain.organizations, []) : [
+        for network in try(org.networks, []) : [
+          for floor_plan in try(network.floor_plans, []) : {
+            organization_name       = org.name,
+            network_name            = network.name,
+            floor_plan_name         = floor_plan.name,
+            center_lat              = floor_plan.center.lat,
+            center_lng              = floor_plan.center.lng,
+            bottom_left_corner_lat  = floor_plan.bottom_left_corner.lat,
+            bottom_left_corner_lng  = floor_plan.bottom_left_corner.lng,
+            bottom_right_corner_lat = floor_plan.bottom_right_corner.lat,
+            bottom_right_corner_lng = floor_plan.bottom_right_corner.lng,
+            top_left_corner_lat     = floor_plan.top_left_corner.lat,
+            top_left_corner_lng     = floor_plan.top_left_corner.lng,
+            top_right_corner_lat    = floor_plan.top_right_corner.lat,
+            top_right_corner_lng    = floor_plan.top_right_corner.lng,
+            image_contents          = floor_plan.image_contents
+          }
+        ]
+      ]
+    ]
+  ])
+}
 
+data "meraki_network" "networks" {
+  for_each = { for plan in local.floor_plans : plan.network_name => plan }
+
+  organization_id = data.meraki_organization.organization[each.value.organization_name].id
+  name            = each.value.network_name
+}
+
+resource "meraki_network_floor_plan" "floor_plan" {
+  for_each = { for plan in local.floor_plans : plan.floor_plan_name => plan }
+
+  network_id              = data.meraki_network.networks[each.value.network_name].id
+  name                    = each.value.floor_plan_name
+  bottom_left_corner_lat  = each.value.bottom_left_corner_lat
+  bottom_left_corner_lng  = each.value.bottom_left_corner_lng
+  bottom_right_corner_lat = each.value.bottom_right_corner_lat
+  bottom_right_corner_lng = each.value.bottom_right_corner_lng
+  top_left_corner_lat     = each.value.top_left_corner_lat
+  top_left_corner_lng     = each.value.top_left_corner_lng
+  top_right_corner_lat    = each.value.top_right_corner_lat
+  top_right_corner_lng    = each.value.top_right_corner_lng
+  image_contents          = each.value.image_contents
+
+  depends_on = [data.meraki_network.networks]
+}
 //TODO: Add the following resources @mcparaf
 // networks_floor_plans
 // 
