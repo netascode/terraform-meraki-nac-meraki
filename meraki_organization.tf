@@ -1,3 +1,31 @@
+# Extract organizations from the YAML structure
+locals {
+  organizations = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for org in try(domain.organizations, []) : {
+        organization_name = org.name,
+        # management_details = [{
+        #   name  = "MSP ID",
+        #   value = "123456"  # Example MSP ID, can be customized
+        # }]
+      }
+    ]
+  ])
+}
+
+# Dynamically create organizations based on YAML input
+resource "meraki_organization" "organization" {
+  for_each = { for org in local.organizations : org.organization_name => org }
+
+  name = each.value.organization_name
+
+  # management_details = [
+  #   for detail in each.value.management_details : {
+  #     name  = detail.name
+  #     value = detail.value
+  #   }
+  # ]
+}
 locals {
   org_names = flatten([
     for domain in try(local.meraki.domains, []) : [
