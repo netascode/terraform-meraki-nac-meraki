@@ -130,13 +130,11 @@ locals {
           authentication_method = try(admin.authentication_method, local.defaults.meraki.organizations.admins.authentication_method, null)
           org_access            = try(admin.org_access, local.defaults.meraki.organizations.admins.org_access, null)
 
-          # networks now uses id directly from the YAML schema
           networks = [for network in try(admin.networks, []) : {
             id     = try(network.id, local.defaults.meraki.organizations.admins.networks.id, null)
             access = try(network.access, local.defaults.meraki.organizations.admins.networks.access, null)
           }]
 
-          # tags now use tag instead of name
           tags = [for tag in try(admin.tags, []) : {
             tag    = try(tag.tag, local.defaults.meraki.organizations.admins.tags.tag, null)
             access = try(tag.access, local.defaults.meraki.organizations.admins.tags.access, null)
@@ -156,6 +154,7 @@ resource "meraki_organization_admin" "organization_admin" {
   org_access            = each.value.org_access
   networks              = each.value.networks
   tags                  = each.value.tags
+  depends_on            = [meraki_network.network]
 }
 # Apply Organization Inventory Claim
 locals {
