@@ -148,23 +148,26 @@ data "meraki_network" "networks" {
   organization_id = each.value.organization_id
   name            = each.value.networks[0] # Use the network name from the YAML for lookup (assuming one name for now)
 }
-resource "meraki_organization_admin" "organization_admin" {
+resource "meraki_organization_admin" "organization_admin_no_networks" {
   for_each              = { for admin in local.admins : admin.key => admin }
   organization_id       = each.value.organization_id
   name                  = each.value.name
   email                 = each.value.email
   authentication_method = each.value.authentication_method
   org_access            = each.value.org_access
-
-  # Use the fetched network IDs
+  tags                  = each.value.tags
+}
+resource "meraki_organization_admin" "organization_admin_with_networks" {
+  for_each        = { for admin in local.admins : admin.key => admin }
+  organization_id = each.value.organization_id
+  name            = each.value.name
   networks = [
     for network in try(each.value.networks, []) : {
-      id     = data.meraki_network.networks[each.key].id # Use the fetched network ID
+      id     = data.meraki_network.networks[network.id].id # Resolve the network ID
       access = try(network.access, local.defaults.meraki.organizations.admins.networks.access, null)
     }
   ]
-
-  tags = each.value.tags
+  depends_on = [meraki_network.network]
 }
 # Apply Organization Inventory Claim
 locals {
