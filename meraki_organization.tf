@@ -251,8 +251,8 @@ resource "meraki_organization_adaptive_policy_acl" "acls" {
     for rule in each.value.rules : {
       policy   = rule.policy
       protocol = rule.protocol
-      src_port = rule.srcPort
-      dst_port = rule.dstPort
+      src_port = rule.src_port
+      dst_port = rule.dst_port
     }
   ]
 }
