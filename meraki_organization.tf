@@ -13,7 +13,7 @@ locals {
   ])
 }
 
-# Dynamically create organizations based on YAML input
+# Create Organizations
 resource "meraki_organization" "organization" {
   for_each = { for org in local.organizations : org.organization_name => org }
 
@@ -65,7 +65,9 @@ resource "meraki_network" "network" {
   product_types   = each.value.product_types
   tags            = each.value.tags
   time_zone       = each.value.time_zone
-  depends_on      = [meraki_organization_inventory_claim.organization_claim]
+  depends_on = [meraki_organization_inventory_claim.organization_claim,
+    meraki_organization.organization
+  ]
 }
 
 # Apply Organization Login Security Settings
