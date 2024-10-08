@@ -291,10 +291,10 @@ locals {
       for organization in try(domain.organizations, []) : [
         for obj in try(organization.policy_objects, []) : {
           org_id   = data.meraki_organization.organization[organization.name].id
-          name     = obj.name
-          category = obj.category
-          type     = obj.type
-          cidr     = obj.cidr
+          name     = try(obj.name, null)
+          category = try(obj.category, null)
+          type     = try(obj.type, null)
+          cidr     = try(obj.cidr, null)
           fqdn     = try(obj.fqdn, null)
           mask     = try(obj.mask, null)
           ip       = try(obj.ip, null)
