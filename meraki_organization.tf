@@ -118,6 +118,7 @@ resource "meraki_organization_snmp" "snmp" {
 }
 
 # Apply Organization Admins
+# //TODO Check Tag & Networks Logic with @marcin
 locals {
   admins = flatten([
     for domain in try(local.meraki.domains, []) : [
