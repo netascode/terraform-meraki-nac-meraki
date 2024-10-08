@@ -164,8 +164,6 @@ resource "meraki_network_vlan_profile" "net_vlan_profiles" {
   vlan_groups = try(each.value.data.vlan_groups, local.defaults.meraki.networks.vlan_profiles.vlan_groups, [])
 
 }
-
-//TODO: @mcparaf discuss with @jon-humphries how to handle claim for multiple device types.
 locals {
   networks_devices_claim = flatten([
 
@@ -230,6 +228,4 @@ resource "meraki_network_floor_plan" "net_floor_plans" {
   image_contents          = each.value.data.image_contents
   depends_on              = [meraki_network.network]
 }
-//TODO: Add the following resources @mcparaf
-// networks_floor_plans
-// 
+
