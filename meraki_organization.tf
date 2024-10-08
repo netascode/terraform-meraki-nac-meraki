@@ -166,10 +166,9 @@ resource "meraki_organization_admin" "organization_admin_with_networks" {
   org_access            = each.value.org_access
   tags                  = each.value.tags
 
-  # Use the dynamically fetched network IDs
   networks = [
     for network in try(each.value.networks, []) : {
-      id     = data.meraki_network.networks[network.id].id # Fetch the network ID dynamically
+      id     = data.meraki_network.networks[network].id
       access = try(network.access, local.defaults.meraki.organizations.admins.networks.access, null)
     }
   ]
