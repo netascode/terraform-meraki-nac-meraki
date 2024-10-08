@@ -158,9 +158,13 @@ resource "meraki_organization_admin" "organization_admin_no_networks" {
   tags                  = each.value.tags
 }
 resource "meraki_organization_admin" "organization_admin_with_networks" {
-  for_each        = { for admin in local.admins : admin.key => admin }
-  organization_id = each.value.organization_id
-  name            = each.value.name
+  for_each              = { for admin in local.admins : admin.key => admin }
+  organization_id       = each.value.organization_id
+  name                  = each.value.name
+  email                 = each.value.email
+  authentication_method = each.value.authentication_method
+  org_access            = each.value.org_access
+  tags                  = each.value.tags
   networks = [
     for network in try(each.value.networks, []) : {
       id     = data.meraki_network.networks[network.id].id # Resolve the network ID
