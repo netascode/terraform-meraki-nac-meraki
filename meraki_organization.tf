@@ -118,13 +118,6 @@ resource "meraki_organization_snmp" "snmp" {
 }
 
 # Apply Organization Admins
-
-data "meraki_network" "networks" {
-  for_each = { for network in try(admin.networks, []) : network.id => network }
-
-  organization_id = data.meraki_organization.organization[org.name].id
-  name            = each.value.id
-}
 locals {
   admins = flatten([
     for domain in try(local.meraki.domains, []) : [
@@ -137,8 +130,9 @@ locals {
           authentication_method = try(admin.authentication_method, local.defaults.meraki.organizations.admins.authentication_method, null)
           org_access            = try(admin.org_access, local.defaults.meraki.organizations.admins.org_access, null)
 
+          # Directly reference network names without using toset() or flatten()
           networks = [for network in try(admin.networks, []) : {
-            id     = try(data.meraki_network.networks[network.id].id, local.defaults.meraki.organizations.admins.networks.id, null)
+            name   = network.id # The network name (ASCII)
             access = try(network.access, local.defaults.meraki.organizations.admins.networks.access, null)
           }]
 
@@ -152,6 +146,14 @@ locals {
   ])
 }
 
+# Dynamically fetch the network IDs based on provided names (ASCII names)
+data "meraki_network" "networks" {
+  for_each = { for admin in local.admins : admin.key => admin }
+
+  organization_id = each.value.organization_id
+  name            = each.value.networks[*].name # Use the network name to look up the ID
+}
+
 resource "meraki_organization_admin" "organization_admin" {
   for_each              = { for admin in local.admins : admin.key => admin }
   organization_id       = each.value.organization_id
@@ -159,9 +161,18 @@ resource "meraki_organization_admin" "organization_admin" {
   email                 = each.value.email
   authentication_method = each.value.authentication_method
   org_access            = each.value.org_access
-  networks              = each.value.networks
-  tags                  = each.value.tags
+
+  # Map the network names to their corresponding IDs
+  networks = [
+    for network in try(each.value.networks, []) : {
+      id     = data.meraki_network.networks[network.name].id # Fetch network ID from the data source
+      access = network.access
+    }
+  ]
+
+  tags = each.value.tags
 }
+
 # Apply Organization Inventory Claim
 locals {
   inventory_claim = flatten([
