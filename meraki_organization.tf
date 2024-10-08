@@ -171,7 +171,7 @@ locals {
   ])
 }
 
-resource "meraki_organization_inventory_claim" "oranization_claim" {
+resource "meraki_organization_inventory_claim" "organization_claim" {
   for_each = { for claim in local.inventory_claim : claim.organization_id => claim }
 
   organization_id = each.value.organization_id
