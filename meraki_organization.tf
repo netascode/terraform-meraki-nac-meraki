@@ -188,7 +188,7 @@ resource "meraki_organization_inventory_claim" "organization_claim" {
   orders  = each.value.orders
   serials = each.value.serials
 }
-
+# Apply Organization Adaptive Policy
 locals {
   adaptive_policy_groups = flatten([
     for domain in try(local.meraki.domains, []) : [
@@ -285,7 +285,66 @@ resource "meraki_organization_adaptive_policy" "organizations_adaptive_policy_po
     meraki_organization_adaptive_policy_acl.organizations_adaptive_policy_acl
   ]
 }
+# Apply Organization Policy Object
+locals {
+  policy_objects = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for obj in try(organization.policy_objects, []) : {
+          org_id    = data.meraki_organization.organization[organization.name].id
+          name      = obj.name
+          category  = obj.category
+          type      = obj.type
+          cidr      = obj.cidr
+          fqdn      = try(obj.fqdn, null)
+          mask      = try(obj.mask, null)
+          ip        = try(obj.ip, null)
+          group_ids = try(obj.group_ids, [])
+        } if try(organization.policy_objects, null) != null
+      ]
+    ]
+  ])
+}
 
-//TODO @mcparaf: Missing Organization Appliance VPN Settings
-//TODO @mcparaf: Missing Organization Early Opt-in
-//TODO @mcparaf: Missing Organization Policy Objects
+resource "meraki_organization_policy_object" "policy_object" {
+  for_each = { for obj in local.policy_objects : obj.name => obj }
+
+  organization_id = each.value.org_id
+  category        = each.value.category
+  name            = each.value.name
+  type            = each.value.type
+
+  # Conditionally apply fields
+  cidr = try(each.value.cidr, null)
+  fqdn = try(each.value.fqdn, null)
+  mask = try(each.value.mask, null)
+  ip   = try(each.value.ip, null)
+}
+# Apply Organization Policy Object Group
+locals {
+  policy_object_groups = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for group in try(organization.policy_objects_groups, []) : {
+          org_id     = data.meraki_organization.organization[organization.name].id
+          name       = group.name
+          category   = group.category
+          object_ids = try(group.object_ids, [])
+        } if try(organization.policy_objects_groups, null) != null
+      ]
+    ]
+  ])
+}
+
+resource "meraki_organization_policy_object_group" "policy_object_group" {
+  for_each = { for group in local.policy_object_groups : group.name => group }
+
+  organization_id = each.value.org_id
+  category        = each.value.category
+  name            = each.value.name
+  object_ids      = each.value.object_ids
+}
+
+//TODO Organization Appliance VPN Settings 
+//TODO Organization Early Opt-in - Awaiting Provider Support
+//TODO Organization Policy Objects

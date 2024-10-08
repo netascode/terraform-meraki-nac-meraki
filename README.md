@@ -76,6 +76,8 @@ module "meraki" {
 | [meraki_organization_admin.organization_admin](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/organization_admin) | resource |
 | [meraki_organization_inventory_claim.organization_claim](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/organization_inventory_claim) | resource |
 | [meraki_organization_login_security.login_security](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/organization_login_security) | resource |
+| [meraki_organization_policy_object.policy_object](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/organization_policy_object) | resource |
+| [meraki_organization_policy_object_group.policy_object_group](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/organization_policy_object_group) | resource |
 | [meraki_organization_snmp.snmp](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/organization_snmp) | resource |
 | [meraki_switch_access_control_lists.net_switch_access_control_lists](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_access_control_lists) | resource |
 | [meraki_switch_access_policy.net_switch_access_policy](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_access_policy) | resource |
