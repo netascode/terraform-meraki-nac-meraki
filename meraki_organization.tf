@@ -152,8 +152,41 @@ resource "meraki_organization_admin" "organization_admin" {
   networks              = each.value.networks
   tags                  = each.value.tags
 }
+# Apply Organization Inventory Claim
+locals {
+  inventory_claim = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for org in try(domain.organizations, []) : {
+        organization_id = data.meraki_organization.organization[org.name].id
+        licenses = [
+          for license in try(org.inventory_claim.licenses, []) : {
+            key  = license.key
+            mode = license.mode
+          }
+        ]
+        orders  = try(org.inventory_claim.orders, [])
+        serials = try(org.inventory_claim.serials, [])
+      } if try(org.inventory_claim, null) != null
+    ]
+  ])
+}
 
-//TODO @mcparaf: Missing Organization Inventory Claim
+resource "meraki_organization_inventory_claim" "oranization_claim" {
+  for_each = { for claim in local.inventory_claim : claim.organization_id => claim }
+
+  organization_id = each.value.organization_id
+
+  licenses = [
+    for license in each.value.licenses : {
+      key  = license.key
+      mode = license.mode
+    }
+  ]
+
+  orders  = each.value.orders
+  serials = each.value.serials
+}
+
 //TODO @mcparaf: Missing Organization Adaptive Policy
 //TODO @mcparaf: Missing Organization Appliance VPN Settings
 //TODO @mcparaf: Missing Organization Early Opt-in

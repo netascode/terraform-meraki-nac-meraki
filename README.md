@@ -71,6 +71,7 @@ module "meraki" {
 | [meraki_network_syslog_servers.net_syslog_servers](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/network_syslog_servers) | resource |
 | [meraki_network_vlan_profile.net_vlan_profiles](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/network_vlan_profile) | resource |
 | [meraki_organization_admin.organization_admin](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/organization_admin) | resource |
+| [meraki_organization_inventory_claim.oranization_claim](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/organization_inventory_claim) | resource |
 | [meraki_organization_login_security.login_security](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/organization_login_security) | resource |
 | [meraki_organization_snmp.snmp](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/organization_snmp) | resource |
 | [meraki_switch_access_control_lists.net_switch_access_control_lists](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_access_control_lists) | resource |
