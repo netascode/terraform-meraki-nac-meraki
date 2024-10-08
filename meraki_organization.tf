@@ -118,6 +118,13 @@ resource "meraki_organization_snmp" "snmp" {
 }
 
 # Apply Organization Admins
+
+data "meraki_network" "networks" {
+  for_each = { for network in try(admin.networks, []) : network.id => network }
+
+  organization_id = data.meraki_organization.organization[org.name].id
+  name            = each.value.id
+}
 locals {
   admins = flatten([
     for domain in try(local.meraki.domains, []) : [
