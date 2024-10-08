@@ -257,6 +257,8 @@ resource "meraki_organization_adaptive_policy_acl" "acls" {
       dst_port = rule.dst_port
     }
   ]
+  depends_on = [meraki_organization_adaptive_policy_group.group]
+
 }
 
 resource "meraki_organization_adaptive_policy" "adaptive_policies" {
@@ -278,6 +280,8 @@ resource "meraki_organization_adaptive_policy" "adaptive_policies" {
   ]
 
   # last_entry_rule = "allow"
+  depends_on = [meraki_organization_adaptive_policy_group.acls]
+
 }
 
 //TODO @mcparaf: Missing Organization Adaptive Policy
