@@ -209,7 +209,7 @@ locals {
           acl_name    = acl.name
           description = acl.description
           rules       = acl.rules
-          ip_version  = acl.ipVersion
+          ip_version  = acl.ip_version
         } if try(organization.adaptive_policy_acls, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
