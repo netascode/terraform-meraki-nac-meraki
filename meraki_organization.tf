@@ -118,7 +118,6 @@ resource "meraki_organization_snmp" "snmp" {
 }
 
 # Apply Organization Admins
-//TODO @mcparaf: The logic of this Module is not correct, Networks is nested under Tags in the Data Model.
 locals {
   admins = flatten([
     for domain in try(local.meraki.domains, []) : [
@@ -130,12 +129,16 @@ locals {
           email                 = try(admin.email, local.defaults.meraki.organizations.admins.email, null)
           authentication_method = try(admin.authentication_method, local.defaults.meraki.organizations.admins.authentication_method, null)
           org_access            = try(admin.org_access, local.defaults.meraki.organizations.admins.org_access, null)
+
+          # networks now uses id directly from the YAML schema
           networks = [for network in try(admin.networks, []) : {
-            id     = meraki_network.network["${domain.name}/${org.name}/${network.name}"].id
+            id     = try(network.id, local.defaults.meraki.organizations.admins.networks.id, null)
             access = try(network.access, local.defaults.meraki.organizations.admins.networks.access, null)
           }]
+
+          # tags now use tag instead of name
           tags = [for tag in try(admin.tags, []) : {
-            tag    = tag.name
+            tag    = try(tag.tag, local.defaults.meraki.organizations.admins.tags.tag, null)
             access = try(tag.access, local.defaults.meraki.organizations.admins.tags.access, null)
           }]
         }
@@ -143,6 +146,7 @@ locals {
     ]
   ])
 }
+
 resource "meraki_organization_admin" "organization_admin" {
   for_each              = { for admin in local.admins : admin.key => admin }
   organization_id       = each.value.organization_id
@@ -153,7 +157,6 @@ resource "meraki_organization_admin" "organization_admin" {
   networks              = each.value.networks
   tags                  = each.value.tags
 }
-
 # Apply Organization Inventory Claim
 locals {
   inventory_claim = flatten([
