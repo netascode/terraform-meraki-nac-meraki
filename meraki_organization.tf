@@ -280,7 +280,7 @@ resource "meraki_organization_adaptive_policy" "adaptive_policies" {
   ]
 
   # last_entry_rule = "allow"
-  depends_on = [meraki_organization_adaptive_policy_group.acls]
+  depends_on = [meraki_organization_adaptive_policy_acl.acls]
 
 }
 
