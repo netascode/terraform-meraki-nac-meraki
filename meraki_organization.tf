@@ -131,7 +131,7 @@ locals {
           org_access            = try(admin.org_access, local.defaults.meraki.organizations.admins.org_access, null)
 
           networks = [for network in try(admin.networks, []) : {
-            id     = try(network.id, local.defaults.meraki.organizations.admins.networks.id, null)
+            id     = try(data.meraki_network.networks[network.id].id, local.defaults.meraki.organizations.admins.networks.id, null)
             access = try(network.access, local.defaults.meraki.organizations.admins.networks.access, null)
           }]
 
@@ -154,7 +154,6 @@ resource "meraki_organization_admin" "organization_admin" {
   org_access            = each.value.org_access
   networks              = each.value.networks
   tags                  = each.value.tags
-  depends_on            = [meraki_network.network]
 }
 # Apply Organization Inventory Claim
 locals {
