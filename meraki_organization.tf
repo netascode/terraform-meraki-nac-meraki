@@ -363,4 +363,3 @@ resource "meraki_organization_policy_object_group" "policy_object_group" {
 
 //TODO Organization Appliance VPN Settings 
 //TODO Organization Early Opt-in - Awaiting Provider Support
-//TODO Organization Policy Objects
