@@ -37,6 +37,7 @@ resource "meraki_network" "network" {
   product_types   = each.value.product_types
   tags            = each.value.tags
   time_zone       = each.value.time_zone
+  depends_on      = [meraki_organization_inventory_claim.organization_claim]
 }
 
 # Apply Organization Login Security Settings
@@ -152,6 +153,7 @@ resource "meraki_organization_admin" "organization_admin" {
   networks              = each.value.networks
   tags                  = each.value.tags
 }
+
 # Apply Organization Inventory Claim
 locals {
   inventory_claim = flatten([

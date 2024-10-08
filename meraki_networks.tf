@@ -6,8 +6,7 @@ locals {
         for network in try(organization.networks, []) : [
           for group_policy in try(network.group_policies, []) : {
             network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
-
-            data = try(group_policy, null)
+            data       = try(group_policy, null)
           } if try(network.group_policies, null) != null
         ] if try(organization.networks, null) != null
       ] if try(domain.organizations, null) != null
@@ -71,8 +70,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
-
-          data = try(network.settings, null)
+          data       = try(network.settings, null)
         } if try(organization.networks, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
@@ -80,9 +78,8 @@ locals {
 }
 
 resource "meraki_network_settings" "net_settings" {
-  for_each   = { for i, v in local.networks_settings : i => v }
-  network_id = each.value.network_id
-
+  for_each                                  = { for i, v in local.networks_settings : i => v }
+  network_id                                = each.value.network_id
   local_status_page_enabled                 = try(each.value.data.local_status_page_enabled, local.defaults.meraki.networks.settings.local_status_page_enabled, null)
   remote_status_page_enabled                = try(each.value.data.remote_status_page_enabled, local.defaults.meraki.networks.settings.remote_status_page_enabled, null)
   local_status_page_authentication_enabled  = try(each.value.data.local_status_page.authentication.enabled, local.defaults.meraki.networks.settings.local_status_page.authentication.enabled, null)
