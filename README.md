@@ -58,6 +58,7 @@ module "meraki" {
 |------|-------------|
 | <a name="output_default_values"></a> [default\_values](#output\_default\_values) | All default values. |
 | <a name="output_model"></a> [model](#output\_model) | Full model. |
+| <a name="output_policy_object_ids"></a> [policy\_object\_ids](#output\_policy\_object\_ids) | Output the policy object IDs |
 ## Resources
 
 | Name | Type |

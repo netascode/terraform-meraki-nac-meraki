@@ -285,27 +285,26 @@ resource "meraki_organization_adaptive_policy" "organizations_adaptive_policy_po
     meraki_organization_adaptive_policy_acl.organizations_adaptive_policy_acl
   ]
 }
-# Apply Organization Policy Object
 locals {
   policy_objects = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for obj in try(organization.policy_objects, []) : {
-          org_id    = data.meraki_organization.organization[organization.name].id
-          name      = obj.name
-          category  = obj.category
-          type      = obj.type
-          cidr      = obj.cidr
-          fqdn      = try(obj.fqdn, null)
-          mask      = try(obj.mask, null)
-          ip        = try(obj.ip, null)
-          group_ids = try(obj.group_ids, [])
+          org_id   = data.meraki_organization.organization[organization.name].id
+          name     = obj.name
+          category = obj.category
+          type     = obj.type
+          cidr     = obj.cidr
+          fqdn     = try(obj.fqdn, null)
+          mask     = try(obj.mask, null)
+          ip       = try(obj.ip, null)
         } if try(organization.policy_objects, null) != null
       ]
     ]
   ])
 }
 
+# Create Policy Objects
 resource "meraki_organization_policy_object" "policy_object" {
   for_each = { for obj in local.policy_objects : obj.name => obj }
 
@@ -320,29 +319,46 @@ resource "meraki_organization_policy_object" "policy_object" {
   mask = try(each.value.mask, null)
   ip   = try(each.value.ip, null)
 }
-# Apply Organization Policy Object Group
+
+# Output the policy object IDs
+output "policy_object_ids" {
+  value = {
+    for obj in meraki_organization_policy_object.policy_object : obj.name => obj.id
+  }
+}
 locals {
   policy_object_groups = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for group in try(organization.policy_objects_groups, []) : {
-          org_id     = data.meraki_organization.organization[organization.name].id
-          name       = group.name
-          category   = group.category
-          object_ids = try(group.object_ids, [])
+          org_id       = data.meraki_organization.organization[organization.name].id
+          name         = group.name
+          category     = group.category
+          object_names = try(group.object_ids, []) # This refers to the names from YAML, which will be mapped to IDs
         } if try(organization.policy_objects_groups, null) != null
       ]
     ]
   ])
+
+  # Map object names to their IDs
+  policy_object_id_map = {
+    for obj in meraki_organization_policy_object.policy_object : obj.name => obj.id
+  }
 }
 
+# Create Policy Object Groups
 resource "meraki_organization_policy_object_group" "policy_object_group" {
   for_each = { for group in local.policy_object_groups : group.name => group }
 
   organization_id = each.value.org_id
   category        = each.value.category
   name            = each.value.name
-  object_ids      = each.value.object_ids
+
+  # Use the object names provided in YAML and map them to their corresponding object IDs
+  object_ids = [
+    for obj_name in each.value.object_names : local.policy_object_id_map[obj_name]
+  ]
+  depends_on = [meraki_organization_policy_object.policy_object]
 }
 
 //TODO Organization Appliance VPN Settings 
