@@ -233,7 +233,8 @@ locals {
     ] if try(local.meraki.domains, null) != null
   ])
 }
-resource "meraki_organization_adaptive_policy_group" "group" {
+
+resource "meraki_organization_adaptive_policy_group" "organizations_adaptive_policy_group" {
   for_each = { for g in local.adaptive_policy_groups : g.group_name => g }
 
   organization_id = each.value.org_id
@@ -242,7 +243,7 @@ resource "meraki_organization_adaptive_policy_group" "group" {
   description     = each.value.description
 }
 
-resource "meraki_organization_adaptive_policy_acl" "acls" {
+resource "meraki_organization_adaptive_policy_acl" "organizations_adaptive_policy_acl" {
   for_each = { for a in local.adaptive_policy_acls : a.acl_name => a }
 
   organization_id = each.value.org_id
@@ -257,37 +258,34 @@ resource "meraki_organization_adaptive_policy_acl" "acls" {
       dst_port = rule.dst_port
     }
   ]
-  depends_on = [meraki_organization_adaptive_policy_group.group]
-
+  depends_on = [meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group]
 }
 
-resource "meraki_organization_adaptive_policy" "adaptive_policies" {
+resource "meraki_organization_adaptive_policy" "organizations_adaptive_policy_policy" {
   for_each = { for p in local.adaptive_policies : p.policy_name => p }
 
   organization_id        = each.value.org_id
-  source_group_id        = meraki_organization_adaptive_policy_group.group[each.value.source_group_name].id
+  source_group_id        = meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[each.value.source_group_name].id
   source_group_name      = each.value.source_group_name
   source_group_sgt       = each.value.source_group_sgt
-  destination_group_id   = meraki_organization_adaptive_policy_group.group[each.value.destination_group_name].id
+  destination_group_id   = meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[each.value.destination_group_name].id
   destination_group_name = each.value.destination_group_name
   destination_group_sgt  = each.value.destination_group_sgt
 
   acls = [
     for acl in each.value.acls : {
-      id   = meraki_organization_adaptive_policy_acl.acls[acl.name].id
+      id   = meraki_organization_adaptive_policy_acl.organizations_adaptive_policy_acl[acl.name].id
       name = acl.name
     }
   ]
 
   # last_entry_rule = "allow"
   depends_on = [
-    meraki_organization_adaptive_policy_group.group,
-    meraki_organization_adaptive_policy_acl.acls
+    meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group,
+    meraki_organization_adaptive_policy_acl.organizations_adaptive_policy_acl
   ]
-
 }
 
-//TODO @mcparaf: Missing Organization Adaptive Policy
 //TODO @mcparaf: Missing Organization Appliance VPN Settings
 //TODO @mcparaf: Missing Organization Early Opt-in
 //TODO @mcparaf: Missing Organization Policy Objects
