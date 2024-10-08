@@ -3,8 +3,8 @@ terraform {
 
   required_providers {
     meraki = {
-        source  = "CiscoDevNet/meraki"
-        version = "0.1.2"
+      source  = "CiscoDevNet/meraki"
+      version = "0.1.2"
     }
 
     utils = {
