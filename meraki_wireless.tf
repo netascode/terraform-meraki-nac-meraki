@@ -245,14 +245,16 @@ resource "meraki_wireless_ssid" "net_wireless_ssids" {
   named_vlans_radius_guest_vlan_name                                          = try(each.value.data.named_vlans.radius.guest_vlan.name, local.defaults.meraki.networks.networks_wireless_ssids.named_vlans.radius.guest_vlan.name, null)
 }
 locals {
-  networks_wireless_ssid_eap_override = flatten([
+  networks_networks_wireless_ssid_eap_override = flatten([
 
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for wireless_ssid in try(network.wireless_ssids, []) : {
-            network_id  = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
-            ssid_number = meraki_wireless_ssid.net_wireless_ssids["${domain.name}/${organization.name}/${network.name}/${wireless_ssid.name}"].number
+            network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+
+            # Use the correct key structure that matches the SSID creation logic
+            ssid_number = meraki_wireless_ssid.net_wireless_ssids[format("%s/%s", network_id, wireless_ssid.name)].number
 
             eap_override = try(wireless_ssid.eap_override, null)
           } if try(wireless_ssid.eap_override, null) != null
@@ -262,10 +264,10 @@ locals {
   ])
 }
 resource "meraki_wireless_ssid_eap_override" "net_wireless_ssid_eap_override" {
-  for_each = { for i, v in local.networks_wireless_ssid_eap_override : i => v }
+  for_each = { for i, v in local.networks_networks_wireless_ssid_eap_override : i => v }
 
   network_id              = each.value.network_id
-  number                  = each.value.ssid_number
+  number                  = each.value.ssid_number # This references the SSID number of CORP
   max_retries             = try(each.value.eap_override.max_retries, local.defaults.meraki.networks.networks_wireless_ssids.eap_override.max_retries, null)
   timeout                 = try(each.value.eap_override.timeout, local.defaults.meraki.networks.networks_wireless_ssids.eap_override.timeout, null)
   eapol_key_retries       = try(each.value.eap_override.eapol_key.retries, local.defaults.meraki.networks.networks_wireless_ssids.eap_override.eapol_key.retries, null)
