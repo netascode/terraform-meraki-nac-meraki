@@ -3,7 +3,7 @@
 
 # Apply the Meraki Wireless RF Profiles
 locals {
-  networks_networks_wireless_rf_profiles = flatten([
+  networks_wireless_rf_profiles = flatten([
 
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
@@ -20,7 +20,7 @@ locals {
 }
 
 resource "meraki_wireless_rf_profile" "net_wireless_rf_profiles" {
-  for_each   = { for i, v in local.networks_networks_wireless_rf_profiles : i => v }
+  for_each   = { for i, v in local.networks_wireless_rf_profiles : i => v }
   network_id = each.value.network_id
 
   name                                       = try(each.value.data.name, local.defaults.meraki.networks.networks_wireless_rf_profiles.name, null)
@@ -114,7 +114,7 @@ resource "meraki_wireless_rf_profile" "net_wireless_rf_profiles" {
 }
 # Apply the Wireless Settings
 locals {
-  networks_networks_wireless_settings = flatten([
+  networks_wireless_settings = flatten([
 
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
@@ -129,7 +129,7 @@ locals {
 }
 
 resource "meraki_wireless_settings" "net_wireless_settings" {
-  for_each   = { for i, v in local.networks_networks_wireless_settings : i => v }
+  for_each   = { for i, v in local.networks_wireless_settings : i => v }
   network_id = each.value.network_id
 
   meshing_enabled                           = try(each.value.data.meshing_enabled, local.defaults.meraki.networks.networks_wireless_settings.meshing_enabled, null)
@@ -143,7 +143,7 @@ resource "meraki_wireless_settings" "net_wireless_settings" {
 }
 # Apply the Wireless SSIDs
 locals {
-  networks_networks_wireless_ssids = flatten([
+  networks_wireless_ssids = flatten([
 
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
@@ -160,7 +160,7 @@ locals {
 }
 
 resource "meraki_wireless_ssid" "net_wireless_ssids" {
-  for_each   = { for i, v in local.networks_networks_wireless_ssids : i => v }
+  for_each   = { for i, v in local.networks_wireless_ssids : i => v }
   network_id = each.value.network_id
   number     = each.key
 
@@ -243,20 +243,37 @@ resource "meraki_wireless_ssid" "net_wireless_ssids" {
   named_vlans_tagging_by_ap_tags                                              = try(each.value.data.named_vlans.tagging.by_ap_tags, local.defaults.meraki.networks.networks_wireless_ssids.named_vlans.tagging.by_ap_tags, null)
   named_vlans_radius_guest_vlan_enabled                                       = try(each.value.data.named_vlans.radius.guest_vlan.enabled, local.defaults.meraki.networks.networks_wireless_ssids.named_vlans.radius.guest_vlan.enabled, null)
   named_vlans_radius_guest_vlan_name                                          = try(each.value.data.named_vlans.radius.guest_vlan.name, local.defaults.meraki.networks.networks_wireless_ssids.named_vlans.radius.guest_vlan.name, null)
-  eap_override {
-    timeout = try(each.value.data.eap_override.timeout, local.defaults.meraki.networks.networks_wireless_ssids.eap_override.timeout, null)
+}
+locals {
+  networks_wireless_ssid_eap_override = flatten([
 
-    identity {
-      retries = try(each.value.data.eap_override.identity.retries, local.defaults.meraki.networks.networks_wireless_ssids.eap_override.identity.retries, null)
-      timeout = try(each.value.data.eap_override.identity.timeout, local.defaults.meraki.networks.networks_wireless_ssids.eap_override.identity.timeout, null)
-    }
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for wireless_ssid in try(network.wireless_ssids, []) : {
+            network_id  = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+            ssid_number = meraki_wireless_ssid.net_wireless_ssids["${domain.name}/${organization.name}/${network.name}/${wireless_ssid.name}"].number
 
-    max_retries = try(each.value.data.eap_override.max_retries, local.defaults.meraki.networks.networks_wireless_ssids.eap_override.max_retries, null)
+            eap_override = try(wireless_ssid.eap_override, null)
+          } if try(wireless_ssid.eap_override, null) != null
+        ] if try(organization.networks, null) != null
+      ] if try(domain.organizations, null) != null
+    ] if try(local.meraki.domains, null) != null
+  ])
+}
+resource "meraki_wireless_ssid_eap_override" "net_wireless_ssid_eap_override" {
+  for_each = { for i, v in local.networks_wireless_ssid_eap_override : i => v }
 
-    eapol_key {
-      retries       = try(each.value.data.eap_override.eapol_key.retries, local.defaults.meraki.networks.networks_wireless_ssids.eap_override.eapol_key.retries, null)
-      timeout_in_ms = try(each.value.data.eap_override.eapol_key.timeout_in_ms, local.defaults.meraki.networks.networks_wireless_ssids.eap_override.eapol_key.timeout_in_ms, null)
-    }
-  }
+  network_id              = each.value.network_id
+  number                  = each.value.ssid_number
+  max_retries             = try(each.value.eap_override.max_retries, local.defaults.meraki.networks.networks_wireless_ssids.eap_override.max_retries, null)
+  timeout                 = try(each.value.eap_override.timeout, local.defaults.meraki.networks.networks_wireless_ssids.eap_override.timeout, null)
+  eapol_key_retries       = try(each.value.eap_override.eapol_key.retries, local.defaults.meraki.networks.networks_wireless_ssids.eap_override.eapol_key.retries, null)
+  eapol_key_timeout_in_ms = try(each.value.eap_override.eapol_key.timeout_in_ms, local.defaults.meraki.networks.networks_wireless_ssids.eap_override.eapol_key.timeout_in_ms, null)
+  identity_retries        = try(each.value.eap_override.identity.retries, local.defaults.meraki.networks.networks_wireless_ssids.eap_override.identity.retries, null)
+  identity_timeout        = try(each.value.eap_override.identity.timeout, local.defaults.meraki.networks.networks_wireless_ssids.eap_override.identity.timeout, null)
 
+  depends_on = [
+    meraki_wireless_ssid.net_wireless_ssids
+  ]
 }
