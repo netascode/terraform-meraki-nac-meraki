@@ -217,6 +217,23 @@ resource "meraki_organization_inventory_claim" "organization_claim" {
   orders  = each.value.orders
   serials = each.value.serials
 }
+# Apply Organization Adaptive Policy Settings
+locals {
+  adaptive_policy_settings = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : {
+        org_id           = data.meraki_organization.organization[organization.name].id
+        enabled_networks = try(organization.adaptive_policy_settings.enabled_networks, [])
+      } if try(organization.adaptive_policy_settings, null) != null
+    ] if try(domain.organizations, null) != null
+  ])
+}
+resource "meraki_organization_adaptive_policy_settings" "organizations_adaptive_policy_settings" {
+  for_each = { for s in local.adaptive_policy_settings : s.org_id => s }
+
+  organization_id  = each.value.org_id
+  enabled_networks = each.value.enabled_networks
+}
 # Apply Organization Adaptive Policy
 locals {
   adaptive_policy_groups = flatten([

@@ -1,6 +1,7 @@
 
 //TODO: @jon-humphries need to ensure that this data model is correct as its currently not validating
 
+# Apply the Meraki Wireless RF Profiles
 locals {
   networks_networks_wireless_rf_profiles = flatten([
 
@@ -111,6 +112,7 @@ resource "meraki_wireless_rf_profile" "net_wireless_rf_profiles" {
   flex_radios_by_model                       = try(each.value.data.flex_radios.by_model, local.defaults.meraki.networks.networks_wireless_rf_profiles.flex_radios.by_model, null)
 
 }
+# Apply the Wireless Settings
 locals {
   networks_networks_wireless_settings = flatten([
 
@@ -139,7 +141,7 @@ resource "meraki_wireless_settings" "net_wireless_settings" {
   named_vlans_pool_dhcp_monitoring_duration = try(each.value.data.named_vlans.pool_dhcp_monitoring.duration, local.defaults.meraki.networks.networks_wireless_settings.named_vlans.pool_dhcp_monitoring.duration, null)
 
 }
-
+# Apply the Wireless SSIDs
 locals {
   networks_networks_wireless_ssids = flatten([
 
