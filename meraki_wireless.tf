@@ -243,5 +243,20 @@ resource "meraki_wireless_ssid" "net_wireless_ssids" {
   named_vlans_tagging_by_ap_tags                                              = try(each.value.data.named_vlans.tagging.by_ap_tags, local.defaults.meraki.networks.networks_wireless_ssids.named_vlans.tagging.by_ap_tags, null)
   named_vlans_radius_guest_vlan_enabled                                       = try(each.value.data.named_vlans.radius.guest_vlan.enabled, local.defaults.meraki.networks.networks_wireless_ssids.named_vlans.radius.guest_vlan.enabled, null)
   named_vlans_radius_guest_vlan_name                                          = try(each.value.data.named_vlans.radius.guest_vlan.name, local.defaults.meraki.networks.networks_wireless_ssids.named_vlans.radius.guest_vlan.name, null)
+  eap_override {
+    timeout = try(each.value.data.eap_override.timeout, local.defaults.meraki.networks.networks_wireless_ssids.eap_override.timeout, null)
+
+    identity {
+      retries = try(each.value.data.eap_override.identity.retries, local.defaults.meraki.networks.networks_wireless_ssids.eap_override.identity.retries, null)
+      timeout = try(each.value.data.eap_override.identity.timeout, local.defaults.meraki.networks.networks_wireless_ssids.eap_override.identity.timeout, null)
+    }
+
+    max_retries = try(each.value.data.eap_override.max_retries, local.defaults.meraki.networks.networks_wireless_ssids.eap_override.max_retries, null)
+
+    eapol_key {
+      retries       = try(each.value.data.eap_override.eapol_key.retries, local.defaults.meraki.networks.networks_wireless_ssids.eap_override.eapol_key.retries, null)
+      timeout_in_ms = try(each.value.data.eap_override.eapol_key.timeout_in_ms, local.defaults.meraki.networks.networks_wireless_ssids.eap_override.eapol_key.timeout_in_ms, null)
+    }
+  }
 
 }
