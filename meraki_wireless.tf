@@ -245,19 +245,15 @@ resource "meraki_wireless_ssid" "net_wireless_ssids" {
   named_vlans_radius_guest_vlan_name                                          = try(each.value.data.named_vlans.radius.guest_vlan.name, local.defaults.meraki.networks.networks_wireless_ssids.named_vlans.radius.guest_vlan.name, null)
 }
 locals {
-  ssid_name_to_number_map = {
-    for ssid in meraki_wireless_ssid.net_wireless_ssids : ssid.name => ssid.number
-  }
-}
-locals {
   networks_wireless_ssid_eap_overrides = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
-          for wireless_ssid in try(network.wireless_ssids, []) : {
+          for i, wireless_ssid in try(network.wireless_ssids, []) : {
             network_id   = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
             ssid_name    = wireless_ssid.name
             eap_override = try(wireless_ssid.eap_override, null)
+            number       = i
           } if try(wireless_ssid.eap_override, null) != null
         ] if try(organization.networks, null) != null
       ] if try(domain.organizations, null) != null
@@ -271,7 +267,7 @@ resource "meraki_wireless_ssid_eap_override" "net_wireless_ssid_eap_override" {
   }
 
   network_id              = each.value.network_id
-  number                  = local.ssid_name_to_number_map[each.value.ssid_name] # Map the SSID name to its number
+  number                  = each.value.number
   max_retries             = try(each.value.eap_override.max_retries, 5)
   timeout                 = try(each.value.eap_override.timeout, 5)
   eapol_key_retries       = try(each.value.eap_override.eapol_key.retries, 3)
@@ -280,6 +276,6 @@ resource "meraki_wireless_ssid_eap_override" "net_wireless_ssid_eap_override" {
   identity_timeout        = try(each.value.eap_override.identity.timeout, 10)
 
   depends_on = [
-    meraki_wireless_ssid.net_wireless_ssids # Ensure that SSIDs are created before applying overrides
+    meraki_wireless_ssid.net_wireless_ssids
   ]
 }
