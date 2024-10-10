@@ -1,4 +1,3 @@
-# Extract organizations from the YAML structure
 locals {
   organizations = flatten([
     for domain in try(local.meraki.domains, []) : [
