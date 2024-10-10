@@ -6,8 +6,7 @@ locals {
         for network in try(organization.networks, []) : [
           for group_policy in try(network.group_policies, []) : {
             network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
-
-            data = try(group_policy, null)
+            data       = try(group_policy, null)
           } if try(network.group_policies, null) != null
         ] if try(organization.networks, null) != null
       ] if try(domain.organizations, null) != null
@@ -71,8 +70,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
-
-          data = try(network.settings, null)
+          data       = try(network.settings, null)
         } if try(organization.networks, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
@@ -80,9 +78,8 @@ locals {
 }
 
 resource "meraki_network_settings" "net_settings" {
-  for_each   = { for i, v in local.networks_settings : i => v }
-  network_id = each.value.network_id
-
+  for_each                                  = { for i, v in local.networks_settings : i => v }
+  network_id                                = each.value.network_id
   local_status_page_enabled                 = try(each.value.data.local_status_page_enabled, local.defaults.meraki.networks.settings.local_status_page_enabled, null)
   remote_status_page_enabled                = try(each.value.data.remote_status_page_enabled, local.defaults.meraki.networks.settings.remote_status_page_enabled, null)
   local_status_page_authentication_enabled  = try(each.value.data.local_status_page.authentication.enabled, local.defaults.meraki.networks.settings.local_status_page.authentication.enabled, null)
@@ -167,8 +164,6 @@ resource "meraki_network_vlan_profile" "net_vlan_profiles" {
   vlan_groups = try(each.value.data.vlan_groups, local.defaults.meraki.networks.vlan_profiles.vlan_groups, [])
 
 }
-
-//TODO: @mcparaf discuss with @jon-humphries how to handle claim for multiple device types.
 locals {
   networks_devices_claim = flatten([
 
@@ -192,7 +187,45 @@ resource "meraki_network_device_claim" "net_device_claim" {
 
 }
 
+locals {
+  networks_floor_plans = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for floor_plan in try(network.floor_plans, []) : {
+            network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+            data = {
+              name                    = floor_plan.name
+              bottom_left_corner_lat  = floor_plan.bottom_left_corner.lat
+              bottom_left_corner_lng  = floor_plan.bottom_left_corner.lng
+              bottom_right_corner_lat = floor_plan.bottom_right_corner.lat
+              bottom_right_corner_lng = floor_plan.bottom_right_corner.lng
+              top_left_corner_lat     = floor_plan.top_left_corner.lat
+              top_left_corner_lng     = floor_plan.top_left_corner.lng
+              top_right_corner_lat    = floor_plan.top_right_corner.lat
+              top_right_corner_lng    = floor_plan.top_right_corner.lng
+              image_contents          = floor_plan.image_contents
+            }
+          } if try(network.floor_plans, null) != null
+        ] if try(organization.networks, null) != null
+      ] if try(domain.organizations, null) != null
+    ] if try(local.meraki.domains, null) != null
+  ])
+}
+resource "meraki_network_floor_plan" "net_floor_plans" {
+  for_each   = { for i, v in local.networks_floor_plans : i => v }
+  network_id = each.value.network_id
 
-//TODO: Add the following resources @mcparaf
-// networks_floor_plans
-// 
+  name                    = each.value.data.name
+  bottom_left_corner_lat  = each.value.data.bottom_left_corner_lat
+  bottom_left_corner_lng  = each.value.data.bottom_left_corner_lng
+  bottom_right_corner_lat = each.value.data.bottom_right_corner_lat
+  bottom_right_corner_lng = each.value.data.bottom_right_corner_lng
+  top_left_corner_lat     = each.value.data.top_left_corner_lat
+  top_left_corner_lng     = each.value.data.top_left_corner_lng
+  top_right_corner_lat    = each.value.data.top_right_corner_lat
+  top_right_corner_lng    = each.value.data.top_right_corner_lng
+  image_contents          = each.value.data.image_contents
+  depends_on              = [meraki_network.network]
+}
+

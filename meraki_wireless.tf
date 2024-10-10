@@ -1,8 +1,9 @@
 
 //TODO: @jon-humphries need to ensure that this data model is correct as its currently not validating
 
+# Apply the Meraki Wireless RF Profiles
 locals {
-  networks_networks_wireless_rf_profiles = flatten([
+  networks_wireless_rf_profiles = flatten([
 
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
@@ -19,7 +20,7 @@ locals {
 }
 
 resource "meraki_wireless_rf_profile" "net_wireless_rf_profiles" {
-  for_each   = { for i, v in local.networks_networks_wireless_rf_profiles : i => v }
+  for_each   = { for i, v in local.networks_wireless_rf_profiles : i => v }
   network_id = each.value.network_id
 
   name                                       = try(each.value.data.name, local.defaults.meraki.networks.networks_wireless_rf_profiles.name, null)
@@ -111,8 +112,9 @@ resource "meraki_wireless_rf_profile" "net_wireless_rf_profiles" {
   flex_radios_by_model                       = try(each.value.data.flex_radios.by_model, local.defaults.meraki.networks.networks_wireless_rf_profiles.flex_radios.by_model, null)
 
 }
+# Apply the Wireless Settings
 locals {
-  networks_networks_wireless_settings = flatten([
+  networks_wireless_settings = flatten([
 
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
@@ -127,7 +129,7 @@ locals {
 }
 
 resource "meraki_wireless_settings" "net_wireless_settings" {
-  for_each   = { for i, v in local.networks_networks_wireless_settings : i => v }
+  for_each   = { for i, v in local.networks_wireless_settings : i => v }
   network_id = each.value.network_id
 
   meshing_enabled                           = try(each.value.data.meshing_enabled, local.defaults.meraki.networks.networks_wireless_settings.meshing_enabled, null)
@@ -139,9 +141,9 @@ resource "meraki_wireless_settings" "net_wireless_settings" {
   named_vlans_pool_dhcp_monitoring_duration = try(each.value.data.named_vlans.pool_dhcp_monitoring.duration, local.defaults.meraki.networks.networks_wireless_settings.named_vlans.pool_dhcp_monitoring.duration, null)
 
 }
-
+# Apply the Wireless SSIDs
 locals {
-  networks_networks_wireless_ssids = flatten([
+  networks_wireless_ssids = flatten([
 
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
@@ -158,7 +160,7 @@ locals {
 }
 
 resource "meraki_wireless_ssid" "net_wireless_ssids" {
-  for_each   = { for i, v in local.networks_networks_wireless_ssids : i => v }
+  for_each   = { for i, v in local.networks_wireless_ssids : i => v }
   network_id = each.value.network_id
   number     = each.key
 
@@ -241,5 +243,34 @@ resource "meraki_wireless_ssid" "net_wireless_ssids" {
   named_vlans_tagging_by_ap_tags                                              = try(each.value.data.named_vlans.tagging.by_ap_tags, local.defaults.meraki.networks.networks_wireless_ssids.named_vlans.tagging.by_ap_tags, null)
   named_vlans_radius_guest_vlan_enabled                                       = try(each.value.data.named_vlans.radius.guest_vlan.enabled, local.defaults.meraki.networks.networks_wireless_ssids.named_vlans.radius.guest_vlan.enabled, null)
   named_vlans_radius_guest_vlan_name                                          = try(each.value.data.named_vlans.radius.guest_vlan.name, local.defaults.meraki.networks.networks_wireless_ssids.named_vlans.radius.guest_vlan.name, null)
-
+}
+locals {
+  networks_wireless_ssid_eap_overrides = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for i, wireless_ssid in try(network.wireless_ssids, []) : {
+            network_id   = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+            ssid_name    = wireless_ssid.name
+            eap_override = try(wireless_ssid.eap_override, null)
+            number       = i
+          } if try(wireless_ssid.eap_override, null) != null
+        ] if try(organization.networks, null) != null
+      ] if try(domain.organizations, null) != null
+    ] if try(local.meraki.domains, null) != null
+  ])
+}
+resource "meraki_wireless_ssid_eap_override" "net_wireless_ssid_eap_override" {
+  for_each                = { for i, v in local.networks_wireless_ssid_eap_overrides : i => v }
+  network_id              = each.value.network_id
+  number                  = each.value.number
+  max_retries             = try(each.value.eap_override.max_retries, 5)
+  timeout                 = try(each.value.eap_override.timeout, 5)
+  eapol_key_retries       = try(each.value.eap_override.eapol_key.retries, 3)
+  eapol_key_timeout_in_ms = try(each.value.eap_override.eapol_key.timeout_in_ms, 10000)
+  identity_retries        = try(each.value.eap_override.identity.retries, 3)
+  identity_timeout        = try(each.value.eap_override.identity.timeout, 10)
+  depends_on = [
+    meraki_wireless_ssid.net_wireless_ssids
+  ]
 }

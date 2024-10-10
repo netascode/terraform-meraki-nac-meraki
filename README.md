@@ -65,13 +65,22 @@ module "meraki" {
 | [local_sensitive_file.defaults](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
 | [meraki_network.network](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/network) | resource |
 | [meraki_network_device_claim.net_device_claim](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/network_device_claim) | resource |
+| [meraki_network_floor_plan.net_floor_plans](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/network_floor_plan) | resource |
 | [meraki_network_group_policy.net_group_policies](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/network_group_policy) | resource |
 | [meraki_network_settings.net_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/network_settings) | resource |
 | [meraki_network_snmp.net_snmp](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/network_snmp) | resource |
 | [meraki_network_syslog_servers.net_syslog_servers](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/network_syslog_servers) | resource |
 | [meraki_network_vlan_profile.net_vlan_profiles](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/network_vlan_profile) | resource |
+| [meraki_organization.organization](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/organization) | resource |
+| [meraki_organization_adaptive_policy.organizations_adaptive_policy_policy](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/organization_adaptive_policy) | resource |
+| [meraki_organization_adaptive_policy_acl.organizations_adaptive_policy_acl](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/organization_adaptive_policy_acl) | resource |
+| [meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/organization_adaptive_policy_group) | resource |
+| [meraki_organization_adaptive_policy_settings.organizations_adaptive_policy_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/organization_adaptive_policy_settings) | resource |
 | [meraki_organization_admin.organization_admin](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/organization_admin) | resource |
+| [meraki_organization_inventory_claim.organization_claim](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/organization_inventory_claim) | resource |
 | [meraki_organization_login_security.login_security](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/organization_login_security) | resource |
+| [meraki_organization_policy_object.policy_object](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/organization_policy_object) | resource |
+| [meraki_organization_policy_object_group.policy_object_group](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/organization_policy_object_group) | resource |
 | [meraki_organization_snmp.snmp](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/organization_snmp) | resource |
 | [meraki_switch_access_control_lists.net_switch_access_control_lists](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_access_control_lists) | resource |
 | [meraki_switch_access_policy.net_switch_access_policy](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_access_policy) | resource |
@@ -98,6 +107,7 @@ module "meraki" {
 | [meraki_wireless_rf_profile.net_wireless_rf_profiles](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/wireless_rf_profile) | resource |
 | [meraki_wireless_settings.net_wireless_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/wireless_settings) | resource |
 | [meraki_wireless_ssid.net_wireless_ssids](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/wireless_ssid) | resource |
+| [meraki_wireless_ssid_eap_override.net_wireless_ssid_eap_override](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/wireless_ssid_eap_override) | resource |
 | [meraki_organization.organization](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/data-sources/organization) | data source |
 | [utils_yaml_merge.defaults](https://registry.terraform.io/providers/netascode/utils/latest/docs/data-sources/yaml_merge) | data source |
 | [utils_yaml_merge.model](https://registry.terraform.io/providers/netascode/utils/latest/docs/data-sources/yaml_merge) | data source |
