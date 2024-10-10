@@ -371,12 +371,6 @@ resource "meraki_organization_policy_object" "policy_object" {
   ip   = try(each.value.ip, null)
 }
 
-# Output the policy object IDs
-output "policy_object_ids" {
-  value = {
-    for obj in meraki_organization_policy_object.policy_object : obj.name => obj.id
-  }
-}
 locals {
   policy_object_groups = flatten([
     for domain in try(local.meraki.domains, []) : [
