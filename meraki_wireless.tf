@@ -261,11 +261,7 @@ locals {
   ])
 }
 resource "meraki_wireless_ssid_eap_override" "net_wireless_ssid_eap_override" {
-  for_each = {
-    for eap_override_data in local.networks_wireless_ssid_eap_overrides :
-    format("%s-%s", eap_override_data.network_id, eap_override_data.ssid_name) => eap_override_data
-  }
-
+  for_each                = { for i, v in local.networks_wireless_ssid_eap_overrides : i => v }
   network_id              = each.value.network_id
   number                  = each.value.number
   max_retries             = try(each.value.eap_override.max_retries, 5)
@@ -274,7 +270,6 @@ resource "meraki_wireless_ssid_eap_override" "net_wireless_ssid_eap_override" {
   eapol_key_timeout_in_ms = try(each.value.eap_override.eapol_key.timeout_in_ms, 10000)
   identity_retries        = try(each.value.eap_override.identity.retries, 3)
   identity_timeout        = try(each.value.eap_override.identity.timeout, 10)
-
   depends_on = [
     meraki_wireless_ssid.net_wireless_ssids
   ]
