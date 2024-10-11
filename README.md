@@ -113,6 +113,12 @@ module "meraki" {
 | [meraki_wireless_ssid.net_wireless_ssids](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/wireless_ssid) | resource |
 | [meraki_wireless_ssid_device_type_group_policies.net_wireless_ssids_device_type_group_policies](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/wireless_ssid_device_type_group_policies) | resource |
 | [meraki_wireless_ssid_eap_override.net_wireless_ssid_eap_override](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/wireless_ssid_eap_override) | resource |
+| [meraki_wireless_ssid_hotspot_20.net_wireless_ssids_hotspot20](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/wireless_ssid_hotspot_20) | resource |
+| [meraki_wireless_ssid_identity_psk.net_wireless_ssids_identity_psks](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/wireless_ssid_identity_psk) | resource |
+| [meraki_wireless_ssid_l3_firewall_rules.net_wireless_ssids_l3_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/wireless_ssid_l3_firewall_rules) | resource |
+| [meraki_wireless_ssid_schedules.net_wireless_ssids_schedules](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/wireless_ssid_schedules) | resource |
+| [meraki_wireless_ssid_splash_settings.net_wireless_ssids_splash_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/wireless_ssid_splash_settings) | resource |
+| [meraki_wireless_ssid_traffic_shaping_rules.net_wireless_ssids_traffic_shaping_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/wireless_ssid_traffic_shaping_rules) | resource |
 | [meraki_organization.organization](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/data-sources/organization) | data source |
 | [utils_yaml_merge.defaults](https://registry.terraform.io/providers/netascode/utils/latest/docs/data-sources/yaml_merge) | data source |
 | [utils_yaml_merge.model](https://registry.terraform.io/providers/netascode/utils/latest/docs/data-sources/yaml_merge) | data source |

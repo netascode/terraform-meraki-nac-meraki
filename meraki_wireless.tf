@@ -298,7 +298,7 @@ locals {
             network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
             number     = local.wireless_ssids_map["${domain.name}/${organization.name}/${network.name}/wireless_ssid/${wireless_ssid.name}"]
             data       = try(wireless_ssid.device_type_group_policies, null)
-          } if try(network.wireless_ssids, null) != null
+          } if try(wireless_ssid.device_type_group_policies, null) != null
         ] if try(organization.networks, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
@@ -312,5 +312,212 @@ resource "meraki_wireless_ssid_device_type_group_policies" "net_wireless_ssids_d
 
   enabled              = try(each.value.data.enabled, local.defaults.meraki.networks.networks_wireless_ssids_device_type_group_policies.enabled, null)
   device_type_policies = try(each.value.data.device_type_policies, local.defaults.meraki.networks.networks_wireless_ssids_device_type_group_policies.device_type_policies, null)
+
+}
+
+locals {
+  networks_wireless_ssids_firewall_l3_firewall_rules = flatten([
+
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for wireless_ssid in try(network.wireless_ssids, []) : {
+            network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+            number     = local.wireless_ssids_map["${domain.name}/${organization.name}/${network.name}/wireless_ssid/${wireless_ssid.name}"]
+            data       = try(wireless_ssid.firewall_l3_firewall_rules, null)
+          } if try(wireless_ssid.firewall_l3_firewall_rules, null) != null
+        ] if try(organization.networks, null) != null
+      ] if try(domain.organizations, null) != null
+    ] if try(local.meraki.domains, null) != null
+  ])
+}
+
+resource "meraki_wireless_ssid_l3_firewall_rules" "net_wireless_ssids_l3_firewall_rules" {
+  for_each   = { for i, v in local.networks_wireless_ssids_firewall_l3_firewall_rules : i => v }
+  network_id = each.value.network_id
+  number     = each.value.number
+
+  rules            = try(each.value.data.rules, local.defaults.meraki.networks.networks_wireless_ssids_firewall_l3_firewall_rules.rules, null)
+  allow_lan_access = try(each.value.data.allow_lan_access, local.defaults.meraki.networks.networks_wireless_ssids_firewall_l3_firewall_rules.allow_lan_access, null)
+
+}
+
+
+locals {
+  networks_wireless_ssids_hotspot20 = flatten([
+
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for wireless_ssid in try(network.wireless_ssids, []) : {
+            network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+            number     = local.wireless_ssids_map["${domain.name}/${organization.name}/${network.name}/wireless_ssid/${wireless_ssid.name}"]
+            data       = try(wireless_ssid.hotspot20, null)
+          } if try(wireless_ssid.hotspot20, null) != null
+        ] if try(organization.networks, null) != null
+      ] if try(domain.organizations, null) != null
+    ] if try(local.meraki.domains, null) != null
+  ])
+}
+
+resource "meraki_wireless_ssid_hotspot_20" "net_wireless_ssids_hotspot20" {
+  for_each   = { for i, v in local.networks_wireless_ssids_hotspot20 : i => v }
+  network_id = each.value.network_id
+  number     = each.value.number
+
+  enabled             = try(each.value.data.enabled, local.defaults.meraki.networks.networks_wireless_ssids_hotspot20.enabled, null)
+  operator_name       = try(each.value.data.operator.name, local.defaults.meraki.networks.networks_wireless_ssids_hotspot20.operator.name, null)
+  venue_name          = try(each.value.data.venue.name, local.defaults.meraki.networks.networks_wireless_ssids_hotspot20.venue.name, null)
+  venue_type          = try(each.value.data.venue.type, local.defaults.meraki.networks.networks_wireless_ssids_hotspot20.venue.type, null)
+  network_access_type = try(each.value.data.network_access_type, local.defaults.meraki.networks.networks_wireless_ssids_hotspot20.network_access_type, null)
+  domains             = try(each.value.data.domains, local.defaults.meraki.networks.networks_wireless_ssids_hotspot20.domains, null)
+  roam_consort_ois    = try(each.value.data.roam_consort_ois, local.defaults.meraki.networks.networks_wireless_ssids_hotspot20.roam_consort_ois, null)
+  mcc_mncs            = try(each.value.data.mcc_mncs, local.defaults.meraki.networks.networks_wireless_ssids_hotspot20.mcc_mncs, null)
+  nai_realms          = try(each.value.data.nai_realms, local.defaults.meraki.networks.networks_wireless_ssids_hotspot20.nai_realms, null)
+
+}
+
+locals {
+  networks_wireless_ssids_identity_psks = flatten([
+
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for wireless_ssid in try(network.wireless_ssids, []) : [
+            for identity_psk in try(wireless_ssid.identity_psks, []) : {
+              network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+              number     = local.wireless_ssids_map["${domain.name}/${organization.name}/${network.name}/wireless_ssid/${wireless_ssid.name}"]
+              data       = try(identity_psk, null)
+            } if try(wireless_ssid.identity_psks, null) != null
+          ] if try(network.wireless_ssids, null) != null
+        ] if try(organization.networks, null) != null
+      ] if try(domain.organizations, null) != null
+    ] if try(local.meraki.domains, null) != null
+  ])
+}
+
+resource "meraki_wireless_ssid_identity_psk" "net_wireless_ssids_identity_psks" {
+  for_each   = { for i, v in local.networks_wireless_ssids_identity_psks : i => v }
+  network_id = each.value.network_id
+  number     = each.value.number
+
+  name            = try(each.value.data.name, local.defaults.meraki.networks.networks_wireless_ssids_identity_psks.name, null)
+  passphrase      = try(each.value.data.passphrase, local.defaults.meraki.networks.networks_wireless_ssids_identity_psks.passphrase, null)
+  group_policy_id = try(each.value.data.group_policy_id, local.defaults.meraki.networks.networks_wireless_ssids_identity_psks.group_policy_id, null)
+  expires_at      = try(each.value.data.expires_at, local.defaults.meraki.networks.networks_wireless_ssids_identity_psks.expires_at, null)
+
+}
+
+
+locals {
+  networks_wireless_ssids_schedules = flatten([
+
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for wireless_ssid in try(network.wireless_ssids, []) : {
+            network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+            number     = local.wireless_ssids_map["${domain.name}/${organization.name}/${network.name}/wireless_ssid/${wireless_ssid.name}"]
+            data       = try(wireless_ssid.schedules, null)
+          } if try(wireless_ssid.schedules, null) != null
+        ] if try(organization.networks, null) != null
+      ] if try(domain.organizations, null) != null
+    ] if try(local.meraki.domains, null) != null
+  ])
+}
+
+resource "meraki_wireless_ssid_schedules" "net_wireless_ssids_schedules" {
+  for_each   = { for i, v in local.networks_wireless_ssids_schedules : i => v }
+  network_id = each.value.network_id
+  number     = each.value.number
+
+  enabled           = try(each.value.data.enabled, local.defaults.meraki.networks.networks_wireless_ssids_schedules.enabled, null)
+  ranges            = try(each.value.data.ranges, local.defaults.meraki.networks.networks_wireless_ssids_schedules.ranges, null)
+  ranges_in_seconds = try(each.value.data.ranges_in_seconds, local.defaults.meraki.networks.networks_wireless_ssids_schedules.ranges_in_seconds, null)
+
+}
+
+locals {
+  networks_wireless_ssids_splash_settings = flatten([
+
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for wireless_ssid in try(network.wireless_ssids, []) : {
+            network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+            number     = local.wireless_ssids_map["${domain.name}/${organization.name}/${network.name}/wireless_ssid/${wireless_ssid.name}"]
+            data       = try(wireless_ssid.splash_settings, null)
+          } if try(wireless_ssid.splash_settings, null) != null
+        ] if try(organization.networks, null) != null
+      ] if try(domain.organizations, null) != null
+    ] if try(local.meraki.domains, null) != null
+  ])
+}
+
+resource "meraki_wireless_ssid_splash_settings" "net_wireless_ssids_splash_settings" {
+  for_each   = { for i, v in local.networks_wireless_ssids_splash_settings : i => v }
+  network_id = each.value.network_id
+  number     = each.value.number
+
+  splash_url                                    = try(each.value.data.splash_url, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.splash_url, null)
+  use_splash_url                                = try(each.value.data.use_splash_url, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.use_splash_url, null)
+  splash_timeout                                = try(each.value.data.splash_timeout, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.splash_timeout, null)
+  redirect_url                                  = try(each.value.data.redirect_url, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.redirect_url, null)
+  use_redirect_url                              = try(each.value.data.use_redirect_url, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.use_redirect_url, null)
+  welcome_message                               = try(each.value.data.welcome_message, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.welcome_message, null)
+  theme_id                                      = try(each.value.data.theme_id, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.theme_id, null)
+  splash_logo_md5                               = try(each.value.data.splash_logo.md5, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.splash_logo.md5, null)
+  splash_logo_extension                         = try(each.value.data.splash_logo.extension, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.splash_logo.extension, null)
+  splash_logo_image_format                      = try(each.value.data.splash_logo.image.format, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.splash_logo.image.format, null)
+  splash_logo_image_contents                    = try(each.value.data.splash_logo.image.contents, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.splash_logo.image.contents, null)
+  splash_image_md5                              = try(each.value.data.splash_image.md5, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.splash_image.md5, null)
+  splash_image_extension                        = try(each.value.data.splash_image.extension, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.splash_image.extension, null)
+  splash_image_image_format                     = try(each.value.data.splash_image.image.format, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.splash_image.image.format, null)
+  splash_image_image_contents                   = try(each.value.data.splash_image.image.contents, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.splash_image.image.contents, null)
+  splash_prepaid_front_md5                      = try(each.value.data.splash_prepaid_front.md5, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.splash_prepaid_front.md5, null)
+  splash_prepaid_front_extension                = try(each.value.data.splash_prepaid_front.extension, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.splash_prepaid_front.extension, null)
+  splash_prepaid_front_image_format             = try(each.value.data.splash_prepaid_front.image.format, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.splash_prepaid_front.image.format, null)
+  splash_prepaid_front_image_contents           = try(each.value.data.splash_prepaid_front.image.contents, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.splash_prepaid_front.image.contents, null)
+  block_all_traffic_before_sign_on              = try(each.value.data.block_all_traffic_before_sign_on, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.block_all_traffic_before_sign_on, null)
+  controller_disconnection_behavior             = try(each.value.data.controller_disconnection_behavior, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.controller_disconnection_behavior, null)
+  allow_simultaneous_logins                     = try(each.value.data.allow_simultaneous_logins, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.allow_simultaneous_logins, null)
+  guest_sponsorship_duration_in_minutes         = try(each.value.data.guest_sponsorship.duration_in_minutes, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.guest_sponsorship.duration_in_minutes, null)
+  guest_sponsorship_guest_can_request_timeframe = try(each.value.data.guest_sponsorship.guest_can_request_timeframe, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.guest_sponsorship.guest_can_request_timeframe, null)
+  billing_free_access_enabled                   = try(each.value.data.billing.free_access.enabled, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.billing.free_access.enabled, null)
+  billing_free_access_duration_in_minutes       = try(each.value.data.billing.free_access.duration_in_minutes, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.billing.free_access.duration_in_minutes, null)
+  billing_prepaid_access_fast_login_enabled     = try(each.value.data.billing.prepaid_access_fast_login_enabled, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.billing.prepaid_access_fast_login_enabled, null)
+  billing_reply_to_email_address                = try(each.value.data.billing.reply_to_email_address, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.billing.reply_to_email_address, null)
+  sentry_enrollment_systems_manager_network_id  = try(each.value.data.sentry_enrollment.systems_manager_network.id, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.sentry_enrollment.systems_manager_network.id, null)
+  sentry_enrollment_strength                    = try(each.value.data.sentry_enrollment.strength, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.sentry_enrollment.strength, null)
+  sentry_enrollment_enforced_systems            = try(each.value.data.sentry_enrollment.enforced_systems, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.sentry_enrollment.enforced_systems, null)
+
+}
+
+
+locals {
+  networks_wireless_ssids_traffic_shaping_rules = flatten([
+
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for wireless_ssid in try(network.wireless_ssids, []) : {
+            network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+            number     = local.wireless_ssids_map["${domain.name}/${organization.name}/${network.name}/wireless_ssid/${wireless_ssid.name}"]
+            data       = try(wireless_ssid.traffic_shaping_rules, null)
+          } if try(wireless_ssid.traffic_shaping_rules, null) != null
+        ] if try(organization.networks, null) != null
+      ] if try(domain.organizations, null) != null
+    ] if try(local.meraki.domains, null) != null
+  ])
+}
+
+resource "meraki_wireless_ssid_traffic_shaping_rules" "net_wireless_ssids_traffic_shaping_rules" {
+  for_each   = { for i, v in local.networks_wireless_ssids_traffic_shaping_rules : i => v }
+  network_id = each.value.network_id
+  number     = each.value.number
+
+  traffic_shaping_enabled = try(each.value.data.traffic_shaping_enabled, local.defaults.meraki.networks.networks_wireless_ssids_traffic_shaping_rules.traffic_shaping_enabled, null)
+  default_rules_enabled   = try(each.value.data.default_rules_enabled, local.defaults.meraki.networks.networks_wireless_ssids_traffic_shaping_rules.default_rules_enabled, null)
+  rules                   = try(each.value.data.rules, local.defaults.meraki.networks.networks_wireless_ssids_traffic_shaping_rules.rules, null)
 
 }
