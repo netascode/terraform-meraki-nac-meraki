@@ -28,6 +28,12 @@ data "utils_yaml_merge" "defaults" {
   input = [file("${path.module}/defaults/defaults.yaml"), yamlencode(local.user_defaults)]
 }
 
+resource "local_file" "merged_yaml_output" {
+  count    = var.write_merged_yaml_file != "" ? 1 : 0
+  content  = data.utils_yaml_merge.model.output
+  filename = var.write_merged_yaml_file
+}
+
 resource "local_sensitive_file" "defaults" {
   count    = var.write_default_values_file != "" ? 1 : 0
   content  = data.utils_yaml_merge.defaults.output
