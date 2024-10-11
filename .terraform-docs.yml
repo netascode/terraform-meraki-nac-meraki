@@ -18,7 +18,7 @@ content: |-
   #### `organization.yaml`
 
   ```yaml
-  {{ include "./examples/administrator/organization.yaml" }}
+  {{ include "./examples/administrator/organizations_admins.yaml" }}
   ```
 
   #### `main.tf`

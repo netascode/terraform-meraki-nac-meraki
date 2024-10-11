@@ -1,0 +1,12 @@
+meraki:
+  domains:
+    - name: EMEA
+      administrator:
+        name: Dev CX Provider Admin
+      organizations:
+        - name: Dev
+          admins:
+            - name: Dev CX Provider Admin
+              email: devadmincxprovider@foobar.com
+              authentication_method: Email
+              org_access: full

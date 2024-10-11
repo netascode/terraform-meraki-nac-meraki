@@ -21,10 +21,10 @@ content: |-
 
   Note that this example will create resources. Resources can be destroyed with `terraform destroy`.
 
-  #### `organization.yaml`
+  #### `organizations_admins.yaml`
 
   ```yaml
-  {{ include "./organization.yaml" }}
+  {{ include "./organizations_admins.yaml" }}
   ```
 
   #### `main.tf`

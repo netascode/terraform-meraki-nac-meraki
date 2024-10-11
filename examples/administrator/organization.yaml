@@ -1,8 +1,0 @@
-meraki:
-  organizations:
-    - name: MyOrg1
-      administrators:
-        - name: Admin1
-          email: admin@cisco.com
-          networks:
-            - name: MyNet1

@@ -17,17 +17,21 @@ $ terraform apply
 
 Note that this example will create resources. Resources can be destroyed with `terraform destroy`.
 
-#### `organization.yaml`
+#### `organizations_admins.yaml`
 
 ```yaml
 meraki:
-  organizations:
-    - name: MyOrg1
-      administrators:
-        - name: Admin1
-          email: admin@cisco.com
-          networks:
-            - name: MyNet1
+  domains:
+    - name: EMEA
+      administrator:
+        name: Dev CX Provider Admin
+      organizations:
+        - name: Dev
+          admins:
+            - name: Dev CX Provider Admin
+              email: devadmincxprovider@foobar.com
+              authentication_method: Email
+              org_access: full
 ```
 
 #### `main.tf`
@@ -37,7 +41,7 @@ module "meraki" {
   source  = "netascode/nac-meraki/meraki"
   version = ">= 0.1.0"
 
-  yaml_files = ["organization.yaml"]
+  yaml_files = ["organizations_admins.yaml"]
 }
 ```
 <!-- END_TF_DOCS -->
