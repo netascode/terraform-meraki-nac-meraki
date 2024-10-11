@@ -25,3 +25,9 @@ variable "write_default_values_file" {
 variable "api_key" {
   type = string
 }
+
+variable "write_merged_yaml_file" {
+  type        = string
+  description = "The path where the merged YAML output should be written"
+  default     = ""
+}
