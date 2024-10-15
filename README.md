@@ -69,6 +69,9 @@ module "meraki" {
 |------|------|
 | [local_file.merged_yaml_output](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_sensitive_file.defaults](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
+| [meraki_appliance_uplinks_settings.devices_appliance_uplinks_setting](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/appliance_uplinks_settings) | resource |
+| [meraki_device.device](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/device) | resource |
+| [meraki_device_management_interface.devices_management_interface](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/device_management_interface) | resource |
 | [meraki_network.network](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/network) | resource |
 | [meraki_network_device_claim.net_device_claim](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/network_device_claim) | resource |
 | [meraki_network_floor_plan.net_floor_plans](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/network_floor_plan) | resource |
@@ -96,8 +99,10 @@ module "meraki" {
 | [meraki_switch_dscp_to_cos_mappings.net_switch_dscp_to_cos_mappings](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_dscp_to_cos_mappings) | resource |
 | [meraki_switch_link_aggregation.net_switch_link_aggregation](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_link_aggregation) | resource |
 | [meraki_switch_mtu.net_switch_mtu](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_mtu) | resource |
+| [meraki_switch_port.devices_switch_port](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_port) | resource |
 | [meraki_switch_port_schedule.net_switch_port_schedules](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_port_schedule) | resource |
 | [meraki_switch_qos_rule.net_switch_qos_rule](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_qos_rule) | resource |
+| [meraki_switch_routing_interface.devices_switch_routing_interface](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_routing_interface) | resource |
 | [meraki_switch_routing_multicast.net_switch_routing_multicast](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_routing_multicast) | resource |
 | [meraki_switch_routing_multicast_rendezvous_point.net_switch_routing_multicast_rendezvous_point](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_routing_multicast_rendezvous_point) | resource |
 | [meraki_switch_routing_ospf.net_switch_routing_ospf](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_routing_ospf) | resource |

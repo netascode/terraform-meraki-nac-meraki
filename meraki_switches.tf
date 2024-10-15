@@ -468,10 +468,8 @@ locals {
             switches     = try(p.switches, null)
             stp_priority = try(p.stp_priority, null)
             stacks = length(try(p.stacks, [])) > 0 ? [
-              for s in p.stacks : try(
-                local.switch_stack_map["${domain.name}/${org.name}/${network.name}/switch_stacks/${s}"],
-                null
-              )
+              for s in p.stacks :
+              local.switch_stack_map["${domain.name}/${org.name}/${network.name}/switch_stacks/${s}"]
             ] : null
           }]
         } if try(network.switch_stp, null) != null
