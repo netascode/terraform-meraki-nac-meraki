@@ -103,9 +103,11 @@ module "meraki" {
 | [meraki_switch_port_schedule.net_switch_port_schedules](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_port_schedule) | resource |
 | [meraki_switch_qos_rule.net_switch_qos_rule](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_qos_rule) | resource |
 | [meraki_switch_routing_interface.devices_switch_routing_interface](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_routing_interface) | resource |
+| [meraki_switch_routing_interface_dhcp.devices_switch_routing_interfaces_dhcp](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_routing_interface_dhcp) | resource |
 | [meraki_switch_routing_multicast.net_switch_routing_multicast](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_routing_multicast) | resource |
 | [meraki_switch_routing_multicast_rendezvous_point.net_switch_routing_multicast_rendezvous_point](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_routing_multicast_rendezvous_point) | resource |
 | [meraki_switch_routing_ospf.net_switch_routing_ospf](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_routing_ospf) | resource |
+| [meraki_switch_routing_static_route.devices_switch_routing_static_routes](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_routing_static_route) | resource |
 | [meraki_switch_settings.net_switch_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_settings) | resource |
 | [meraki_switch_stack.net_switch_stacks](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_stack) | resource |
 | [meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_first](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_stack_routing_interface) | resource |

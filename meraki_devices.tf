@@ -215,3 +215,70 @@ resource "meraki_switch_routing_interface" "devices_switch_routing_interface" {
 
 }
 
+locals {
+  devices_switch_routing_interfaces_dhcp = flatten([
+
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for device in try(network.devices, []) : [
+            for switch_routing_interface in try(device.switch_routing_interfaces, []) : {
+              device_serial = meraki_device.device["${domain.name}/${organization.name}/${device.name}"].serial
+              interface_id  = meraki_switch_routing_interface.devices_switch_routing_interface["${domain.name}/${organization.name}/${network.name}/switch_routing_interfaces/${switch_routing_interface.name}"].id
+              data          = try(switch_routing_interface.dhcp, null)
+            } if try(switch_routing_interface.dhcp, null) != null
+          ]
+        ]
+      ]
+    ]
+  ])
+}
+
+resource "meraki_switch_routing_interface_dhcp" "devices_switch_routing_interfaces_dhcp" {
+  for_each     = { for i, v in local.devices_switch_routing_interfaces_dhcp : i => v }
+  interface_id = each.value.interface_id
+  serial       = each.value.device_serial
+
+  dhcp_mode              = try(each.value.data.dhcp_mode, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.dhcp_mode, null)
+  dhcp_relay_server_ips  = try(each.value.data.dhcp_relay_server_ips, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.dhcp_relay_server_ips, null)
+  dhcp_lease_time        = try(each.value.data.dhcp_lease_time, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.dhcp_lease_time, null)
+  dns_nameservers_option = try(each.value.data.dns_nameservers_option, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.dns_nameservers_option, null)
+  dns_custom_nameservers = try(each.value.data.dns_custom_nameservers, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.dns_custom_nameservers, null)
+  boot_options_enabled   = try(each.value.data.boot_options_enabled, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.boot_options_enabled, null)
+  boot_next_server       = try(each.value.data.boot_next_server, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.boot_next_server, null)
+  boot_file_name         = try(each.value.data.boot_file_name, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.boot_file_name, null)
+  dhcp_options           = try(each.value.data.dhcp_options, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.dhcp_options, null)
+  reserved_ip_ranges     = try(each.value.data.reserved_ip_ranges, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.reserved_ip_ranges, null)
+  fixed_ip_assignments   = try(each.value.data.fixed_ip_assignments, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.fixed_ip_assignments, null)
+
+}
+
+locals {
+  devices_switch_routing_static_routes = flatten([
+
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for device in try(network.devices, []) : [
+            for switch_routing_static_route in try(device.switch_routing_static_routes, []) : {
+              device_serial = meraki_device.device["${domain.name}/${organization.name}/${device.name}"].serial
+              data          = switch_routing_static_route
+            }
+          ] if try(device.switch_routing_static_routes, null) != null
+        ]
+      ]
+    ]
+  ])
+}
+
+resource "meraki_switch_routing_static_route" "devices_switch_routing_static_routes" {
+  for_each = { for i, v in local.devices_switch_routing_static_routes : i => v }
+  serial   = each.value.device_serial
+
+  name                            = try(each.value.data.name, local.defaults.meraki.networks.devices_switch_routing_static_routes.name, null)
+  subnet                          = try(each.value.data.subnet, local.defaults.meraki.networks.devices_switch_routing_static_routes.subnet, null)
+  next_hop_ip                     = try(each.value.data.next_hop_ip, local.defaults.meraki.networks.devices_switch_routing_static_routes.next_hop_ip, null)
+  advertise_via_ospf_enabled      = try(each.value.data.advertise_via_ospf_enabled, local.defaults.meraki.networks.devices_switch_routing_static_routes.advertise_via_ospf_enabled, null)
+  prefer_over_ospf_routes_enabled = try(each.value.data.prefer_over_ospf_routes_enabled, local.defaults.meraki.networks.devices_switch_routing_static_routes.prefer_over_ospf_routes_enabled, null)
+
+}
