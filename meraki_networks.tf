@@ -172,19 +172,19 @@ locals {
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
 
-          data = network.devices_claim
-        } if try(network.devices_claim, null) != null
+          serials = [for d in network.devices : d.serial]
+        } if try(network.devices, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
+  marcin_debug = 5
 }
 
 resource "meraki_network_device_claim" "net_device_claim" {
   for_each   = { for i, v in local.networks_devices_claim : i => v }
   network_id = each.value.network_id
 
-  serials = try(each.value.data.serials, local.defaults.meraki.networks.networks_switch_stacks.serials, null)
-
+  serials = each.value.serials
 }
 
 locals {
@@ -195,16 +195,16 @@ locals {
           for floor_plan in try(network.floor_plans, []) : {
             network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
             data = {
-              name                    = floor_plan.name
-              bottom_left_corner_lat  = floor_plan.bottom_left_corner.lat
-              bottom_left_corner_lng  = floor_plan.bottom_left_corner.lng
-              bottom_right_corner_lat = floor_plan.bottom_right_corner.lat
-              bottom_right_corner_lng = floor_plan.bottom_right_corner.lng
-              top_left_corner_lat     = floor_plan.top_left_corner.lat
-              top_left_corner_lng     = floor_plan.top_left_corner.lng
-              top_right_corner_lat    = floor_plan.top_right_corner.lat
-              top_right_corner_lng    = floor_plan.top_right_corner.lng
-              image_contents          = floor_plan.image_contents
+              name                    = try(floor_plan.name, null)
+              bottom_left_corner_lat  = try(floor_plan.bottom_left_corner.lat, null)
+              bottom_left_corner_lng  = try(floor_plan.bottom_left_corner.lng, null)
+              bottom_right_corner_lat = try(floor_plan.bottom_right_corner.lat, null)
+              bottom_right_corner_lng = try(floor_plan.bottom_right_corner.lng, null)
+              top_left_corner_lat     = try(floor_plan.top_left_corner.lat, null)
+              top_left_corner_lng     = try(floor_plan.top_left_corner.lng, null)
+              top_right_corner_lat    = try(floor_plan.top_right_corner.lat, null)
+              top_right_corner_lng    = try(floor_plan.top_right_corner.lng, null)
+              image_contents          = try(floor_plan.image_contents, null)
             }
           } if try(network.floor_plans, null) != null
         ] if try(organization.networks, null) != null
