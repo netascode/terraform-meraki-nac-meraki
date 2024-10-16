@@ -89,6 +89,9 @@ spec_url = ""
 def fields(d, p):
     ret = []
     if d["type"] == "object":
+        if "properties" not in d:
+            # ret.append(copy.deepcopy(p))
+            return ret
         for prop, propValue in d["properties"].items():
            propRet = fields(propValue, p+[prop])
            ret += propRet

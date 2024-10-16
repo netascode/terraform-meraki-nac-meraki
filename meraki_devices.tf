@@ -290,9 +290,9 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : {
-              device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
-              data          = device.wireless_bluetooth_settings
-           } if try(device.wireless_bluetooth_settings, null) != null
+            device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
+            data          = device.wireless_bluetooth_settings
+          } if try(device.wireless_bluetooth_settings, null) != null
         ]
       ]
     ]
@@ -300,10 +300,10 @@ locals {
 }
 
 resource "meraki_wireless_device_bluetooth_settings" "devices_wireless_bluetooth_settings" {
-  for_each   = { for i, v in local.devices_wireless_bluetooth_settings : i => v }
+  for_each = { for i, v in local.devices_wireless_bluetooth_settings : i => v }
   serial   = each.value.device_serial
 
-  uuid = try(each.value.data.uuid, local.defaults.meraki.networks.devices_wireless_bluetooth_settings.uuid, null)
+  uuid  = try(each.value.data.uuid, local.defaults.meraki.networks.devices_wireless_bluetooth_settings.uuid, null)
   major = try(each.value.data.major, local.defaults.meraki.networks.devices_wireless_bluetooth_settings.major, null)
   minor = try(each.value.data.minor, local.defaults.meraki.networks.devices_wireless_bluetooth_settings.minor, null)
 

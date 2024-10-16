@@ -498,7 +498,7 @@ locals {
             network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
             stack_key  = format("%s/%s/%s/switch_stacks/%s", domain.name, organization.name, network.name, switch_stack.name)
             data       = switch_stack
-            serials = [for d in switch_stack.devices : meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${d}"].serial]
+            serials    = [for d in switch_stack.devices : meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${d}"].serial]
           } if try(network.switch_stacks, null) != null
         ] if try(organization.networks, null) != null
       ] if try(domain.organizations, null) != null
@@ -510,8 +510,8 @@ resource "meraki_switch_stack" "net_switch_stacks" {
   for_each   = { for s in local.networks_switch_stacks : s.stack_key => s }
   network_id = each.value.network_id
 
-  name    = try(each.value.data.name, local.defaults.meraki.networks.networks_switch_stacks.name, null)
-  serials = each.value.serials
+  name       = try(each.value.data.name, local.defaults.meraki.networks.networks_switch_stacks.name, null)
+  serials    = each.value.serials
   depends_on = [meraki_network_device_claim.net_device_claim]
 
 }
