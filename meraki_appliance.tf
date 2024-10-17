@@ -438,30 +438,30 @@ resource "meraki_appliance_vpn_bgp" "appliance_vpn_bgp" {
   neighbors       = try(each.value.data.neighbors, local.defaults.meraki.networks.networks_appliance_vpn_bgp.neighbors, null)
 
 }
-locals {
-  networks_networks_appliance_vpn_site_to_site_vpn = flatten([
+# locals {
+#   networks_networks_appliance_vpn_site_to_site_vpn = flatten([
 
-    for domain in try(local.meraki.domains, []) : [
-      for organization in try(domain.organizations, []) : [
-        for network in try(organization.networks, []) : {
-          network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+#     for domain in try(local.meraki.domains, []) : [
+#       for organization in try(domain.organizations, []) : [
+#         for network in try(organization.networks, []) : {
+#           network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
 
-          data = try(network.appliance_vpn_site_to_site_vpn, null)
-        } if try(network.appliance_vpn_site_to_site_vpn, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
-  ])
-}
+#           data = try(network.appliance_vpn_site_to_site_vpn, null)
+#         } if try(network.appliance_vpn_site_to_site_vpn, null) != null
+#       ] if try(domain.organizations, null) != null
+#     ] if try(local.meraki.domains, null) != null
+#   ])
+# }
 
-resource "meraki_appliance_site_to_site_vpn" "appliance_vpn_site_to_site_vpn" {
-  for_each   = { for i, v in local.networks_networks_appliance_vpn_site_to_site_vpn : i => v }
-  network_id = each.value.network_id
+# resource "meraki_appliance_site_to_site_vpn" "appliance_vpn_site_to_site_vpn" {
+#   for_each   = { for i, v in local.networks_networks_appliance_vpn_site_to_site_vpn : i => v }
+#   network_id = each.value.network_id
 
-  mode    = try(each.value.data.mode, local.defaults.meraki.networks.networks_appliance_vpn_site_to_site_vpn.mode, null)
-  hubs    = try(each.value.data.hubs, local.defaults.meraki.networks.networks_appliance_vpn_site_to_site_vpn.hubs, null)
-  subnets = try(each.value.data.subnets, local.defaults.meraki.networks.networks_appliance_vpn_site_to_site_vpn.subnets, null)
+#   mode    = try(each.value.data.mode, local.defaults.meraki.networks.networks_appliance_vpn_site_to_site_vpn.mode, null)
+#   hubs    = try(each.value.data.hubs, local.defaults.meraki.networks.networks_appliance_vpn_site_to_site_vpn.hubs, null)
+#   subnets = try(each.value.data.subnets, local.defaults.meraki.networks.networks_appliance_vpn_site_to_site_vpn.subnets, null)
 
-}
+# }
 locals {
   networks_networks_appliance_warm_spare = flatten([
 
