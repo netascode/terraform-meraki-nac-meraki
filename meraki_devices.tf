@@ -127,25 +127,24 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : [
-            for switch_port in try(device.switch_ports, []) : [
-              # Split by comma and iterate over port IDs
-              for port_id in split(",", switch_port.port_ids) :
-              # Handle range or single port
-              contains(port_id, "-") ?
-              [for p in range(
-                tonumber(split("-", port_id)[0]),
-                tonumber(split("-", port_id)[1])
-                ) : {
-                device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
-                port_id       = p
-                data          = switch_port
-              }] :
-              {
-                device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
-                port_id       = tonumber(trimspace(port_id))
-                data          = switch_port
-              }
-            ]
+            for switch_port in try(device.switch_ports, []) : flatten([
+              for port_id in split(",", switch_port.port_ids) : (
+                contains(port_id, "-") ?
+                [for p in range(
+                  tonumber(split("-", port_id)[0]),
+                  tonumber(split("-", port_id)[1])
+                  ) : {
+                  device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
+                  port_id       = p
+                  data          = switch_port
+                }] :
+                [{
+                  device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
+                  port_id       = tonumber(trimspace(port_id))
+                  data          = switch_port
+                }]
+              )
+            ])
           ]
         ]
       ]
