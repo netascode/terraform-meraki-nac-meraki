@@ -121,7 +121,6 @@ module "meraki" {
 | [meraki_switch_dscp_to_cos_mappings.net_switch_dscp_to_cos_mappings](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_dscp_to_cos_mappings) | resource |
 | [meraki_switch_link_aggregation.net_switch_link_aggregation](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_link_aggregation) | resource |
 | [meraki_switch_mtu.net_switch_mtu](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_mtu) | resource |
-| [meraki_switch_port.devices_switch_port](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_port) | resource |
 | [meraki_switch_port_schedule.net_switch_port_schedules](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_port_schedule) | resource |
 | [meraki_switch_qos_rule.net_switch_qos_rule](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_qos_rule) | resource |
 | [meraki_switch_routing_interface.devices_switch_routing_interface](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.2/docs/resources/switch_routing_interface) | resource |
