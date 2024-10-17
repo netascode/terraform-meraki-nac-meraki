@@ -194,7 +194,7 @@ locals {
           }
         ]
         orders  = try(org.inventory_claim.orders, [])
-        serials = try(org.inventory_claim.serials, [])
+        serials = try(org.inventory_claim.devices, [])
       } if try(org.inventory_claim, null) != null
     ]
   ])
