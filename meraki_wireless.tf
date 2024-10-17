@@ -521,3 +521,65 @@ resource "meraki_wireless_ssid_traffic_shaping_rules" "net_wireless_ssids_traffi
   rules                   = try(each.value.data.rules, local.defaults.meraki.networks.networks_wireless_ssids_traffic_shaping_rules.rules, null)
 
 }
+
+locals {
+  networks_networks_wireless_alternate_management_interface = flatten([
+
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : {
+          network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+
+          data = try(network.wireless_alternate_management_interface, null)
+          access_points = [for ap in try(network.wireless_alternate_management_interface.access_points, []) : {
+            alternate_management_ip = try(ap.alternate_management_ip, null)
+            dns1 = try(ap.dns1, null)
+            dns2 = try(ap.dns2, null)
+            gateway = try(ap.gateway, null)
+            serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${ap.device}"].serial
+            subnet_mask = try(ap.subnet_mask, null)
+          }]
+        } if try(network.wireless_alternate_management_interface, null) != null
+      ] if try(domain.organizations, null) != null
+    ] if try(local.meraki.domains, null) != null
+  ])
+  marcin_debug = 5
+}
+
+resource "meraki_wireless_alternate_management_interface" "wireless_alternate_management_interface" {
+  for_each   = { for i, v in local.networks_networks_wireless_alternate_management_interface : i => v }
+  network_id = each.value.network_id
+
+  enabled = try(each.value.data.enabled, local.defaults.meraki.networks.networks_wireless_alternate_management_interface.enabled, null)
+  vlan_id = try(each.value.data.vlan_id, local.defaults.meraki.networks.networks_wireless_alternate_management_interface.vlan_id, null)
+  protocols = try(each.value.data.protocols, local.defaults.meraki.networks.networks_wireless_alternate_management_interface.protocols, null)
+  access_points = length(each.value.access_points) > 0 ? each.value.access_points : null
+
+}
+locals {
+  networks_networks_wireless_bluetooth_settings = flatten([
+
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : {
+          network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+
+          data = try(network.wireless_bluetooth_settings, null)
+        } if try(network.wireless_bluetooth_settings, null) != null
+      ] if try(domain.organizations, null) != null
+    ] if try(local.meraki.domains, null) != null
+  ])
+}
+
+resource "meraki_wireless_network_bluetooth_settings" "wireless_bluetooth_settings" {
+  for_each   = { for i, v in local.networks_networks_wireless_bluetooth_settings : i => v }
+  network_id = each.value.network_id
+
+  scanning_enabled = try(each.value.data.scanning_enabled, local.defaults.meraki.networks.networks_wireless_bluetooth_settings.scanning_enabled, null)
+  advertising_enabled = try(each.value.data.advertising_enabled, local.defaults.meraki.networks.networks_wireless_bluetooth_settings.advertising_enabled, null)
+  uuid = try(each.value.data.uuid, local.defaults.meraki.networks.networks_wireless_bluetooth_settings.uuid, null)
+  major_minor_assignment_mode = try(each.value.data.major_minor_assignment_mode, local.defaults.meraki.networks.networks_wireless_bluetooth_settings.major_minor_assignment_mode, null)
+  major = try(each.value.data.major, local.defaults.meraki.networks.networks_wireless_bluetooth_settings.major, null)
+  minor = try(each.value.data.minor, local.defaults.meraki.networks.networks_wireless_bluetooth_settings.minor, null)
+
+}

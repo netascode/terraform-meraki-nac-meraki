@@ -177,7 +177,6 @@ locals {
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
-  marcin_debug = 5
 }
 
 resource "meraki_network_device_claim" "net_device_claim" {
