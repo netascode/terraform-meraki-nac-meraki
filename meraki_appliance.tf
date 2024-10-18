@@ -447,6 +447,10 @@ locals {
           network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
 
           data = try(network.appliance_vpn_site_to_site_vpn, null)
+          hubs = [for h in try(network.appliance_vpn_site_to_site_vpn.hubs, []) : {
+            use_default_route = try(h.use_default_route, null)
+            hub_id = meraki_network.network["${domain.name}/${organization.name}/${h.hub_name}"].id
+          } ]
         } if try(network.appliance_vpn_site_to_site_vpn, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
@@ -458,7 +462,7 @@ resource "meraki_appliance_site_to_site_vpn" "appliance_vpn_site_to_site_vpn" {
   network_id = each.value.network_id
 
   mode    = try(each.value.data.mode, local.defaults.meraki.networks.networks_appliance_vpn_site_to_site_vpn.mode, null)
-  hubs    = try(each.value.data.hubs, local.defaults.meraki.networks.networks_appliance_vpn_site_to_site_vpn.hubs, null)
+  hubs    = each.value.hubs
   subnets = try(each.value.data.subnets, local.defaults.meraki.networks.networks_appliance_vpn_site_to_site_vpn.subnets, null)
 
 }
