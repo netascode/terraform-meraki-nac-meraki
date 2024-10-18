@@ -233,8 +233,8 @@ locals {
         for network in try(organization.networks, []) : [
           for switch_port_schedule in try(network.switch_port_schedules, []) : {
             network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
-
-            data = try(switch_port_schedule, null)
+            key        = format("%s/%s/%s/port_schedules/%s", domain.name, organization.name, network.name, switch_port_schedule.name)
+            data       = try(switch_port_schedule, null)
           } if try(network.switch_port_schedules, null) != null
         ] if try(organization.networks, null) != null
       ] if try(domain.organizations, null) != null
@@ -243,7 +243,7 @@ locals {
 }
 
 resource "meraki_switch_port_schedule" "net_switch_port_schedules" {
-  for_each   = { for i, v in local.networks_switch_port_schedules : i => v }
+  for_each   = { for i in local.networks_switch_port_schedules : i.key => i }
   network_id = each.value.network_id
 
   name                           = try(each.value.data.name, local.defaults.meraki.networks.networks_switch_port_schedules.name, null)
