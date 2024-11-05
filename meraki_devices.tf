@@ -252,6 +252,7 @@ resource "meraki_switch_routing_interface_dhcp" "devices_switch_routing_interfac
   dhcp_options           = try(each.value.data.dhcp_options, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.dhcp_options, null)
   reserved_ip_ranges     = try(each.value.data.reserved_ip_ranges, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.reserved_ip_ranges, null)
   fixed_ip_assignments   = try(each.value.data.fixed_ip_assignments, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.fixed_ip_assignments, null)
+  depends_on             = [meraki_switch_routing_interface.devices_switch_routing_interface]
 
 }
 
@@ -282,6 +283,7 @@ resource "meraki_switch_routing_static_route" "devices_switch_routing_static_rou
   next_hop_ip                     = try(each.value.data.next_hop_ip, local.defaults.meraki.networks.devices_switch_routing_static_routes.next_hop_ip, null)
   advertise_via_ospf_enabled      = try(each.value.data.advertise_via_ospf_enabled, local.defaults.meraki.networks.devices_switch_routing_static_routes.advertise_via_ospf_enabled, null)
   prefer_over_ospf_routes_enabled = try(each.value.data.prefer_over_ospf_routes_enabled, local.defaults.meraki.networks.devices_switch_routing_static_routes.prefer_over_ospf_routes_enabled, null)
+  depends_on                      = [meraki_switch_routing_interface.devices_switch_routing_interface]
 
 }
 
