@@ -122,7 +122,7 @@ locals {
           network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
 
           data = try(network.wireless_settings, null)
-        } if try(organization.networks, null) != null
+        } if try(network.wireless_settings, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])

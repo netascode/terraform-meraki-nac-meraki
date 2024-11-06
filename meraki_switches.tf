@@ -206,7 +206,7 @@ locals {
           network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
 
           data = try(network.switch_mtu, null)
-        } if try(organization.networks, null) != null
+        } if try(network.switch_mtu, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -317,7 +317,7 @@ locals {
           network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
 
           data = try(network.switch_routing_multicast, null)
-        } if try(organization.networks, null) != null
+        } if try(network.switch_routing_multicast, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -372,7 +372,7 @@ locals {
           network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
 
           data = try(network.switch_routing_ospf, null)
-        } if try(organization.networks, null) != null
+        } if try(network.switch_routing_ospf, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -406,7 +406,7 @@ locals {
           network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
 
           data = try(network.switch_settings, null)
-        } if try(organization.networks, null) != null
+        } if try(network.switch_settings, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])

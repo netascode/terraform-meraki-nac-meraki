@@ -129,7 +129,7 @@ locals {
         v3_priv_mode    = try(org.snmp.v3_priv_mode, local.defaults.meraki.organizations.snmp.v3_priv_mode, null)
         v3_priv_pass    = try(org.snmp.v3_priv_pass, local.defaults.meraki.organizations.snmp.v3_priv_pass, null)
         peer_ips        = try(org.snmp.peer_ips, null)
-      }
+      } if try(org.snmp, null) != null
     ]
   ])
 }

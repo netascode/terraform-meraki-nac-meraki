@@ -71,10 +71,11 @@ locals {
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
           data       = try(network.settings, null)
-        } if try(organization.networks, null) != null
+        } if try(network.settings, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
-  ])
+  ]
+  )
 }
 
 resource "meraki_network_settings" "net_settings" {
@@ -98,7 +99,7 @@ locals {
           network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
 
           data = try(network.snmp, null)
-        } if try(organization.networks, null) != null
+        } if try(network.snmp, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -123,7 +124,7 @@ locals {
           network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
 
           data = try(network.syslog_servers, null)
-        } if try(organization.networks, null) != null
+        } if try(network.syslog_servers, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
