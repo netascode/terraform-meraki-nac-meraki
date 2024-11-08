@@ -91,6 +91,7 @@ module "meraki" {
 | [meraki_appliance_vpn_bgp.appliance_vpn_bgp](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_vpn_bgp) | resource |
 | [meraki_appliance_vpn_firewall_rules.net_organizations_appliance_vpn_vpn_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_vpn_firewall_rules) | resource |
 | [meraki_appliance_warm_spare.appliance_warm_spare](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_warm_spare) | resource |
+
 | [meraki_device.device](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/device) | resource |
 | [meraki_device_management_interface.devices_management_interface](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/device_management_interface) | resource |
 | [meraki_network.network](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/network) | resource |
@@ -141,19 +142,6 @@ module "meraki" {
 | [meraki_wireless_alternate_management_interface.wireless_alternate_management_interface](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_alternate_management_interface) | resource |
 | [meraki_wireless_device_bluetooth_settings.devices_wireless_bluetooth_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_device_bluetooth_settings) | resource |
 | [meraki_wireless_network_bluetooth_settings.wireless_bluetooth_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_network_bluetooth_settings) | resource |
-| [meraki_wireless_rf_profile.net_wireless_rf_profiles](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_rf_profile) | resource |
-| [meraki_wireless_settings.net_wireless_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_settings) | resource |
-| [meraki_wireless_ssid.net_wireless_ssids](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_ssid) | resource |
-| [meraki_wireless_ssid_device_type_group_policies.net_wireless_ssids_device_type_group_policies](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_ssid_device_type_group_policies) | resource |
-| [meraki_wireless_ssid_eap_override.net_wireless_ssid_eap_override](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_ssid_eap_override) | resource |
-| [meraki_wireless_ssid_hotspot_20.net_wireless_ssids_hotspot20](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_ssid_hotspot_20) | resource |
-| [meraki_wireless_ssid_identity_psk.net_wireless_ssids_identity_psks](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_ssid_identity_psk) | resource |
-| [meraki_wireless_ssid_l3_firewall_rules.net_wireless_ssids_l3_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_ssid_l3_firewall_rules) | resource |
-| [meraki_wireless_ssid_schedules.net_wireless_ssids_schedules](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_ssid_schedules) | resource |
-| [meraki_wireless_ssid_splash_settings.net_wireless_ssids_splash_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_ssid_splash_settings) | resource |
-| [meraki_wireless_ssid_traffic_shaping_rules.net_wireless_ssids_traffic_shaping_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_ssid_traffic_shaping_rules) | resource |
-| [utils_yaml_merge.defaults](https://registry.terraform.io/providers/netascode/utils/latest/docs/data-sources/yaml_merge) | data source |
-| [utils_yaml_merge.model](https://registry.terraform.io/providers/netascode/utils/latest/docs/data-sources/yaml_merge) | data source |
 ## Modules
 
 No modules.
