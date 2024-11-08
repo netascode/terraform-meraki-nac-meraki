@@ -74,7 +74,7 @@ locals {
         } if try(network.settings, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
-  ]
+    ]
   )
 }
 
