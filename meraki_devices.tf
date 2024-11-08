@@ -5,7 +5,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : {
-            key  = format("%s/%s/%s", domain.name, organization.name, device.name)
+            key  = format("%s/%s/%s/devices/%s", domain.name, organization.name, network.name, device.name)
             data = device
           }
         ]
@@ -27,7 +27,7 @@ resource "meraki_device" "device" {
   move_map_marker = try(each.value.data.move_map_marker, local.defaults.meraki.devices.move_map_marker, null)
   #   switch_profile_id = try(each.value.data.switch_profile_id, local.defaults.meraki.devices.switch_profile_id, null)
   #   floor_plan_id = try(each.value.data.floor_plan_id, local.defaults.meraki.devices.floor_plan_id, null)
-
+  depends_on = [meraki_network_device_claim.net_device_claim]
 }
 
 locals {
@@ -37,7 +37,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : {
-            device_serial = meraki_device.device["${domain.name}/${organization.name}/${device.name}"].serial
+            device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
 
             data = try(device.appliance_uplinks_settings, null)
           } if try(device.appliance_uplinks_settings, null) != null
@@ -90,7 +90,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : {
-            device_serial = meraki_device.device["${domain.name}/${organization.name}/${device.name}"].serial
+            device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
 
             data = try(device.management_interface, null)
           } if try(device.management_interface, null) != null
@@ -122,22 +122,48 @@ resource "meraki_device_management_interface" "devices_management_interface" {
 }
 
 locals {
-  devices_switch_ports = flatten([
+  devices_switch_ports = concat(flatten([
 
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : [
-            for switch_port in try(device.switch_ports, []) : {
-              device_serial = meraki_device.device["${domain.name}/${organization.name}/${device.name}"].serial
+            for switch_port in try(device.switch_ports, []) : [
+              for port_id in split(",", switch_port.port_ids) : {
+                device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
 
-              data = switch_port
-            }
-          ] if try(device.switch_ports, null) != null
+                data                     = merge(switch_port, { port_id = port_id })
+                port_schedule_id         = meraki_switch_port_schedule.net_switch_port_schedules["${domain.name}/${organization.name}/${network.name}/port_schedules/${switch_port.port_schedule_name}"].id
+                adaptive_policy_group_id = try(meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/%s/adaptive_policy_groups/%s", domain.name, organization.name, switch_port.adaptive_policy_group_name)].id, null)
+              } if replace(port_id, "-", "") == port_id
+            ]
+          ]
         ]
       ]
     ]
-  ])
+    ]),
+    flatten([
+      for domain in try(local.meraki.domains, []) : [
+        for organization in try(domain.organizations, []) : [
+          for network in try(organization.networks, []) : [
+            for device in try(network.devices, []) : [
+              for switch_port in try(device.switch_ports, []) : [
+                for port_range in split(",", switch_port.port_ids) : [
+                  for p in range(split("-", port_range)[0], split("-", port_range)[1]) : {
+                    device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
+
+                    data                     = merge(switch_port, { port_id = p })
+                    port_schedule_id         = meraki_switch_port_schedule.net_switch_port_schedules["${domain.name}/${organization.name}/${network.name}/port_schedules/${switch_port.port_schedule_name}"].id
+                    adaptive_policy_group_id = try(meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/%s/adaptive_policy_groups/%s", domain.name, organization.name, switch_port.adaptive_policy_group_name)].id, null)
+                  }
+                ] if replace(port_range, "-", "") != port_range
+              ]
+            ]
+          ]
+        ]
+      ]
+    ])
+  )
 }
 
 resource "meraki_switch_port" "devices_switch_port" {
@@ -157,7 +183,7 @@ resource "meraki_switch_port" "devices_switch_port" {
   rstp_enabled                = try(each.value.data.rstp_enabled, local.defaults.meraki.networks.devices_switch_ports.rstp_enabled, null)
   stp_guard                   = try(each.value.data.stp_guard, local.defaults.meraki.networks.devices_switch_ports.stp_guard, null)
   link_negotiation            = try(each.value.data.link_negotiation, local.defaults.meraki.networks.devices_switch_ports.link_negotiation, null)
-  port_schedule_id            = try(each.value.data.port_schedule_id, local.defaults.meraki.networks.devices_switch_ports.port_schedule_id, null)
+  port_schedule_id            = each.value.port_schedule_id
   udld                        = try(each.value.data.udld, local.defaults.meraki.networks.devices_switch_ports.udld, null)
   access_policy_type          = try(each.value.data.access_policy_type, local.defaults.meraki.networks.devices_switch_ports.access_policy_type, null)
   access_policy_number        = try(each.value.data.access_policy_number, local.defaults.meraki.networks.devices_switch_ports.access_policy_number, null)
@@ -165,14 +191,14 @@ resource "meraki_switch_port" "devices_switch_port" {
   sticky_mac_allow_list       = try(each.value.data.sticky_mac_allow_list, local.defaults.meraki.networks.devices_switch_ports.sticky_mac_allow_list, null)
   sticky_mac_allow_list_limit = try(each.value.data.sticky_mac_allow_list_limit, local.defaults.meraki.networks.devices_switch_ports.sticky_mac_allow_list_limit, null)
   storm_control_enabled       = try(each.value.data.storm_control_enabled, local.defaults.meraki.networks.devices_switch_ports.storm_control_enabled, null)
-  adaptive_policy_group_id    = try(each.value.data.adaptive_policy_group_id, local.defaults.meraki.networks.devices_switch_ports.adaptive_policy_group_id, null)
+  adaptive_policy_group_id    = each.value.adaptive_policy_group_id
   peer_sgt_capable            = try(each.value.data.peer_sgt_capable, local.defaults.meraki.networks.devices_switch_ports.peer_sgt_capable, null)
   flexible_stacking_enabled   = try(each.value.data.flexible_stacking_enabled, local.defaults.meraki.networks.devices_switch_ports.flexible_stacking_enabled, null)
   dai_trusted                 = try(each.value.data.dai_trusted, local.defaults.meraki.networks.devices_switch_ports.dai_trusted, null)
   profile_enabled             = try(each.value.data.profile.enabled, local.defaults.meraki.networks.devices_switch_ports.profile.enabled, null)
-  profile_id                  = try(each.value.data.profile.id, local.defaults.meraki.networks.devices_switch_ports.profile.id, null)
-  profile_iname               = try(each.value.data.profile.iname, local.defaults.meraki.networks.devices_switch_ports.profile.iname, null)
-  dot3az_enabled              = try(each.value.data.dot3az.enabled, local.defaults.meraki.networks.devices_switch_ports.dot3az.enabled, null)
+  # profile_id                  = try(each.value.data.profile.id, local.defaults.meraki.networks.devices_switch_ports.profile.id, null)
+  profile_iname  = try(each.value.data.profile.iname, local.defaults.meraki.networks.devices_switch_ports.profile.iname, null)
+  dot3az_enabled = try(each.value.data.dot3az.enabled, local.defaults.meraki.networks.devices_switch_ports.dot3az.enabled, null)
 
 }
 
@@ -184,7 +210,7 @@ locals {
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : [
             for switch_routing_interface in try(device.switch_routing_interfaces, []) : {
-              device_serial = meraki_device.device["${domain.name}/${organization.name}/${device.name}"].serial
+              device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
               interface_key = format("%s/%s/%s/switch_routing_interfaces/%s", domain.name, organization.name, network.name, switch_routing_interface.name)
               data          = switch_routing_interface
             }
@@ -223,7 +249,7 @@ locals {
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : [
             for switch_routing_interface in try(device.switch_routing_interfaces, []) : {
-              device_serial = meraki_device.device["${domain.name}/${organization.name}/${device.name}"].serial
+              device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
               interface_id  = meraki_switch_routing_interface.devices_switch_routing_interface["${domain.name}/${organization.name}/${network.name}/switch_routing_interfaces/${switch_routing_interface.name}"].id
               data          = try(switch_routing_interface.dhcp, null)
             } if try(switch_routing_interface.dhcp, null) != null
@@ -250,6 +276,7 @@ resource "meraki_switch_routing_interface_dhcp" "devices_switch_routing_interfac
   dhcp_options           = try(each.value.data.dhcp_options, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.dhcp_options, null)
   reserved_ip_ranges     = try(each.value.data.reserved_ip_ranges, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.reserved_ip_ranges, null)
   fixed_ip_assignments   = try(each.value.data.fixed_ip_assignments, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.fixed_ip_assignments, null)
+  depends_on             = [meraki_switch_routing_interface.devices_switch_routing_interface]
 
 }
 
@@ -261,7 +288,7 @@ locals {
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : [
             for switch_routing_static_route in try(device.switch_routing_static_routes, []) : {
-              device_serial = meraki_device.device["${domain.name}/${organization.name}/${device.name}"].serial
+              device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
               data          = switch_routing_static_route
             }
           ] if try(device.switch_routing_static_routes, null) != null
@@ -280,5 +307,32 @@ resource "meraki_switch_routing_static_route" "devices_switch_routing_static_rou
   next_hop_ip                     = try(each.value.data.next_hop_ip, local.defaults.meraki.networks.devices_switch_routing_static_routes.next_hop_ip, null)
   advertise_via_ospf_enabled      = try(each.value.data.advertise_via_ospf_enabled, local.defaults.meraki.networks.devices_switch_routing_static_routes.advertise_via_ospf_enabled, null)
   prefer_over_ospf_routes_enabled = try(each.value.data.prefer_over_ospf_routes_enabled, local.defaults.meraki.networks.devices_switch_routing_static_routes.prefer_over_ospf_routes_enabled, null)
+  depends_on                      = [meraki_switch_routing_interface.devices_switch_routing_interface]
+
+}
+
+locals {
+  devices_wireless_bluetooth_settings = flatten([
+
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for device in try(network.devices, []) : {
+            device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
+            data          = device.wireless_bluetooth_settings
+          } if try(device.wireless_bluetooth_settings, null) != null
+        ]
+      ]
+    ]
+  ])
+}
+
+resource "meraki_wireless_device_bluetooth_settings" "devices_wireless_bluetooth_settings" {
+  for_each = { for i, v in local.devices_wireless_bluetooth_settings : i => v }
+  serial   = each.value.device_serial
+
+  uuid  = try(each.value.data.uuid, local.defaults.meraki.networks.devices_wireless_bluetooth_settings.uuid, null)
+  major = try(each.value.data.major, local.defaults.meraki.networks.devices_wireless_bluetooth_settings.major, null)
+  minor = try(each.value.data.minor, local.defaults.meraki.networks.devices_wireless_bluetooth_settings.minor, null)
 
 }

@@ -69,7 +69,29 @@ module "meraki" {
 |------|------|
 | [local_file.merged_yaml_output](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_sensitive_file.defaults](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
+| [meraki_appliance_content_filtering.appliance_content_filtering](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_content_filtering) | resource |
+| [meraki_appliance_firewall_settings.appliance_firewall_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_firewall_settings) | resource |
+| [meraki_appliance_firewalled_service.appliance_firewall_firewalled_services](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_firewalled_service) | resource |
+| [meraki_appliance_inbound_firewall_rules.appliance_firewall_inbound_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_inbound_firewall_rules) | resource |
+| [meraki_appliance_l3_firewall_rules.appliance_firewall_l3_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_l3_firewall_rules) | resource |
+| [meraki_appliance_l7_firewall_rules.appliance_firewall_l7_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_l7_firewall_rules) | resource |
+| [meraki_appliance_network_security_intrusion.appliance_security_intrusion](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_network_security_intrusion) | resource |
+| [meraki_appliance_one_to_many_nat_rules.appliance_firewall_one_to_many_nat_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_one_to_many_nat_rules) | resource |
+| [meraki_appliance_one_to_one_nat_rules.appliance_firewall_one_to_one_nat_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_one_to_one_nat_rules) | resource |
+| [meraki_appliance_port.appliance_ports](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_port) | resource |
+| [meraki_appliance_port_forwarding_rules.appliance_firewall_port_forwarding_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_port_forwarding_rules) | resource |
+| [meraki_appliance_security_malware.appliance_security_malware](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_security_malware) | resource |
+| [meraki_appliance_settings.appliance_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_settings) | resource |
+| [meraki_appliance_single_lan.appliance_single_lan](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_single_lan) | resource |
+| [meraki_appliance_site_to_site_vpn.appliance_vpn_site_to_site_vpn](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_site_to_site_vpn) | resource |
+| [meraki_appliance_third_party_vpn_peers.organizations_appliance_vpn_third_party_vpn_peers](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_third_party_vpn_peers) | resource |
 | [meraki_appliance_uplinks_settings.devices_appliance_uplinks_setting](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_uplinks_settings) | resource |
+| [meraki_appliance_vlan.appliance_vlans](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_vlan) | resource |
+| [meraki_appliance_vlans_settings.appliance_vlans_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_vlans_settings) | resource |
+| [meraki_appliance_vpn_bgp.appliance_vpn_bgp](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_vpn_bgp) | resource |
+| [meraki_appliance_vpn_firewall_rules.net_organizations_appliance_vpn_vpn_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_vpn_firewall_rules) | resource |
+| [meraki_appliance_warm_spare.appliance_warm_spare](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/appliance_warm_spare) | resource |
+
 | [meraki_device.device](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/device) | resource |
 | [meraki_device_management_interface.devices_management_interface](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/device_management_interface) | resource |
 | [meraki_network.network](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/network) | resource |
@@ -117,20 +139,9 @@ module "meraki" {
 | [meraki_switch_stack_routing_static_route.net_switch_stacks_routing_static_route](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/switch_stack_routing_static_route) | resource |
 | [meraki_switch_storm_control.net_switch_storm_control](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/switch_storm_control) | resource |
 | [meraki_switch_stp.net_switch_stp](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/switch_stp) | resource |
-| [meraki_wireless_rf_profile.net_wireless_rf_profiles](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_rf_profile) | resource |
-| [meraki_wireless_settings.net_wireless_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_settings) | resource |
-| [meraki_wireless_ssid.net_wireless_ssids](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_ssid) | resource |
-| [meraki_wireless_ssid_device_type_group_policies.net_wireless_ssids_device_type_group_policies](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_ssid_device_type_group_policies) | resource |
-| [meraki_wireless_ssid_eap_override.net_wireless_ssid_eap_override](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_ssid_eap_override) | resource |
-| [meraki_wireless_ssid_hotspot_20.net_wireless_ssids_hotspot20](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_ssid_hotspot_20) | resource |
-| [meraki_wireless_ssid_identity_psk.net_wireless_ssids_identity_psks](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_ssid_identity_psk) | resource |
-| [meraki_wireless_ssid_l3_firewall_rules.net_wireless_ssids_l3_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_ssid_l3_firewall_rules) | resource |
-| [meraki_wireless_ssid_schedules.net_wireless_ssids_schedules](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_ssid_schedules) | resource |
-| [meraki_wireless_ssid_splash_settings.net_wireless_ssids_splash_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_ssid_splash_settings) | resource |
-| [meraki_wireless_ssid_traffic_shaping_rules.net_wireless_ssids_traffic_shaping_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_ssid_traffic_shaping_rules) | resource |
-| [meraki_organization.organization](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/data-sources/organization) | data source |
-| [utils_yaml_merge.defaults](https://registry.terraform.io/providers/netascode/utils/latest/docs/data-sources/yaml_merge) | data source |
-| [utils_yaml_merge.model](https://registry.terraform.io/providers/netascode/utils/latest/docs/data-sources/yaml_merge) | data source |
+| [meraki_wireless_alternate_management_interface.wireless_alternate_management_interface](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_alternate_management_interface) | resource |
+| [meraki_wireless_device_bluetooth_settings.devices_wireless_bluetooth_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_device_bluetooth_settings) | resource |
+| [meraki_wireless_network_bluetooth_settings.wireless_bluetooth_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_network_bluetooth_settings) | resource |
 ## Modules
 
 No modules.
