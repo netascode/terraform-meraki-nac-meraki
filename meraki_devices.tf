@@ -122,7 +122,6 @@ resource "meraki_device_management_interface" "devices_management_interface" {
 }
 
 locals {
-  marcin_debug = 5
   devices_switch_ports = concat(flatten([
 
     for domain in try(local.meraki.domains, []) : [

@@ -62,7 +62,6 @@ module "meraki" {
 | Name | Description |
 |------|-------------|
 | <a name="output_default_values"></a> [default\_values](#output\_default\_values) | All default values. |
-| <a name="output_marcin_debug"></a> [marcin\_debug](#output\_marcin\_debug) | n/a |
 | <a name="output_model"></a> [model](#output\_model) | Full model. |
 ## Resources
 
