@@ -122,24 +122,49 @@ resource "meraki_device_management_interface" "devices_management_interface" {
 }
 
 locals {
-  devices_switch_ports = flatten([
+  marcin_debug = 5
+  devices_switch_ports = concat(flatten([
 
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : [
-            for switch_port in try(device.switch_ports, []) : {
-              device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
+            for switch_port in try(device.switch_ports, []) : [
+              for port_id in split(",", switch_port.port_ids) : {
+                device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
 
-              data                     = switch_port
-              port_schedule_id         = meraki_switch_port_schedule.net_switch_port_schedules["${domain.name}/${organization.name}/${network.name}/port_schedules/${switch_port.port_schedule_name}"].id
-              adaptive_policy_group_id = meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/%s/adaptive_policy_groups/%s", domain.name, organization.name, switch_port.adaptive_policy_group_name)].id
-            }
-          ] if try(device.switch_ports, null) != null
+                data                     = merge(switch_port, { port_id = port_id })
+                port_schedule_id         = meraki_switch_port_schedule.net_switch_port_schedules["${domain.name}/${organization.name}/${network.name}/port_schedules/${switch_port.port_schedule_name}"].id
+                adaptive_policy_group_id = try(meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/%s/adaptive_policy_groups/%s", domain.name, organization.name, switch_port.adaptive_policy_group_name)].id, null)
+              } if replace(port_id, "-", "") == port_id
+            ]
+          ]
         ]
       ]
     ]
-  ])
+    ]),
+    flatten([
+      for domain in try(local.meraki.domains, []) : [
+        for organization in try(domain.organizations, []) : [
+          for network in try(organization.networks, []) : [
+            for device in try(network.devices, []) : [
+              for switch_port in try(device.switch_ports, []) : [
+                for port_range in split(",", switch_port.port_ids) : [
+                  for p in range(split("-", port_range)[0], split("-", port_range)[1]) : {
+                    device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
+
+                    data                     = merge(switch_port, { port_id = p })
+                    port_schedule_id         = meraki_switch_port_schedule.net_switch_port_schedules["${domain.name}/${organization.name}/${network.name}/port_schedules/${switch_port.port_schedule_name}"].id
+                    adaptive_policy_group_id = try(meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/%s/adaptive_policy_groups/%s", domain.name, organization.name, switch_port.adaptive_policy_group_name)].id, null)
+                  }
+                ] if replace(port_range, "-", "") != port_range
+              ]
+            ]
+          ]
+        ]
+      ]
+    ])
+  )
 }
 
 resource "meraki_switch_port" "devices_switch_port" {
