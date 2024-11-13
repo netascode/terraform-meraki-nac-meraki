@@ -174,7 +174,7 @@ locals {
           network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
 
           serials = [for d in network.devices : d.serial]
-        } if try(network.devices, null) != null
+        } if length(network.devices) > 0
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
