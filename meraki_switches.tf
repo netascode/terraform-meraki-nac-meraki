@@ -4,7 +4,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : [
         for network in try(org.networks, []) : {
-          network_id = meraki_network.network["${domain.name}/${org.name}/${network.name}"].id
+          network_id = meraki_network.network["${org.name}/${network.name}"].id
           data       = network.switch_access_control_lists
         } if try(network.switch_access_control_lists, null) != null
       ]
@@ -24,9 +24,9 @@ locals {
       for org in try(domain.organizations, []) : [
         for network in try(org.networks, []) : [
           for switch_access_policy in try(network.switch_access_policies, []) : {
-            policy_key = format("%s/%s/%s/switch_access_policies/%s", domain.name, org.name, network.name, switch_access_policy.name)
+            policy_key = format("%s/%s/switch_access_policies/%s", org.name, network.name, switch_access_policy.name)
             data       = switch_access_policy
-            network_id = meraki_network.network["${domain.name}/${org.name}/${network.name}"].id
+            network_id = meraki_network.network["${org.name}/${network.name}"].id
           }
         ] if try(network.switch_access_policies, null) != null
       ]
@@ -72,7 +72,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : [
         for network in try(org.networks, []) : {
-          network_id = meraki_network.network["${domain.name}/${org.name}/${network.name}"].id
+          network_id = meraki_network.network["${org.name}/${network.name}"].id
           data       = network.switch_alternate_management_interface
         } if try(network.switch_alternate_management_interface, null) != null
       ]
@@ -98,7 +98,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : [
         for network in try(org.networks, []) : {
-          network_id = meraki_network.network["${domain.name}/${org.name}/${network.name}"].id
+          network_id = meraki_network.network["${org.name}/${network.name}"].id
           data       = network.switch_dhcp_server_policy
         } if try(network.switch_dhcp_server_policy, null) != null
       ]
@@ -126,7 +126,7 @@ locals {
         for network in try(org.networks, []) : [
           for trusted_server in try(network.switch_dhcp_server_policy_arp_inspection_trusted_servers, []) : {
             data       = trusted_server
-            network_id = meraki_network.network["${domain.name}/${org.name}/${network.name}"].id
+            network_id = meraki_network.network["${org.name}/${network.name}"].id
           }
         ] if try(network.switch_dhcp_server_policy_arp_inspection_trusted_servers, null) != null
       ]
@@ -149,7 +149,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : [
         for network in try(org.networks, []) : {
-          network_id = meraki_network.network["${domain.name}/${org.name}/${network.name}"].id
+          network_id = meraki_network.network["${org.name}/${network.name}"].id
           data       = network.switch_dscp_to_cos_mappings
         } if try(network.switch_dscp_to_cos_mappings, null) != null
       ]
@@ -174,7 +174,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for switch_link_aggregation in try(network.switch_link_aggregations, []) : {
-            network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+            network_id = meraki_network.network["${organization.name}/${network.name}"].id
 
             data = try(switch_link_aggregation, null)
           } if try(network.switch_link_aggregations, null) != null
@@ -203,7 +203,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
-          network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+          network_id = meraki_network.network["${organization.name}/${network.name}"].id
 
           data = try(network.switch_mtu, null)
         } if try(network.switch_mtu, null) != null
@@ -232,8 +232,8 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for switch_port_schedule in try(network.switch_port_schedules, []) : {
-            network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
-            key        = format("%s/%s/%s/port_schedules/%s", domain.name, organization.name, network.name, switch_port_schedule.name)
+            network_id = meraki_network.network["${organization.name}/${network.name}"].id
+            key        = format("%s/%s/port_schedules/%s", organization.name, network.name, switch_port_schedule.name)
             data       = try(switch_port_schedule, null)
           } if try(network.switch_port_schedules, null) != null
         ] if try(organization.networks, null) != null
@@ -281,7 +281,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for switch_qos_rule in try(network.switch_qos_rules, []) : {
-            network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+            network_id = meraki_network.network["${organization.name}/${network.name}"].id
 
             data = try(switch_qos_rule, null)
           } if try(network.switch_qos_rules, null) != null
@@ -314,7 +314,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
-          network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+          network_id = meraki_network.network["${organization.name}/${network.name}"].id
 
           data = try(network.switch_routing_multicast, null)
         } if try(network.switch_routing_multicast, null) != null
@@ -342,7 +342,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for switch_routing_multicast_rendezvous_point in try(network.switch_routing_multicast_rendezvous_points, []) : {
-            network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+            network_id = meraki_network.network["${organization.name}/${network.name}"].id
 
             data = try(switch_routing_multicast_rendezvous_point, null)
           } if try(network.switch_routing_multicast_rendezvous_points, null) != null
@@ -369,7 +369,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
-          network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+          network_id = meraki_network.network["${organization.name}/${network.name}"].id
 
           data = try(network.switch_routing_ospf, null)
         } if try(network.switch_routing_ospf, null) != null
@@ -403,7 +403,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
-          network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+          network_id = meraki_network.network["${organization.name}/${network.name}"].id
 
           data = try(network.switch_settings, null)
         } if try(network.switch_settings, null) != null
@@ -430,7 +430,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
-          network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+          network_id = meraki_network.network["${organization.name}/${network.name}"].id
 
           data = try(network.switch_storm_control, null)
         } if try(network.switch_storm_control, null) != null
@@ -462,14 +462,14 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : [
         for network in try(org.networks, []) : {
-          network_id = meraki_network.network["${domain.name}/${org.name}/${network.name}"].id
+          network_id = meraki_network.network["${org.name}/${network.name}"].id
           data       = network.switch_stp
           stp_bridge_priority = [for p in network.switch_stp.stp_bridge_priority : {
             switches     = try(p.switches, null)
             stp_priority = try(p.stp_priority, null)
             stacks = length(try(p.stacks, [])) > 0 ? [
               for s in p.stacks :
-              local.switch_stack_map["${domain.name}/${org.name}/${network.name}/switch_stacks/${s}"]
+              local.switch_stack_map["${org.name}/${network.name}/switch_stacks/${s}"]
             ] : null
           }]
         } if try(network.switch_stp, null) != null
@@ -495,10 +495,10 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for switch_stack in try(network.switch_stacks, []) : {
-            network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
-            stack_key  = format("%s/%s/%s/switch_stacks/%s", domain.name, organization.name, network.name, switch_stack.name)
+            network_id = meraki_network.network["${organization.name}/${network.name}"].id
+            stack_key  = format("%s/%s/switch_stacks/%s", organization.name, network.name, switch_stack.name)
             data       = switch_stack
-            serials    = [for d in switch_stack.devices : meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${d}"].serial]
+            serials    = [for d in switch_stack.devices : meraki_device.device["${organization.name}/${network.name}/devices/${d}"].serial]
           } if try(network.switch_stacks, null) != null
         ] if try(organization.networks, null) != null
       ] if try(domain.organizations, null) != null
@@ -524,9 +524,9 @@ locals {
         for network in try(organization.networks, []) : [
           for switch_stack in try(network.switch_stacks, []) : [
             for routing_interface in try(switch_stack.routing_interfaces, []) : {
-              network_id      = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
-              interface_key   = format("%s/%s/%s/switch_stacks/%s/routing_interfaces/%s", domain.name, organization.name, network.name, switch_stack.name, routing_interface.name)
-              switch_stack_id = meraki_switch_stack.net_switch_stacks["${domain.name}/${organization.name}/${network.name}/switch_stacks/${switch_stack.name}"].id
+              network_id      = meraki_network.network["${organization.name}/${network.name}"].id
+              interface_key   = format("%s/%s/switch_stacks/%s/routing_interfaces/%s", organization.name, network.name, switch_stack.name, routing_interface.name)
+              switch_stack_id = meraki_switch_stack.net_switch_stacks["${organization.name}/${network.name}/switch_stacks/${switch_stack.name}"].id
               data            = try(routing_interface, null)
             } if try(routing_interface.default_gateway, null) != null
           ] if try(network.switch_stacks, null) != null
@@ -541,9 +541,9 @@ locals {
         for network in try(organization.networks, []) : [
           for switch_stack in try(network.switch_stacks, []) : [
             for routing_interface in try(switch_stack.routing_interfaces, []) : {
-              network_id      = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
-              interface_key   = format("%s/%s/%s/switch_stacks/%s/routing_interfaces/%s", domain.name, organization.name, network.name, switch_stack.name, routing_interface.name)
-              switch_stack_id = meraki_switch_stack.net_switch_stacks["${domain.name}/${organization.name}/${network.name}/switch_stacks/${switch_stack.name}"].id
+              network_id      = meraki_network.network["${organization.name}/${network.name}"].id
+              interface_key   = format("%s/%s/switch_stacks/%s/routing_interfaces/%s", organization.name, network.name, switch_stack.name, routing_interface.name)
+              switch_stack_id = meraki_switch_stack.net_switch_stacks["${organization.name}/${network.name}/switch_stacks/${switch_stack.name}"].id
               data            = try(routing_interface, null)
             } if try(routing_interface.default_gateway, null) == null
           ] if try(network.switch_stacks, null) != null
@@ -605,9 +605,9 @@ locals {
         for network in try(organization.networks, []) : [
           for switch_stack in try(network.switch_stacks, []) : [
             for routing_interface in try(switch_stack.routing_interfaces, []) : {
-              network_id      = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
-              switch_stack_id = meraki_switch_stack.net_switch_stacks["${domain.name}/${organization.name}/${network.name}/switch_stacks/${switch_stack.name}"].id
-              interface_id    = meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_first["${domain.name}/${organization.name}/${network.name}/switch_stacks/${switch_stack.name}/routing_interfaces/${routing_interface.name}"].id
+              network_id      = meraki_network.network["${organization.name}/${network.name}"].id
+              switch_stack_id = meraki_switch_stack.net_switch_stacks["${organization.name}/${network.name}/switch_stacks/${switch_stack.name}"].id
+              interface_id    = meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_first["${organization.name}/${network.name}/switch_stacks/${switch_stack.name}/routing_interfaces/${routing_interface.name}"].id
               data            = routing_interface.dhcp
             } if try(routing_interface.default_gateway, null) != null
           ] if try(network.switch_stacks, null) != null
@@ -647,9 +647,9 @@ locals {
         for network in try(organization.networks, []) : [
           for switch_stack in try(network.switch_stacks, []) : [
             for routing_interface in try(switch_stack.routing_interfaces, []) : {
-              network_id      = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
-              switch_stack_id = meraki_switch_stack.net_switch_stacks["${domain.name}/${organization.name}/${network.name}/switch_stacks/${switch_stack.name}"].id
-              interface_id    = meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_not_first["${domain.name}/${organization.name}/${network.name}/switch_stacks/${switch_stack.name}/routing_interfaces/${routing_interface.name}"].id
+              network_id      = meraki_network.network["${organization.name}/${network.name}"].id
+              switch_stack_id = meraki_switch_stack.net_switch_stacks["${organization.name}/${network.name}/switch_stacks/${switch_stack.name}"].id
+              interface_id    = meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_not_first["${organization.name}/${network.name}/switch_stacks/${switch_stack.name}/routing_interfaces/${routing_interface.name}"].id
               data            = routing_interface.dhcp
             } if try(routing_interface.default_gateway, null) == null
           ] if try(network.switch_stacks, null) != null
@@ -688,8 +688,8 @@ locals {
         for network in try(organization.networks, []) : [
           for switch_stack in try(network.switch_stacks, []) : [
             for routing_static_route in try(switch_stack.routing_static_routes, []) : {
-              network_id      = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
-              switch_stack_id = meraki_switch_stack.net_switch_stacks["${domain.name}/${organization.name}/${network.name}/switch_stacks/${switch_stack.name}"].id
+              network_id      = meraki_network.network["${organization.name}/${network.name}"].id
+              switch_stack_id = meraki_switch_stack.net_switch_stacks["${organization.name}/${network.name}/switch_stacks/${switch_stack.name}"].id
               data            = try(routing_static_route, null)
             } if try(switch_stack.routing_static_routes, null) != null
           ] if try(network.switch_stacks, null) != null
