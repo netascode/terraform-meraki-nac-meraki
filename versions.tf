@@ -17,6 +17,3 @@ terraform {
     }
   }
 }
-provider "meraki" {
-  api_key = var.api_key
-}

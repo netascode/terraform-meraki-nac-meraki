@@ -51,7 +51,6 @@ module "meraki" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_api_key"></a> [api\_key](#input\_api\_key) | n/a | `string` | n/a | yes |
 | <a name="input_model"></a> [model](#input\_model) | As an alternative to YAML files, a native Terraform data structure can be provided as well. | `map(any)` | `{}` | no |
 | <a name="input_write_default_values_file"></a> [write\_default\_values\_file](#input\_write\_default\_values\_file) | Write all default values to a YAML file. Value is a path pointing to the file to be created. | `string` | `""` | no |
 | <a name="input_write_merged_yaml_file"></a> [write\_merged\_yaml\_file](#input\_write\_merged\_yaml\_file) | The path where the merged YAML output should be written | `string` | `""` | no |
