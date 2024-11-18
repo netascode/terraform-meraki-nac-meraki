@@ -141,7 +141,6 @@ resource "meraki_switch_dhcp_server_policy_arp_inspection_trusted_server" "net_s
   mac          = try(each.value.data.mac, local.defaults.meraki.networks.switch_dhcp_server_policy_arp_inspection_trusted_servers.mac, null)
   vlan         = try(each.value.data.vlan, local.defaults.meraki.networks.switch_dhcp_server_policy_arp_inspection_trusted_servers.vlan, null)
   ipv4_address = try(each.value.data.ipv4.address, local.defaults.meraki.networks.switch_dhcp_server_policy_arp_inspection_trusted_servers.ipv4.address, null)
-  //TODO @mcparaf missing Trusted Server name: Check with Marcin
 }
 
 locals {
@@ -199,14 +198,14 @@ resource "meraki_switch_link_aggregation" "net_switch_link_aggregation" {
   network_id = each.value.network_id
 
   switch_ports = [
-    for port in try(each.value.switch_ports, []) : {
-      serial  = port.serial  # Resolved serial
-      port_id = port.port_id # Port ID
+    for port in try(each.value.switch_ports, local.defaults.meraki.networks.switch.link.aggregations.switch_ports, null) : {
+      serial  = port.serial
+      port_id = port.port_id
     }
   ]
 
   switch_profile_ports = [
-    for profile in try(each.value.switch_profile_ports, []) : {
+    for profile in try(each.value.switch_profile_ports, local.defaults.meraki.networks.switch.link.aggregations.switch_profile_ports, null) : {
       profile = profile.profile
       port_id = profile.port_id
     }
