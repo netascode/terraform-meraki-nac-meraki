@@ -173,18 +173,18 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for switch_link_aggregation in try(network.switch_link_aggregations, []) : {
-            network_id            = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
-            link_aggregation_name = try(switch_link_aggregation.link_aggregation_name, null)
+            network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
             switch_ports = [
               for port in try(switch_link_aggregation.switch_ports, []) : {
-                device  = try(port.device, null)  # Device name
-                port_id = try(port.port_id, null) # Port ID
+                device  = port.device
+                port_id = port.port_id
+                serial  = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${port.device}"].serial
               }
             ]
             switch_profile_ports = [
               for profile in try(switch_link_aggregation.switch_profile_ports, []) : {
-                profile = try(profile.profile, null) # Profile name
-                port_id = try(profile.port_id, null) # Port ID
+                profile = profile.profile
+                port_id = profile.port_id
               }
             ]
           }
@@ -200,17 +200,18 @@ resource "meraki_switch_link_aggregation" "net_switch_link_aggregation" {
 
   switch_ports = [
     for port in try(each.value.switch_ports, []) : {
-      serial  = port.device  # Device name
+      serial  = port.serial  # Resolved serial
       port_id = port.port_id # Port ID
     }
   ]
 
   switch_profile_ports = [
     for profile in try(each.value.switch_profile_ports, []) : {
-      profile = profile.profile # Profile name
-      port_id = profile.port_id # Port ID
+      profile = profile.profile
+      port_id = profile.port_id
     }
   ]
+
   depends_on = [meraki_network_device_claim.net_device_claim]
 }
 locals {
