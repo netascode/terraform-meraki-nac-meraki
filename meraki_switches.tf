@@ -186,7 +186,7 @@ locals {
                 port_id = profile.port_id
               }
             ]
-          }
+          } if try(switch_link_aggregation.switch_profile_ports, null) != null
         ]
       ]
     ]
