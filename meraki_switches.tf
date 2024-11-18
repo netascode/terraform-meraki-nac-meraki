@@ -200,7 +200,7 @@ resource "meraki_switch_link_aggregation" "net_switch_link_aggregation" {
 
   switch_ports = [
     for port in try(each.value.switch_ports, []) : {
-      device  = port.device  # Device name
+      serial  = port.device  # Device name
       port_id = port.port_id # Port ID
     }
   ]
@@ -211,9 +211,6 @@ resource "meraki_switch_link_aggregation" "net_switch_link_aggregation" {
       port_id = profile.port_id # Port ID
     }
   ]
-
-  link_aggregation_name = try(each.value.link_aggregation_name, null)
-
   depends_on = [meraki_network_device_claim.net_device_claim]
 }
 locals {
