@@ -169,34 +169,53 @@ resource "meraki_switch_dscp_to_cos_mappings" "net_switch_dscp_to_cos_mappings" 
 
 locals {
   networks_switch_link_aggregations = flatten([
-
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for switch_link_aggregation in try(network.switch_link_aggregations, []) : {
-            network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
-
-            data = try(switch_link_aggregation, null)
-          } if try(network.switch_link_aggregations, null) != null
-        ] if try(organization.networks, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+            network_id            = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+            link_aggregation_name = try(switch_link_aggregation.link_aggregation_name, null)
+            switch_ports = [
+              for port in try(switch_link_aggregation.switch_ports, []) : {
+                device  = try(port.device, null)  # Device name
+                port_id = try(port.port_id, null) # Port ID
+              }
+            ]
+            switch_profile_ports = [
+              for profile in try(switch_link_aggregation.switch_profile_ports, []) : {
+                profile = try(profile.profile, null) # Profile name
+                port_id = try(profile.port_id, null) # Port ID
+              }
+            ]
+          }
+        ]
+      ]
+    ]
   ])
 }
-
-//TODO @jon-humphries need to test with data model
 resource "meraki_switch_link_aggregation" "net_switch_link_aggregation" {
-  for_each   = { for i, v in local.networks_switch_link_aggregations : i => v }
+  for_each = { for i, v in local.networks_switch_link_aggregations : i => v }
+
   network_id = each.value.network_id
 
-  switch_ports         = try(each.value.data.switch_ports, local.defaults.meraki.networks.networks_switch_link_aggregations.switch_ports, null)
-  switch_profile_ports = try(each.value.data.switch_profile_ports, local.defaults.meraki.networks.networks_switch_link_aggregations.switch_profile_ports, null)
+  switch_ports = [
+    for port in try(each.value.switch_ports, []) : {
+      device  = port.device  # Device name
+      port_id = port.port_id # Port ID
+    }
+  ]
+
+  switch_profile_ports = [
+    for profile in try(each.value.switch_profile_ports, []) : {
+      profile = profile.profile # Profile name
+      port_id = profile.port_id # Port ID
+    }
+  ]
+
+  link_aggregation_name = try(each.value.link_aggregation_name, null)
 
   depends_on = [meraki_network_device_claim.net_device_claim]
 }
-
-
-
 locals {
   networks_switch_mtu = flatten([
 
