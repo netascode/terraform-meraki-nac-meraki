@@ -2,7 +2,7 @@ locals {
   organizations = flatten([
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : {
-        organization_name = format("%s/%s", domain.name, org.name),
+        organization_name = org.name,
         # management_details = [{
         #   name  = "MSP ID",
         #   value = "123456"  # Example MSP ID, can be customized
@@ -44,8 +44,8 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : [
         for network in try(org.networks, []) : {
-          key             = format("%s/%s/%s", domain.name, org.name, network.name)
-          organization_id = meraki_organization.organization[format("%s/%s", domain.name, org.name)].id
+          key             = format("%s/%s", org.name, network.name)
+          organization_id = meraki_organization.organization[org.name].id
           name            = try(network.name, local.defaults.meraki.organizations.networks.name)
           notes           = try(network.notes, local.defaults.meraki.organizations.networks.notes, "")
           product_types   = try(network.product_types, local.defaults.meraki.organizations.networks.product_types, ["appliance", "switch", "wireless"])
@@ -74,7 +74,7 @@ locals {
   login_security = flatten([
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : {
-        organization_id                                     = meraki_organization.organization[format("%s/%s", domain.name, org.name)].id
+        organization_id                                     = meraki_organization.organization[org.name].id
         enforce_password_expiration                         = try(org.login_security.enforce_password_expiration, local.defaults.meraki.organizations.login_security.enforce_password_expiration, null)
         password_expiration_days                            = try(org.login_security.password_expiration_days, local.defaults.meraki.organizations.login_security.password_expiration_days, null)
         enforce_different_passwords                         = try(org.login_security.enforce_different_passwords, local.defaults.meraki.organizations.login_security.enforce_different_passwords, null)
@@ -121,7 +121,7 @@ locals {
   snmp = flatten([
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : {
-        organization_id = meraki_organization.organization[format("%s/%s", domain.name, org.name)].id
+        organization_id = meraki_organization.organization[org.name].id
         v2c_enabled     = try(org.snmp.v2c_enabled, local.defaults.meraki.organizations.snmp.v2c_enabled, null)
         v3_enabled      = try(org.snmp.v3_enabled, local.defaults.meraki.organizations.snmp.v3_enabled, null)
         v3_auth_mode    = try(org.snmp.v3_auth_mode, local.defaults.meraki.organizations.snmp.v3_auth_mode, null)
@@ -153,13 +153,13 @@ locals {
       for org in try(domain.organizations, []) : [
         for admin in try(org.admins, []) : {
           key                   = format("%s/%s", org.name, try(admin.name, local.defaults.meraki.organizations.admins.name, null))
-          organization_id       = meraki_organization.organization[format("%s/%s", domain.name, org.name)].id
+          organization_id       = meraki_organization.organization[org.name].id
           name                  = try(admin.name, local.defaults.meraki.organizations.admins.name, null)
           email                 = try(admin.email, local.defaults.meraki.organizations.admins.email, null)
           authentication_method = try(admin.authentication_method, local.defaults.meraki.organizations.admins.authentication_method, null)
           org_access            = try(admin.org_access, local.defaults.meraki.organizations.admins.org_access, null)
           networks = [for network in try(admin.networks, []) : {
-            id     = meraki_network.network["${domain.name}/${org.name}/${network.id}"].id
+            id     = meraki_network.network["${org.name}/${network.id}"].id
             access = try(network.access, local.defaults.meraki.organizations.admins.networks.access, null)
           }]
           tags = [for tag in try(admin.tags, []) : {
@@ -186,7 +186,7 @@ locals {
   inventory_claim = flatten([
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : {
-        organization_id = meraki_organization.organization[format("%s/%s", domain.name, org.name)].id
+        organization_id = meraki_organization.organization[org.name].id
         licenses = [
           for license in try(org.inventory_claim.licenses, []) : {
             key  = license.key
@@ -221,10 +221,10 @@ locals {
   adaptive_policy_settings = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : {
-        org_id = meraki_organization.organization[format("%s/%s", domain.name, organization.name)].id
+        org_id = meraki_organization.organization[organization.name].id
         enabled_networks = [
           for network in try(organization.adaptive_policy_settings.enabled_networks, []) :
-          meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network)].id
+          meraki_network.network[format("%s/%s", organization.name, network)].id
         ]
       } if try(organization.adaptive_policy_settings, null) != null
     ] if try(domain.organizations, null) != null
@@ -244,8 +244,8 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for group in try(organization.adaptive_policy_groups, []) : {
-          org_id      = meraki_organization.organization[format("%s/%s", domain.name, organization.name)].id
-          key         = format("%s/%s/adaptive_policy_groups/%s", domain.name, organization.name, group.name)
+          org_id      = meraki_organization.organization[organization.name].id
+          key         = format("%s/adaptive_policy_groups/%s", organization.name, group.name)
           group_name  = try(group.name, local.defaults.meraki.organizations.adaptive_policy_groups.name, null)
           sgt         = try(group.sgt, local.defaults.meraki.organizations.adaptive_policy_groups.sgt, null)
           description = try(group.description, local.defaults.meraki.organizations.adaptive_policy_groups.description, null)
@@ -258,12 +258,12 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for acl in try(organization.adaptive_policy_acls, []) : {
-          org_id      = meraki_organization.organization[format("%s/%s", domain.name, organization.name)].id
+          org_id      = meraki_organization.organization[organization.name].id
           acl_name    = try(acl.name, local.defaults.meraki.organizations.adaptive_policy_acls.name, null)
           description = try(acl.description, local.defaults.meraki.organizations.adaptive_policy_acls.description, null)
           rules       = try(acl.rules, local.defaults.meraki.organizations.adaptive_policy_acls.rules, null)
           ip_version  = try(acl.ip_version, local.defaults.meraki.organizations.adaptive_policy_acls.ip_version, null)
-          key         = format("%s/%s/adaptive_policy_acls/%s", domain.name, organization.name, acl.name)
+          key         = format("%s/adaptive_policy_acls/%s", organization.name, acl.name)
         } if try(organization.adaptive_policy_acls, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
@@ -273,17 +273,17 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for policy in try(organization.adaptive_policy_policies, []) : {
-          org_id                 = meraki_organization.organization[format("%s/%s", domain.name, organization.name)].id
+          org_id                 = meraki_organization.organization[organization.name].id
           policy_name            = try(policy.name, local.defaults.meraki.organizations.adaptive_policy_policies.name, null)
           source_group_name      = try(policy.source_group.name, local.defaults.meraki.organizations.adaptive_policy_policies.source_group.name, null)
-          source_group_id        = meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/%s/adaptive_policy_groups/%s", domain.name, organization.name, policy.source_group.name)].id
+          source_group_id        = meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/adaptive_policy_groups/%s", organization.name, policy.source_group.name)].id
           source_group_sgt       = try(policy.source_group.sgt, local.defaults.meraki.organizations.adaptive_policy_policies.source_group.sgt, null)
           destination_group_name = try(policy.destination_group.name, local.defaults.meraki.organizations.adaptive_policy_policies.destination_group.name, null)
-          destination_group_id   = meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/%s/adaptive_policy_groups/%s", domain.name, organization.name, policy.destination_group.name)].id
+          destination_group_id   = meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/adaptive_policy_groups/%s", organization.name, policy.destination_group.name)].id
           destination_group_sgt  = try(policy.destination_group.sgt, local.defaults.meraki.organizations.adaptive_policy_policies.destination_group.sgt, null)
           acls = [
             for acl in policy.acls : {
-              id   = meraki_organization_adaptive_policy_acl.organizations_adaptive_policy_acl[format("%s/%s/adaptive_policy_acls/%s", domain.name, organization.name, acl.name)].id
+              id   = meraki_organization_adaptive_policy_acl.organizations_adaptive_policy_acl[format("%s/adaptive_policy_acls/%s", organization.name, acl.name)].id
               name = acl.name
             }
           ]
@@ -344,7 +344,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for obj in try(organization.policy_objects, []) : {
-          org_id   = meraki_organization.organization[format("%s/%s", domain.name, organization.name)].id
+          org_id   = meraki_organization.organization[organization.name].id
           name     = try(obj.name, local.defaults.meraki.organizations.adaptive_policy_object.name, null)
           category = try(obj.category, local.defaults.meraki.organizations.adaptive_policy_object.category, null)
           type     = try(obj.type, local.defaults.meraki.organizations.adaptive_policy_object.type, null)
@@ -377,7 +377,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for group in try(organization.policy_objects_groups, []) : {
-          org_id     = meraki_organization.organization[format("%s/%s", domain.name, organization.name)].id
+          org_id     = meraki_organization.organization[organization.name].id
           name       = group.name
           category   = group.category
           object_ids = [for name in try(group.object_names, []) : meraki_organization_policy_object.policy_object[name].id]
@@ -402,7 +402,7 @@ locals {
 
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : {
-        org_id = meraki_organization.organization["${domain.name}/${organization.name}"].id
+        org_id = meraki_organization.organization[organization.name].id
 
         data = try(organization.appliance_vpn_third_party_vpn_peers, null)
       } if try(organization.appliance_vpn_third_party_vpn_peers, null) != null
@@ -423,7 +423,7 @@ locals {
 
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : {
-        org_id = meraki_organization.organization["${domain.name}/${organization.name}"].id
+        org_id = meraki_organization.organization[organization.name].id
 
         data = try(organization.appliance_vpn_vpn_firewall_rules, null)
       } if try(organization.appliance_vpn_vpn_firewall_rules, null) != null

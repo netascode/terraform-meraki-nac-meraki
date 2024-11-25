@@ -5,7 +5,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for group_policy in try(network.group_policies, []) : {
-            network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+            network_id = meraki_network.network["${organization.name}/${network.name}"].id
             data       = try(group_policy, null)
           } if try(network.group_policies, null) != null
         ] if try(organization.networks, null) != null
@@ -69,7 +69,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
-          network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+          network_id = meraki_network.network["${organization.name}/${network.name}"].id
           data       = try(network.settings, null)
         } if try(network.settings, null) != null
       ] if try(domain.organizations, null) != null
@@ -96,7 +96,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
-          network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+          network_id = meraki_network.network["${organization.name}/${network.name}"].id
 
           data = try(network.snmp, null)
         } if try(network.snmp, null) != null
@@ -121,7 +121,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
-          network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+          network_id = meraki_network.network["${organization.name}/${network.name}"].id
 
           data = try(network.syslog_servers, null)
         } if try(network.syslog_servers, null) != null
@@ -145,7 +145,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for vlan_profile in try(network.vlan_profiles, []) : {
-            network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+            network_id = meraki_network.network["${organization.name}/${network.name}"].id
 
             data = try(vlan_profile, null)
           } if try(network.vlan_profiles, null) != null
@@ -171,7 +171,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
-          network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+          network_id = meraki_network.network["${organization.name}/${network.name}"].id
 
           serials = [for d in network.devices : d.serial]
         } if try(network.devices, null) != null
@@ -193,7 +193,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for floor_plan in try(network.floor_plans, []) : {
-            network_id = meraki_network.network["${domain.name}/${organization.name}/${network.name}"].id
+            network_id = meraki_network.network["${organization.name}/${network.name}"].id
             data = {
               name                    = try(floor_plan.name, null)
               bottom_left_corner_lat  = try(floor_plan.bottom_left_corner.lat, null)

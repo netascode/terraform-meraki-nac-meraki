@@ -5,7 +5,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : {
-            key  = format("%s/%s/%s/devices/%s", domain.name, organization.name, network.name, device.name)
+            key  = format("%s/%s/devices/%s", organization.name, network.name, device.name)
             data = device
           }
         ]
@@ -37,7 +37,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : {
-            device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
+            device_serial = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
 
             data = try(device.appliance_uplinks_settings, null)
           } if try(device.appliance_uplinks_settings, null) != null
@@ -90,7 +90,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : {
-            device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
+            device_serial = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
 
             data = try(device.management_interface, null)
           } if try(device.management_interface, null) != null
@@ -130,11 +130,11 @@ locals {
           for device in try(network.devices, []) : [
             for switch_port in try(device.switch_ports, []) : [
               for port_id in split(",", switch_port.port_ids) : {
-                device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
+                device_serial = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
 
                 data                     = merge(switch_port, { port_id = port_id })
-                port_schedule_id         = meraki_switch_port_schedule.net_switch_port_schedules["${domain.name}/${organization.name}/${network.name}/port_schedules/${switch_port.port_schedule_name}"].id
-                adaptive_policy_group_id = try(meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/%s/adaptive_policy_groups/%s", domain.name, organization.name, switch_port.adaptive_policy_group_name)].id, null)
+                port_schedule_id         = meraki_switch_port_schedule.net_switch_port_schedules["${organization.name}/${network.name}/port_schedules/${switch_port.port_schedule_name}"].id
+                adaptive_policy_group_id = try(meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/adaptive_policy_groups/%s", organization.name, switch_port.adaptive_policy_group_name)].id, null)
               } if replace(port_id, "-", "") == port_id
             ]
           ]
@@ -150,11 +150,11 @@ locals {
               for switch_port in try(device.switch_ports, []) : [
                 for port_range in split(",", switch_port.port_ids) : [
                   for p in range(split("-", port_range)[0], split("-", port_range)[1]) : {
-                    device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
+                    device_serial = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
 
                     data                     = merge(switch_port, { port_id = p })
-                    port_schedule_id         = meraki_switch_port_schedule.net_switch_port_schedules["${domain.name}/${organization.name}/${network.name}/port_schedules/${switch_port.port_schedule_name}"].id
-                    adaptive_policy_group_id = try(meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/%s/adaptive_policy_groups/%s", domain.name, organization.name, switch_port.adaptive_policy_group_name)].id, null)
+                    port_schedule_id         = meraki_switch_port_schedule.net_switch_port_schedules["${organization.name}/${network.name}/port_schedules/${switch_port.port_schedule_name}"].id
+                    adaptive_policy_group_id = try(meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/adaptive_policy_groups/%s", organization.name, switch_port.adaptive_policy_group_name)].id, null)
                   }
                 ] if replace(port_range, "-", "") != port_range
               ]
@@ -210,8 +210,8 @@ locals {
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : [
             for switch_routing_interface in try(device.switch_routing_interfaces, []) : {
-              device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
-              interface_key = format("%s/%s/%s/switch_routing_interfaces/%s", domain.name, organization.name, network.name, switch_routing_interface.name)
+              device_serial = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
+              interface_key = format("%s/%s/switch_routing_interfaces/%s", organization.name, network.name, switch_routing_interface.name)
               data          = switch_routing_interface
             }
           ] if try(device.switch_routing_interfaces, null) != null
@@ -249,8 +249,8 @@ locals {
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : [
             for switch_routing_interface in try(device.switch_routing_interfaces, []) : {
-              device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
-              interface_id  = meraki_switch_routing_interface.devices_switch_routing_interface["${domain.name}/${organization.name}/${network.name}/switch_routing_interfaces/${switch_routing_interface.name}"].id
+              device_serial = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
+              interface_id  = meraki_switch_routing_interface.devices_switch_routing_interface["${organization.name}/${network.name}/switch_routing_interfaces/${switch_routing_interface.name}"].id
               data          = try(switch_routing_interface.dhcp, null)
             } if try(switch_routing_interface.dhcp, null) != null
           ]
@@ -288,7 +288,7 @@ locals {
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : [
             for switch_routing_static_route in try(device.switch_routing_static_routes, []) : {
-              device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
+              device_serial = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
               data          = switch_routing_static_route
             }
           ] if try(device.switch_routing_static_routes, null) != null
@@ -318,7 +318,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : {
-            device_serial = meraki_device.device["${domain.name}/${organization.name}/${network.name}/devices/${device.name}"].serial
+            device_serial = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
             data          = device.wireless_bluetooth_settings
           } if try(device.wireless_bluetooth_settings, null) != null
         ]
