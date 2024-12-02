@@ -143,6 +143,7 @@ module "meraki" {
 | [meraki_wireless_rf_profile.net_wireless_rf_profiles](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_rf_profile) | resource |
 | [meraki_wireless_settings.net_wireless_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_settings) | resource |
 | [meraki_wireless_ssid.net_wireless_ssids](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_ssid) | resource |
+| [meraki_wireless_ssid_bonjour_forwarding.wireless_ssids_bonjour_forwarding](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_ssid_bonjour_forwarding) | resource |
 | [meraki_wireless_ssid_device_type_group_policies.net_wireless_ssids_device_type_group_policies](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_ssid_device_type_group_policies) | resource |
 | [meraki_wireless_ssid_eap_override.net_wireless_ssid_eap_override](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_ssid_eap_override) | resource |
 | [meraki_wireless_ssid_hotspot_20.net_wireless_ssids_hotspot20](https://registry.terraform.io/providers/CiscoDevNet/meraki/0.1.3/docs/resources/wireless_ssid_hotspot_20) | resource |
