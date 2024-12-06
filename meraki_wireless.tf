@@ -522,6 +522,35 @@ resource "meraki_wireless_ssid_traffic_shaping_rules" "net_wireless_ssids_traffi
 
 }
 
+
+locals {
+  networks_wireless_ssids_bonjour_forwarding = flatten([
+
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for wireless_ssid in try(network.wireless_ssids, []) : {
+            network_id = meraki_network.network["${organization.name}/${network.name}"].id
+            number     = local.wireless_ssids_map["${organization.name}/${network.name}/wireless_ssid/${wireless_ssid.name}"]
+            data       = try(wireless_ssid.bonjour_forwarding, null)
+          } if try(wireless_ssid.bonjour_forwarding, null) != null
+        ] if try(organization.networks, null) != null
+      ] if try(domain.organizations, null) != null
+    ] if try(local.meraki.domains, null) != null
+  ])
+}
+
+resource "meraki_wireless_ssid_bonjour_forwarding" "wireless_ssids_bonjour_forwarding" {
+  for_each   = { for i, v in local.networks_wireless_ssids_bonjour_forwarding : i => v }
+  network_id = each.value.network_id
+  number     = each.value.number
+
+  enabled           = try(each.value.data.enabled, local.defaults.meraki.networks.networks_wireless_ssids_bonjour_forwarding.enabled, null)
+  rules             = try(each.value.data.rules, local.defaults.meraki.networks.networks_wireless_ssids_bonjour_forwarding.rules, null)
+  exception_enabled = try(each.value.data.exception.enabled, local.defaults.meraki.networks.networks_wireless_ssids_bonjour_forwarding.exception.enabled, null)
+
+}
+
 locals {
   networks_networks_wireless_alternate_management_interface = flatten([
 
