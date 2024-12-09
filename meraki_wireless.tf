@@ -313,6 +313,10 @@ resource "meraki_wireless_ssid_device_type_group_policies" "net_wireless_ssids_d
   enabled              = try(each.value.data.enabled, local.defaults.meraki.networks.networks_wireless_ssids_device_type_group_policies.enabled, null)
   device_type_policies = try(each.value.data.device_type_policies, local.defaults.meraki.networks.networks_wireless_ssids_device_type_group_policies.device_type_policies, null)
 
+  depends_on = [
+    meraki_wireless_ssid.net_wireless_ssids
+  ]
+
 }
 
 locals {
@@ -339,7 +343,9 @@ resource "meraki_wireless_ssid_l3_firewall_rules" "net_wireless_ssids_l3_firewal
 
   rules            = try(each.value.data.rules, local.defaults.meraki.networks.networks_wireless_ssids_firewall_l3_firewall_rules.rules, null)
   allow_lan_access = try(each.value.data.allow_lan_access, local.defaults.meraki.networks.networks_wireless_ssids_firewall_l3_firewall_rules.allow_lan_access, null)
-
+  depends_on = [
+    meraki_wireless_ssid.net_wireless_ssids
+  ]
 }
 
 
@@ -374,7 +380,9 @@ resource "meraki_wireless_ssid_hotspot_20" "net_wireless_ssids_hotspot20" {
   roam_consort_ois    = try(each.value.data.roam_consort_ois, local.defaults.meraki.networks.networks_wireless_ssids_hotspot20.roam_consort_ois, null)
   mcc_mncs            = try(each.value.data.mcc_mncs, local.defaults.meraki.networks.networks_wireless_ssids_hotspot20.mcc_mncs, null)
   nai_realms          = try(each.value.data.nai_realms, local.defaults.meraki.networks.networks_wireless_ssids_hotspot20.nai_realms, null)
-
+  depends_on = [
+    meraki_wireless_ssid.net_wireless_ssids
+  ]
 }
 
 locals {
@@ -405,7 +413,9 @@ resource "meraki_wireless_ssid_identity_psk" "net_wireless_ssids_identity_psks" 
   passphrase      = try(each.value.data.passphrase, local.defaults.meraki.networks.networks_wireless_ssids_identity_psks.passphrase, null)
   group_policy_id = try(each.value.data.group_policy_id, local.defaults.meraki.networks.networks_wireless_ssids_identity_psks.group_policy_id, null)
   expires_at      = try(each.value.data.expires_at, local.defaults.meraki.networks.networks_wireless_ssids_identity_psks.expires_at, null)
-
+  depends_on = [
+    meraki_wireless_ssid.net_wireless_ssids
+  ]
 }
 
 
@@ -434,7 +444,9 @@ resource "meraki_wireless_ssid_schedules" "net_wireless_ssids_schedules" {
   enabled           = try(each.value.data.enabled, local.defaults.meraki.networks.networks_wireless_ssids_schedules.enabled, null)
   ranges            = try(each.value.data.ranges, local.defaults.meraki.networks.networks_wireless_ssids_schedules.ranges, null)
   ranges_in_seconds = try(each.value.data.ranges_in_seconds, local.defaults.meraki.networks.networks_wireless_ssids_schedules.ranges_in_seconds, null)
-
+  depends_on = [
+    meraki_wireless_ssid.net_wireless_ssids
+  ]
 }
 
 locals {
@@ -490,7 +502,9 @@ resource "meraki_wireless_ssid_splash_settings" "net_wireless_ssids_splash_setti
   sentry_enrollment_systems_manager_network_id  = try(each.value.data.sentry_enrollment.systems_manager_network.id, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.sentry_enrollment.systems_manager_network.id, null)
   sentry_enrollment_strength                    = try(each.value.data.sentry_enrollment.strength, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.sentry_enrollment.strength, null)
   sentry_enrollment_enforced_systems            = try(each.value.data.sentry_enrollment.enforced_systems, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.sentry_enrollment.enforced_systems, null)
-
+  depends_on = [
+    meraki_wireless_ssid.net_wireless_ssids
+  ]
 }
 
 
@@ -519,7 +533,9 @@ resource "meraki_wireless_ssid_traffic_shaping_rules" "net_wireless_ssids_traffi
   traffic_shaping_enabled = try(each.value.data.traffic_shaping_enabled, local.defaults.meraki.networks.networks_wireless_ssids_traffic_shaping_rules.traffic_shaping_enabled, null)
   default_rules_enabled   = try(each.value.data.default_rules_enabled, local.defaults.meraki.networks.networks_wireless_ssids_traffic_shaping_rules.default_rules_enabled, null)
   rules                   = try(each.value.data.rules, local.defaults.meraki.networks.networks_wireless_ssids_traffic_shaping_rules.rules, null)
-
+  depends_on = [
+    meraki_wireless_ssid.net_wireless_ssids
+  ]
 }
 
 
@@ -548,7 +564,9 @@ resource "meraki_wireless_ssid_bonjour_forwarding" "wireless_ssids_bonjour_forwa
   enabled           = try(each.value.data.enabled, local.defaults.meraki.networks.networks_wireless_ssids_bonjour_forwarding.enabled, null)
   rules             = try(each.value.data.rules, local.defaults.meraki.networks.networks_wireless_ssids_bonjour_forwarding.rules, null)
   exception_enabled = try(each.value.data.exception.enabled, local.defaults.meraki.networks.networks_wireless_ssids_bonjour_forwarding.exception.enabled, null)
-
+  depends_on = [
+    meraki_wireless_ssid.net_wireless_ssids
+  ]
 }
 
 locals {
@@ -582,7 +600,9 @@ resource "meraki_wireless_alternate_management_interface" "wireless_alternate_ma
   vlan_id       = try(each.value.data.vlan_id, local.defaults.meraki.networks.networks_wireless_alternate_management_interface.vlan_id, null)
   protocols     = try(each.value.data.protocols, local.defaults.meraki.networks.networks_wireless_alternate_management_interface.protocols, null)
   access_points = length(each.value.access_points) > 0 ? each.value.access_points : null
-
+  depends_on = [
+    meraki_wireless_ssid.net_wireless_ssids
+  ]
 }
 locals {
   networks_networks_wireless_bluetooth_settings = flatten([
@@ -609,5 +629,7 @@ resource "meraki_wireless_network_bluetooth_settings" "wireless_bluetooth_settin
   major_minor_assignment_mode = try(each.value.data.major_minor_assignment_mode, local.defaults.meraki.networks.networks_wireless_bluetooth_settings.major_minor_assignment_mode, null)
   major                       = try(each.value.data.major, local.defaults.meraki.networks.networks_wireless_bluetooth_settings.major, null)
   minor                       = try(each.value.data.minor, local.defaults.meraki.networks.networks_wireless_bluetooth_settings.minor, null)
-
+  depends_on = [
+    meraki_wireless_ssid.net_wireless_ssids
+  ]
 }
