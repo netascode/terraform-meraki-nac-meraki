@@ -195,7 +195,7 @@ resource "meraki_switch_link_aggregation" "net_switch_link_aggregation" {
   switch_ports         = each.value.switch_ports
   switch_profile_ports = try(each.value.data.switch_profile_ports, local.defaults.meraki.networks.networks_switch_link_aggregations.switch_profile_ports, null)
 
-  depends_on = [meraki_network_device_claim.net_device_claim]
+  depends_on = [meraki_switch_stack.net_switch_stacks]
 }
 
 
