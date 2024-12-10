@@ -175,7 +175,10 @@ locals {
         for network in try(organization.networks, []) : [
           for switch_link_aggregation in try(network.switch_link_aggregations, []) : {
             network_id = meraki_network.network["${organization.name}/${network.name}"].id
-
+            switch_ports = [for p in switch_link_aggregation.switch_ports : {
+              serial  = meraki_device.device["${organization.name}/${network.name}/devices/${p.device}"].serial
+              port_id = p.port_id
+            }]
             data = try(switch_link_aggregation, null)
           } if try(network.switch_link_aggregations, null) != null
         ] if try(organization.networks, null) != null
@@ -189,10 +192,10 @@ resource "meraki_switch_link_aggregation" "net_switch_link_aggregation" {
   for_each   = { for i, v in local.networks_switch_link_aggregations : i => v }
   network_id = each.value.network_id
 
-  switch_ports         = try(each.value.data.switch_ports, local.defaults.meraki.networks.networks_switch_link_aggregations.switch_ports, null)
+  switch_ports         = each.value.switch_ports
   switch_profile_ports = try(each.value.data.switch_profile_ports, local.defaults.meraki.networks.networks_switch_link_aggregations.switch_profile_ports, null)
 
-  depends_on = [meraki_network_device_claim.net_device_claim]
+  depends_on = [meraki_switch_stack.net_switch_stacks]
 }
 
 
