@@ -285,8 +285,8 @@ locals {
         for network in try(organization.networks, []) : [
           for switch_qos_rule in try(network.switch_qos_rules, []) : {
             network_id = meraki_network.network["${organization.name}/${network.name}"].id
-
-            data = try(switch_qos_rule, null)
+            key        = "${organization.name}/${network.name}/qos_rules/${switch_qos_rule.qos_rule_name}"
+            data       = try(switch_qos_rule, null)
           } if try(network.switch_qos_rules, null) != null
         ] if try(organization.networks, null) != null
       ] if try(domain.organizations, null) != null
@@ -295,7 +295,7 @@ locals {
 }
 
 resource "meraki_switch_qos_rule" "net_switch_qos_rule" {
-  for_each   = { for i, v in local.networks_switch_qos_rules : i => v }
+  for_each   = { for i, v in local.networks_switch_qos_rules : v.key => v }
   network_id = each.value.network_id
 
   vlan           = try(each.value.data.vlan, local.defaults.meraki.networks.networks_switch_qos_rules.vlan, null)
@@ -310,6 +310,25 @@ resource "meraki_switch_qos_rule" "net_switch_qos_rule" {
 
 }
 
+locals {
+  networks_switch_qos_rules_orders = flatten([
+
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : {
+          network_id = meraki_network.network["${organization.name}/${network.name}"].id
+          rule_ids   = [for r in network.switch_qos_rules : meraki_switch_qos_rule.net_switch_qos_rule["${organization.name}/${network.name}/qos_rules/${r.qos_rule_name}"].id]
+        } if try(network.switch_qos_rules, null) != null
+      ] if try(domain.organizations, null) != null
+    ] if try(local.meraki.domains, null) != null
+  ])
+}
+
+resource "meraki_switch_qos_rule_order" "net_switch_qos_rule_order" {
+  for_each   = { for i, v in local.networks_switch_qos_rules_orders : i => v }
+  network_id = each.value.network_id
+  rule_ids   = each.value.rule_ids
+}
 
 locals {
   networks_switch_routing_multicast = flatten([
