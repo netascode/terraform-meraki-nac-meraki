@@ -345,6 +345,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for obj in try(organization.policy_objects, []) : {
           org_id   = meraki_organization.organization[organization.name].id
+          key      = "${organization.name}/${obj.name}"
           name     = try(obj.name, local.defaults.meraki.organizations.adaptive_policy_object.name, null)
           category = try(obj.category, local.defaults.meraki.organizations.adaptive_policy_object.category, null)
           type     = try(obj.type, local.defaults.meraki.organizations.adaptive_policy_object.type, null)
@@ -360,7 +361,7 @@ locals {
 
 # Create Policy Objects
 resource "meraki_organization_policy_object" "policy_object" {
-  for_each = { for obj in local.policy_objects : obj.name => obj }
+  for_each = { for obj in local.policy_objects : obj.key => obj }
 
   organization_id = each.value.org_id
   category        = each.value.category
@@ -379,8 +380,9 @@ locals {
         for group in try(organization.policy_objects_groups, []) : {
           org_id     = meraki_organization.organization[organization.name].id
           name       = group.name
+          key        = "${organization.name}/${group.name}"
           category   = group.category
-          object_ids = [for name in try(group.object_names, []) : meraki_organization_policy_object.policy_object[name].id]
+          object_ids = [for name in try(group.object_names, []) : meraki_organization_policy_object.policy_object["${organization.name}/${name}"].id]
         } if try(organization.policy_objects_groups, null) != null
       ]
     ]
@@ -389,7 +391,7 @@ locals {
 
 # Create Policy Object Groups (if applicable)
 resource "meraki_organization_policy_object_group" "policy_object_group" {
-  for_each = { for group in local.policy_object_groups : group.name => group }
+  for_each = { for group in local.policy_object_groups : group.key => group }
 
   organization_id = each.value.org_id
   name            = each.value.name
