@@ -7,6 +7,7 @@ locals {
           for group_policy in try(network.group_policies, []) : {
             network_id = meraki_network.network["${organization.name}/${network.name}"].id
             data       = try(group_policy, null)
+            key        = "${organization.name}/${network.name}/${group_policy.name}"
           } if try(network.group_policies, null) != null
         ] if try(organization.networks, null) != null
       ] if try(domain.organizations, null) != null
@@ -15,7 +16,7 @@ locals {
 }
 
 resource "meraki_network_group_policy" "net_group_policies" {
-  for_each   = { for i, v in local.networks_group_policies : i => v }
+  for_each   = { for v in local.networks_group_policies : v.key => v }
   network_id = each.value.network_id
 
   name                                              = try(each.value.data.name, local.defaults.meraki.networks.group_policies.name, null)
