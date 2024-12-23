@@ -396,9 +396,10 @@ locals {
         for network in try(organization.networks, []) : [
           for wireless_ssid in try(network.wireless_ssids, []) : [
             for identity_psk in try(wireless_ssid.identity_psks, []) : {
-              network_id = meraki_network.network["${organization.name}/${network.name}"].id
-              number     = meraki_wireless_ssid.net_wireless_ssids["${organization.name}/${network.name}/ssids/${wireless_ssid.name}"].number
-              data       = try(identity_psk, null)
+              network_id      = meraki_network.network["${organization.name}/${network.name}"].id
+              number          = meraki_wireless_ssid.net_wireless_ssids["${organization.name}/${network.name}/ssids/${wireless_ssid.name}"].number
+              data            = try(identity_psk, null)
+              group_policy_id = meraki_network_group_policy.net_group_policies["${organization.name}/${network.name}/${identity_psk.group_policy_name}"].id
             } if try(wireless_ssid.identity_psks, null) != null
           ] if try(network.wireless_ssids, null) != null
         ] if try(organization.networks, null) != null
@@ -411,10 +412,11 @@ resource "meraki_wireless_ssid_identity_psk" "net_wireless_ssids_identity_psks" 
   for_each        = { for i, v in local.networks_wireless_ssids_identity_psks : i => v }
   network_id      = each.value.network_id
   number          = each.value.number
-  name            = try(each.value.data.name, local.defaults.meraki.networks.wireless_ssids_identity_psks.name, null)
-  passphrase      = try(each.value.data.passphrase, local.defaults.meraki.networks.wireless_ssids_identity_psks.passphrase, null)
-  group_policy_id = try(each.value.data.group_policy_id, local.defaults.meraki.networks.wireless_ssids_identity_psks.group_policy_id, null)
-  expires_at      = try(each.value.data.expires_at, local.defaults.meraki.networks.wireless_ssids_identity_psks.expires_at, null)
+  group_policy_id = each.value.group_policy_id
+
+  name       = try(each.value.data.name, local.defaults.meraki.networks.wireless_ssids_identity_psks.name, null)
+  passphrase = try(each.value.data.passphrase, local.defaults.meraki.networks.wireless_ssids_identity_psks.passphrase, null)
+  expires_at = try(each.value.data.expires_at, local.defaults.meraki.networks.wireless_ssids_identity_psks.expires_at, null)
   depends_on = [
     meraki_wireless_ssid.net_wireless_ssids
   ]

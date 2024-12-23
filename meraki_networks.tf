@@ -15,6 +15,7 @@ locals {
                 protocol  = try(rule.protocol, null)
               }
             ]
+            key = "${organization.name}/${network.name}/${group_policy.name}"
           } if try(network.group_policies, null) != null
         ] if try(organization.networks, null) != null
       ] if try(domain.organizations, null) != null
@@ -23,8 +24,9 @@ locals {
 }
 
 resource "meraki_network_group_policy" "net_group_policies" {
-  for_each                                          = { for i, v in local.networks_group_policies : i => v }
-  network_id                                        = each.value.network_id
+  for_each   = { for v in local.networks_group_policies : v.key => v }
+  network_id = each.value.network_id
+
   name                                              = try(each.value.data.name, local.defaults.meraki.networks.group_policies.name, null)
   scheduling_enabled                                = try(each.value.data.scheduling.enabled, local.defaults.meraki.networks.group_policies.scheduling.enabled, null)
   scheduling_monday_active                          = try(each.value.data.scheduling.monday.active, local.defaults.meraki.networks.group_policies.scheduling.monday.active, null)
