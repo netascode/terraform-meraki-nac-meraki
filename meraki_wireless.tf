@@ -162,7 +162,7 @@ locals {
 resource "meraki_wireless_ssid" "net_wireless_ssids" {
   for_each   = { for v in local.networks_wireless_ssids : v.key => v }
   network_id = each.value.network_id
-  number     = each.value.data.number
+  number     = each.value.data.ssid_number
 
   name                                                                        = try(each.value.data.name, local.defaults.meraki.networks.networks_wireless_ssids.name, null)
   enabled                                                                     = try(each.value.data.enabled, local.defaults.meraki.networks.networks_wireless_ssids.enabled, null)
