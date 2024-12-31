@@ -300,10 +300,10 @@ resource "meraki_switch_qos_rule" "net_switch_qos_rule" {
 
   vlan           = try(each.value.data.vlan, local.defaults.meraki.networks.networks_switch_qos_rules.vlan, null)
   protocol       = try(each.value.data.protocol, local.defaults.meraki.networks.networks_switch_qos_rules.protocol, null)
-  src_port       = try(each.value.data.src_port, local.defaults.meraki.networks.networks_switch_qos_rules.src_port, null)
-  src_port_range = try(each.value.data.src_port_range, local.defaults.meraki.networks.networks_switch_qos_rules.src_port_range, null)
-  dst_port       = try(each.value.data.dst_port, local.defaults.meraki.networks.networks_switch_qos_rules.dst_port, null)
-  dst_port_range = try(each.value.data.dst_port_range, local.defaults.meraki.networks.networks_switch_qos_rules.dst_port_range, null)
+  src_port       = try(each.value.data.source_port, local.defaults.meraki.networks.networks_switch_qos_rules.source_port, null)
+  src_port_range = try(each.value.data.source_port_range, local.defaults.meraki.networks.networks_switch_qos_rules.source_port_range, null)
+  dst_port       = try(each.value.data.destination_port, local.defaults.meraki.networks.networks_switch_qos_rules.destination_port, null)
+  dst_port_range = try(each.value.data.destination_port_range, local.defaults.meraki.networks.networks_switch_qos_rules.destination_port_range, null)
   dscp           = try(each.value.data.dscp, local.defaults.meraki.networks.networks_switch_qos_rules.dscp, null)
 
   depends_on = [meraki_network_device_claim.net_device_claim]
