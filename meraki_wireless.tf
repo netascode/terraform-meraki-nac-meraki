@@ -141,31 +141,17 @@ resource "meraki_wireless_settings" "net_wireless_settings" {
   named_vlans_pool_dhcp_monitoring_duration = try(each.value.data.named_vlans.pool_dhcp_monitoring.duration, local.defaults.meraki.networks.networks_wireless_settings.named_vlans.pool_dhcp_monitoring.duration, null)
 
 }
-# Apply the Wireless SSIDs
+# Apply the Wireless SSIDs# Apply the Wireless SSIDs
 locals {
-  wireless_ssids_numbers_list = flatten([
-
-    for domain in try(local.meraki.domains, []) : [
-      for organization in try(domain.organizations, []) : [
-        for network in try(organization.networks, []) : [
-          for i, wireless_ssid in try(network.wireless_ssids, []) : {
-            key    = format("${organization.name}/${network.name}/wireless_ssid/${wireless_ssid.name}")
-            number = i
-          } if try(network.wireless_ssids, null) != null
-        ] if try(organization.networks, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
-  ])
-  wireless_ssids_map = { for w in local.wireless_ssids_numbers_list : w.key => w.number }
   networks_wireless_ssids = flatten([
 
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
-          for i, wireless_ssid in try(network.wireless_ssids, []) : {
+          for wireless_ssid in try(network.wireless_ssids, []) : {
             network_id = meraki_network.network["${organization.name}/${network.name}"].id
-            number     = i
             data       = try(wireless_ssid, null)
+            key        = "${organization.name}/${network.name}/ssids/${wireless_ssid.name}"
           } if try(network.wireless_ssids, null) != null
         ] if try(organization.networks, null) != null
       ] if try(domain.organizations, null) != null
@@ -174,9 +160,9 @@ locals {
 }
 
 resource "meraki_wireless_ssid" "net_wireless_ssids" {
-  for_each   = { for i, v in local.networks_wireless_ssids : i => v }
+  for_each   = { for v in local.networks_wireless_ssids : v.key => v }
   network_id = each.value.network_id
-  number     = each.value.number
+  number     = each.value.data.ssid_number
 
   name                                                                        = try(each.value.data.name, local.defaults.meraki.networks.networks_wireless_ssids.name, null)
   enabled                                                                     = try(each.value.data.enabled, local.defaults.meraki.networks.networks_wireless_ssids.enabled, null)
