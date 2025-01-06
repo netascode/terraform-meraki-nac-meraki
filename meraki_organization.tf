@@ -349,7 +349,7 @@ locals {
           name     = try(obj.name, local.defaults.meraki.organizations.adaptive_policy_object.name, null)
           category = try(obj.category, local.defaults.meraki.organizations.adaptive_policy_object.category, null)
           type     = try(obj.type, local.defaults.meraki.organizations.adaptive_policy_object.type, null)
-          cidr     = try(obj.cidr, local.defaults.meraki.organizations.adaptive_policy_object.cidr, null)
+          prefix   = try(obj.prefix, local.defaults.meraki.organizations.adaptive_policy_object.prefix, null)
           fqdn     = try(obj.fqdn, local.defaults.meraki.organizations.adaptive_policy_object.fqdn, null)
           mask     = try(obj.mask, local.defaults.meraki.organizations.adaptive_policy_object.mask, null)
           ip       = try(obj.ip, local.defaults.meraki.organizations.adaptive_policy_object.ip, null)
@@ -367,7 +367,7 @@ resource "meraki_organization_policy_object" "policy_object" {
   category        = each.value.category
   name            = each.value.name
   type            = each.value.type
-  cidr            = try(each.value.cidr, null)
+  cidr            = try(each.value.prefix, null)
   fqdn            = try(each.value.fqdn, null)
   mask            = try(each.value.mask, null)
   ip              = try(each.value.ip, null)
