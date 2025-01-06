@@ -279,7 +279,7 @@ locals {
           source_group_sgt       = try(policy.source_group.sgt, local.defaults.meraki.organizations.adaptive_policy.policies.source_group.sgt, null)
           source_group_id        = meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/adaptive_policy_groups/%s", organization.name, policy.source_group.name)].id
           destination_group_name = try(policy.destination_group.name, local.defaults.meraki.organizations.adaptive_policy.policies.destination_group.name, null)
-          destination_group_name = try(policy.destination_group.sgt, local.defaults.meraki.organizations.adaptive_policy.policies.destination_group.sgt, null)
+          destination_group_sgt  = try(policy.destination_group.sgt, local.defaults.meraki.organizations.adaptive_policy.policies.destination_group.sgt, null)
           destination_group_id   = meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/adaptive_policy_groups/%s", organization.name, policy.destination_group.name)].id
           acls = [
             for acl in policy.acls : {
