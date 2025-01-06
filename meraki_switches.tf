@@ -245,7 +245,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
-          for switch_port_schedule in try(network.switch_port_schedules, []) : {
+          for switch_port_schedule in try(network.switch.port_schedules, []) : {
             network_id = meraki_network.network["${organization.name}/${network.name}"].id
             key        = format("%s/%s/port_schedules/%s", organization.name, network.name, switch_port_schedule.name)
             data       = try(switch_port_schedule, null)
@@ -260,28 +260,28 @@ resource "meraki_switch_port_schedule" "net_switch_port_schedules" {
   for_each   = { for i in local.networks_switch_port_schedules : i.key => i }
   network_id = each.value.network_id
 
-  name                           = try(each.value.data.name, local.defaults.meraki.networks.networks_switch_port_schedules.name, null)
-  port_schedule_monday_active    = try(each.value.data.port_schedule.monday.active, local.defaults.meraki.networks.networks_switch_port_schedules.port_schedule.monday.active, null)
-  port_schedule_monday_from      = try(each.value.data.port_schedule.monday.from, local.defaults.meraki.networks.networks_switch_port_schedules.port_schedule.monday.from, null)
-  port_schedule_monday_to        = try(each.value.data.port_schedule.monday.to, local.defaults.meraki.networks.networks_switch_port_schedules.port_schedule.monday.to, null)
-  port_schedule_tuesday_active   = try(each.value.data.port_schedule.tuesday.active, local.defaults.meraki.networks.networks_switch_port_schedules.port_schedule.tuesday.active, null)
-  port_schedule_tuesday_from     = try(each.value.data.port_schedule.tuesday.from, local.defaults.meraki.networks.networks_switch_port_schedules.port_schedule.tuesday.from, null)
-  port_schedule_tuesday_to       = try(each.value.data.port_schedule.tuesday.to, local.defaults.meraki.networks.networks_switch_port_schedules.port_schedule.tuesday.to, null)
-  port_schedule_wednesday_active = try(each.value.data.port_schedule.wednesday.active, local.defaults.meraki.networks.networks_switch_port_schedules.port_schedule.wednesday.active, null)
-  port_schedule_wednesday_from   = try(each.value.data.port_schedule.wednesday.from, local.defaults.meraki.networks.networks_switch_port_schedules.port_schedule.wednesday.from, null)
-  port_schedule_wednesday_to     = try(each.value.data.port_schedule.wednesday.to, local.defaults.meraki.networks.networks_switch_port_schedules.port_schedule.wednesday.to, null)
-  port_schedule_thursday_active  = try(each.value.data.port_schedule.thursday.active, local.defaults.meraki.networks.networks_switch_port_schedules.port_schedule.thursday.active, null)
-  port_schedule_thursday_from    = try(each.value.data.port_schedule.thursday.from, local.defaults.meraki.networks.networks_switch_port_schedules.port_schedule.thursday.from, null)
-  port_schedule_thursday_to      = try(each.value.data.port_schedule.thursday.to, local.defaults.meraki.networks.networks_switch_port_schedules.port_schedule.thursday.to, null)
-  port_schedule_friday_active    = try(each.value.data.port_schedule.friday.active, local.defaults.meraki.networks.networks_switch_port_schedules.port_schedule.friday.active, null)
-  port_schedule_friday_from      = try(each.value.data.port_schedule.friday.from, local.defaults.meraki.networks.networks_switch_port_schedules.port_schedule.friday.from, null)
-  port_schedule_friday_to        = try(each.value.data.port_schedule.friday.to, local.defaults.meraki.networks.networks_switch_port_schedules.port_schedule.friday.to, null)
-  port_schedule_saturday_active  = try(each.value.data.port_schedule.saturday.active, local.defaults.meraki.networks.networks_switch_port_schedules.port_schedule.saturday.active, null)
-  port_schedule_saturday_from    = try(each.value.data.port_schedule.saturday.from, local.defaults.meraki.networks.networks_switch_port_schedules.port_schedule.saturday.from, null)
-  port_schedule_saturday_to      = try(each.value.data.port_schedule.saturday.to, local.defaults.meraki.networks.networks_switch_port_schedules.port_schedule.saturday.to, null)
-  port_schedule_sunday_active    = try(each.value.data.port_schedule.sunday.active, local.defaults.meraki.networks.networks_switch_port_schedules.port_schedule.sunday.active, null)
-  port_schedule_sunday_from      = try(each.value.data.port_schedule.sunday.from, local.defaults.meraki.networks.networks_switch_port_schedules.port_schedule.sunday.from, null)
-  port_schedule_sunday_to        = try(each.value.data.port_schedule.sunday.to, local.defaults.meraki.networks.networks_switch_port_schedules.port_schedule.sunday.to, null)
+  name                           = try(each.value.data.name, local.defaults.meraki.networks.networks.switch_port_schedules.name, null)
+  port_schedule_monday_active    = try(each.value.data.port_schedule.monday.active, local.defaults.meraki.networks.networks.switch_port_schedules.port_schedule.monday.active, null)
+  port_schedule_monday_from      = try(each.value.data.port_schedule.monday.from, local.defaults.meraki.networks.networks.switch_port_schedules.port_schedule.monday.from, null)
+  port_schedule_monday_to        = try(each.value.data.port_schedule.monday.to, local.defaults.meraki.networks.networks.switch_port_schedules.port_schedule.monday.to, null)
+  port_schedule_tuesday_active   = try(each.value.data.port_schedule.tuesday.active, local.defaults.meraki.networks.networks.switch_port_schedules.port_schedule.tuesday.active, null)
+  port_schedule_tuesday_from     = try(each.value.data.port_schedule.tuesday.from, local.defaults.meraki.networks.networks.switch_port_schedules.port_schedule.tuesday.from, null)
+  port_schedule_tuesday_to       = try(each.value.data.port_schedule.tuesday.to, local.defaults.meraki.networks.networks.switch_port_schedules.port_schedule.tuesday.to, null)
+  port_schedule_wednesday_active = try(each.value.data.port_schedule.wednesday.active, local.defaults.meraki.networks.networks.switch_port_schedules.port_schedule.wednesday.active, null)
+  port_schedule_wednesday_from   = try(each.value.data.port_schedule.wednesday.from, local.defaults.meraki.networks.networks.switch_port_schedules.port_schedule.wednesday.from, null)
+  port_schedule_wednesday_to     = try(each.value.data.port_schedule.wednesday.to, local.defaults.meraki.networks.networks.switch_port_schedules.port_schedule.wednesday.to, null)
+  port_schedule_thursday_active  = try(each.value.data.port_schedule.thursday.active, local.defaults.meraki.networks.networks.switch_port_schedules.port_schedule.thursday.active, null)
+  port_schedule_thursday_from    = try(each.value.data.port_schedule.thursday.from, local.defaults.meraki.networks.networks.switch_port_schedules.port_schedule.thursday.from, null)
+  port_schedule_thursday_to      = try(each.value.data.port_schedule.thursday.to, local.defaults.meraki.networks.networks.switch_port_schedules.port_schedule.thursday.to, null)
+  port_schedule_friday_active    = try(each.value.data.port_schedule.friday.active, local.defaults.meraki.networks.networks.switch_port_schedules.port_schedule.friday.active, null)
+  port_schedule_friday_from      = try(each.value.data.port_schedule.friday.from, local.defaults.meraki.networks.networks.switch_port_schedules.port_schedule.friday.from, null)
+  port_schedule_friday_to        = try(each.value.data.port_schedule.friday.to, local.defaults.meraki.networks.networks.switch_port_schedules.port_schedule.friday.to, null)
+  port_schedule_saturday_active  = try(each.value.data.port_schedule.saturday.active, local.defaults.meraki.networks.networks.switch_port_schedules.port_schedule.saturday.active, null)
+  port_schedule_saturday_from    = try(each.value.data.port_schedule.saturday.from, local.defaults.meraki.networks.networks.switch_port_schedules.port_schedule.saturday.from, null)
+  port_schedule_saturday_to      = try(each.value.data.port_schedule.saturday.to, local.defaults.meraki.networks.networks.switch_port_schedules.port_schedule.saturday.to, null)
+  port_schedule_sunday_active    = try(each.value.data.port_schedule.sunday.active, local.defaults.meraki.networks.networks.switch_port_schedules.port_schedule.sunday.active, null)
+  port_schedule_sunday_from      = try(each.value.data.port_schedule.sunday.from, local.defaults.meraki.networks.networks.switch_port_schedules.port_schedule.sunday.from, null)
+  port_schedule_sunday_to        = try(each.value.data.port_schedule.sunday.to, local.defaults.meraki.networks.networks.switch_port_schedules.port_schedule.sunday.to, null)
 
   depends_on = [meraki_network_device_claim.net_device_claim]
 
