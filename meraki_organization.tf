@@ -223,10 +223,10 @@ locals {
       for organization in try(domain.organizations, []) : {
         org_id = meraki_organization.organization[organization.name].id
         enabled_networks = [
-          for network in try(organization.adaptive_policy_settings.enabled_networks, []) :
+          for network in try(organization.adaptive_policy.settings.enabled_networks, []) :
           meraki_network.network[format("%s/%s", organization.name, network)].id
         ]
-      } if try(organization.adaptive_policy_settings, null) != null
+      } if try(organization.adaptive_policy.settings, null) != null
     ] if try(domain.organizations, null) != null
   ])
 }
@@ -246,10 +246,10 @@ locals {
         for group in try(organization.adaptive_policy.groups, []) : {
           org_id      = meraki_organization.organization[organization.name].id
           key         = format("%s/adaptive_policy_groups/%s", organization.name, group.name)
-          group_name  = try(group.name, local.defaults.meraki.organizations.adaptive_policy_groups.name, null)
-          sgt         = try(group.sgt, local.defaults.meraki.organizations.adaptive_policy_groups.sgt, null)
-          description = try(group.description, local.defaults.meraki.organizations.adaptive_policy_groups.description, null)
-        } if try(organization.adaptive_policy_groups, null) != null
+          group_name  = try(group.name, local.defaults.meraki.organizations.adaptive_policy.groups.name, null)
+          sgt         = try(group.sgt, local.defaults.meraki.organizations.adaptive_policy.groups.sgt, null)
+          description = try(group.description, local.defaults.meraki.organizations.adaptive_policy.groups.description, null)
+        } if try(organization.adaptive_policy.groups, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -257,14 +257,14 @@ locals {
   adaptive_policy_acls = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
-        for acl in try(organization.adaptive_policy_acls, []) : {
+        for acl in try(organization.adaptive_policy.acls, []) : {
           org_id      = meraki_organization.organization[organization.name].id
-          acl_name    = try(acl.name, local.defaults.meraki.organizations.adaptive_policy_acls.name, null)
-          description = try(acl.description, local.defaults.meraki.organizations.adaptive_policy_acls.description, null)
-          rules       = try(acl.rules, local.defaults.meraki.organizations.adaptive_policy_acls.rules, null)
-          ip_version  = try(acl.ip_version, local.defaults.meraki.organizations.adaptive_policy_acls.ip_version, null)
+          acl_name    = try(acl.name, local.defaults.meraki.organizations.adaptive_policy.acls.name, null)
+          description = try(acl.description, local.defaults.meraki.organizations.adaptive_policy.acls.description, null)
+          rules       = try(acl.rules, local.defaults.meraki.organizations.adaptive_policy.acls.rules, null)
+          ip_version  = try(acl.ip_version, local.defaults.meraki.organizations.adaptive_policy.acls.ip_version, null)
           key         = format("%s/adaptive_policy_acls/%s", organization.name, acl.name)
-        } if try(organization.adaptive_policy_acls, null) != null
+        } if try(organization.adaptive_policy.acls, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -275,19 +275,19 @@ locals {
         for policy in try(organization.adaptive_policy_policies, []) : {
           org_id                 = meraki_organization.organization[organization.name].id
           policy_name            = try(policy.name, local.defaults.meraki.organizations.adaptive_policy_policies.name, null)
-          source_group_name      = try(policy.source_group.name, local.defaults.meraki.organizations.adaptive_policy_policies.source_group.name, null)
-          source_group_id        = meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/adaptive_policy_groups/%s", organization.name, policy.source_group.name)].id
-          source_group_sgt       = try(policy.source_group.sgt, local.defaults.meraki.organizations.adaptive_policy_policies.source_group.sgt, null)
-          destination_group_name = try(policy.destination_group.name, local.defaults.meraki.organizations.adaptive_policy_policies.destination_group.name, null)
-          destination_group_id   = meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/adaptive_policy_groups/%s", organization.name, policy.destination_group.name)].id
-          destination_group_sgt  = try(policy.destination_group.sgt, local.defaults.meraki.organizations.adaptive_policy_policies.destination_group.sgt, null)
+          source_group_name      = try(policy.source_group.name, local.defaults.meraki.organizations.adaptive_policy.policies.source_group.name, null)
+          source_group_id        = meraki_organization_adaptive_policy_group.organizations_adaptive_policy.group[format("%s/adaptive_policy_groups/%s", organization.name, policy.source_group.name)].id
+          source_group_sgt       = try(policy.source_group.sgt, local.defaults.meraki.organizations.adaptive_policy.policies.source_group.sgt, null)
+          destination_group_name = try(policy.destination_group.name, local.defaults.meraki.organizations.adaptive_policy.policies.destination_group.name, null)
+          destination_group_id   = meraki_organization_adaptive_policy_group.organizations_adaptive_policy.group[format("%s/adaptive_policy_groups/%s", organization.name, policy.destination_group.name)].id
+          destination_group_sgt  = try(policy.destination_group.sgt, local.defaults.meraki.organizations.adaptive_policy.policies.destination_group.sgt, null)
           acls = [
             for acl in policy.acls : {
               id   = meraki_organization_adaptive_policy_acl.organizations_adaptive_policy_acl[format("%s/adaptive_policy_acls/%s", organization.name, acl.name)].id
               name = acl.name
             }
           ]
-        } if try(organization.adaptive_policy_policies, null) != null
+        } if try(organization.adaptive_policy.policies, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
