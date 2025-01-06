@@ -87,8 +87,8 @@ locals {
         enforce_two_factor_auth                             = try(org.login_security.enforce_two_factor_auth, local.defaults.meraki.organizations.login_security.enforce_two_factor_auth, null)
         enforce_login_ip_ranges                             = try(org.login_security.enforce_login_ip_ranges, local.defaults.meraki.organizations.login_security.enforce_login_ip_ranges, null)
         login_ip_ranges                                     = try(org.login_security.login_ip_ranges, local.defaults.meraki.organizations.login_security.login_ip_ranges, null)
-        api_authentication_ip_restrictions_for_keys_enabled = try(org.login_security.api_authentication.ip_restrictions_for_keys.enabled, local.defaults.meraki.organizations.login_security.api_authentication.ip_restrictions_for_keys.enabled, null)
-        api_authentication_ip_restrictions_for_keys_ranges  = try(org.login_security.api_authentication.ip_restrictions_for_keys.ranges, local.defaults.meraki.organizations.login_security.api_authentication.ip_restrictions_for_keys.ranges, null)
+        api_authentication_ip_restrictions_for_keys_enabled = try(org.login_security.api_authentication.enabled, local.defaults.meraki.organizations.login_security.api_authentication.enabled, null)
+        api_authentication_ip_restrictions_for_keys_ranges  = try(org.login_security.api_authentication.ranges, local.defaults.meraki.organizations.login_security.api_authentication.ranges, null)
       } if try(org.login_security, null) != null
     ]
   ])
@@ -137,8 +137,8 @@ resource "meraki_organization_snmp" "snmp" {
   for_each = { for i, v in local.snmp : i => v }
 
   organization_id = each.value.organization_id
-  v2c_enabled     = each.value.v2c_enabled
-  v3_enabled      = each.value.v3_enabled
+  v2c_enabled     = each.value.v2c
+  v3_enabled      = each.value.v3
   v3_auth_mode    = each.value.v3_auth_mode
   v3_auth_pass    = each.value.v3_auth_pass
   v3_priv_mode    = each.value.v3_priv_mode
@@ -152,12 +152,12 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : [
         for admin in try(org.admins, []) : {
-          key                   = format("%s/%s", org.name, try(admin.name, local.defaults.meraki.organizations.admins.name, null))
-          organization_id       = meraki_organization.organization[org.name].id
-          name                  = try(admin.name, local.defaults.meraki.organizations.admins.name, null)
-          email                 = try(admin.email, local.defaults.meraki.organizations.admins.email, null)
-          authentication_method = try(admin.authentication_method, local.defaults.meraki.organizations.admins.authentication_method, null)
-          org_access            = try(admin.org_access, local.defaults.meraki.organizations.admins.org_access, null)
+          key             = format("%s/%s", org.name, try(admin.name, local.defaults.meraki.organizations.admins.name, null))
+          organization_id = meraki_organization.organization[org.name].id
+          name            = try(admin.name, local.defaults.meraki.organizations.admins.name, null)
+          email           = try(admin.email, local.defaults.meraki.organizations.admins.email, null)
+          # authentication_method = try(admin.authentication_method, local.defaults.meraki.organizations.admins.authentication_method, null)
+          org_access = try(admin.organization_access, local.defaults.meraki.organizations.admins.organization_access, null)
           networks = [for network in try(admin.networks, []) : {
             id     = meraki_network.network["${org.name}/${network.id}"].id
             access = try(network.access, local.defaults.meraki.organizations.admins.networks.access, null)
