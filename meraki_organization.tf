@@ -122,8 +122,8 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : {
         organization_id = meraki_organization.organization[org.name].id
-        v2c_enabled     = try(org.snmp.v2c, local.defaults.meraki.organizations.snmp.v2c, null)
-        v3_enabled      = try(org.snmp.v3, local.defaults.meraki.organizations.snmp.v3, null)
+        v2c             = try(org.snmp.v2c, local.defaults.meraki.organizations.snmp.v2c, null)
+        v3              = try(org.snmp.v3, local.defaults.meraki.organizations.snmp.v3, null)
         v3_auth_mode    = try(org.snmp.v3_auth_mode, local.defaults.meraki.organizations.snmp.v3_auth_mode, null)
         v3_auth_pass    = try(org.snmp.v3_auth_pass, local.defaults.meraki.organizations.snmp.v3_auth_pass, null)
         v3_priv_mode    = try(org.snmp.v3_priv_mode, local.defaults.meraki.organizations.snmp.v3_priv_mode, null)
