@@ -243,7 +243,7 @@ locals {
   adaptive_policy_groups = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
-        for group in try(organization.adaptive_policy_groups, []) : {
+        for group in try(organization.adaptive_policy.groups, []) : {
           org_id      = meraki_organization.organization[organization.name].id
           key         = format("%s/adaptive_policy_groups/%s", organization.name, group.name)
           group_name  = try(group.name, local.defaults.meraki.organizations.adaptive_policy_groups.name, null)
