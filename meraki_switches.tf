@@ -496,7 +496,7 @@ locals {
       for org in try(domain.organizations, []) : [
         for network in try(org.networks, []) : {
           network_id = meraki_network.network["${org.name}/${network.name}"].id
-          data       = network.switch_stp
+          data       = network.switch.stp
           stp_bridge_priority = [for p in network.switch.stp.stp_bridge_priority : {
             switches     = try(p.switches, null)
             stp_priority = try(p.stp_priority, null)
