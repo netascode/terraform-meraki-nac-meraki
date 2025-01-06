@@ -34,12 +34,12 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : [
         for network in try(org.networks, []) : [
-          for switch_access_policy in try(network.switch_access_policies, []) : {
+          for switch_access_policy in try(network.switch.access_policies, []) : {
             policy_key = format("%s/%s/switch_access_policies/%s", org.name, network.name, switch_access_policy.name)
             data       = switch_access_policy
             network_id = meraki_network.network["${org.name}/${network.name}"].id
           }
-        ] if try(network.switch_access_policies, null) != null
+        ] if try(network.switch.access_policies, null) != null
       ]
     ]
   ])
@@ -59,9 +59,9 @@ resource "meraki_switch_access_policy" "net_switch_access_policy" {
   radius_cache_enabled                     = try(each.value.data.radius.cache.enabled, local.defaults.meraki.networks.switch_access_policies.radius.cache.enabled, null)
   radius_cache_timeout                     = try(each.value.data.radius.cache.timeout, local.defaults.meraki.networks.switch_access_policies.radius.cache.timeout, null)
   guest_port_bouncing                      = try(each.value.data.guest_port_bouncing, local.defaults.meraki.networks.switch_access_policies.guest_port_bouncing, null)
-  radius_testing_enabled                   = try(each.value.data.radius_testing_enabled, local.defaults.meraki.networks.switch_access_policies.radius_testing_enabled, null)
-  radius_coa_support_enabled               = try(each.value.data.radius_coa_support_enabled, local.defaults.meraki.networks.switch_access_policies.radius_coa_support_enabled, null)
-  radius_accounting_enabled                = try(each.value.data.radius_accounting_enabled, local.defaults.meraki.networks.switch_access_policies.radius_accounting_enabled, null)
+  radius_testing_enabled                   = try(each.value.data.radius_testing, local.defaults.meraki.networks.switch_access_policies.radius_testing, null)
+  radius_coa_support_enabled               = try(each.value.data.radius_coa_support, local.defaults.meraki.networks.switch_access_policies.radius_coa_support, null)
+  radius_accounting_enabled                = try(each.value.data.radius_accounting, local.defaults.meraki.networks.switch_access_policies.radius_accounting, null)
   radius_accounting_servers                = try(each.value.data.radius_accounting_servers, local.defaults.meraki.networks.switch_access_policies.radius_accounting_servers, null)
   radius_group_attribute                   = try(each.value.data.radius_group_attribute, local.defaults.meraki.networks.switch_access_policies.radius_group_attribute, null)
   host_mode                                = try(each.value.data.host_mode, local.defaults.meraki.networks.switch_access_policies.host_mode, null)
@@ -70,7 +70,7 @@ resource "meraki_switch_access_policy" "net_switch_access_policy" {
   guest_vlan_id                            = try(each.value.data.guest_vlan_id, local.defaults.meraki.networks.switch_access_policies.guest_vlan_id, null)
   dot1x_control_direction                  = try(each.value.data.dot1x.control_direction, local.defaults.meraki.networks.switch_access_policies.dot1x.control_direction, null)
   voice_vlan_clients                       = try(each.value.data.voice_vlan_clients, local.defaults.meraki.networks.switch_access_policies.voice_vlan_clients, null)
-  url_redirect_walled_garden_enabled       = try(each.value.data.url_redirect_walled_garden_enabled, local.defaults.meraki.networks.switch_access_policies.url_redirect_walled_garden_enabled, null)
+  url_redirect_walled_garden_enabled       = try(each.value.data.url_redirect_walled_garden, local.defaults.meraki.networks.switch_access_policies.url_redirect_walled_garden, null)
   url_redirect_walled_garden_ranges        = try(each.value.data.url_redirect_walled_garden_ranges, local.defaults.meraki.networks.switch_access_policies.url_redirect_walled_garden_ranges, null)
 
 }
