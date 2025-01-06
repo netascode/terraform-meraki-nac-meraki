@@ -5,17 +5,28 @@ locals {
       for org in try(domain.organizations, []) : [
         for network in try(org.networks, []) : {
           network_id = meraki_network.network["${org.name}/${network.name}"].id
-          data       = network.switch_access_control_lists
-        } if try(network.switch_access_control_lists, null) != null
+          rules = [
+            for rule in try(network.switch.access_control_lists.rules, []) : {
+              comment    = rule.comment
+              dst_cidr   = rule.destination_cidr
+              dst_port   = rule.destination_port
+              ip_version = rule.ip_version
+              policy     = rule.policy
+              protocol   = rule.protocol
+              src_cidr   = rule.source_cidr
+              src_port   = rule.source_port
+              vlan       = rule.vlan
+            }
+          ]
+        } if try(network.switch.access_control_lists.rules, null) != null
       ]
     ]
   ])
 }
-
 resource "meraki_switch_access_control_lists" "net_switch_access_control_lists" {
   for_each   = { for i, v in local.networks_switch_access_control_lists : i => v }
   network_id = each.value.network_id
-  rules      = try(each.value.data.rules, local.defaults.meraki.networks.switch_access_control_lists, null)
+  rules      = each.value.rules
 }
 
 locals {
