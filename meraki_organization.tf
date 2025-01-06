@@ -172,14 +172,14 @@ locals {
   ])
 }
 resource "meraki_organization_admin" "organization_admin" {
-  for_each              = { for admin in local.admins : admin.key => admin }
-  organization_id       = each.value.organization_id
-  name                  = each.value.name
-  email                 = each.value.email
-  authentication_method = each.value.authentication_method
-  org_access            = each.value.org_access
-  networks              = each.value.networks
-  tags                  = each.value.tags
+  for_each        = { for admin in local.admins : admin.key => admin }
+  organization_id = each.value.organization_id
+  name            = each.value.name
+  email           = each.value.email
+  # authentication_method = each.value.authentication_method
+  org_access = each.value.org_access
+  networks   = each.value.networks
+  tags       = each.value.tags
 }
 # Apply Organization Inventory Claim
 locals {
