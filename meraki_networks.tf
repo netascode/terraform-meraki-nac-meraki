@@ -1,32 +1,16 @@
 locals {
   networks_group_policies = flatten([
+
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
-        for network in try(organization.networks, []) : {
-          network_id = meraki_network.network["${organization.name}/${network.name}"].id
-          data = {
-            name                 = try(network.group_policies.name, null)
-            scheduling           = try(network.group_policies.scheduling, {})
-            bandwidth            = try(network.group_policies.bandwidth, {})
-            vlan_tagging         = try(network.group_policies.vlan_tagging, {})
-            splash_auth_settings = try(network.group_policies.splash_auth_settings, null)
-            bonjour_forwarding   = try(network.group_policies.bonjour_forwarding, {})
-            firewall_and_traffic_shaping = {
-              settings = try(network.group_policies.firewall_and_traffic_shaping.settings, null)
-              l3_firewall_rules = [
-                for rule in try(network.group_policies.firewall_and_traffic_shaping.l3_firewall_rules, []) : {
-                  comment   = try(rule.comment, null)
-                  dest_cidr = try(rule.destination_cidr, null)
-                  dest_port = try(rule.destination_port, null)
-                  policy    = try(rule.policy, null)
-                  protocol  = try(rule.protocol, null)
-                }
-              ]
-            }
-          }
-        }
-      ]
-    ]
+        for network in try(organization.networks, []) : [
+          for group_policy in try(network.group_policies, []) : {
+            network_id = meraki_network.network["${organization.name}/${network.name}"].id
+            data       = try(group_policy, null)
+          } if try(network.group_policies, null) != null
+        ] if try(organization.networks, null) != null
+      ] if try(domain.organizations, null) != null
+    ] if try(local.meraki.domains, null) != null
   ])
 }
 
@@ -61,20 +45,21 @@ resource "meraki_network_group_policy" "net_group_policies" {
   bandwidth_limit_up                                = try(each.value.data.bandwidth.bandwidth_limits.limit_up, local.defaults.meraki.networks.group_policies.bandwidth.bandwidth_limits.limit_up, null)
   bandwidth_limit_down                              = try(each.value.data.bandwidth.bandwidth_limits.limit_down, local.defaults.meraki.networks.group_policies.bandwidth.bandwidth_limits.limit_down, null)
   firewall_and_traffic_shaping_settings             = try(each.value.data.firewall_and_traffic_shaping.settings, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.settings, null)
+  traffic_shaping_rules                             = try(each.value.data.firewall_and_traffic_shaping.traffic_shaping_rules, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.traffic_shaping_rules, null)
   l3_firewall_rules                                 = try(each.value.data.firewall_and_traffic_shaping.l3_firewall_rules, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.l3_firewall_rules, null)
   l7_firewall_rules                                 = try(each.value.data.firewall_and_traffic_shaping.l7_firewall_rules, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.l7_firewall_rules, null)
-  traffic_shaping_rules                             = try(each.value.data.firewall_and_traffic_shaping.traffic_shaping_rules, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.traffic_shaping_rules, null)
   content_filtering_allowed_url_patterns_settings   = try(each.value.data.content_filtering.allowed_url_patterns.settings, local.defaults.meraki.networks.group_policies.content_filtering.allowed_url_patterns.settings, null)
   content_filtering_allowed_url_patterns            = try(each.value.data.content_filtering.allowed_url_patterns.patterns, local.defaults.meraki.networks.group_policies.content_filtering.allowed_url_patterns.patterns, null)
   content_filtering_blocked_url_patterns_settings   = try(each.value.data.content_filtering.blocked_url_patterns.settings, local.defaults.meraki.networks.group_policies.content_filtering.blocked_url_patterns.settings, null)
   content_filtering_blocked_url_patterns            = try(each.value.data.content_filtering.blocked_url_patterns.patterns, local.defaults.meraki.networks.group_policies.content_filtering.blocked_url_patterns.patterns, null)
   content_filtering_blocked_url_categories_settings = try(each.value.data.content_filtering.blocked_url_categories.settings, local.defaults.meraki.networks.group_policies.content_filtering.blocked_url_categories.settings, null)
   content_filtering_blocked_url_categories          = try(each.value.data.content_filtering.blocked_url_categories.categories, local.defaults.meraki.networks.group_policies.content_filtering.blocked_url_categories.categories, null)
+  splash_auth_settings                              = try(each.value.data.splash_auth_settings, local.defaults.meraki.networks.group_policies.splash_auth_settings, null)
   vlan_tagging_settings                             = try(each.value.data.vlan_tagging.settings, local.defaults.meraki.networks.group_policies.vlan_tagging.settings, null)
   vlan_tagging_vlan_id                              = try(each.value.data.vlan_tagging.vlan_id, local.defaults.meraki.networks.group_policies.vlan_tagging.vlan_id, null)
   bonjour_forwarding_settings                       = try(each.value.data.bonjour_forwarding.settings, local.defaults.meraki.networks.group_policies.bonjour_forwarding.settings, null)
   bonjour_forwarding_rules                          = try(each.value.data.bonjour_forwarding.rules, local.defaults.meraki.networks.group_policies.bonjour_forwarding.rules, null)
-  splash_auth_settings                              = try(each.value.data.splash_auth_settings, local.defaults.meraki.networks.group_policies.splash_auth_settings, null)
+
 }
 
 
