@@ -181,27 +181,27 @@ resource "meraki_organization_admin" "organization_admin" {
   networks   = each.value.networks
   tags       = each.value.tags
 }
-# Apply Organization Inventory Claim
+# Apply Organization Inventory
 locals {
-  inventory_claim = flatten([
+  inventory = flatten([
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : {
         organization_id = meraki_organization.organization[org.name].id
         licenses = [
-          for license in try(org.inventory_claim.licenses, []) : {
+          for license in try(org.inventory.licenses, []) : {
             key  = license.key
             mode = license.mode
           }
         ]
-        orders  = try(org.inventory_claim.orders, [])
-        serials = try(org.inventory_claim.serials, [])
-      } if try(org.inventory_claim, null) != null
+        orders  = try(org.inventory.orders, [])
+        devices = try(org.inventory.devices, [])
+      } if try(org.inventory, null) != null
     ]
   ])
 }
 
 resource "meraki_organization_inventory_claim" "organization_claim" {
-  for_each = { for i, v in local.inventory_claim : i => v }
+  for_each = { for i, v in local.inventory : i => v }
 
   organization_id = each.value.organization_id
 
@@ -213,7 +213,7 @@ resource "meraki_organization_inventory_claim" "organization_claim" {
   ]
 
   orders  = each.value.orders
-  serials = each.value.serials
+  serials = each.value.devices
 }
 # Apply Organization Adaptive Policy Settings
 # Use existing network data in adaptive policy settings
