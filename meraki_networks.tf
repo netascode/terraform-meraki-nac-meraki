@@ -1,35 +1,32 @@
 locals {
   networks_group_policies = flatten([
-
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
-        for network in try(organization.networks, []) : [
-          for group_policy in try(network.group_policies, []) : {
-            network_id = meraki_network.network["${organization.name}/${network.name}"].id
-            data = {
-              name       = group_policy.name
-              scheduling = group_policy.scheduling
-              bandwidth  = group_policy.bandwidth
-              firewall_and_traffic_shaping = {
-                settings = try(group_policy.firewall_and_traffic_shaping.settings, null)
-                l3_firewall_rules = [
-                  for rule in try(group_policy.firewall_and_traffic_shaping.l3_firewall_rules, []) : {
-                    comment   = try(rule.comment, null)
-                    policy    = try(rule.policy, null)
-                    protocol  = try(rule.protocol, null)
-                    dest_cidr = try(rule.destination_cidr, null)
-                    dest_port = try(rule.destination_port, null)
-                  }
-                ]
-              }
-              splash_auth_settings = group_policy.splash_auth_settings
-              vlan_tagging         = group_policy.vlan_tagging
-              bonjour_forwarding   = group_policy.bonjour_forwarding
+        for network in try(organization.networks, []) : {
+          network_id = meraki_network.network["${organization.name}/${network.name}"].id
+          data = {
+            name                 = try(network.group_policies.name, null)
+            scheduling           = try(network.group_policies.scheduling, {})
+            bandwidth            = try(network.group_policies.bandwidth, {})
+            vlan_tagging         = try(network.group_policies.vlan_tagging, {})
+            splash_auth_settings = try(network.group_policies.splash_auth_settings, null)
+            bonjour_forwarding   = try(network.group_policies.bonjour_forwarding, {})
+            firewall_and_traffic_shaping = {
+              settings = try(network.group_policies.firewall_and_traffic_shaping.settings, null)
+              l3_firewall_rules = [
+                for rule in try(network.group_policies.firewall_and_traffic_shaping.l3_firewall_rules, []) : {
+                  comment   = try(rule.comment, null)
+                  dest_cidr = try(rule.destination_cidr, null)
+                  dest_port = try(rule.destination_port, null)
+                  policy    = try(rule.policy, null)
+                  protocol  = try(rule.protocol, null)
+                }
+              ]
             }
-          } if try(network.group_policies, null) != null
-        ] if try(organization.networks, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+          }
+        }
+      ]
+    ]
   ])
 }
 
@@ -37,42 +34,34 @@ resource "meraki_network_group_policy" "net_group_policies" {
   for_each   = { for i, v in local.networks_group_policies : i => v }
   network_id = each.value.network_id
 
-  name                                  = try(each.value.data.name, local.defaults.meraki.networks.group_policies.name, null)
-  scheduling_enabled                    = try(each.value.data.scheduling.enabled, local.defaults.meraki.networks.group_policies.scheduling.enabled, null)
-  scheduling_monday_active              = try(each.value.data.scheduling.monday.active, local.defaults.meraki.networks.group_policies.scheduling.monday.active, null)
-  scheduling_monday_from                = try(each.value.data.scheduling.monday.from, local.defaults.meraki.networks.group_policies.scheduling.monday.from, null)
-  scheduling_monday_to                  = try(each.value.data.scheduling.monday.to, local.defaults.meraki.networks.group_policies.scheduling.monday.to, null)
-  scheduling_tuesday_active             = try(each.value.data.scheduling.tuesday.active, local.defaults.meraki.networks.group_policies.scheduling.tuesday.active, null)
-  scheduling_tuesday_from               = try(each.value.data.scheduling.tuesday.from, local.defaults.meraki.networks.group_policies.scheduling.tuesday.from, null)
-  scheduling_tuesday_to                 = try(each.value.data.scheduling.tuesday.to, local.defaults.meraki.networks.group_policies.scheduling.tuesday.to, null)
-  scheduling_wednesday_active           = try(each.value.data.scheduling.wednesday.active, local.defaults.meraki.networks.group_policies.scheduling.wednesday.active, null)
-  scheduling_wednesday_from             = try(each.value.data.scheduling.wednesday.from, local.defaults.meraki.networks.group_policies.scheduling.wednesday.from, null)
-  scheduling_wednesday_to               = try(each.value.data.scheduling.wednesday.to, local.defaults.meraki.networks.group_policies.scheduling.wednesday.to, null)
-  scheduling_thursday_active            = try(each.value.data.scheduling.thursday.active, local.defaults.meraki.networks.group_policies.scheduling.thursday.active, null)
-  scheduling_thursday_from              = try(each.value.data.scheduling.thursday.from, local.defaults.meraki.networks.group_policies.scheduling.thursday.from, null)
-  scheduling_thursday_to                = try(each.value.data.scheduling.thursday.to, local.defaults.meraki.networks.group_policies.scheduling.thursday.to, null)
-  scheduling_friday_active              = try(each.value.data.scheduling.friday.active, local.defaults.meraki.networks.group_policies.scheduling.friday.active, null)
-  scheduling_friday_from                = try(each.value.data.scheduling.friday.from, local.defaults.meraki.networks.group_policies.scheduling.friday.from, null)
-  scheduling_friday_to                  = try(each.value.data.scheduling.friday.to, local.defaults.meraki.networks.group_policies.scheduling.friday.to, null)
-  scheduling_saturday_active            = try(each.value.data.scheduling.saturday.active, local.defaults.meraki.networks.group_policies.scheduling.saturday.active, null)
-  scheduling_saturday_from              = try(each.value.data.scheduling.saturday.from, local.defaults.meraki.networks.group_policies.scheduling.saturday.from, null)
-  scheduling_saturday_to                = try(each.value.data.scheduling.saturday.to, local.defaults.meraki.networks.group_policies.scheduling.saturday.to, null)
-  scheduling_sunday_active              = try(each.value.data.scheduling.sunday.active, local.defaults.meraki.networks.group_policies.scheduling.sunday.active, null)
-  scheduling_sunday_from                = try(each.value.data.scheduling.sunday.from, local.defaults.meraki.networks.group_policies.scheduling.sunday.from, null)
-  scheduling_sunday_to                  = try(each.value.data.scheduling.sunday.to, local.defaults.meraki.networks.group_policies.scheduling.sunday.to, null)
-  bandwidth_settings                    = try(each.value.data.bandwidth.settings, local.defaults.meraki.networks.group_policies.bandwidth.settings, null)
-  bandwidth_limit_up                    = try(each.value.data.bandwidth.bandwidth_limits.limit_up, local.defaults.meraki.networks.group_policies.bandwidth.bandwidth_limits.limit_up, null)
-  bandwidth_limit_down                  = try(each.value.data.bandwidth.bandwidth_limits.limit_down, local.defaults.meraki.networks.group_policies.bandwidth.bandwidth_limits.limit_down, null)
-  firewall_and_traffic_shaping_settings = try(each.value.data.firewall_and_traffic_shaping.settings, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.settings, null)
-  l3_firewall_rules = [
-    for rule in try(each.value.data.firewall_and_traffic_shaping.l3_firewall_rules, []) : {
-      comment   = try(rule.comment, null)
-      dest_cidr = try(rule.destination_cidr, null)
-      dest_port = try(rule.destination_port, null)
-      policy    = try(rule.policy, null)
-      protocol  = try(rule.protocol, null)
-    }
-  ]
+  name                                              = try(each.value.data.name, local.defaults.meraki.networks.group_policies.name, null)
+  scheduling_enabled                                = try(each.value.data.scheduling.enabled, local.defaults.meraki.networks.group_policies.scheduling.enabled, null)
+  scheduling_monday_active                          = try(each.value.data.scheduling.monday.active, local.defaults.meraki.networks.group_policies.scheduling.monday.active, null)
+  scheduling_monday_from                            = try(each.value.data.scheduling.monday.from, local.defaults.meraki.networks.group_policies.scheduling.monday.from, null)
+  scheduling_monday_to                              = try(each.value.data.scheduling.monday.to, local.defaults.meraki.networks.group_policies.scheduling.monday.to, null)
+  scheduling_tuesday_active                         = try(each.value.data.scheduling.tuesday.active, local.defaults.meraki.networks.group_policies.scheduling.tuesday.active, null)
+  scheduling_tuesday_from                           = try(each.value.data.scheduling.tuesday.from, local.defaults.meraki.networks.group_policies.scheduling.tuesday.from, null)
+  scheduling_tuesday_to                             = try(each.value.data.scheduling.tuesday.to, local.defaults.meraki.networks.group_policies.scheduling.tuesday.to, null)
+  scheduling_wednesday_active                       = try(each.value.data.scheduling.wednesday.active, local.defaults.meraki.networks.group_policies.scheduling.wednesday.active, null)
+  scheduling_wednesday_from                         = try(each.value.data.scheduling.wednesday.from, local.defaults.meraki.networks.group_policies.scheduling.wednesday.from, null)
+  scheduling_wednesday_to                           = try(each.value.data.scheduling.wednesday.to, local.defaults.meraki.networks.group_policies.scheduling.wednesday.to, null)
+  scheduling_thursday_active                        = try(each.value.data.scheduling.thursday.active, local.defaults.meraki.networks.group_policies.scheduling.thursday.active, null)
+  scheduling_thursday_from                          = try(each.value.data.scheduling.thursday.from, local.defaults.meraki.networks.group_policies.scheduling.thursday.from, null)
+  scheduling_thursday_to                            = try(each.value.data.scheduling.thursday.to, local.defaults.meraki.networks.group_policies.scheduling.thursday.to, null)
+  scheduling_friday_active                          = try(each.value.data.scheduling.friday.active, local.defaults.meraki.networks.group_policies.scheduling.friday.active, null)
+  scheduling_friday_from                            = try(each.value.data.scheduling.friday.from, local.defaults.meraki.networks.group_policies.scheduling.friday.from, null)
+  scheduling_friday_to                              = try(each.value.data.scheduling.friday.to, local.defaults.meraki.networks.group_policies.scheduling.friday.to, null)
+  scheduling_saturday_active                        = try(each.value.data.scheduling.saturday.active, local.defaults.meraki.networks.group_policies.scheduling.saturday.active, null)
+  scheduling_saturday_from                          = try(each.value.data.scheduling.saturday.from, local.defaults.meraki.networks.group_policies.scheduling.saturday.from, null)
+  scheduling_saturday_to                            = try(each.value.data.scheduling.saturday.to, local.defaults.meraki.networks.group_policies.scheduling.saturday.to, null)
+  scheduling_sunday_active                          = try(each.value.data.scheduling.sunday.active, local.defaults.meraki.networks.group_policies.scheduling.sunday.active, null)
+  scheduling_sunday_from                            = try(each.value.data.scheduling.sunday.from, local.defaults.meraki.networks.group_policies.scheduling.sunday.from, null)
+  scheduling_sunday_to                              = try(each.value.data.scheduling.sunday.to, local.defaults.meraki.networks.group_policies.scheduling.sunday.to, null)
+  bandwidth_settings                                = try(each.value.data.bandwidth.settings, local.defaults.meraki.networks.group_policies.bandwidth.settings, null)
+  bandwidth_limit_up                                = try(each.value.data.bandwidth.bandwidth_limits.limit_up, local.defaults.meraki.networks.group_policies.bandwidth.bandwidth_limits.limit_up, null)
+  bandwidth_limit_down                              = try(each.value.data.bandwidth.bandwidth_limits.limit_down, local.defaults.meraki.networks.group_policies.bandwidth.bandwidth_limits.limit_down, null)
+  firewall_and_traffic_shaping_settings             = try(each.value.data.firewall_and_traffic_shaping.settings, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.settings, null)
+  l3_firewall_rules                                 = try(each.value.data.firewall_and_traffic_shaping.l3_firewall_rules, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.l3_firewall_rules, null)
   l7_firewall_rules                                 = try(each.value.data.firewall_and_traffic_shaping.l7_firewall_rules, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.l7_firewall_rules, null)
   traffic_shaping_rules                             = try(each.value.data.firewall_and_traffic_shaping.traffic_shaping_rules, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.traffic_shaping_rules, null)
   content_filtering_allowed_url_patterns_settings   = try(each.value.data.content_filtering.allowed_url_patterns.settings, local.defaults.meraki.networks.group_policies.content_filtering.allowed_url_patterns.settings, null)
