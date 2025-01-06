@@ -270,7 +270,7 @@ resource "meraki_switch_routing_interface_dhcp" "devices_switch_routing_interfac
   dhcp_lease_time        = try(each.value.data.dhcp_lease_time, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.dhcp_lease_time, null)
   dns_nameservers_option = try(each.value.data.dns_nameservers_option, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.dns_nameservers_option, null)
   dns_custom_nameservers = try(each.value.data.dns_custom_nameservers, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.dns_custom_nameservers, null)
-  boot_options_enabled   = try(each.value.data.boot_optionslocal.defaults.meraki.networks.networks.switch.port_schedules, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.boot_optionslocal.defaults.meraki.networks.networks.switch.port_schedules, null)
+  boot_options_enabled   = try(each.value.data.boot_options, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.boot_options, null)
   boot_next_server       = try(each.value.data.boot_next_server, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.boot_next_server, null)
   boot_file_name         = try(each.value.data.boot_file_name, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.boot_file_name, null)
   dhcp_options           = try(each.value.data.dhcp_options, local.defaults.meraki.networks.devices_switch_routing_interfaces_dhcp.dhcp_options, null)
