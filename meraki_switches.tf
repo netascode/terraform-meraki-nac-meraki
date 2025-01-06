@@ -328,7 +328,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
-          rule_ids   = [for r in network.switch_qos_rules : meraki_switch_qos_rule.net_switch_qos_rule["${organization.name}/${network.name}/qos_rules/${r.qos_rule_name}"].id]
+          rule_ids   = [for r in network.switch.qos_rules : meraki_switch_qos_rule.net_switch_qos_rule["${organization.name}/${network.name}/qos_rules/${r.qos_rule_name}"].id]
         } if try(network.switch.qos_rules, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
@@ -419,7 +419,7 @@ resource "meraki_switch_routing_ospf" "net_switch_routing_ospf" {
   hello_timer_in_seconds            = try(each.value.data.hello_timer_in_seconds, local.defaults.meraki.networks.networks_switch_routing_ospf.hello_timer_in_seconds, null)
   dead_timer_in_seconds             = try(each.value.data.dead_timer_in_seconds, local.defaults.meraki.networks.networks_switch_routing_ospf.dead_timer_in_seconds, null)
   areas                             = try(each.value.data.areas, local.defaults.meraki.networks.networks_switch_routing_ospf.areas, null)
-  v3_enabled                        = try(each.value.data.v3, local.defaults.meraki.networks.networks_switch_routing_ospf.v3.enabled, null)
+  v3_enabled                        = try(each.value.data.v3.enabled, local.defaults.meraki.networks.networks_switch_routing_ospf.v3.enabled, null)
   v3_hello_timer_in_seconds         = try(each.value.data.v3.hello_timer_in_seconds, local.defaults.meraki.networks.networks_switch_routing_ospf.v3.hello_timer_in_seconds, null)
   v3_dead_timer_in_seconds          = try(each.value.data.v3.dead_timer_in_seconds, local.defaults.meraki.networks.networks_switch_routing_ospf.v3.dead_timer_in_seconds, null)
   v3_areas                          = try(each.value.data.v3.areas, local.defaults.meraki.networks.networks_switch_routing_ospf.v3.areas, null)
@@ -452,8 +452,8 @@ resource "meraki_switch_settings" "net_switch_settings" {
   vlan                           = try(each.value.data.vlan, local.defaults.meraki.networks.networks_switch_settings.vlan, null)
   use_combined_power             = try(each.value.data.use_combined_power, local.defaults.meraki.networks.networks_switch_settings.use_combined_power, null)
   power_exceptions               = try(each.value.data.power_exceptions, local.defaults.meraki.networks.networks_switch_settings.power_exceptions, null)
-  uplink_client_sampling_enabled = try(each.value.data.uplink_client_sampling, local.defaults.meraki.networks.networks_switch_settings.uplink_client_sampling.enabled, null)
-  mac_blocklist_enabled          = try(each.value.data.mac_blocklist, local.defaults.meraki.networks.networks_switch_settings.mac_blocklist.enabled, null)
+  uplink_client_sampling_enabled = try(each.value.data.uplink_client_sampling.enabled, local.defaults.meraki.networks.networks_switch_settings.uplink_client_sampling.enabled, null)
+  mac_blocklist_enabled          = try(each.value.data.mac_blocklist.enabled, local.defaults.meraki.networks.networks_switch_settings.mac_blocklist.enabled, null)
 
   depends_on = [meraki_network_device_claim.net_device_claim]
 }
@@ -496,7 +496,7 @@ locals {
       for org in try(domain.organizations, []) : [
         for network in try(org.networks, []) : {
           network_id = meraki_network.network["${org.name}/${network.name}"].id
-          data       = network.switch_stp
+          data       = network_switch_stp
           stp_bridge_priority = [for p in network.switch.stp.stp_bridge_priority : {
             switches     = try(p.switches, null)
             stp_priority = try(p.stp_priority, null)
