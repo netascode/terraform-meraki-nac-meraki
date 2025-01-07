@@ -10,8 +10,7 @@ locals {
         for network in try(organization.networks, []) : [
           for wireless_rf_profile in try(network.wireless.rf_profiles, []) : {
             network_id = meraki_network.network["${organization.name}/${network.name}"].id
-
-            data = try(wireless_rf_profile, null)
+            data       = try(wireless_rf_profile, null)
           } if try(network.wireless.rf_profiles, null) != null
         ] if try(organization.networks, null) != null
       ] if try(domain.organizations, null) != null
@@ -20,9 +19,8 @@ locals {
 }
 
 resource "meraki_wireless_rf_profile" "net_wireless_rf_profiles" {
-  for_each   = { for i, v in local.networks_wireless_rf_profiles : i => v }
-  network_id = each.value.network_id
-
+  for_each                                   = { for i, v in local.networks_wireless_rf_profiles : i => v }
+  network_id                                 = each.value.network_id
   name                                       = try(each.value.data.name, local.defaults.meraki.networks.networks_wireless.rf_profiles.name, null)
   client_balancing_enabled                   = try(each.value.data.client_balancing, local.defaults.meraki.networks.networks_wireless.rf_profiles.client_balancing, null)
   min_bitrate_type                           = try(each.value.data.min_bitrate_type, local.defaults.meraki.networks.networks_wireless.rf_profiles.min_bitrate_type, null)
@@ -115,13 +113,11 @@ resource "meraki_wireless_rf_profile" "net_wireless_rf_profiles" {
 # Apply the Wireless Settings
 locals {
   networks_wireless_settings = flatten([
-
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
-
-          data = try(network.wireless.settings, null)
+          data       = try(network.wireless.settings, null)
         } if try(network.wireless.settings, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
@@ -129,9 +125,8 @@ locals {
 }
 
 resource "meraki_wireless_settings" "net_wireless_settings" {
-  for_each   = { for i, v in local.networks_wireless_settings : i => v }
-  network_id = each.value.network_id
-
+  for_each                                  = { for i, v in local.networks_wireless_settings : i => v }
+  network_id                                = each.value.network_id
   meshing_enabled                           = try(each.value.data.meshing, local.defaults.meraki.networks.networks_wireless_settings.meshing_enabled, null)
   ipv6_bridge_enabled                       = try(each.value.data.ipv6_bridge, local.defaults.meraki.networks.networks_wireless_settings.ipv6_bridge_enabled, null)
   location_analytics_enabled                = try(each.value.data.location_analytics, local.defaults.meraki.networks.networks_wireless_settings.location_analytics_enabled, null)
@@ -144,7 +139,6 @@ resource "meraki_wireless_settings" "net_wireless_settings" {
 # Apply the Wireless SSIDs
 locals {
   wireless_ssids_numbers_list = flatten([
-
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
@@ -158,7 +152,6 @@ locals {
   ])
   wireless_ssids_map = { for w in local.wireless_ssids_numbers_list : w.key => w.number }
   networks_wireless_ssids = flatten([
-
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
@@ -328,7 +321,6 @@ resource "meraki_wireless_ssid_device_type_group_policies" "net_wireless_ssids_d
   depends_on = [
     meraki_wireless_ssid.net_wireless_ssids
   ]
-
 }
 
 locals {
@@ -427,7 +419,6 @@ resource "meraki_wireless_ssid_identity_psk" "net_wireless_ssids_identity_psks" 
 
 locals {
   networks_wireless_ssids_schedules = flatten([
-
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
@@ -443,10 +434,9 @@ locals {
 }
 
 resource "meraki_wireless_ssid_schedules" "net_wireless_ssids_schedules" {
-  for_each   = { for i, v in local.networks_wireless_ssids_schedules : i => v }
-  network_id = each.value.network_id
-  number     = each.value.number
-
+  for_each          = { for i, v in local.networks_wireless_ssids_schedules : i => v }
+  network_id        = each.value.network_id
+  number            = each.value.number
   enabled           = try(each.value.data.enabled, local.defaults.meraki.networks.networks_wireless_ssids_schedules.enabled, null)
   ranges            = try(each.value.data.ranges, local.defaults.meraki.networks.networks_wireless_ssids_schedules.ranges, null)
   ranges_in_seconds = try(each.value.data.ranges_in_seconds, local.defaults.meraki.networks.networks_wireless_ssids_schedules.ranges_in_seconds, null)
@@ -530,12 +520,11 @@ locals {
 }
 
 resource "meraki_wireless_ssid_traffic_shaping_rules" "net_wireless_ssids_traffic_shaping_rules" {
-  for_each   = { for i, v in local.networks_wireless_ssids_traffic_shaping_rules : i => v }
-  network_id = each.value.network_id
-  number     = each.value.number
-
-  traffic_shaping_enabled = try(each.value.data.traffic_shaping_enabled, local.defaults.meraki.networks.networks_wireless_ssids_traffic_shaping_rules.traffic_shaping_enabled, null)
-  default_rules_enabled   = try(each.value.data.default_rules_enabled, local.defaults.meraki.networks.networks_wireless_ssids_traffic_shaping_rules.default_rules_enabled, null)
+  for_each                = { for i, v in local.networks_wireless_ssids_traffic_shaping_rules : i => v }
+  network_id              = each.value.network_id
+  number                  = each.value.number
+  traffic_shaping_enabled = try(each.value.data.traffic_shaping, local.defaults.meraki.networks.networks_wireless_ssids_traffic_shaping_rules.traffic_shaping, null)
+  default_rules_enabled   = try(each.value.data.default_rules, local.defaults.meraki.networks.networks_wireless_ssids_traffic_shaping_rules.default_rules, null)
   rules                   = try(each.value.data.rules, local.defaults.meraki.networks.networks_wireless_ssids_traffic_shaping_rules.rules, null)
   depends_on = [
     meraki_wireless_ssid.net_wireless_ssids
@@ -545,7 +534,6 @@ resource "meraki_wireless_ssid_traffic_shaping_rules" "net_wireless_ssids_traffi
 
 locals {
   networks_wireless_ssids_bonjour_forwarding = flatten([
-
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
@@ -561,10 +549,9 @@ locals {
 }
 
 resource "meraki_wireless_ssid_bonjour_forwarding" "wireless_ssids_bonjour_forwarding" {
-  for_each   = { for i, v in local.networks_wireless_ssids_bonjour_forwarding : i => v }
-  network_id = each.value.network_id
-  number     = each.value.number
-
+  for_each          = { for i, v in local.networks_wireless_ssids_bonjour_forwarding : i => v }
+  network_id        = each.value.network_id
+  number            = each.value.number
   enabled           = try(each.value.data.enabled, local.defaults.meraki.networks.networks_wireless_ssids_bonjour_forwarding.enabled, null)
   rules             = try(each.value.data.rules, local.defaults.meraki.networks.networks_wireless_ssids_bonjour_forwarding.rules, null)
   exception_enabled = try(each.value.data.exception.enabled, local.defaults.meraki.networks.networks_wireless_ssids_bonjour_forwarding.exception.enabled, null)
@@ -575,13 +562,11 @@ resource "meraki_wireless_ssid_bonjour_forwarding" "wireless_ssids_bonjour_forwa
 
 locals {
   networks_networks_wireless_alternate_management_interface = flatten([
-
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
-
-          data = try(network.wireless.alternate_management_interface, null)
+          data       = try(network.wireless.alternate_management_interface, null)
           access_points = [for ap in try(network.wireless.alternate_management_interface.access_points, []) : {
             alternate_management_ip = try(ap.alternate_management_ip, null)
             dns1                    = try(ap.dns1, null)
@@ -597,9 +582,8 @@ locals {
 }
 
 resource "meraki_wireless_alternate_management_interface" "wireless_alternate_management_interface" {
-  for_each   = { for i, v in local.networks_networks_wireless_alternate_management_interface : i => v }
-  network_id = each.value.network_id
-
+  for_each      = { for i, v in local.networks_networks_wireless_alternate_management_interface : i => v }
+  network_id    = each.value.network_id
   enabled       = try(each.value.data.enabled, local.defaults.meraki.networks.networks_wireless_alternate_management_interface.enabled, null)
   vlan_id       = try(each.value.data.vlan_id, local.defaults.meraki.networks.networks_wireless_alternate_management_interface.vlan_id, null)
   protocols     = try(each.value.data.protocols, local.defaults.meraki.networks.networks_wireless_alternate_management_interface.protocols, null)
@@ -610,13 +594,11 @@ resource "meraki_wireless_alternate_management_interface" "wireless_alternate_ma
 }
 locals {
   networks_networks_wireless_bluetooth_settings = flatten([
-
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
-
-          data = try(network.wireless.bluetooth_settings, null)
+          data       = try(network.wireless.bluetooth_settings, null)
         } if try(network.wireless.bluetooth_settings, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
@@ -624,9 +606,8 @@ locals {
 }
 
 resource "meraki_wireless_network_bluetooth_settings" "wireless_bluetooth_settings" {
-  for_each   = { for i, v in local.networks_networks_wireless_bluetooth_settings : i => v }
-  network_id = each.value.network_id
-
+  for_each                    = { for i, v in local.networks_networks_wireless_bluetooth_settings : i => v }
+  network_id                  = each.value.network_id
   scanning_enabled            = try(each.value.data.scanning, local.defaults.meraki.networks.networks_wireless_bluetooth_settings.scanning, null)
   advertising_enabled         = try(each.value.data.advertising, local.defaults.meraki.networks.networks_wireless_bluetooth_settings.advertising, null)
   uuid                        = try(each.value.data.uuid, local.defaults.meraki.networks.networks_wireless_bluetooth_settings.uuid, null)
