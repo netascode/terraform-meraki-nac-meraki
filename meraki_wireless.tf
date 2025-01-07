@@ -163,6 +163,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for i, wireless_ssid in try(network.wireless_ssids, []) : {
+            key        = format("${organization.name}/${network.name}/wireless_ssid/${wireless_ssid.name}") # Include the key
             network_id = meraki_network.network["${organization.name}/${network.name}"].id
             number     = i
             data       = try(wireless_ssid, null)
