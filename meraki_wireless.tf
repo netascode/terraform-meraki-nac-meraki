@@ -167,6 +167,22 @@ locals {
             network_id = meraki_network.network["${organization.name}/${network.name}"].id
             number     = i
             data       = try(wireless_ssid, null)
+            radius_servers = [
+              for radius_server in try(wireless_ssid.radius_servers, []) : {
+                host           = radius_server.host
+                port           = radius_server.port
+                radsec_enabled = radius_server.radsec
+                secret         = radius_server.secret
+              }
+            ]
+            radius_accounting_servers = [
+              for radius_accounting_server in try(wireless_ssid.radius_accounting_servers, []) : {
+                host           = radius_server.host
+                port           = radius_server.port
+                radsec_enabled = radius_server.radsec
+                secret         = radius_server.secret
+              }
+            ]
           } if try(network.wireless_ssids, null) != null
         ] if try(organization.networks, null) != null
       ] if try(domain.organizations, null) != null
@@ -174,10 +190,9 @@ locals {
   ])
 }
 resource "meraki_wireless_ssid" "net_wireless_ssids" {
-  for_each   = { for v in local.networks_wireless_ssids : v.key => v }
-  network_id = each.value.network_id
-  number     = each.value.data.ssid_number
-
+  for_each                                                                    = { for v in local.networks_wireless_ssids : v.key => v }
+  network_id                                                                  = each.value.network_id
+  number                                                                      = each.value.data.ssid_number
   name                                                                        = try(each.value.data.name, local.defaults.meraki.networks.networks_wireless_ssids.name, null)
   enabled                                                                     = try(each.value.data.enabled, local.defaults.meraki.networks.networks_wireless_ssids.enabled, null)
   auth_mode                                                                   = try(each.value.data.auth_mode, local.defaults.meraki.networks.networks_wireless_ssids.auth_mode, null)
@@ -207,9 +222,9 @@ resource "meraki_wireless_ssid" "net_wireless_ssids" {
   active_directory_servers                                                    = try(each.value.data.active_directory.servers, local.defaults.meraki.networks.networks_wireless_ssids.active_directory.servers, null)
   active_directory_credentials_logon_name                                     = try(each.value.data.active_directory.credentials.logon_name, local.defaults.meraki.networks.networks_wireless_ssids.active_directory.credentials.logon_name, null)
   active_directory_credentials_password                                       = try(each.value.data.active_directory.credentials.password, local.defaults.meraki.networks.networks_wireless_ssids.active_directory.credentials.password, null)
-  radius_servers                                                              = try(each.value.data.radius_servers, local.defaults.meraki.networks.networks_wireless_ssids.radius_servers, null)
-  radius_proxy_enabled                                                        = try(each.value.data.radius_proxy_enabled, local.defaults.meraki.networks.networks_wireless_ssids.radius_proxy, null)
-  radius_testing_enabled                                                      = try(each.value.data.radius_testing_enabled, local.defaults.meraki.networks.networks_wireless_ssids.radius_testing, null)
+  radius_servers                                                              = try(each.value.radius_servers, local.defaults.meraki.networks.networks_wireless_ssids.radius_servers, null)
+  radius_proxy_enabled                                                        = try(each.value.data.radius_proxy, local.defaults.meraki.networks.networks_wireless_ssids.radius_proxy, null)
+  radius_testing_enabled                                                      = try(each.value.data.radius_testing, local.defaults.meraki.networks.networks_wireless_ssids.radius_testing, null)
   radius_called_station_id                                                    = try(each.value.data.radius_called_station_id, local.defaults.meraki.networks.networks_wireless_ssids.radius_called_station_id, null)
   radius_authentication_nas_id                                                = try(each.value.data.radius_authentication_nas_id, local.defaults.meraki.networks.networks_wireless_ssids.radius_authentication_nas_id, null)
   radius_server_timeout                                                       = try(each.value.data.radius_server_timeout, local.defaults.meraki.networks.networks_wireless_ssids.radius_server_timeout, null)
@@ -219,7 +234,7 @@ resource "meraki_wireless_ssid" "net_wireless_ssids" {
   radius_failover_policy                                                      = try(each.value.data.radius_failover_policy, local.defaults.meraki.networks.networks_wireless_ssids.radius_failover_policy, null)
   radius_load_balancing_policy                                                = try(each.value.data.radius_load_balancing_policy, local.defaults.meraki.networks.networks_wireless_ssids.radius_load_balancing_policy, null)
   radius_accounting_enabled                                                   = try(each.value.data.radius_accounting, local.defaults.meraki.networks.networks_wireless_ssids.radius_accounting, null)
-  radius_accounting_servers                                                   = try(each.value.data.radius_accounting_servers, local.defaults.meraki.networks.networks_wireless_ssids.radius_accounting_servers, null)
+  radius_accounting_servers                                                   = try(each.value.radius_accounting_servers, local.defaults.meraki.networks.networks_wireless_ssids.radius_accounting_servers, null)
   radius_accounting_interim_interval                                          = try(each.value.data.radius_accounting_interim_interval, local.defaults.meraki.networks.networks_wireless_ssids.radius_accounting_interim_interval, null)
   radius_attribute_for_group_policies                                         = try(each.value.data.radius_attribute_for_group_policies, local.defaults.meraki.networks.networks_wireless_ssids.radius_attribute_for_group_policies, null)
   ip_assignment_mode                                                          = try(each.value.data.ip_assignment_mode, local.defaults.meraki.networks.networks_wireless_ssids.ip_assignment_mode, null)
@@ -290,7 +305,6 @@ resource "meraki_wireless_ssid_eap_override" "net_wireless_ssid_eap_override" {
 
 locals {
   networks_wireless_ssids_device_type_group_policies = flatten([
-
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
@@ -306,13 +320,11 @@ locals {
 }
 
 resource "meraki_wireless_ssid_device_type_group_policies" "net_wireless_ssids_device_type_group_policies" {
-  for_each   = { for i, v in local.networks_wireless_ssids_device_type_group_policies : i => v }
-  network_id = each.value.network_id
-  number     = each.value.number
-
+  for_each             = { for i, v in local.networks_wireless_ssids_device_type_group_policies : i => v }
+  network_id           = each.value.network_id
+  number               = each.value.number
   enabled              = try(each.value.data.enabled, local.defaults.meraki.networks.networks_wireless_ssids_device_type_group_policies.enabled, null)
   device_type_policies = try(each.value.data.device_type_policies, local.defaults.meraki.networks.networks_wireless_ssids_device_type_group_policies.device_type_policies, null)
-
   depends_on = [
     meraki_wireless_ssid.net_wireless_ssids
   ]
@@ -321,7 +333,6 @@ resource "meraki_wireless_ssid_device_type_group_policies" "net_wireless_ssids_d
 
 locals {
   networks_wireless_ssids_firewall_l3_firewall_rules = flatten([
-
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
@@ -337,10 +348,9 @@ locals {
 }
 
 resource "meraki_wireless_ssid_l3_firewall_rules" "net_wireless_ssids_l3_firewall_rules" {
-  for_each   = { for i, v in local.networks_wireless_ssids_firewall_l3_firewall_rules : i => v }
-  network_id = each.value.network_id
-  number     = each.value.number
-
+  for_each         = { for i, v in local.networks_wireless_ssids_firewall_l3_firewall_rules : i => v }
+  network_id       = each.value.network_id
+  number           = each.value.number
   rules            = try(each.value.data.rules, local.defaults.meraki.networks.networks_wireless_ssids_firewall_l3_firewall_rules.rules, null)
   allow_lan_access = try(each.value.data.allow_lan_access, local.defaults.meraki.networks.networks_wireless_ssids_firewall_l3_firewall_rules.allow_lan_access, null)
   depends_on = [
@@ -351,7 +361,6 @@ resource "meraki_wireless_ssid_l3_firewall_rules" "net_wireless_ssids_l3_firewal
 
 locals {
   networks_wireless_ssids_hotspot20 = flatten([
-
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
@@ -367,10 +376,9 @@ locals {
 }
 
 resource "meraki_wireless_ssid_hotspot_20" "net_wireless_ssids_hotspot20" {
-  for_each   = { for i, v in local.networks_wireless_ssids_hotspot20 : i => v }
-  network_id = each.value.network_id
-  number     = each.value.number
-
+  for_each            = { for i, v in local.networks_wireless_ssids_hotspot20 : i => v }
+  network_id          = each.value.network_id
+  number              = each.value.number
   enabled             = try(each.value.data.enabled, local.defaults.meraki.networks.networks_wireless_ssids_hotspot20.enabled, null)
   operator_name       = try(each.value.data.operator.name, local.defaults.meraki.networks.networks_wireless_ssids_hotspot20.operator.name, null)
   venue_name          = try(each.value.data.venue.name, local.defaults.meraki.networks.networks_wireless_ssids_hotspot20.venue.name, null)
@@ -387,7 +395,6 @@ resource "meraki_wireless_ssid_hotspot_20" "net_wireless_ssids_hotspot20" {
 
 locals {
   networks_wireless_ssids_identity_psks = flatten([
-
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
@@ -405,10 +412,9 @@ locals {
 }
 
 resource "meraki_wireless_ssid_identity_psk" "net_wireless_ssids_identity_psks" {
-  for_each   = { for i, v in local.networks_wireless_ssids_identity_psks : i => v }
-  network_id = each.value.network_id
-  number     = each.value.number
-
+  for_each        = { for i, v in local.networks_wireless_ssids_identity_psks : i => v }
+  network_id      = each.value.network_id
+  number          = each.value.number
   name            = try(each.value.data.name, local.defaults.meraki.networks.networks_wireless_ssids_identity_psks.name, null)
   passphrase      = try(each.value.data.passphrase, local.defaults.meraki.networks.networks_wireless_ssids_identity_psks.passphrase, null)
   group_policy_id = try(each.value.data.group_policy_id, local.defaults.meraki.networks.networks_wireless_ssids_identity_psks.group_policy_id, null)
@@ -451,7 +457,6 @@ resource "meraki_wireless_ssid_schedules" "net_wireless_ssids_schedules" {
 
 locals {
   networks_wireless_ssids_splash_settings = flatten([
-
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
@@ -467,10 +472,9 @@ locals {
 }
 
 resource "meraki_wireless_ssid_splash_settings" "net_wireless_ssids_splash_settings" {
-  for_each   = { for i, v in local.networks_wireless_ssids_splash_settings : i => v }
-  network_id = each.value.network_id
-  number     = each.value.number
-
+  for_each                                      = { for i, v in local.networks_wireless_ssids_splash_settings : i => v }
+  network_id                                    = each.value.network_id
+  number                                        = each.value.number
   splash_url                                    = try(each.value.data.splash_url, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.splash_url, null)
   use_splash_url                                = try(each.value.data.use_splash_url, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.use_splash_url, null)
   splash_timeout                                = try(each.value.data.splash_timeout, local.defaults.meraki.networks.networks_wireless_ssids_splash_settings.splash_timeout, null)
