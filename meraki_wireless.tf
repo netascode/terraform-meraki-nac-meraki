@@ -612,8 +612,8 @@ locals {
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
 
-          data = try(network.wireless_bluetooth_settings, null)
-        } if try(network.wireless_bluetooth_settings, null) != null
+          data = try(network.wireless.bluetooth_settings, null)
+        } if try(network.wireless.bluetooth_settings, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -623,8 +623,8 @@ resource "meraki_wireless_network_bluetooth_settings" "wireless_bluetooth_settin
   for_each   = { for i, v in local.networks_networks_wireless_bluetooth_settings : i => v }
   network_id = each.value.network_id
 
-  scanning_enabled            = try(each.value.data.scanning_enabled, local.defaults.meraki.networks.networks_wireless_bluetooth_settings.scanning_enabled, null)
-  advertising_enabled         = try(each.value.data.advertising_enabled, local.defaults.meraki.networks.networks_wireless_bluetooth_settings.advertising_enabled, null)
+  scanning_enabled            = try(each.value.data.scanning, local.defaults.meraki.networks.networks_wireless_bluetooth_settings.scanning, null)
+  advertising_enabled         = try(each.value.data.advertising, local.defaults.meraki.networks.networks_wireless_bluetooth_settings.advertising, null)
   uuid                        = try(each.value.data.uuid, local.defaults.meraki.networks.networks_wireless_bluetooth_settings.uuid, null)
   major_minor_assignment_mode = try(each.value.data.major_minor_assignment_mode, local.defaults.meraki.networks.networks_wireless_bluetooth_settings.major_minor_assignment_mode, null)
   major                       = try(each.value.data.major, local.defaults.meraki.networks.networks_wireless_bluetooth_settings.major, null)
