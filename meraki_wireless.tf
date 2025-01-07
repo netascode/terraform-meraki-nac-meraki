@@ -251,7 +251,7 @@ resource "meraki_wireless_ssid" "net_wireless_ssids" {
   adult_content_filtering_enabled                                             = try(each.value.data.adult_content_filtering, local.defaults.meraki.networks.networks_wireless_ssids.adult_content_filtering, null)
   dns_rewrite_enabled                                                         = try(each.value.data.dns_rewrite, local.defaults.meraki.networks.networks_wireless_ssids.dns_rewrite, null)
   dns_rewrite_dns_custom_nameservers                                          = try(each.value.data.dns_rewrite.dns_custom_nameservers, local.defaults.meraki.networks.networks_wireless_ssids.dns_rewrite.dns_custom_nameservers, null)
-  speed_burst_enabled                                                         = try(each.value.data.speed_burst, local.defaults.meraki.networks.networks_wireless_ssids.speed_burst, null)
+  speed_burst_enabled                                                         = try(each.value.data.speed_burst.enabled, local.defaults.meraki.networks.networks_wireless_ssids.speed_burst.enabled, null)
   named_vlans_tagging_enabled                                                 = try(each.value.data.named_vlans.tagging, local.defaults.meraki.networks.networks_wireless_ssids.named_vlans.tagging, null)
   named_vlans_tagging_default_vlan_name                                       = try(each.value.data.named_vlans.tagging.default_vlan_name, local.defaults.meraki.networks.networks_wireless_ssids.named_vlans.tagging.default_vlan_name, null)
   named_vlans_tagging_by_ap_tags                                              = try(each.value.data.named_vlans.tagging.by_ap_tags, local.defaults.meraki.networks.networks_wireless_ssids.named_vlans.tagging.by_ap_tags, null)
