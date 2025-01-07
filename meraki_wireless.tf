@@ -137,7 +137,7 @@ resource "meraki_wireless_settings" "net_wireless_settings" {
   location_analytics_enabled                = try(each.value.data.location_analytics, local.defaults.meraki.networks.networks_wireless_settings.location_analytics_enabled, null)
   upgrade_strategy                          = try(each.value.data.upgrade_strategy, local.defaults.meraki.networks.networks_wireless_settings.upgrade_strategy, null)
   led_lights_on                             = try(each.value.data.led_lights_on, local.defaults.meraki.networks.networks_wireless_settings.led_lights_on, null)
-  named_vlans_pool_dhcp_monitoring_enabled  = try(each.value.data.named_vlans.pool_dhcp_monitoring, local.defaults.meraki.networks.networks_wireless_settings.named_vlans.pool_dhcp_monitoring.enabled, null)
+  named_vlans_pool_dhcp_monitoring_enabled  = try(each.value.data.named_vlans.pool_dhcp_monitoring.enabled, local.defaults.meraki.networks.networks_wireless_settings.named_vlans.pool_dhcp_monitoring.enabled, null)
   named_vlans_pool_dhcp_monitoring_duration = try(each.value.data.named_vlans.pool_dhcp_monitoring.duration, local.defaults.meraki.networks.networks_wireless_settings.named_vlans.pool_dhcp_monitoring.duration, null)
 
 }
