@@ -577,8 +577,8 @@ locals {
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
 
-          data = try(network.wireless_alternate_management_interface, null)
-          access_points = [for ap in try(network.wireless_alternate_management_interface.access_points, []) : {
+          data = try(network.wireless.alternate_management_interface, null)
+          access_points = [for ap in try(network.wireless.alternate_management_interface.access_points, []) : {
             alternate_management_ip = try(ap.alternate_management_ip, null)
             dns1                    = try(ap.dns1, null)
             dns2                    = try(ap.dns2, null)
@@ -586,7 +586,7 @@ locals {
             serial                  = meraki_device.device["${organization.name}/${network.name}/devices/${ap.device}"].serial
             subnet_mask             = try(ap.subnet_mask, null)
           }]
-        } if try(network.wireless_alternate_management_interface, null) != null
+        } if try(network.wireless.alternate_management_interface, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
