@@ -7,6 +7,15 @@ locals {
           for group_policy in try(network.group_policies, []) : {
             network_id = meraki_network.network["${organization.name}/${network.name}"].id
             data       = try(group_policy, null)
+            rules = [
+              for rule in try(group_policy.firewall_and_traffic_shaping.l3_firewall_rules, []) : {
+                comment  = rule.comment
+                dst_cidr = rule.destination_cidr
+                dst_port = rule.destination_port
+                policy   = rule.policy
+                protocol = rule.protocol
+              }
+            ]
           } if try(network.group_policies, null) != null
         ] if try(organization.networks, null) != null
       ] if try(domain.organizations, null) != null
@@ -46,7 +55,7 @@ resource "meraki_network_group_policy" "net_group_policies" {
   bandwidth_limit_down                              = try(each.value.data.bandwidth.bandwidth_limits.limit_down, local.defaults.meraki.networks.group_policies.bandwidth.bandwidth_limits.limit_down, null)
   firewall_and_traffic_shaping_settings             = try(each.value.data.firewall_and_traffic_shaping.settings, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.settings, null)
   traffic_shaping_rules                             = try(each.value.data.firewall_and_traffic_shaping.traffic_shaping_rules, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.traffic_shaping_rules, null)
-  l3_firewall_rules                                 = try(each.value.data.firewall_and_traffic_shaping.l3_firewall_rules, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.l3_firewall_rules, null)
+  l3_firewall_rules                                 = try(each.value.rules, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.l3_firewall_rules, null)
   l7_firewall_rules                                 = try(each.value.data.firewall_and_traffic_shaping.l7_firewall_rules, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.l7_firewall_rules, null)
   content_filtering_allowed_url_patterns_settings   = try(each.value.data.content_filtering.allowed_url_patterns.settings, local.defaults.meraki.networks.group_policies.content_filtering.allowed_url_patterns.settings, null)
   content_filtering_allowed_url_patterns            = try(each.value.data.content_filtering.allowed_url_patterns.patterns, local.defaults.meraki.networks.group_policies.content_filtering.allowed_url_patterns.patterns, null)
