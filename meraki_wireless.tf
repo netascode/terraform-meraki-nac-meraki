@@ -177,10 +177,10 @@ locals {
             ]
             radius_accounting_servers = [
               for radius_accounting_server in try(wireless_ssid.radius_accounting_servers, []) : {
-                host           = radius_server.host
-                port           = radius_server.port
-                radsec_enabled = radius_server.radsec
-                secret         = radius_server.secret
+                host           = radius_accounting_server.host
+                port           = radius_accounting_server.port
+                radsec_enabled = radius_accounting_server.radsec
+                secret         = radius_accounting_server.secret
               }
             ]
           } if try(network.wireless_ssids, null) != null
