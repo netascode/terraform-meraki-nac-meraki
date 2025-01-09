@@ -156,24 +156,24 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for i, wireless_ssid in try(network.wireless_ssids, []) : {
-            key        = format("${organization.name}/${network.name}/wireless_ssid/${wireless_ssid.name}") # Include the key
+            key        = format("${organization.name}/${network.name}/wireless_ssid/${try(wireless_ssid.name, "unknown")}") # Use "unknown" if name is missing
             network_id = meraki_network.network["${organization.name}/${network.name}"].id
             number     = i
             data       = try(wireless_ssid, null)
             radius_servers = [
               for radius_server in try(wireless_ssid.radius_servers, []) : {
-                host           = radius_server.host
-                port           = radius_server.port
-                radsec_enabled = radius_server.radsec
-                secret         = radius_server.secret
+                host           = try(radius_server.host, null)
+                port           = try(radius_server.port, null)
+                radsec_enabled = try(radius_server.radsec, null)
+                secret         = try(radius_server.secret, null)
               }
             ]
             radius_accounting_servers = [
               for radius_accounting_server in try(wireless_ssid.radius_accounting_servers, []) : {
-                host           = radius_accounting_server.host
-                port           = radius_accounting_server.port
-                radsec_enabled = radius_accounting_server.radsec
-                secret         = radius_accounting_server.secret
+                host           = try(radius_accounting_server.host, null)
+                port           = try(radius_accounting_server.port, null)
+                radsec_enabled = try(radius_accounting_server.radsec, null)
+                secret         = try(radius_accounting_server.secret, null)
               }
             ]
           } if try(network.wireless_ssids, null) != null

@@ -8,11 +8,11 @@ locals {
             data       = try(group_policy, null)
             rules = [
               for rule in try(group_policy.firewall_and_traffic_shaping.l3_firewall_rules, []) : {
-                comment   = rule.comment
-                dest_cidr = rule.destination_cidr
-                dest_port = rule.destination_port
-                policy    = rule.policy
-                protocol  = rule.protocol
+                comment   = try(rule.comment, null)
+                dest_cidr = try(rule.destination_cidr, null)
+                dest_port = try(rule.destination_port, null)
+                policy    = try(rule.policy, null)
+                protocol  = try(rule.protocol, null)
               }
             ]
           } if try(network.group_policies, null) != null

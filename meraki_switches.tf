@@ -7,15 +7,15 @@ locals {
           network_id = meraki_network.network["${org.name}/${network.name}"].id
           rules = [
             for rule in try(network.switch.access_control_lists.rules, []) : {
-              comment    = rule.comment
-              dst_cidr   = rule.destination_cidr
-              dst_port   = rule.destination_port
-              ip_version = rule.ip_version
-              policy     = rule.policy
-              protocol   = rule.protocol
-              src_cidr   = rule.source_cidr
-              src_port   = rule.source_port
-              vlan       = rule.vlan
+              comment    = try(rule.comment, null)
+              dst_cidr   = try(rule.destination_cidr, null)
+              dst_port   = try(rule.destination_port, null)
+              ip_version = try(rule.ip_version, null)
+              policy     = try(rule.policy, null)
+              protocol   = try(rule.protocol, null)
+              src_cidr   = try(rule.source_cidr, null)
+              src_port   = try(rule.source_port, null)
+              vlan       = try(rule.vlan, null)
             }
           ]
         } if try(network.switch.access_control_lists.rules, null) != null
