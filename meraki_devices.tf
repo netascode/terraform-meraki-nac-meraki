@@ -177,7 +177,7 @@ resource "meraki_switch_port" "devices_switch_port" {
   mac_allow_list              = try(each.value.data.mac_allow_list, local.defaults.meraki.networks.devices_switch_ports.mac_allow_list, null)
   sticky_mac_allow_list       = try(each.value.data.sticky_mac_allow_list, local.defaults.meraki.networks.devices_switch_ports.sticky_mac_allow_list, null)
   sticky_mac_allow_list_limit = try(each.value.data.sticky_mac_allow_list_limit, local.defaults.meraki.networks.devices_switch_ports.sticky_mac_allow_list_limit, null)
-  storm_control_enabled       = try(each.value.data.storm_control, local.defaults.meraki.networks.networks.switch.port_schedules, local.defaults.meraki.networks.devices_switch_ports.storm_controllocal.defaults.meraki.networks.networks.switch.port_schedules, null)
+  storm_control_enabled       = try(each.value.data.storm_control, local.defaults.meraki.networks.networks.switch.port_schedules.storm_control, null)
   adaptive_policy_group_id    = each.value.adaptive_policy_group_id
   peer_sgt_capable            = try(each.value.data.peer_sgt_capable, local.defaults.meraki.networks.devices_switch_ports.peer_sgt_capable, null)
   flexible_stacking_enabled   = try(each.value.data.flexible_stacking, local.defaults.meraki.networks.networks.switch.port_schedules, local.defaults.meraki.networks.devices_switch_ports.flexible_stackinglocal.defaults.meraki.networks.networks.switch.port_schedules, null)
