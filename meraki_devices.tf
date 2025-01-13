@@ -180,7 +180,7 @@ resource "meraki_switch_port" "devices_switch_port" {
   storm_control_enabled       = try(each.value.data.storm_control, local.defaults.meraki.networks.networks.switch.port_schedules.storm_control, null)
   adaptive_policy_group_id    = each.value.adaptive_policy_group_id
   peer_sgt_capable            = try(each.value.data.peer_sgt_capable, local.defaults.meraki.networks.devices_switch_ports.peer_sgt_capable, null)
-  flexible_stacking_enabled   = try(each.value.data.flexible_stacking, local.defaults.meraki.networks.networks.switch.port_schedules, local.defaults.meraki.networks.devices_switch_ports.flexible_stackinglocal.defaults.meraki.networks.networks.switch.port_schedules, null)
+  flexible_stacking_enabled   = try(each.value.data.flexible_stacking, local.defaults.meraki.networks.networks.switch.port_schedules.flexible_stacking, null)
   dai_trusted                 = try(each.value.data.dai_trusted, local.defaults.meraki.networks.devices_switch_ports.dai_trusted, null)
   profile_enabled             = try(each.value.data.profile.enabled, local.defaults.meraki.networks.devices_switch_ports.profile.enabled, null)
   # profile_id                  = try(each.value.data.profile.id, local.defaults.meraki.networks.devices_switch_ports.profile.id, null)
