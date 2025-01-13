@@ -166,8 +166,8 @@ resource "meraki_switch_port" "devices_switch_port" {
   vlan                        = try(each.value.data.vlan, local.defaults.meraki.networks.devices_switch_ports.vlan, null)
   voice_vlan                  = try(each.value.data.voice_vlan, local.defaults.meraki.networks.devices_switch_ports.voice_vlan, null)
   allowed_vlans               = try(each.value.data.allowed_vlans, local.defaults.meraki.networks.devices_switch_ports.allowed_vlans, null)
-  isolation_enabled           = try(each.value.data.isolation, local.defaults.meraki.networks.networks.switch.port_schedules, local.defaults.meraki.networks.devices_switch_ports.isolationlocal.defaults.meraki.networks.networks.switch.port_schedules, null)
-  rstp_enabled                = try(each.value.data.rstp, local.defaults.meraki.networks.networks.switch.port_schedules, local.defaults.meraki.networks.devices_switch_ports.rstplocal.defaults.meraki.networks.networks.switch.port_schedules, null)
+  isolation_enabled           = try(each.value.data.isolation, local.defaults.meraki.networks.networks.switch.port_schedules.isolation, null)
+  rstp_enabled                = try(each.value.data.rstp, local.defaults.meraki.networks.networks.switch.port_schedules.rstp, null)
   stp_guard                   = try(each.value.data.stp_guard, local.defaults.meraki.networks.devices_switch_ports.stp_guard, null)
   link_negotiation            = try(each.value.data.link_negotiation, local.defaults.meraki.networks.devices_switch_ports.link_negotiation, null)
   port_schedule_id            = each.value.port_schedule_id
