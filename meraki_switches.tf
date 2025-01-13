@@ -26,7 +26,8 @@ locals {
 resource "meraki_switch_access_control_lists" "net_switch_access_control_lists" {
   for_each   = { for i, v in local.networks_switch_access_control_lists : i => v }
   network_id = each.value.network_id
-  rules      = each.value.rules
+  rules      = length(each.value.rules) > 0 ? each.value.rules : null
+
 }
 
 locals {
@@ -186,7 +187,7 @@ resource "meraki_switch_link_aggregation" "net_switch_link_aggregation" {
   for_each             = { for i, v in local.networks_switch_link_aggregations : i => v }
   network_id           = each.value.network_id
   switch_ports         = each.value.switch_ports
-  switch_profile_ports = try(each.value.data.switch_profile_ports, local.defaults.meraki.networks.networks_switch_link_aggregations.switch_profile_ports, null)
+  switch_profile_ports = try(each.value.data.switch_profile_ports, local.defaults.meraki.networks.switch_link_aggregations.switch_profile_ports, null)
   depends_on           = [meraki_switch_stack.net_switch_stacks]
 }
 
@@ -208,8 +209,8 @@ locals {
 resource "meraki_switch_mtu" "net_switch_mtu" {
   for_each         = { for i, v in local.networks_switch_mtu : i => v }
   network_id       = each.value.network_id
-  default_mtu_size = try(each.value.data.default_mtu_size, local.defaults.meraki.networks.networks_switch.mtu.default_mtu_size, null)
-  overrides        = try(each.value.data.overrides, local.defaults.meraki.networks.networks_switch.mtu.overrides, null)
+  default_mtu_size = try(each.value.data.default_mtu_size, local.defaults.meraki.networks.switch.mtu.default_mtu_size, null)
+  overrides        = try(each.value.data.overrides, local.defaults.meraki.networks.switch.mtu.overrides, null)
   depends_on       = [meraki_network_device_claim.net_device_claim]
 }
 
@@ -232,28 +233,28 @@ locals {
 resource "meraki_switch_port_schedule" "net_switch_port_schedules" {
   for_each                       = { for i in local.networks_switch_port_schedules : i.key => i }
   network_id                     = each.value.network_id
-  name                           = try(each.value.data.name, local.defaults.meraki.networks.networks.switch.port_schedules.name, null)
-  port_schedule_monday_active    = try(each.value.data.port_schedule.monday.active, local.defaults.meraki.networks.networks.switch.port_schedules.port_schedule.monday.active, null)
-  port_schedule_monday_from      = try(each.value.data.port_schedule.monday.from, local.defaults.meraki.networks.networks.switch.port_schedules.port_schedule.monday.from, null)
-  port_schedule_monday_to        = try(each.value.data.port_schedule.monday.to, local.defaults.meraki.networks.networks.switch.port_schedules.port_schedule.monday.to, null)
-  port_schedule_tuesday_active   = try(each.value.data.port_schedule.tuesday.active, local.defaults.meraki.networks.networks.switch.port_schedules.port_schedule.tuesday.active, null)
-  port_schedule_tuesday_from     = try(each.value.data.port_schedule.tuesday.from, local.defaults.meraki.networks.networks.switch.port_schedules.port_schedule.tuesday.from, null)
-  port_schedule_tuesday_to       = try(each.value.data.port_schedule.tuesday.to, local.defaults.meraki.networks.networks.switch.port_schedules.port_schedule.tuesday.to, null)
-  port_schedule_wednesday_active = try(each.value.data.port_schedule.wednesday.active, local.defaults.meraki.networks.networks.switch.port_schedules.port_schedule.wednesday.active, null)
-  port_schedule_wednesday_from   = try(each.value.data.port_schedule.wednesday.from, local.defaults.meraki.networks.networks.switch.port_schedules.port_schedule.wednesday.from, null)
-  port_schedule_wednesday_to     = try(each.value.data.port_schedule.wednesday.to, local.defaults.meraki.networks.networks.switch.port_schedules.port_schedule.wednesday.to, null)
-  port_schedule_thursday_active  = try(each.value.data.port_schedule.thursday.active, local.defaults.meraki.networks.networks.switch.port_schedules.port_schedule.thursday.active, null)
-  port_schedule_thursday_from    = try(each.value.data.port_schedule.thursday.from, local.defaults.meraki.networks.networks.switch.port_schedules.port_schedule.thursday.from, null)
-  port_schedule_thursday_to      = try(each.value.data.port_schedule.thursday.to, local.defaults.meraki.networks.networks.switch.port_schedules.port_schedule.thursday.to, null)
-  port_schedule_friday_active    = try(each.value.data.port_schedule.friday.active, local.defaults.meraki.networks.networks.switch.port_schedules.port_schedule.friday.active, null)
-  port_schedule_friday_from      = try(each.value.data.port_schedule.friday.from, local.defaults.meraki.networks.networks.switch.port_schedules.port_schedule.friday.from, null)
-  port_schedule_friday_to        = try(each.value.data.port_schedule.friday.to, local.defaults.meraki.networks.networks.switch.port_schedules.port_schedule.friday.to, null)
-  port_schedule_saturday_active  = try(each.value.data.port_schedule.saturday.active, local.defaults.meraki.networks.networks.switch.port_schedules.port_schedule.saturday.active, null)
-  port_schedule_saturday_from    = try(each.value.data.port_schedule.saturday.from, local.defaults.meraki.networks.networks.switch.port_schedules.port_schedule.saturday.from, null)
-  port_schedule_saturday_to      = try(each.value.data.port_schedule.saturday.to, local.defaults.meraki.networks.networks.switch.port_schedules.port_schedule.saturday.to, null)
-  port_schedule_sunday_active    = try(each.value.data.port_schedule.sunday.active, local.defaults.meraki.networks.networks.switch.port_schedules.port_schedule.sunday.active, null)
-  port_schedule_sunday_from      = try(each.value.data.port_schedule.sunday.from, local.defaults.meraki.networks.networks.switch.port_schedules.port_schedule.sunday.from, null)
-  port_schedule_sunday_to        = try(each.value.data.port_schedule.sunday.to, local.defaults.meraki.networks.networks.switch.port_schedules.port_schedule.sunday.to, null)
+  name                           = try(each.value.data.name, local.defaults.meraki.networks.switch.port_schedules.name, null)
+  port_schedule_monday_active    = try(each.value.data.port_schedule.monday.active, local.defaults.meraki.networks.switch.port_schedules.port_schedule.monday.active, null)
+  port_schedule_monday_from      = try(each.value.data.port_schedule.monday.from, local.defaults.meraki.networks.switch.port_schedules.port_schedule.monday.from, null)
+  port_schedule_monday_to        = try(each.value.data.port_schedule.monday.to, local.defaults.meraki.networks.switch.port_schedules.port_schedule.monday.to, null)
+  port_schedule_tuesday_active   = try(each.value.data.port_schedule.tuesday.active, local.defaults.meraki.networks.switch.port_schedules.port_schedule.tuesday.active, null)
+  port_schedule_tuesday_from     = try(each.value.data.port_schedule.tuesday.from, local.defaults.meraki.networks.switch.port_schedules.port_schedule.tuesday.from, null)
+  port_schedule_tuesday_to       = try(each.value.data.port_schedule.tuesday.to, local.defaults.meraki.networks.switch.port_schedules.port_schedule.tuesday.to, null)
+  port_schedule_wednesday_active = try(each.value.data.port_schedule.wednesday.active, local.defaults.meraki.networks.switch.port_schedules.port_schedule.wednesday.active, null)
+  port_schedule_wednesday_from   = try(each.value.data.port_schedule.wednesday.from, local.defaults.meraki.networks.switch.port_schedules.port_schedule.wednesday.from, null)
+  port_schedule_wednesday_to     = try(each.value.data.port_schedule.wednesday.to, local.defaults.meraki.networks.switch.port_schedules.port_schedule.wednesday.to, null)
+  port_schedule_thursday_active  = try(each.value.data.port_schedule.thursday.active, local.defaults.meraki.networks.switch.port_schedules.port_schedule.thursday.active, null)
+  port_schedule_thursday_from    = try(each.value.data.port_schedule.thursday.from, local.defaults.meraki.networks.switch.port_schedules.port_schedule.thursday.from, null)
+  port_schedule_thursday_to      = try(each.value.data.port_schedule.thursday.to, local.defaults.meraki.networks.switch.port_schedules.port_schedule.thursday.to, null)
+  port_schedule_friday_active    = try(each.value.data.port_schedule.friday.active, local.defaults.meraki.networks.switch.port_schedules.port_schedule.friday.active, null)
+  port_schedule_friday_from      = try(each.value.data.port_schedule.friday.from, local.defaults.meraki.networks.switch.port_schedules.port_schedule.friday.from, null)
+  port_schedule_friday_to        = try(each.value.data.port_schedule.friday.to, local.defaults.meraki.networks.switch.port_schedules.port_schedule.friday.to, null)
+  port_schedule_saturday_active  = try(each.value.data.port_schedule.saturday.active, local.defaults.meraki.networks.switch.port_schedules.port_schedule.saturday.active, null)
+  port_schedule_saturday_from    = try(each.value.data.port_schedule.saturday.from, local.defaults.meraki.networks.switch.port_schedules.port_schedule.saturday.from, null)
+  port_schedule_saturday_to      = try(each.value.data.port_schedule.saturday.to, local.defaults.meraki.networks.switch.port_schedules.port_schedule.saturday.to, null)
+  port_schedule_sunday_active    = try(each.value.data.port_schedule.sunday.active, local.defaults.meraki.networks.switch.port_schedules.port_schedule.sunday.active, null)
+  port_schedule_sunday_from      = try(each.value.data.port_schedule.sunday.from, local.defaults.meraki.networks.switch.port_schedules.port_schedule.sunday.from, null)
+  port_schedule_sunday_to        = try(each.value.data.port_schedule.sunday.to, local.defaults.meraki.networks.switch.port_schedules.port_schedule.sunday.to, null)
   depends_on                     = [meraki_network_device_claim.net_device_claim]
 }
 
@@ -277,13 +278,13 @@ locals {
 resource "meraki_switch_qos_rule" "net_switch_qos_rule" {
   for_each       = { for i, v in local.networks_switch_qos_rules : v.key => v }
   network_id     = each.value.network_id
-  vlan           = try(each.value.data.vlan, local.defaults.meraki.networks.networks_switch_qos_rules.vlan, null)
-  protocol       = try(each.value.data.protocol, local.defaults.meraki.networks.networks_switch_qos_rules.protocol, null)
-  src_port       = try(each.value.data.source_port, local.defaults.meraki.networks.networks_switch_qos_rules.source_port, null)
-  src_port_range = try(each.value.data.source_port_range, local.defaults.meraki.networks.networks_switch_qos_rules.source_port_range, null)
-  dst_port       = try(each.value.data.destination_port, local.defaults.meraki.networks.networks_switch_qos_rules.destination_port, null)
-  dst_port_range = try(each.value.data.destination_port_range, local.defaults.meraki.networks.networks_switch_qos_rules.destination_port_range, null)
-  dscp           = try(each.value.data.dscp, local.defaults.meraki.networks.networks_switch_qos_rules.dscp, null)
+  vlan           = try(each.value.data.vlan, local.defaults.meraki.networks.switch_qos_rules.vlan, null)
+  protocol       = try(each.value.data.protocol, local.defaults.meraki.networks.switch_qos_rules.protocol, null)
+  src_port       = try(each.value.data.source_port, local.defaults.meraki.networks.switch_qos_rules.source_port, null)
+  src_port_range = try(each.value.data.source_port_range, local.defaults.meraki.networks.switch_qos_rules.source_port_range, null)
+  dst_port       = try(each.value.data.destination_port, local.defaults.meraki.networks.switch_qos_rules.destination_port, null)
+  dst_port_range = try(each.value.data.destination_port_range, local.defaults.meraki.networks.switch_qos_rules.destination_port_range, null)
+  dscp           = try(each.value.data.dscp, local.defaults.meraki.networks.switch_qos_rules.dscp, null)
   depends_on     = [meraki_network_device_claim.net_device_claim]
 }
 
@@ -322,9 +323,9 @@ locals {
 resource "meraki_switch_routing_multicast" "net_switch_routing_multicast" {
   for_each                                                 = { for i, v in local.networks_switch_routing_multicast : i => v }
   network_id                                               = each.value.network_id
-  default_settings_igmp_snooping_enabled                   = try(each.value.data.default_settings.igmp_snooping, local.defaults.meraki.networks.networks_switch_routing_multicast.default_settings.igmp_snooping, null)
-  default_settings_flood_unknown_multicast_traffic_enabled = try(each.value.data.default_settings.flood_unknown_multicast_traffic, local.defaults.meraki.networks.networks_switch_routing_multicast.default_settings.flood_unknown_multicast_traffic, null)
-  overrides                                                = try(each.value.data.overrides, local.defaults.meraki.networks.networks_switch_routing_multicast.overrides, null)
+  default_settings_igmp_snooping_enabled                   = try(each.value.data.default_settings.igmp_snooping, local.defaults.meraki.networks.switch_routing_multicast.default_settings.igmp_snooping, null)
+  default_settings_flood_unknown_multicast_traffic_enabled = try(each.value.data.default_settings.flood_unknown_multicast_traffic, local.defaults.meraki.networks.switch_routing_multicast.default_settings.flood_unknown_multicast_traffic, null)
+  overrides                                                = try(each.value.data.overrides, local.defaults.meraki.networks.switch_routing_multicast.overrides, null)
   depends_on                                               = [meraki_network_device_claim.net_device_claim]
 }
 
@@ -346,8 +347,8 @@ locals {
 resource "meraki_switch_routing_multicast_rendezvous_point" "net_switch_routing_multicast_rendezvous_point" {
   for_each        = { for i, v in local.networks_switch_routing_multicast_rendezvous_points : i => v }
   network_id      = each.value.network_id
-  interface_ip    = try(each.value.data.interface_ip, local.defaults.meraki.networks.networks_switch_routing_multicast_rendezvous_points.interface_ip, null)
-  multicast_group = try(each.value.data.multicast_group, local.defaults.meraki.networks.networks_switch_routing_multicast_rendezvous_points.multicast_group, null)
+  interface_ip    = try(each.value.data.interface_ip, local.defaults.meraki.networks.switch_routing_multicast_rendezvous_points.interface_ip, null)
+  multicast_group = try(each.value.data.multicast_group, local.defaults.meraki.networks.switch_routing_multicast_rendezvous_points.multicast_group, null)
   depends_on      = [meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_not_first]
 }
 
@@ -367,17 +368,17 @@ locals {
 resource "meraki_switch_routing_ospf" "net_switch_routing_ospf" {
   for_each                          = { for i, v in local.networks_switch_routing_ospf : i => v }
   network_id                        = each.value.network_id
-  enabled                           = try(each.value.data.enabled, local.defaults.meraki.networks.networks_switch_routing_ospf.enabled, null)
-  hello_timer_in_seconds            = try(each.value.data.hello_timer_in_seconds, local.defaults.meraki.networks.networks_switch_routing_ospf.hello_timer_in_seconds, null)
-  dead_timer_in_seconds             = try(each.value.data.dead_timer_in_seconds, local.defaults.meraki.networks.networks_switch_routing_ospf.dead_timer_in_seconds, null)
-  areas                             = try(each.value.data.areas, local.defaults.meraki.networks.networks_switch_routing_ospf.areas, null)
-  v3_enabled                        = try(each.value.data.v3.enabled, local.defaults.meraki.networks.networks_switch_routing_ospf.v3.enabled, null)
-  v3_hello_timer_in_seconds         = try(each.value.data.v3.hello_timer_in_seconds, local.defaults.meraki.networks.networks_switch_routing_ospf.v3.hello_timer_in_seconds, null)
-  v3_dead_timer_in_seconds          = try(each.value.data.v3.dead_timer_in_seconds, local.defaults.meraki.networks.networks_switch_routing_ospf.v3.dead_timer_in_seconds, null)
-  v3_areas                          = try(each.value.data.v3.areas, local.defaults.meraki.networks.networks_switch_routing_ospf.v3.areas, null)
-  md5_authentication_enabled        = try(each.value.data.md5_authentication, local.defaults.meraki.networks.networks_switch_routing_ospf.md5_authentication_enabled, null)
-  md5_authentication_key_id         = try(each.value.data.md5_authentication_key.id, local.defaults.meraki.networks.networks_switch_routing_ospf.md5_authentication_key.id, null)
-  md5_authentication_key_passphrase = try(each.value.data.md5_authentication_key.passphrase, local.defaults.meraki.networks.networks_switch_routing_ospf.md5_authentication_key.passphrase, null)
+  enabled                           = try(each.value.data.enabled, local.defaults.meraki.networks.switch_routing_ospf.enabled, null)
+  hello_timer_in_seconds            = try(each.value.data.hello_timer_in_seconds, local.defaults.meraki.networks.switch_routing_ospf.hello_timer_in_seconds, null)
+  dead_timer_in_seconds             = try(each.value.data.dead_timer_in_seconds, local.defaults.meraki.networks.switch_routing_ospf.dead_timer_in_seconds, null)
+  areas                             = try(each.value.data.areas, local.defaults.meraki.networks.switch_routing_ospf.areas, null)
+  v3_enabled                        = try(each.value.data.v3.enabled, local.defaults.meraki.networks.switch_routing_ospf.v3.enabled, null)
+  v3_hello_timer_in_seconds         = try(each.value.data.v3.hello_timer_in_seconds, local.defaults.meraki.networks.switch_routing_ospf.v3.hello_timer_in_seconds, null)
+  v3_dead_timer_in_seconds          = try(each.value.data.v3.dead_timer_in_seconds, local.defaults.meraki.networks.switch_routing_ospf.v3.dead_timer_in_seconds, null)
+  v3_areas                          = try(each.value.data.v3.areas, local.defaults.meraki.networks.switch_routing_ospf.v3.areas, null)
+  md5_authentication_enabled        = try(each.value.data.md5_authentication, local.defaults.meraki.networks.switch_routing_ospf.md5_authentication_enabled, null)
+  md5_authentication_key_id         = try(each.value.data.md5_authentication_key.id, local.defaults.meraki.networks.switch_routing_ospf.md5_authentication_key.id, null)
+  md5_authentication_key_passphrase = try(each.value.data.md5_authentication_key.passphrase, local.defaults.meraki.networks.switch_routing_ospf.md5_authentication_key.passphrase, null)
   depends_on                        = [meraki_network_device_claim.net_device_claim]
 }
 
@@ -397,11 +398,11 @@ locals {
 resource "meraki_switch_settings" "net_switch_settings" {
   for_each                       = { for i, v in local.networks_switch_settings : i => v }
   network_id                     = each.value.network_id
-  vlan                           = try(each.value.data.vlan, local.defaults.meraki.networks.networks_switch_settings.vlan, null)
-  use_combined_power             = try(each.value.data.use_combined_power, local.defaults.meraki.networks.networks_switch_settings.use_combined_power, null)
-  power_exceptions               = try(each.value.data.power_exceptions, local.defaults.meraki.networks.networks_switch_settings.power_exceptions, null)
-  uplink_client_sampling_enabled = try(each.value.data.uplink_client_sampling.enabled, local.defaults.meraki.networks.networks_switch_settings.uplink_client_sampling.enabled, null)
-  mac_blocklist_enabled          = try(each.value.data.mac_blocklist.enabled, local.defaults.meraki.networks.networks_switch_settings.mac_blocklist.enabled, null)
+  vlan                           = try(each.value.data.vlan, local.defaults.meraki.networks.switch_settings.vlan, null)
+  use_combined_power             = try(each.value.data.use_combined_power, local.defaults.meraki.networks.switch_settings.use_combined_power, null)
+  power_exceptions               = try(each.value.data.power_exceptions, local.defaults.meraki.networks.switch_settings.power_exceptions, null)
+  uplink_client_sampling_enabled = try(each.value.data.uplink_client_sampling.enabled, local.defaults.meraki.networks.switch_settings.uplink_client_sampling.enabled, null)
+  mac_blocklist_enabled          = try(each.value.data.mac_blocklist.enabled, local.defaults.meraki.networks.switch_settings.mac_blocklist.enabled, null)
   depends_on                     = [meraki_network_device_claim.net_device_claim]
 }
 locals {
@@ -420,9 +421,9 @@ locals {
 resource "meraki_switch_storm_control" "net_switch_storm_control" {
   for_each                  = { for i, v in local.networks_switch_storm_control : i => v }
   network_id                = each.value.network_id
-  broadcast_threshold       = try(each.value.data.broadcast_threshold, local.defaults.meraki.networks.networks_switch_storm_control.broadcast_threshold, null)
-  multicast_threshold       = try(each.value.data.multicast_threshold, local.defaults.meraki.networks.networks_switch_storm_control.multicast_threshold, null)
-  unknown_unicast_threshold = try(each.value.data.unknown_unicast_threshold, local.defaults.meraki.networks.networks_switch_storm_control.unknown_unicast_threshold, null)
+  broadcast_threshold       = try(each.value.data.broadcast_threshold, local.defaults.meraki.networks.switch_storm_control.broadcast_threshold, null)
+  multicast_threshold       = try(each.value.data.multicast_threshold, local.defaults.meraki.networks.switch_storm_control.multicast_threshold, null)
+  unknown_unicast_threshold = try(each.value.data.unknown_unicast_threshold, local.defaults.meraki.networks.switch_storm_control.unknown_unicast_threshold, null)
   depends_on                = [meraki_network_device_claim.net_device_claim]
 }
 
@@ -481,7 +482,7 @@ locals {
 resource "meraki_switch_stack" "net_switch_stacks" {
   for_each   = { for s in local.networks_switch_stacks : s.stack_key => s }
   network_id = each.value.network_id
-  name       = try(each.value.data.name, local.defaults.meraki.networks.networks_switch_stacks.name, null)
+  name       = try(each.value.data.name, local.defaults.meraki.networks.switch_stacks.name, null)
   serials    = each.value.serials
   depends_on = [meraki_network_device_claim.net_device_claim]
 }
@@ -525,38 +526,38 @@ resource "meraki_switch_stack_routing_interface" "net_switch_stack_routing_inter
   for_each                         = { for i in local.networks_switch_stacks_routing_interfaces_first : i.interface_key => i }
   network_id                       = each.value.network_id
   switch_stack_id                  = each.value.switch_stack_id
-  name                             = try(each.value.data.name, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.name, null)
-  subnet                           = try(each.value.data.subnet, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.subnet, null)
-  interface_ip                     = try(each.value.data.interface_ip, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.interface_ip, null)
-  multicast_routing                = try(each.value.data.multicast_routing, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.multicast_routing, null)
-  vlan_id                          = try(each.value.data.vlan_id, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.vlan_id, null)
-  default_gateway                  = try(each.value.data.default_gateway, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.default_gateway, null)
-  ospf_settings_area               = try(each.value.data.ospf_settings.area, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.ospf_settings.area, null)
-  ospf_settings_cost               = try(each.value.data.ospf_settings.cost, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.ospf_settings.cost, null)
-  ospf_settings_is_passive_enabled = try(each.value.data.ospf_settings.is_passive, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.ospf_settings.is_passive, null)
-  ipv6_assignment_mode             = try(each.value.data.ipv6.assignment_mode, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.ipv6.assignment_mode, null)
-  ipv6_prefix                      = try(each.value.data.ipv6.prefix, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.ipv6.prefix, null)
-  ipv6_address                     = try(each.value.data.ipv6.address, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.ipv6.address, null)
-  ipv6_gateway                     = try(each.value.data.ipv6.gateway, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.ipv6.gateway, null)
+  name                             = try(each.value.data.name, local.defaults.meraki.networks.switch_stacks_routing_interfaces.name, null)
+  subnet                           = try(each.value.data.subnet, local.defaults.meraki.networks.switch_stacks_routing_interfaces.subnet, null)
+  interface_ip                     = try(each.value.data.interface_ip, local.defaults.meraki.networks.switch_stacks_routing_interfaces.interface_ip, null)
+  multicast_routing                = try(each.value.data.multicast_routing, local.defaults.meraki.networks.switch_stacks_routing_interfaces.multicast_routing, null)
+  vlan_id                          = try(each.value.data.vlan_id, local.defaults.meraki.networks.switch_stacks_routing_interfaces.vlan_id, null)
+  default_gateway                  = try(each.value.data.default_gateway, local.defaults.meraki.networks.switch_stacks_routing_interfaces.default_gateway, null)
+  ospf_settings_area               = try(each.value.data.ospf_settings.area, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ospf_settings.area, null)
+  ospf_settings_cost               = try(each.value.data.ospf_settings.cost, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ospf_settings.cost, null)
+  ospf_settings_is_passive_enabled = try(each.value.data.ospf_settings.is_passive, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ospf_settings.is_passive, null)
+  ipv6_assignment_mode             = try(each.value.data.ipv6.assignment_mode, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ipv6.assignment_mode, null)
+  ipv6_prefix                      = try(each.value.data.ipv6.prefix, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ipv6.prefix, null)
+  ipv6_address                     = try(each.value.data.ipv6.address, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ipv6.address, null)
+  ipv6_gateway                     = try(each.value.data.ipv6.gateway, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ipv6.gateway, null)
   depends_on                       = [meraki_network_device_claim.net_device_claim]
 }
 resource "meraki_switch_stack_routing_interface" "net_switch_stack_routing_interface_not_first" {
   for_each                         = { for i in local.networks_switch_stacks_routing_interfaces_not_first : i.interface_key => i }
   network_id                       = each.value.network_id
   switch_stack_id                  = each.value.switch_stack_id
-  name                             = try(each.value.data.name, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.name, null)
-  subnet                           = try(each.value.data.subnet, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.subnet, null)
-  interface_ip                     = try(each.value.data.interface_ip, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.interface_ip, null)
-  multicast_routing                = try(each.value.data.multicast_routing, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.multicast_routing, null)
-  vlan_id                          = try(each.value.data.vlan_id, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.vlan_id, null)
-  default_gateway                  = try(each.value.data.default_gateway, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.default_gateway, null)
-  ospf_settings_area               = try(each.value.data.ospf_settings.area, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.ospf_settings.area, null)
-  ospf_settings_cost               = try(each.value.data.ospf_settings.cost, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.ospf_settings.cost, null)
-  ospf_settings_is_passive_enabled = try(each.value.data.ospf_settings.is_passive, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.ospf_settings.is_passive, null)
-  ipv6_assignment_mode             = try(each.value.data.ipv6.assignment_mode, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.ipv6.assignment_mode, null)
-  ipv6_prefix                      = try(each.value.data.ipv6.prefix, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.ipv6.prefix, null)
-  ipv6_address                     = try(each.value.data.ipv6.address, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.ipv6.address, null)
-  ipv6_gateway                     = try(each.value.data.ipv6.gateway, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces.ipv6.gateway, null)
+  name                             = try(each.value.data.name, local.defaults.meraki.networks.switch_stacks_routing_interfaces.name, null)
+  subnet                           = try(each.value.data.subnet, local.defaults.meraki.networks.switch_stacks_routing_interfaces.subnet, null)
+  interface_ip                     = try(each.value.data.interface_ip, local.defaults.meraki.networks.switch_stacks_routing_interfaces.interface_ip, null)
+  multicast_routing                = try(each.value.data.multicast_routing, local.defaults.meraki.networks.switch_stacks_routing_interfaces.multicast_routing, null)
+  vlan_id                          = try(each.value.data.vlan_id, local.defaults.meraki.networks.switch_stacks_routing_interfaces.vlan_id, null)
+  default_gateway                  = try(each.value.data.default_gateway, local.defaults.meraki.networks.switch_stacks_routing_interfaces.default_gateway, null)
+  ospf_settings_area               = try(each.value.data.ospf_settings.area, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ospf_settings.area, null)
+  ospf_settings_cost               = try(each.value.data.ospf_settings.cost, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ospf_settings.cost, null)
+  ospf_settings_is_passive_enabled = try(each.value.data.ospf_settings.is_passive, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ospf_settings.is_passive, null)
+  ipv6_assignment_mode             = try(each.value.data.ipv6.assignment_mode, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ipv6.assignment_mode, null)
+  ipv6_prefix                      = try(each.value.data.ipv6.prefix, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ipv6.prefix, null)
+  ipv6_address                     = try(each.value.data.ipv6.address, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ipv6.address, null)
+  ipv6_gateway                     = try(each.value.data.ipv6.gateway, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ipv6.gateway, null)
   depends_on                       = [meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_first]
 }
 
@@ -584,17 +585,17 @@ resource "meraki_switch_stack_routing_interface_dhcp" "net_switch_stacks_routing
   network_id             = each.value.network_id
   switch_stack_id        = each.value.switch_stack_id
   interface_id           = each.value.interface_id
-  dhcp_mode              = try(each.value.data.dhcp_mode, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.dhcp_mode, null)
-  dhcp_relay_server_ips  = try(each.value.data.dhcp_relay_server_ips, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.dhcp_relay_server_ips, null)
-  dhcp_lease_time        = try(each.value.data.dhcp_lease_time, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.dhcp_lease_time, null)
-  dns_nameservers_option = try(each.value.data.dns_nameservers_option, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.dns_nameservers_option, null)
-  dns_custom_nameservers = try(each.value.data.dns_custom_nameservers, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.dns_custom_nameservers, null)
-  boot_options_enabled   = try(each.value.data.boot_options, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.boot_options, null)
-  boot_next_server       = try(each.value.data.boot_next_server, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.boot_next_server, null)
-  boot_file_name         = try(each.value.data.boot_file_name, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.boot_file_name, null)
-  dhcp_options           = try(each.value.data.dhcp_options, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.dhcp_options, null)
-  reserved_ip_ranges     = try(each.value.data.reserved_ip_ranges, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.reserved_ip_ranges, null)
-  fixed_ip_assignments   = try(each.value.data.fixed_ip_assignments, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.fixed_ip_assignments, null)
+  dhcp_mode              = try(each.value.data.dhcp_mode, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.dhcp_mode, null)
+  dhcp_relay_server_ips  = try(each.value.data.dhcp_relay_server_ips, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.dhcp_relay_server_ips, null)
+  dhcp_lease_time        = try(each.value.data.dhcp_lease_time, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.dhcp_lease_time, null)
+  dns_nameservers_option = try(each.value.data.dns_nameservers_option, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.dns_nameservers_option, null)
+  dns_custom_nameservers = try(each.value.data.dns_custom_nameservers, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.dns_custom_nameservers, null)
+  boot_options_enabled   = try(each.value.data.boot_options, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.boot_options, null)
+  boot_next_server       = try(each.value.data.boot_next_server, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.boot_next_server, null)
+  boot_file_name         = try(each.value.data.boot_file_name, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.boot_file_name, null)
+  dhcp_options           = try(each.value.data.dhcp_options, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.dhcp_options, null)
+  reserved_ip_ranges     = try(each.value.data.reserved_ip_ranges, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.reserved_ip_ranges, null)
+  fixed_ip_assignments   = try(each.value.data.fixed_ip_assignments, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.fixed_ip_assignments, null)
   depends_on             = [meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_first]
 }
 
@@ -622,17 +623,17 @@ resource "meraki_switch_stack_routing_interface_dhcp" "net_switch_stacks_routing
   network_id             = each.value.network_id
   switch_stack_id        = each.value.switch_stack_id
   interface_id           = each.value.interface_id
-  dhcp_mode              = try(each.value.data.dhcp_mode, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.dhcp_mode, null)
-  dhcp_relay_server_ips  = try(each.value.data.dhcp_relay_server_ips, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.dhcp_relay_server_ips, null)
-  dhcp_lease_time        = try(each.value.data.dhcp_lease_time, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.dhcp_lease_time, null)
-  dns_nameservers_option = try(each.value.data.dns_nameservers_option, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.dns_nameservers_option, null)
-  dns_custom_nameservers = try(each.value.data.dns_custom_nameservers, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.dns_custom_nameservers, null)
-  boot_options_enabled   = try(each.value.data.boot_options, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.boot_options, null)
-  boot_next_server       = try(each.value.data.boot_next_server, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.boot_next_server, null)
-  boot_file_name         = try(each.value.data.boot_file_name, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.boot_file_name, null)
-  dhcp_options           = try(each.value.data.dhcp_options, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.dhcp_options, null)
-  reserved_ip_ranges     = try(each.value.data.reserved_ip_ranges, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.reserved_ip_ranges, null)
-  fixed_ip_assignments   = try(each.value.data.fixed_ip_assignments, local.defaults.meraki.networks.networks_switch_stacks_routing_interfaces_dhcp.fixed_ip_assignments, null)
+  dhcp_mode              = try(each.value.data.dhcp_mode, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.dhcp_mode, null)
+  dhcp_relay_server_ips  = try(each.value.data.dhcp_relay_server_ips, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.dhcp_relay_server_ips, null)
+  dhcp_lease_time        = try(each.value.data.dhcp_lease_time, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.dhcp_lease_time, null)
+  dns_nameservers_option = try(each.value.data.dns_nameservers_option, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.dns_nameservers_option, null)
+  dns_custom_nameservers = try(each.value.data.dns_custom_nameservers, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.dns_custom_nameservers, null)
+  boot_options_enabled   = try(each.value.data.boot_options, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.boot_options, null)
+  boot_next_server       = try(each.value.data.boot_next_server, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.boot_next_server, null)
+  boot_file_name         = try(each.value.data.boot_file_name, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.boot_file_name, null)
+  dhcp_options           = try(each.value.data.dhcp_options, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.dhcp_options, null)
+  reserved_ip_ranges     = try(each.value.data.reserved_ip_ranges, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.reserved_ip_ranges, null)
+  fixed_ip_assignments   = try(each.value.data.fixed_ip_assignments, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.fixed_ip_assignments, null)
   depends_on             = [meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_not_first]
 }
 
@@ -658,10 +659,10 @@ resource "meraki_switch_stack_routing_static_route" "net_switch_stacks_routing_s
   for_each                        = { for i, v in local.networks_switch_stacks_routing_static_routes : i => v }
   network_id                      = each.value.network_id
   switch_stack_id                 = each.value.switch_stack_id
-  name                            = try(each.value.data.name, local.defaults.meraki.networks.networks_switch_stacks_routing_static_routes.name, null)
-  subnet                          = try(each.value.data.subnet, local.defaults.meraki.networks.networks_switch_stacks_routing_static_routes.subnet, null)
-  next_hop_ip                     = try(each.value.data.next_hop_ip, local.defaults.meraki.networks.networks_switch_stacks_routing_static_routes.next_hop_ip, null)
-  advertise_via_ospf_enabled      = try(each.value.data.advertise_via_ospf, local.defaults.meraki.networks.networks_switch_stacks_routing_static_routes.advertise_via_ospf, null)
-  prefer_over_ospf_routes_enabled = try(each.value.data.prefer_over_ospf_routes, local.defaults.meraki.networks.networks_switch_stacks_routing_static_routes.prefer_over_ospf_routes, null)
+  name                            = try(each.value.data.name, local.defaults.meraki.networks.switch_stacks_routing_static_routes.name, null)
+  subnet                          = try(each.value.data.subnet, local.defaults.meraki.networks.switch_stacks_routing_static_routes.subnet, null)
+  next_hop_ip                     = try(each.value.data.next_hop_ip, local.defaults.meraki.networks.switch_stacks_routing_static_routes.next_hop_ip, null)
+  advertise_via_ospf_enabled      = try(each.value.data.advertise_via_ospf, local.defaults.meraki.networks.switch_stacks_routing_static_routes.advertise_via_ospf, null)
+  prefer_over_ospf_routes_enabled = try(each.value.data.prefer_over_ospf_routes, local.defaults.meraki.networks.switch_stacks_routing_static_routes.prefer_over_ospf_routes, null)
   depends_on                      = [meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_not_first]
 }
