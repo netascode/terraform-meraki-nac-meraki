@@ -571,7 +571,7 @@ locals {
               network_id      = meraki_network.network["${organization.name}/${network.name}"].id
               switch_stack_id = meraki_switch_stack.net_switch_stacks["${organization.name}/${network.name}/switch_stacks/${switch_stack.name}"].id
               interface_id    = meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_first["${organization.name}/${network.name}/switch_stacks/${switch_stack.name}/routing_interfaces/${routing_interface.name}"].id
-              data            = try(routing_interface.dhcp[0], null) # Take the first element of the dhcp list
+              data            = try(routing_interface.dhcp, null)
             } if try(routing_interface.default_gateway, null) != null
           ] if try(network.switch_stacks, null) != null
         ] if try(organization.networks, null) != null
@@ -609,7 +609,7 @@ locals {
               network_id      = meraki_network.network["${organization.name}/${network.name}"].id
               switch_stack_id = meraki_switch_stack.net_switch_stacks["${organization.name}/${network.name}/switch_stacks/${switch_stack.name}"].id
               interface_id    = meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_not_first["${organization.name}/${network.name}/switch_stacks/${switch_stack.name}/routing_interfaces/${routing_interface.name}"].id
-              data            = try(routing_interface.dhcp[0], null) # Take the first element of the dhcp list
+              data            = try(routing_interface.dhcp, null)
             } if try(routing_interface.default_gateway, null) == null
           ] if try(network.switch_stacks, null) != null
         ] if try(organization.networks, null) != null
