@@ -138,27 +138,13 @@ resource "meraki_wireless_settings" "net_wireless_settings" {
 }
 # Apply the Wireless SSIDs
 locals {
-  wireless_ssids_numbers_list = flatten([
-    for domain in try(local.meraki.domains, []) : [
-      for organization in try(domain.organizations, []) : [
-        for network in try(organization.networks, []) : [
-          for i, wireless_ssid in try(network.wireless_ssids, []) : {
-            key    = format("${organization.name}/${network.name}/wireless_ssid/${wireless_ssid.name}")
-            number = i
-          } if try(network.wireless_ssids, null) != null
-        ] if try(organization.networks, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
-  ])
-  wireless_ssids_map = { for w in local.wireless_ssids_numbers_list : w.key => w.number }
   networks_wireless_ssids = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
-          for i, wireless_ssid in try(network.wireless_ssids, []) : {
-            key        = format("${organization.name}/${network.name}/wireless_ssid/${try(wireless_ssid.name, "unknown")}") # Use "unknown" if name is missing
+          for wireless_ssid in try(network.wireless_ssids, []) : {
+            key        = format("${organization.name}/${network.name}/ssids/${try(wireless_ssid.name, "unknown")}") # Use "unknown" if name is missing
             network_id = meraki_network.network["${organization.name}/${network.name}"].id
-            number     = i
             data       = try(wireless_ssid, null)
             radius_servers = [
               for radius_server in try(wireless_ssid.radius_servers, []) : {
@@ -274,7 +260,7 @@ locals {
           for wireless_ssid in try(network.wireless_ssids, []) : {
             network_id   = meraki_network.network["${organization.name}/${network.name}"].id
             eap_override = try(wireless_ssid.eap_override, null)
-            number       = local.wireless_ssids_map["${organization.name}/${network.name}/wireless_ssid/${wireless_ssid.name}"]
+            number       = meraki_wireless_ssid.net_wireless_ssids["${organization.name}/${network.name}/ssids/${wireless_ssid.name}"].number
           } if try(wireless_ssid.eap_override, null) != null
         ] if try(organization.networks, null) != null
       ] if try(domain.organizations, null) != null
@@ -303,7 +289,7 @@ locals {
         for network in try(organization.networks, []) : [
           for wireless_ssid in try(network.wireless_ssids, []) : {
             network_id = meraki_network.network["${organization.name}/${network.name}"].id
-            number     = local.wireless_ssids_map["${organization.name}/${network.name}/wireless_ssid/${wireless_ssid.name}"]
+            number     = meraki_wireless_ssid.net_wireless_ssids["${organization.name}/${network.name}/ssids/${wireless_ssid.name}"].number
             data       = try(wireless_ssid.device_type_group_policies, null)
           } if try(wireless_ssid.device_type_group_policies, null) != null
         ] if try(organization.networks, null) != null
@@ -330,7 +316,7 @@ locals {
         for network in try(organization.networks, []) : [
           for wireless_ssid in try(network.wireless_ssids, []) : {
             network_id = meraki_network.network["${organization.name}/${network.name}"].id
-            number     = local.wireless_ssids_map["${organization.name}/${network.name}/wireless_ssid/${wireless_ssid.name}"]
+            number     = meraki_wireless_ssid.net_wireless_ssids["${organization.name}/${network.name}/ssids/${wireless_ssid.name}"].number
             data       = try(wireless_ssid.firewall_l3_firewall_rules, null)
           } if try(wireless_ssid.firewall_l3_firewall_rules, null) != null
         ] if try(organization.networks, null) != null
@@ -358,7 +344,7 @@ locals {
         for network in try(organization.networks, []) : [
           for wireless_ssid in try(network.wireless_ssids, []) : {
             network_id = meraki_network.network["${organization.name}/${network.name}"].id
-            number     = local.wireless_ssids_map["${organization.name}/${network.name}/wireless_ssid/${wireless_ssid.name}"]
+            number     = meraki_wireless_ssid.net_wireless_ssids["${organization.name}/${network.name}/ssids/${wireless_ssid.name}"].number
             data       = try(wireless_ssid.hotspot20, null)
           } if try(wireless_ssid.hotspot20, null) != null
         ] if try(organization.networks, null) != null
@@ -393,7 +379,7 @@ locals {
           for wireless_ssid in try(network.wireless_ssids, []) : [
             for identity_psk in try(wireless_ssid.identity_psks, []) : {
               network_id = meraki_network.network["${organization.name}/${network.name}"].id
-              number     = local.wireless_ssids_map["${organization.name}/${network.name}/wireless_ssid/${wireless_ssid.name}"]
+              number     = meraki_wireless_ssid.net_wireless_ssids["${organization.name}/${network.name}/ssids/${wireless_ssid.name}"].number
               data       = try(identity_psk, null)
             } if try(wireless_ssid.identity_psks, null) != null
           ] if try(network.wireless_ssids, null) != null
@@ -424,7 +410,7 @@ locals {
         for network in try(organization.networks, []) : [
           for wireless_ssid in try(network.wireless_ssids, []) : {
             network_id = meraki_network.network["${organization.name}/${network.name}"].id
-            number     = local.wireless_ssids_map["${organization.name}/${network.name}/wireless_ssid/${wireless_ssid.name}"]
+            number     = meraki_wireless_ssid.net_wireless_ssids["${organization.name}/${network.name}/ssids/${wireless_ssid.name}"].number
             data       = try(wireless_ssid.schedules, null)
           } if try(wireless_ssid.schedules, null) != null
         ] if try(organization.networks, null) != null
@@ -452,7 +438,7 @@ locals {
         for network in try(organization.networks, []) : [
           for wireless_ssid in try(network.wireless_ssids, []) : {
             network_id = meraki_network.network["${organization.name}/${network.name}"].id
-            number     = local.wireless_ssids_map["${organization.name}/${network.name}/wireless_ssid/${wireless_ssid.name}"]
+            number     = meraki_wireless_ssid.net_wireless_ssids["${organization.name}/${network.name}/ssids/${wireless_ssid.name}"].number
             data       = try(wireless_ssid.splash_settings, null)
           } if try(wireless_ssid.splash_settings, null) != null
         ] if try(organization.networks, null) != null
@@ -510,7 +496,7 @@ locals {
         for network in try(organization.networks, []) : [
           for wireless_ssid in try(network.wireless_ssids, []) : {
             network_id = meraki_network.network["${organization.name}/${network.name}"].id
-            number     = local.wireless_ssids_map["${organization.name}/${network.name}/wireless_ssid/${wireless_ssid.name}"]
+            number     = meraki_wireless_ssid.net_wireless_ssids["${organization.name}/${network.name}/ssids/${wireless_ssid.name}"].number
             data       = try(wireless_ssid.traffic_shaping_rules, null)
           } if try(wireless_ssid.traffic_shaping_rules, null) != null
         ] if try(organization.networks, null) != null
@@ -539,7 +525,7 @@ locals {
         for network in try(organization.networks, []) : [
           for wireless_ssid in try(network.wireless_ssids, []) : {
             network_id = meraki_network.network["${organization.name}/${network.name}"].id
-            number     = local.wireless_ssids_map["${organization.name}/${network.name}/wireless_ssid/${wireless_ssid.name}"]
+            number     = meraki_wireless_ssid.net_wireless_ssids["${organization.name}/${network.name}/ssids/${wireless_ssid.name}"].number
             data       = try(wireless_ssid.bonjour_forwarding, null)
           } if try(wireless_ssid.bonjour_forwarding, null) != null
         ] if try(organization.networks, null) != null
