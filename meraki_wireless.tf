@@ -394,14 +394,14 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
-          for wireless_ssid in try(network.wireless_ssids, []) : [
+          for wireless_ssid in try(network.wireless.ssids, []) : [
             for identity_psk in try(wireless_ssid.identity_psks, []) : {
               network_id      = meraki_network.network["${organization.name}/${network.name}"].id
               number          = meraki_wireless_ssid.net_wireless_ssids["${organization.name}/${network.name}/ssids/${wireless_ssid.name}"].number
               data            = try(identity_psk, null)
               group_policy_id = meraki_network_group_policy.net_group_policies["${organization.name}/${network.name}/${identity_psk.group_policy_name}"].id
             } if try(wireless_ssid.identity_psks, null) != null
-          ] if try(network.wireless_ssids, null) != null
+          ] if try(network.wireless.ssids, null) != null
         ] if try(organization.networks, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
