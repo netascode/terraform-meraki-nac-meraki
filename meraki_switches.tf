@@ -334,10 +334,10 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
-          for switch_routing_multicast_rendezvous_point in try(network.switch.routing_multicast_rendezvous_points, []) : {
+          for switch_routing_multicast_rendezvous_point in try(network.switch.routing_multicast.rendezvous_points, []) : {
             network_id = meraki_network.network["${organization.name}/${network.name}"].id
             data       = try(switch_routing_multicast_rendezvous_point, null)
-          } if try(network.switch.routing_multicast_rendezvous_points, null) != null
+          } if try(network.switch.routing_multicast.rendezvous_points, null) != null
         ] if try(organization.networks, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
