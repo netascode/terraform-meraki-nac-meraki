@@ -80,8 +80,20 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
-          data       = try(network.appliance.firewall_l3_firewall_rules, null)
-        } if try(network.appliance.firewall_l3_firewall_rules, null) != null
+          data       = try(network.appliance.firewall_l3_firewall, null)
+          rules = [
+            for rule in try(network.appliance.firewall_l3_firewall.rules, []) : {
+              comment        = try(rule.comment, null)
+              dst_cidr       = try(rule.destination_cidr, null)
+              dst_port       = try(rule.destination_port, null)
+              policy         = try(rule.policy, null)
+              protocol       = try(rule.protocol, null)
+              src_cidr       = try(rule.source_cidr, null)
+              src_port       = try(rule.source_port, null)
+              syslog_enabled = try(rule.syslog, null)
+            }
+          ]
+        } if try(network.appliance.firewall_l3_firewall, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -90,7 +102,7 @@ locals {
 resource "meraki_appliance_l3_firewall_rules" "appliance_firewall_l3_firewall_rules" {
   for_each            = { for i, v in local.networks_networks_appliance_firewall_l3_firewall_rules : i => v }
   network_id          = each.value.network_id
-  rules               = try(each.value.data.rules, local.defaults.meraki.networks.appliance_firewall_l3_firewall_rules.rules, null)
+  rules               = try(each.rules, local.defaults.meraki.networks.appliance_firewall_l3_firewall_rules.rules, null)
   syslog_default_rule = try(each.value.data.syslog_default_rule, local.defaults.meraki.networks.appliance_firewall_l3_firewall_rules.syslog_default_rule, null)
 }
 
