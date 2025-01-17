@@ -4,8 +4,8 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
-          data       = try(network.appliance_content_filtering, null)
-        } if try(network.appliance_content_filtering, null) != null
+          data       = try(network.appliance.content_filtering, null)
+        } if try(network.appliance.content_filtering, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -30,7 +30,7 @@ locals {
             network_id = meraki_network.network["${organization.name}/${network.name}"].id
             data       = try(appliance_firewall_firewalled_service, null)
           }
-        ] if try(network.appliance_firewall_firewalled_services, null) != null
+        ] if try(network.appliance.firewall_firewalled_services, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -51,7 +51,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
-          data       = try(network.appliance_firewall_inbound_firewall_rules, null)
+          data       = try(network.appliance.firewall_inbound_firewall_rules, null)
           rules = [for r in network.appliance_firewall_inbound_firewall_rules.rules : merge(r,
             {
               dest_cidr = try(r.destination_cidr, null)
@@ -60,7 +60,7 @@ locals {
               src_port  = try(r.source_port, null)
             }
           )]
-        } if try(network.appliance_firewall_inbound_firewall_rules, null) != null
+        } if try(network.appliance.firewall_inbound_firewall_rules, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -80,8 +80,8 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
-          data       = try(network.appliance_firewall_l3_firewall_rules, null)
-        } if try(network.appliance_firewall_l3_firewall_rules, null) != null
+          data       = try(network.appliance.firewall_l3_firewall_rules, null)
+        } if try(network.appliance.firewall_l3_firewall_rules, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -100,8 +100,8 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
-          data       = try(network.appliance_firewall_l7_firewall_rules, null)
-        } if try(network.appliance_firewall_l7_firewall_rules, null) != null
+          data       = try(network.appliance.firewall_l7_firewall_rules, null)
+        } if try(network.appliance.firewall_l7_firewall_rules, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -119,8 +119,8 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
-          data       = try(network.appliance_firewall_one_to_many_nat_rules, null)
-        } if try(network.appliance_firewall_one_to_many_nat_rules, null) != null
+          data       = try(network.appliance.firewall_one_to_many_nat_rules, null)
+        } if try(network.appliance.firewall_one_to_many_nat_rules, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -138,8 +138,8 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
-          data       = try(network.appliance_firewall_one_to_one_nat_rules, null)
-        } if try(network.appliance_firewall_one_to_one_nat_rules, null) != null
+          data       = try(network.appliance.firewall_one_to_one_nat_rules, null)
+        } if try(network.appliance.firewall_one_to_one_nat_rules, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -157,8 +157,8 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
-          data       = try(network.appliance_firewall_port_forwarding_rules, null)
-        } if try(network.appliance_firewall_port_forwarding_rules, null) != null
+          data       = try(network.appliance.firewall_port_forwarding_rules, null)
+        } if try(network.appliance.firewall_port_forwarding_rules, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -176,8 +176,8 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
-          data       = try(network.appliance_firewall_settings, null)
-        } if try(network.appliance_firewall_settings, null) != null
+          data       = try(network.appliance.firewall_settings, null)
+        } if try(network.appliance.firewall_settings, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -194,11 +194,11 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
-          for appliance_port in try(network.appliance_ports, []) : {
+          for appliance_port in try(network.appliance.ports, []) : {
             network_id = meraki_network.network["${organization.name}/${network.name}"].id
             data       = try(appliance_port, null)
-          } if try(network.appliance_ports, null) != null
-        ] if try(network.appliance_ports, null) != null
+          } if try(network.appliance.ports, null) != null
+        ] if try(network.appliance.ports, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -221,8 +221,8 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
-          data       = try(network.appliance_security_intrusion, null)
-        } if try(network.appliance_security_intrusion, null) != null
+          data       = try(network.appliance.security_intrusion, null)
+        } if try(network.appliance.security_intrusion, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -243,8 +243,8 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
-          data       = try(network.appliance_security_malware, null)
-        } if try(network.appliance_security_malware, null) != null
+          data       = try(network.appliance.security_malware, null)
+        } if try(network.appliance.security_malware, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -264,8 +264,8 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
-          data       = try(network.appliance_settings, null)
-        } if try(network.appliance_settings, null) != null
+          data       = try(network.appliance.settings, null)
+        } if try(network.appliance.settings, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -285,8 +285,8 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
-          data       = try(network.appliance_single_lan, null)
-        } if try(network.appliance_single_lan, null) != null
+          data       = try(network.appliance.single_lan, null)
+        } if try(network.appliance.single_lan, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -306,11 +306,11 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
-          for appliance_vlan in try(network.appliance_vlans, []) : {
+          for appliance_vlan in try(network.appliance.vlans, []) : {
             network_id = meraki_network.network["${organization.name}/${network.name}"].id
             data       = try(appliance_vlan, null)
-          } if try(network.appliance_vlans, null) != null
-        ] if try(network.appliance_vlans, null) != null
+          } if try(network.appliance.vlans, null) != null
+        ] if try(network.appliance.vlans, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -347,8 +347,8 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
-          data       = try(network.appliance_vlans_settings, null)
-        } if try(network.appliance_vlans_settings, null) != null
+          data       = try(network.appliance.vlans_settings, null)
+        } if try(network.appliance.vlans_settings, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -366,8 +366,8 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
-          data       = try(network.appliance_vpn_bgp, null)
-        } if try(network.appliance_vpn_bgp, null) != null
+          data       = try(network.appliance.vpn_bgp, null)
+        } if try(network.appliance.vpn_bgp, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -387,7 +387,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
-          data       = try(network.appliance_vpn_site_to_site_vpn, null)
+          data       = try(network.appliance.vpn_site_to_site_vpn, null)
           hubs = [for h in try(network.appliance_vpn_site_to_site_vpn.hubs, []) : {
             use_default_route = try(h.use_default_route, null)
             hub_id            = meraki_network.network["${organization.name}/${h.hub_network_name}"].id
@@ -411,8 +411,8 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
-          data       = try(network.appliance_warm_spare, null)
-        } if try(network.appliance_warm_spare, null) != null
+          data       = try(network.appliance.warm_spare, null)
+        } if try(network.appliance.warm_spare, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
