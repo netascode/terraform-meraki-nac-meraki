@@ -449,7 +449,7 @@ resource "meraki_appliance_warm_spare" "appliance_warm_spare" {
   for_each     = { for i, v in local.networks_networks_appliance_warm_spare : i => v }
   network_id   = each.value.network_id
   enabled      = try(each.value.data.enabled, local.defaults.meraki.networks.appliance_warm_spare.enabled, null)
-  spare_serial = try(each.value.data.spare_serial, local.defaults.meraki.networks.appliance_warm_spare.spare_serial, null)
+  spare_serial = try(each.value.spare_serial, local.defaults.meraki.networks.appliance_warm_spare.spare_serial, null)
   uplink_mode  = try(each.value.data.uplink_mode, local.defaults.meraki.networks.appliance_warm_spare.uplink_mode, null)
   virtual_ip1  = try(each.value.data.virtual_ip1, local.defaults.meraki.networks.appliance_warm_spare.virtual_ip1, null)
   virtual_ip2  = try(each.value.data.virtual_ip2, local.defaults.meraki.networks.appliance_warm_spare.virtual_ip2, null)
