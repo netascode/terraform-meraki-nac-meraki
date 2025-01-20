@@ -437,7 +437,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id   = meraki_network.network["${organization.name}/${network.name}"].id
-          spare_serial = [for d in network.appliance.warm_spare.spare_device : meraki_device.device["${organization.name}/${network.name}/devices/${d}"].serial]
+          spare_serial = meraki_device.device["${organization.name}/${network.name}/devices/${network.appliance.warm_spare.spare_device}"].serial
           data         = try(network.appliance.warm_spare, null)
         } if try(network.appliance.warm_spare, null) != null
       ] if try(domain.organizations, null) != null
