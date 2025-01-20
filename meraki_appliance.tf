@@ -380,7 +380,7 @@ locals {
 resource "meraki_appliance_vlans_settings" "appliance_vlans_settings" {
   for_each      = { for i, v in local.networks_networks_appliance_vlans_settings : i => v }
   network_id    = each.value.network_id
-  vlans_enabled = try(each.value.data.vlans_enabled, local.defaults.meraki.networks.appliance_vlans_settings.vlans_enabled, null)
+  vlans_enabled = try(each.value.data.vlans, local.defaults.meraki.networks.appliance_vlans_settings.vlans, null)
   depends_on    = [meraki_network_device_claim.net_device_claim]
 }
 
