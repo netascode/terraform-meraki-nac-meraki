@@ -18,7 +18,7 @@ resource "meraki_appliance_content_filtering" "appliance_content_filtering" {
   blocked_url_patterns   = try(each.value.data.blocked_url_patterns, local.defaults.meraki.networks.appliance_content_filtering.blocked_url_patterns, null)
   blocked_url_categories = try(each.value.data.blocked_url_categories, local.defaults.meraki.networks.appliance_content_filtering.blocked_url_categories, null)
   url_category_list_size = try(each.value.data.url_category_list_size, local.defaults.meraki.networks.appliance_content_filtering.url_category_list_size, null)
-
+  depends_on             = [meraki_network_device_claim.net_device_claim]
 }
 
 locals {
@@ -42,7 +42,7 @@ resource "meraki_appliance_firewalled_service" "appliance_firewall_firewalled_se
   access      = try(each.value.data.access, local.defaults.meraki.networks.appliance_firewall_firewalled_services.access, null)
   allowed_ips = try(each.value.data.allowed_ips, local.defaults.meraki.networks.appliance_firewall_firewalled_services.allowed_ips, null)
   service     = each.value.data.service_name
-
+  depends_on  = [meraki_network_device_claim.net_device_claim]
 }
 
 locals {
@@ -71,7 +71,7 @@ resource "meraki_appliance_inbound_firewall_rules" "appliance_firewall_inbound_f
   network_id          = each.value.network_id
   rules               = length(each.value.rules) > 0 ? each.value.rules : null
   syslog_default_rule = try(each.value.data.syslog_default_rule, local.defaults.meraki.networks.appliance_firewall_inbound_firewall_rules.syslog_default_rule, null)
-
+  depends_on          = [meraki_network_device_claim.net_device_claim]
 }
 
 locals {
@@ -104,6 +104,7 @@ resource "meraki_appliance_l3_firewall_rules" "appliance_firewall_l3_firewall_ru
   network_id          = each.value.network_id
   rules               = length(each.value.rules) > 0 ? each.value.rules : null
   syslog_default_rule = try(each.value.data.syslog_default_rule, local.defaults.meraki.networks.appliance_firewall_l3_firewall_rules.syslog_default_rule, null)
+  depends_on          = [meraki_network_device_claim.net_device_claim]
 }
 
 locals {
@@ -123,6 +124,7 @@ resource "meraki_appliance_l7_firewall_rules" "appliance_firewall_l7_firewall_ru
   for_each   = { for i, v in local.networks_networks_appliance_firewall_l7_firewall_rules : i => v }
   network_id = each.value.network_id
   rules      = try(each.value.data.rules, local.defaults.meraki.networks.appliance_firewall_l7_firewall_rules.rules, null)
+  depends_on = [meraki_network_device_claim.net_device_claim]
 }
 
 locals {
@@ -142,6 +144,7 @@ resource "meraki_appliance_one_to_many_nat_rules" "appliance_firewall_one_to_man
   for_each   = { for i, v in local.networks_networks_appliance_firewall_one_to_many_nat_rules : i => v }
   network_id = each.value.network_id
   rules      = try(each.value.data.rules, local.defaults.meraki.networks.appliance_firewall_one_to_many_nat_rules.rules, null)
+  depends_on = [meraki_network_device_claim.net_device_claim]
 }
 
 locals {
@@ -161,6 +164,7 @@ resource "meraki_appliance_one_to_one_nat_rules" "appliance_firewall_one_to_one_
   for_each   = { for i, v in local.networks_networks_appliance_firewall_one_to_one_nat_rules : i => v }
   network_id = each.value.network_id
   rules      = try(each.value.data.rules, local.defaults.meraki.networks.appliance_firewall_one_to_one_nat_rules.rules, null)
+  depends_on = [meraki_network_device_claim.net_device_claim]
 }
 
 locals {
@@ -180,6 +184,7 @@ resource "meraki_appliance_port_forwarding_rules" "appliance_firewall_port_forwa
   for_each   = { for i, v in local.networks_networks_appliance_firewall_port_forwarding_rules : i => v }
   network_id = each.value.network_id
   rules      = try(each.value.data.rules, local.defaults.meraki.networks.appliance_firewall_port_forwarding_rules.rules, null)
+  depends_on = [meraki_network_device_claim.net_device_claim]
 }
 
 locals {
@@ -199,6 +204,7 @@ resource "meraki_appliance_firewall_settings" "appliance_firewall_settings" {
   for_each                                 = { for i, v in local.networks_networks_appliance_firewall_settings : i => v }
   network_id                               = each.value.network_id
   spoofing_protection_ip_source_guard_mode = try(each.value.data.spoofing_protection.ip_source_guard.mode, local.defaults.meraki.networks.appliance_firewall_settings.spoofing_protection.ip_source_guard.mode, null)
+  depends_on                               = [meraki_network_device_claim.net_device_claim]
 }
 
 locals {
@@ -226,6 +232,7 @@ resource "meraki_appliance_port" "appliance_ports" {
   allowed_vlans         = try(each.value.data.allowed_vlans, local.defaults.meraki.networks.appliance_ports.allowed_vlans, null)
   access_policy         = try(each.value.data.access_policy, local.defaults.meraki.networks.appliance_ports.access_policy, null)
   port_id               = each.value.data.port_id
+  depends_on            = [meraki_network_device_claim.net_device_claim]
 }
 locals {
   networks_networks_appliance_security_intrusion = flatten([
@@ -248,6 +255,7 @@ resource "meraki_appliance_network_security_intrusion" "appliance_security_intru
   protected_networks_use_default   = try(each.value.data.protected_networks.use_default, local.defaults.meraki.networks.appliance_security_intrusion.protected_networks.use_default, null)
   protected_networks_included_cidr = try(each.value.data.protected_networks.included_cidr, local.defaults.meraki.networks.appliance_security_intrusion.protected_networks.included_cidr, null)
   protected_networks_excluded_cidr = try(each.value.data.protected_networks.excluded_cidr, local.defaults.meraki.networks.appliance_security_intrusion.protected_networks.excluded_cidr, null)
+  depends_on                       = [meraki_network_device_claim.net_device_claim]
 }
 locals {
   networks_networks_appliance_security_malware = flatten([
@@ -268,6 +276,7 @@ resource "meraki_appliance_security_malware" "appliance_security_malware" {
   mode          = try(each.value.data.mode, local.defaults.meraki.networks.appliance_security_malware.mode, null)
   allowed_urls  = try(each.value.data.allowed_urls, local.defaults.meraki.networks.appliance_security_malware.allowed_urls, null)
   allowed_files = try(each.value.data.allowed_files, local.defaults.meraki.networks.appliance_security_malware.allowed_files, null)
+  depends_on    = [meraki_network_device_claim.net_device_claim]
 }
 
 locals {
@@ -290,6 +299,7 @@ resource "meraki_appliance_settings" "appliance_settings" {
   deployment_mode        = try(each.value.data.deployment_mode, local.defaults.meraki.networks.appliance_settings.deployment_mode, null)
   dynamic_dns_prefix     = try(each.value.data.dynamic_dns.prefix, local.defaults.meraki.networks.appliance_settings.dynamic_dns.prefix, null)
   dynamic_dns_enabled    = try(each.value.data.dynamic_dns.enabled, local.defaults.meraki.networks.appliance_settings.dynamic_dns.enabled, null)
+  depends_on             = [meraki_network_device_claim.net_device_claim]
 }
 locals {
   networks_networks_appliance_single_lan = flatten([
@@ -312,6 +322,7 @@ resource "meraki_appliance_single_lan" "appliance_single_lan" {
   ipv6_enabled            = try(each.value.data.ipv6.enabled, local.defaults.meraki.networks.appliance_single_lan.ipv6.enabled, null)
   ipv6_prefix_assignments = try(each.value.data.ipv6.prefix_assignments, local.defaults.meraki.networks.appliance_single_lan.ipv6.prefix_assignments, null)
   mandatory_dhcp_enabled  = try(each.value.data.mandatory_dhcp.enabled, local.defaults.meraki.networks.appliance_single_lan.mandatory_dhcp.enabled, null)
+  depends_on              = [meraki_network_device_claim.net_device_claim]
 }
 locals {
   networks_networks_appliance_vlans = flatten([
@@ -370,6 +381,7 @@ resource "meraki_appliance_vlans_settings" "appliance_vlans_settings" {
   for_each      = { for i, v in local.networks_networks_appliance_vlans_settings : i => v }
   network_id    = each.value.network_id
   vlans_enabled = try(each.value.data.vlans_enabled, local.defaults.meraki.networks.appliance_vlans_settings.vlans_enabled, null)
+  depends_on    = [meraki_network_device_claim.net_device_claim]
 }
 
 locals {
@@ -392,6 +404,7 @@ resource "meraki_appliance_vpn_bgp" "appliance_vpn_bgp" {
   as_number       = try(each.value.data.as_number, local.defaults.meraki.networks.appliance_vpn_bgp.as_number, null)
   ibgp_hold_timer = try(each.value.data.ibgp_hold_timer, local.defaults.meraki.networks.appliance_vpn_bgp.ibgp_hold_timer, null)
   neighbors       = try(each.value.data.neighbors, local.defaults.meraki.networks.appliance_vpn_bgp.neighbors, null)
+  depends_on      = [meraki_network_device_claim.net_device_claim]
 }
 locals {
   networks_networks_appliance_vpn_site_to_site_vpn = flatten([
@@ -416,6 +429,7 @@ resource "meraki_appliance_site_to_site_vpn" "appliance_vpn_site_to_site_vpn" {
   mode       = try(each.value.data.mode, local.defaults.meraki.networks.appliance_vpn_site_to_site_vpn.mode, null)
   hubs       = each.value.hubs
   subnets    = try(each.value.data.subnets, local.defaults.meraki.networks.appliance_vpn_site_to_site_vpn.subnets, null)
+  depends_on = [meraki_network_device_claim.net_device_claim]
 }
 locals {
   networks_networks_appliance_warm_spare = flatten([
@@ -438,4 +452,5 @@ resource "meraki_appliance_warm_spare" "appliance_warm_spare" {
   uplink_mode  = try(each.value.data.uplink_mode, local.defaults.meraki.networks.appliance_warm_spare.uplink_mode, null)
   virtual_ip1  = try(each.value.data.virtual_ip1, local.defaults.meraki.networks.appliance_warm_spare.virtual_ip1, null)
   virtual_ip2  = try(each.value.data.virtual_ip2, local.defaults.meraki.networks.appliance_warm_spare.virtual_ip2, null)
+  depends_on   = [meraki_network_device_claim.net_device_claim]
 }
