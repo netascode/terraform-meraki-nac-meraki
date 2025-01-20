@@ -84,8 +84,8 @@ locals {
           rules = [
             for rule in try(network.appliance.firewall_l3_firewall.rules, []) : {
               comment        = try(rule.comment, null)
-              dst_cidr       = try(rule.destination_cidr, null)
-              dst_port       = try(rule.destination_port, null)
+              dest_cidr      = try(rule.destination_cidr, null)
+              dest_port      = try(rule.destination_port, null)
               policy         = try(rule.policy, null)
               protocol       = try(rule.protocol, null)
               src_cidr       = try(rule.source_cidr, null)
