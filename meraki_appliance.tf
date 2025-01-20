@@ -413,11 +413,11 @@ locals {
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
           data       = try(network.appliance.vpn_site_to_site_vpn, null)
-          hubs = [for h in try(network.appliance_vpn_site_to_site_vpn.hubs, []) : {
+          hubs = [for h in try(network.appliance.vpn_site_to_site_vpn.hubs, []) : {
             use_default_route = try(h.use_default_route, null)
             hub_id            = meraki_network.network["${organization.name}/${h.hub_network_name}"].id
           }]
-        } if try(network.appliance_vpn_site_to_site_vpn, null) != null
+        } if try(network.appliance.vpn_site_to_site_vpn, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
