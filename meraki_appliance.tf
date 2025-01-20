@@ -232,7 +232,7 @@ resource "meraki_appliance_port" "appliance_ports" {
   allowed_vlans         = try(each.value.data.allowed_vlans, local.defaults.meraki.networks.appliance_ports.allowed_vlans, null)
   access_policy         = try(each.value.data.access_policy, local.defaults.meraki.networks.appliance_ports.access_policy, null)
   port_id               = each.value.data.port_id
-  depends_on            = [meraki_network_device_claim.net_device_claim]
+  depends_on            = [meraki_network_device_claim.net_device_claim, meraki_appliance_vlan.appliance_vlans, meraki_appliance_single_lan.appliance_single_lan]
 }
 locals {
   networks_networks_appliance_security_intrusion = flatten([
