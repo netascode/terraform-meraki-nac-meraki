@@ -76,34 +76,6 @@ resource "meraki_appliance_inbound_firewall_rules" "appliance_firewall_inbound_f
   rules      = length(each.value.rules) > 0 ? each.value.rules : null
   depends_on = [meraki_network_device_claim.net_device_claim]
 }
-# locals {
-#   networks_networks_appliance_firewall_inbound_firewall_rules = flatten([
-#     for domain in try(local.meraki.domains, []) : [
-#       for organization in try(domain.organizations, []) : [
-#         for network in try(organization.networks, []) : {
-#           network_id = meraki_network.network["${organization.name}/${network.name}"].id
-#           data       = try(network.appliance.firewall_inbound_firewall_rules, null)
-#           rules = [for r in network.appliance_firewall_inbound_firewall_rules.rules : merge(r,
-#             {
-#               dest_cidr = try(r.destination_cidr, null)
-#               dest_port = try(r.destination_port, null)
-#               src_cidr  = try(r.source_cidr, null)
-#               src_port  = try(r.source_port, null)
-#             }
-#           )]
-#         } if try(network.appliance.firewall_inbound_firewall_rules, null) != null
-#       ] if try(domain.organizations, null) != null
-#     ] if try(local.meraki.domains, null) != null
-#   ])
-# }
-
-# resource "meraki_appliance_inbound_firewall_rules" "appliance_firewall_inbound_firewall_rules" {
-#   for_each            = { for i, v in local.networks_networks_appliance_firewall_inbound_firewall_rules : i => v }
-#   network_id          = each.value.network_id
-#   rules               = length(each.value.rules) > 0 ? each.value.rules : null
-#   syslog_default_rule = try(each.value.data.syslog_default_rule, local.defaults.meraki.networks.appliance_firewall_inbound_firewall_rules.syslog_default_rule, null)
-#   depends_on          = [meraki_network_device_claim.net_device_claim]
-# }
 
 locals {
   networks_networks_appliance_firewall_l3_firewall_rules = flatten([
