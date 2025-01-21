@@ -70,7 +70,7 @@ locals {
   ])
 }
 
-resource "meraki_appliance_l3_firewall_rules" "appliance_firewall_inbound_firewall_rules" {
+resource "meraki_appliance_inbound_firewall_rules" "appliance_firewall_inbound_firewall_rules" {
   for_each   = { for i, v in local.networks_networks_appliance_firewall_inbound_firewall_rules : i => v }
   network_id = each.value.network_id
   rules      = length(each.value.rules) > 0 ? each.value.rules : null
