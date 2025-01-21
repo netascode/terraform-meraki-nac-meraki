@@ -113,8 +113,8 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
-          data       = try(network.appliance.firewall_l7_firewall.rules, null)
-        } if try(network.appliance.firewall_l7_firewall.rules, null) != null
+          data       = try(network.appliance.firewall_l7_firewall, null)
+        } if try(network.appliance.firewall_l7_firewall, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
