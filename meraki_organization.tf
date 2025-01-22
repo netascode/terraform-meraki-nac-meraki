@@ -392,23 +392,32 @@ locals {
 resource "meraki_appliance_third_party_vpn_peers" "organizations_appliance_vpn_third_party_vpn_peers" {
   for_each        = { for i, v in local.networks_organizations_appliance_vpn_third_party_vpn_peers : i => v }
   organization_id = each.value.org_id
-  peers           = each.value.peers
+  peers           = length(each.value.peers) > 0 ? each.value.peers : null
 }
 
 locals {
-  networks_organizations_appliance_vpn_vpn_firewall_rules = flatten([
+  networks_organizations_appliance_vpn_firewall_rules = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : {
         org_id = meraki_organization.organization[organization.name].id
-        data   = try(organization.appliance.vpn_vpn_firewall_rules, null)
-      } if try(organization.appliance.vpn_vpn_firewall_rules, null) != null
+        rules = [
+          for rule in try(organization.appliance.vpn_firewall_rules.rules, []) : {
+            comment        = try(rule.comment, null)
+            policy         = try(rule.policy, null)
+            protocol       = try(rule.protocol, null)
+            src_port       = try(rule.source_port, null)
+            src_cidr       = try(rule.source_cidr, null)
+            dest_port      = try(rule.destination_port, null)
+            dest_cidr      = try(rule.destination_cidr, null)
+            syslog_enabled = try(rule.syslog, null)
+          }
+        ]
+      } if length(try(organization.appliance.vpn_firewall_rules.rules, [])) > 0
     ] if try(local.meraki.domains, null) != null
   ])
 }
-
-resource "meraki_appliance_vpn_firewall_rules" "net_organizations_appliance_vpn_vpn_firewall_rules" {
-  for_each            = { for i, v in local.networks_organizations_appliance_vpn_vpn_firewall_rules : i => v }
-  organization_id     = each.value.org_id
-  rules               = try(each.value.data.rules, local.defaults.meraki.networks.organizations_appliance_vpn_vpn_firewall_rules.rules, null)
-  syslog_default_rule = try(each.value.data.syslog_default_rule, local.defaults.meraki.networks.organizations_appliance_vpn_vpn_firewall_rules.syslog_default_rule, null)
+resource "meraki_appliance_vpn_firewall_rules" "organizations_vpn_firewall_rules" {
+  for_each        = { for i, v in local.networks_organizations_appliance_vpn_firewall_rules : i => v }
+  organization_id = each.value.org_id
+  rules           = length(each.value.rules) > 0 ? each.value.rules : null
 }
