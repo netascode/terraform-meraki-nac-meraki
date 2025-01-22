@@ -363,7 +363,27 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : {
         org_id = meraki_organization.organization[organization.name].id
-        data   = try(organization.appliance.vpn_third_party_vpn_peers, [])
+        peers = [
+          for peer in try(organization.appliance.vpn_third_party_vpn_peers, []) : {
+            name                                    = peer.name
+            public_ip                               = peer.public_ip
+            remote_id                               = peer.remote_id
+            secret                                  = peer.secret
+            ike_version                             = peer.ike_version
+            local_id                                = peer.local_id
+            private_subnets                         = peer.private_subnets
+            network_tags                            = peer.network_tags
+            ipsec_policies_ike_cipher_algo          = peer.ipsec_policies.ike_cipher_algo
+            ipsec_policies_ike_auth_algo            = peer.ipsec_policies.ike_auth_algo
+            ipsec_policies_ike_prf_algo             = peer.ipsec_policies.ike_prf_algo
+            ipsec_policies_ike_diffie_hellman_group = peer.ipsec_policies.ike_diffie_hellman_group
+            ipsec_policies_ike_lifetime             = peer.ipsec_policies.ike_lifetime
+            ipsec_policies_child_cipher_algo        = peer.ipsec_policies.child_cipher_algo
+            ipsec_policies_child_auth_algo          = peer.ipsec_policies.child_auth_algo
+            ipsec_policies_child_pfs_group          = peer.ipsec_policies.child_pfs_group
+            ipsec_policies_child_lifetime           = peer.ipsec_policies.child_lifetime
+          }
+        ]
       } if length(try(organization.appliance.vpn_third_party_vpn_peers, [])) > 0
     ] if try(local.meraki.domains, null) != null
   ])
@@ -372,7 +392,7 @@ locals {
 resource "meraki_appliance_third_party_vpn_peers" "organizations_appliance_vpn_third_party_vpn_peers" {
   for_each        = { for i, v in local.networks_organizations_appliance_vpn_third_party_vpn_peers : i => v }
   organization_id = each.value.org_id
-  peers           = try(each.value.data.vpn_third_party_vpn_peers, local.defaults.meraki.networks.organizations.appliance.vpn_third_party_vpn_peers, null)
+  peers           = each.value.peers
 }
 
 locals {
