@@ -363,8 +363,8 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : {
         org_id = meraki_organization.organization[organization.name].id
-        data   = try(organization.appliance.vpn_third_party_vpn_peers, null)
-      } if try(organization.appliance.vpn_third_party_vpn_peers, null) != null
+        data   = try(organization.appliance.vpn_third_party_vpn_peers, [])
+      } if length(try(organization.appliance.vpn_third_party_vpn_peers, [])) > 0
     ] if try(local.meraki.domains, null) != null
   ])
 }
