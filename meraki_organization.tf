@@ -360,7 +360,6 @@ resource "meraki_organization_policy_object_group" "policy_object_group" {
 }
 locals {
   networks_organizations_appliance_vpn_third_party_vpn_peers = flatten([
-
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : {
         org_id = meraki_organization.organization[organization.name].id
@@ -373,7 +372,7 @@ locals {
 resource "meraki_appliance_third_party_vpn_peers" "organizations_appliance_vpn_third_party_vpn_peers" {
   for_each        = { for i, v in local.networks_organizations_appliance_vpn_third_party_vpn_peers : i => v }
   organization_id = each.value.org_id
-  peers           = try(each.value.data.peers, local.defaults.meraki.networks.organizations_appliance_vpn_third_party_vpn_peers.peers, null)
+  peers           = try(each.value.data.vpn_third_party_vpn_peers, local.defaults.meraki.networks.organizations.appliance.vpn_third_party_vpn_peers, null)
 }
 
 locals {
