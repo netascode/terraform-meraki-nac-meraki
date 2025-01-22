@@ -364,8 +364,8 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : {
         org_id = meraki_organization.organization[organization.name].id
-        data   = try(organization.appliance_vpn_third_party_vpn_peers, null)
-      } if try(organization.appliance_vpn_third_party_vpn_peers, null) != null
+        data   = try(organization.appliance.vpn_third_party_vpn_peers, null)
+      } if try(organization.appliance.vpn_third_party_vpn_peers, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
 }
@@ -381,8 +381,8 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : {
         org_id = meraki_organization.organization[organization.name].id
-        data   = try(organization.appliance_vpn_vpn_firewall_rules, null)
-      } if try(organization.appliance_vpn_vpn_firewall_rules, null) != null
+        data   = try(organization.appliance.vpn_vpn_firewall_rules, null)
+      } if try(organization.appliance.vpn_vpn_firewall_rules, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
 }
