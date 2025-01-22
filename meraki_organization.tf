@@ -365,23 +365,23 @@ locals {
         org_id = meraki_organization.organization[organization.name].id
         peers = [
           for peer in try(organization.appliance.vpn_third_party_vpn_peers, []) : {
-            name                                    = peer.name
-            public_ip                               = peer.public_ip
-            remote_id                               = peer.remote_id
-            secret                                  = peer.secret
-            ike_version                             = peer.ike_version
-            local_id                                = peer.local_id
-            private_subnets                         = peer.private_subnets
-            network_tags                            = peer.network_tags
-            ipsec_policies_ike_cipher_algo          = peer.ipsec_policies.ike_cipher_algo
-            ipsec_policies_ike_auth_algo            = peer.ipsec_policies.ike_auth_algo
-            ipsec_policies_ike_prf_algo             = peer.ipsec_policies.ike_prf_algo
-            ipsec_policies_ike_diffie_hellman_group = peer.ipsec_policies.ike_diffie_hellman_group
-            ipsec_policies_ike_lifetime             = peer.ipsec_policies.ike_lifetime
-            ipsec_policies_child_cipher_algo        = peer.ipsec_policies.child_cipher_algo
-            ipsec_policies_child_auth_algo          = peer.ipsec_policies.child_auth_algo
-            ipsec_policies_child_pfs_group          = peer.ipsec_policies.child_pfs_group
-            ipsec_policies_child_lifetime           = peer.ipsec_policies.child_lifetime
+            name                                    = try(peer.name, null)
+            public_ip                               = try(peer.public_ip, null)
+            remote_id                               = try(peer.remote_id, null)
+            secret                                  = try(peer.secret, null)
+            ike_version                             = try(peer.ike_version, null)
+            local_id                                = try(peer.local_id, null)
+            private_subnets                         = try(peer.private_subnets, null)
+            network_tags                            = try(peer.network_tags, null)
+            ipsec_policies_ike_cipher_algo          = try(peer.ipsec_policies.ike_cipher_algo, null)
+            ipsec_policies_ike_auth_algo            = try(peer.ipsec_policies.ike_auth_algo, null)
+            ipsec_policies_ike_prf_algo             = try(peer.ipsec_policies.ike_prf_algo, null)
+            ipsec_policies_ike_diffie_hellman_group = try(peer.ipsec_policies.ike_diffie_hellman_group, null)
+            ipsec_policies_ike_lifetime             = try(peer.ipsec_policies.ike_lifetime, null)
+            ipsec_policies_child_cipher_algo        = try(peer.ipsec_policies.child_cipher_algo, null)
+            ipsec_policies_child_auth_algo          = try(peer.ipsec_policies.child_auth_algo, null)
+            ipsec_policies_child_pfs_group          = try(peer.ipsec_policies.child_pfs_group, null)
+            ipsec_policies_child_lifetime           = try(peer.ipsec_policies.child_lifetime, null)
           }
         ]
       } if length(try(organization.appliance.vpn_third_party_vpn_peers, [])) > 0
