@@ -62,7 +62,6 @@ module "meraki" {
 |------|-------------|
 | <a name="output_default_values"></a> [default\_values](#output\_default\_values) | All default values. |
 | <a name="output_model"></a> [model](#output\_model) | Full model. |
-| <a name="output_vpn_firewall_rules"></a> [vpn\_firewall\_rules](#output\_vpn\_firewall\_rules) | n/a |
 ## Resources
 
 | Name | Type |
