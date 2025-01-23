@@ -393,7 +393,7 @@ resource "meraki_appliance_third_party_vpn_peers" "organizations_appliance_vpn_t
   for_each        = { for i, v in local.networks_organizations_appliance_vpn_third_party_vpn_peers : i => v }
   organization_id = each.value.org_id
   peers           = length(each.value.peers) > 0 ? each.value.peers : null
-  depends_on      = [meraki_network_device_claim.net_device_claim]
+  depends_on      = [meraki_network.network]
 }
 
 locals {
@@ -421,5 +421,5 @@ resource "meraki_appliance_vpn_firewall_rules" "organizations_vpn_firewall_rules
   for_each        = { for i, v in local.networks_organizations_appliance_vpn_firewall_rules : i => v }
   organization_id = each.value.org_id
   rules           = length(each.value.rules) > 0 ? each.value.rules : null
-  depends_on      = [meraki_network_device_claim.net_device_claim]
+  depends_on      = [meraki_network.network]
 }
