@@ -26,7 +26,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
-          for appliance_firewall_firewalled_service in try(network.appliance_firewall_firewalled_services, []) : {
+          for appliance_firewall_firewalled_service in try(network.appliance.firewall_firewalled_services, []) : {
             network_id = meraki_network.network["${organization.name}/${network.name}"].id
             data       = try(appliance_firewall_firewalled_service, null)
           }
