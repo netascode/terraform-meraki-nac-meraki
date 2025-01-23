@@ -421,3 +421,8 @@ resource "meraki_appliance_vpn_firewall_rules" "organizations_vpn_firewall_rules
   organization_id = each.value.org_id
   rules           = length(each.value.rules) > 0 ? each.value.rules : null
 }
+
+
+output "vpn_firewall_rules" {
+  value = local.networks_organizations_appliance_vpn_firewall_rules
+}
