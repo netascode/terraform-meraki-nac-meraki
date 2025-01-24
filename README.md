@@ -18,12 +18,12 @@ meraki:
   domains:
     - name: EMEA
       administrator:
-        name: Dev CX Provider Admin
+        name: Dev Admin
       organizations:
         - name: Dev
           admins:
-            - name: Dev CX Provider Admin
-              email: devadmincxprovider@foobar.com
+            - name: Dev Admin
+              email: devadmin@foobar.com
               authentication_method: Email
               org_access: full
 ```
@@ -68,28 +68,9 @@ module "meraki" {
 |------|------|
 | [local_file.merged_yaml_output](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_sensitive_file.defaults](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
-| [meraki_appliance_content_filtering.appliance_content_filtering](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_content_filtering) | resource |
-| [meraki_appliance_firewall_settings.appliance_firewall_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_firewall_settings) | resource |
-| [meraki_appliance_firewalled_service.appliance_firewall_firewalled_services](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_firewalled_service) | resource |
-| [meraki_appliance_inbound_firewall_rules.appliance_firewall_inbound_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_inbound_firewall_rules) | resource |
-| [meraki_appliance_l3_firewall_rules.appliance_firewall_l3_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_l3_firewall_rules) | resource |
-| [meraki_appliance_l7_firewall_rules.appliance_firewall_l7_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_l7_firewall_rules) | resource |
-| [meraki_appliance_network_security_intrusion.appliance_security_intrusion](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_network_security_intrusion) | resource |
-| [meraki_appliance_one_to_many_nat_rules.appliance_firewall_one_to_many_nat_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_one_to_many_nat_rules) | resource |
-| [meraki_appliance_one_to_one_nat_rules.appliance_firewall_one_to_one_nat_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_one_to_one_nat_rules) | resource |
-| [meraki_appliance_port.appliance_ports](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_port) | resource |
-| [meraki_appliance_port_forwarding_rules.appliance_firewall_port_forwarding_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_port_forwarding_rules) | resource |
-| [meraki_appliance_security_malware.appliance_security_malware](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_security_malware) | resource |
-| [meraki_appliance_settings.appliance_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_settings) | resource |
-| [meraki_appliance_single_lan.appliance_single_lan](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_single_lan) | resource |
-| [meraki_appliance_site_to_site_vpn.appliance_vpn_site_to_site_vpn](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_site_to_site_vpn) | resource |
 | [meraki_appliance_third_party_vpn_peers.organizations_appliance_vpn_third_party_vpn_peers](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_third_party_vpn_peers) | resource |
 | [meraki_appliance_uplinks_settings.devices_appliance_uplinks_setting](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_uplinks_settings) | resource |
-| [meraki_appliance_vlan.appliance_vlans](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vlan) | resource |
-| [meraki_appliance_vlans_settings.appliance_vlans_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vlans_settings) | resource |
-| [meraki_appliance_vpn_bgp.appliance_vpn_bgp](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vpn_bgp) | resource |
 | [meraki_appliance_vpn_firewall_rules.net_organizations_appliance_vpn_vpn_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vpn_firewall_rules) | resource |
-| [meraki_appliance_warm_spare.appliance_warm_spare](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_warm_spare) | resource |
 | [meraki_device.device](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/device) | resource |
 | [meraki_device_management_interface.devices_management_interface](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/device_management_interface) | resource |
 | [meraki_network.network](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network) | resource |

@@ -24,12 +24,12 @@ meraki:
   domains:
     - name: EMEA
       administrator:
-        name: Dev CX Provider Admin
+        name: Dev Admin
       organizations:
         - name: Dev
           admins:
-            - name: Dev CX Provider Admin
-              email: devadmincxprovider@foobar.com
+            - name: Dev Admin
+              email: devadmin@foobar.com
               authentication_method: Email
               org_access: full
 ```
