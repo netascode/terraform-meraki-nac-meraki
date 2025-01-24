@@ -4,7 +4,7 @@
 Set environment variables with the Meraki Dashboard API key:
 
 ```bash
-export MERAKI_DASHBOARD_API_KEY=ABC123
+export MERAKI_API_KEY=ABC123
 ```
 
 To run this example you need to execute:
