@@ -86,7 +86,7 @@ module "meraki" {
 | [meraki_appliance_third_party_vpn_peers.organizations_appliance_vpn_third_party_vpn_peers](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_third_party_vpn_peers) | resource |
 | [meraki_appliance_uplinks_settings.devices_appliance_uplinks_setting](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_uplinks_settings) | resource |
 | [meraki_appliance_vlan.appliance_vlans](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vlan) | resource |
-| [meraki_appliance_vlan_dhcp.appliance_vlans](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vlan_dhcp) | resource |
+| [meraki_appliance_vlan_dhcp.appliance_vlans_dhcp](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vlan_dhcp) | resource |
 | [meraki_appliance_vlans_settings.appliance_vlans_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vlans_settings) | resource |
 | [meraki_appliance_vpn_bgp.appliance_vpn_bgp](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vpn_bgp) | resource |
 | [meraki_appliance_vpn_firewall_rules.organizations_vpn_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vpn_firewall_rules) | resource |

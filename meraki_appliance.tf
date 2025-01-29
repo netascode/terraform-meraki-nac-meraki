@@ -363,7 +363,7 @@ resource "meraki_appliance_vlan" "appliance_vlans" {
   depends_on                = [meraki_appliance_vlans_settings.appliance_vlans_settings]
 }
 
-resource "meraki_appliance_vlan_dhcp" "appliance_vlans" {
+resource "meraki_appliance_vlan_dhcp" "appliance_vlans_dhcp" {
   for_each                  = { for i, v in local.networks_networks_appliance_vlans : i => v }
   network_id                = each.value.network_id
   vlan_id                   = each.value.data.vlan_id
