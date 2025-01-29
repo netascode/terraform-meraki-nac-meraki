@@ -343,24 +343,17 @@ locals {
 }
 
 resource "meraki_appliance_vlan" "appliance_vlans" {
-  for_each                  = { for i, v in local.networks_networks_appliance_vlans : i => v }
-  network_id                = each.value.network_id
-  vlan_id                   = each.value.data.vlan_id
-  appliance_ip              = try(each.value.data.appliance_ip, local.defaults.meraki.networks.appliance_vlans.appliance_ip, null)
-  dhcp_boot_options_enabled = try(each.value.data.dhcp_boot_options, local.defaults.meraki.networks.appliance_vlans.dhcp_boot_options, null)
-  dhcp_handling             = try(each.value.data.dhcp_handling, local.defaults.meraki.networks.appliance_vlans.dhcp_handling, null)
-  dhcp_lease_time           = try(each.value.data.dhcp_lease_time, local.defaults.meraki.networks.appliance_vlans.dhcp_lease_time, null)
-  dhcp_options              = try(each.value.data.dhcp_options, local.defaults.meraki.networks.appliance_vlans.dhcp_options, null)
-  dns_nameservers           = try(each.value.data.dns_nameservers, local.defaults.meraki.networks.appliance_vlans.dns_nameservers, null)
-  group_policy_id           = try(each.value.data.group_policy_id, local.defaults.meraki.networks.appliance_vlans.group_policy_id, null)
-  ipv6_enabled              = try(each.value.data.ipv6.enabled, local.defaults.meraki.networks.appliance_vlans.ipv6.enabled, null)
-  ipv6_prefix_assignments   = try(each.value.data.ipv6.prefix_assignments, local.defaults.meraki.networks.appliance_vlans.ipv6.prefix_assignments, null)
-  mandatory_dhcp_enabled    = try(each.value.data.mandatory_dhcp, local.defaults.meraki.networks.appliance_vlans.mandatory_dhcp, null)
-  name                      = try(each.value.data.name, local.defaults.meraki.networks.appliance_vlans.name, null)
-  reserved_ip_ranges        = try(each.value.data.reserved_ip_ranges, local.defaults.meraki.networks.appliance_vlans.reserved_ip_ranges, null)
-  subnet                    = try(each.value.data.subnet, local.defaults.meraki.networks.appliance_vlans.subnet, null)
-  vpn_nat_subnet            = try(each.value.data.vpn_nat_subnet, local.defaults.meraki.networks.appliance_vlans.vpn_nat_subnet, null)
-  depends_on                = [meraki_appliance_vlans_settings.appliance_vlans_settings]
+  for_each                = { for i, v in local.networks_networks_appliance_vlans : i => v }
+  network_id              = each.value.network_id
+  vlan_id                 = each.value.data.vlan_id
+  appliance_ip            = try(each.value.data.appliance_ip, local.defaults.meraki.networks.appliance_vlans.appliance_ip, null)
+  group_policy_id         = try(each.value.data.group_policy_id, local.defaults.meraki.networks.appliance_vlans.group_policy_id, null)
+  ipv6_enabled            = try(each.value.data.ipv6.enabled, local.defaults.meraki.networks.appliance_vlans.ipv6.enabled, null)
+  ipv6_prefix_assignments = try(each.value.data.ipv6.prefix_assignments, local.defaults.meraki.networks.appliance_vlans.ipv6.prefix_assignments, null)
+  name                    = try(each.value.data.name, local.defaults.meraki.networks.appliance_vlans.name, null)
+  subnet                  = try(each.value.data.subnet, local.defaults.meraki.networks.appliance_vlans.subnet, null)
+  vpn_nat_subnet          = try(each.value.data.vpn_nat_subnet, local.defaults.meraki.networks.appliance_vlans.vpn_nat_subnet, null)
+  depends_on              = [meraki_appliance_vlans_settings.appliance_vlans_settings]
 }
 
 resource "meraki_appliance_vlan_dhcp" "appliance_vlans_dhcp" {
