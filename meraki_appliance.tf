@@ -409,7 +409,7 @@ resource "meraki_appliance_vpn_bgp" "appliance_vpn_bgp" {
   as_number       = try(each.value.data.as_number, local.defaults.meraki.networks.appliance_vpn_bgp.as_number, null)
   ibgp_hold_timer = try(each.value.data.ibgp_hold_timer, local.defaults.meraki.networks.appliance_vpn_bgp.ibgp_hold_timer, null)
   neighbors       = try(each.value.data.neighbors, local.defaults.meraki.networks.appliance_vpn_bgp.neighbors, null)
-  depends_on      = [meraki_network_device_claim.net_device_claim]
+  depends_on      = [meraki_appliance_site_to_site_vpn.appliance_vpn_site_to_site_vpn]
 }
 locals {
   networks_networks_appliance_vpn_site_to_site_vpn = flatten([
@@ -434,7 +434,7 @@ resource "meraki_appliance_site_to_site_vpn" "appliance_vpn_site_to_site_vpn" {
   mode       = try(each.value.data.mode, local.defaults.meraki.networks.appliance_vpn_site_to_site_vpn.mode, null)
   hubs       = each.value.hubs
   subnets    = try(each.value.data.subnets, local.defaults.meraki.networks.appliance_vpn_site_to_site_vpn.subnets, null)
-  depends_on = [meraki_network_device_claim.net_device_claim]
+  depends_on = [meraki_network_device_claim.net_device_claim, meraki_appliance_single_lan.appliance_single_lan, meraki_appliance_vlan.appliance_vlans]
 }
 locals {
   networks_networks_appliance_warm_spare = flatten([
