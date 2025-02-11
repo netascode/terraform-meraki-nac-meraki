@@ -12,7 +12,7 @@ resource_key_mapping = {
 }
 
 URL = sys.argv[1]
-OPEN_API_SPEC_PATH = "/meraki/openapi/spec3.json"
+OPEN_API_SPEC_PATH = "/Users/maparafi/openapi/openapi/spec3.json"
 
 
 def to_snake_case(text):

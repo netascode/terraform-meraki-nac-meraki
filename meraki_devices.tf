@@ -311,3 +311,54 @@ resource "meraki_wireless_device_bluetooth_settings" "devices_wireless_bluetooth
   major    = try(each.value.data.major, local.defaults.meraki.networks.devices_wireless_bluetooth_settings.major, null)
   minor    = try(each.value.data.minor, local.defaults.meraki.networks.devices_wireless_bluetooth_settings.minor, null)
 }
+
+locals {
+  networks_devices_cellular_gateway_lan = flatten([
+
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for device in try(network.devices, []) : {
+            serial = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
+
+            data = try(device.cellular.gateway.lan, null)
+          } if try(device.cellular.gateway.lan, null) != null
+        ] if try(organization.networks, null) != null
+      ] if try(domain.organizations, null) != null
+    ] if try(local.meraki.domains, null) != null
+  ])
+}
+
+resource "meraki_device_cellular_gateway_lan" "net_devices_cellular_gateway_lan" {
+  for_each = { for i, v in local.networks_devices_cellular_gateway_lan : i => v }
+  serial   = each.value.serial
+
+  reserved_ip_ranges   = try(each.value.data.reserved_ip_ranges, local.defaults.meraki.networks.devices_cellular_gateway_lan.reserved_ip_ranges, null)
+  fixed_ip_assignments = try(each.value.data.fixed_ip_assignments, local.defaults.meraki.networks.devices_cellular_gateway_lan.fixed_ip_assignments, null)
+
+}
+
+locals {
+  networks_devices_cellular_gateway_port_forwarding_rules = flatten([
+
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for device in try(network.devices, []) : {
+            serial = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
+
+            data = try(device.cellular.gateway.port_forwarding_rules, null)
+          } if try(device.cellular.gateway.lan, null) != null
+        ] if try(organization.networks, null) != null
+      ] if try(domain.organizations, null) != null
+    ] if try(local.meraki.domains, null) != null
+  ])
+}
+
+resource "meraki_device_cellular_gateway_port_forwarding_rules" "net_devices_cellular_gateway_port_forwarding_rules" {
+  for_each = { for i, v in local.networks_devices_cellular_gateway_port_forwarding_rules : i => v }
+  serial   = each.value.serial
+
+  rules = try(each.value.data.rules, local.defaults.meraki.networks.devices_cellular_gateway_port_forwarding_rules.rules, null)
+
+}
