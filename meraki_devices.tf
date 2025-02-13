@@ -321,8 +321,8 @@ locals {
           for device in try(network.devices, []) : {
             serial = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
 
-            data = try(device.cellular.gateway.lan, null)
-          } if try(device.cellular.gateway.lan, null) != null
+            data = try(device.cellular_gateway.lan, null)
+          } if try(device.cellular_gateway.lan, null) != null
         ] if try(organization.networks, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
@@ -347,8 +347,8 @@ locals {
           for device in try(network.devices, []) : {
             serial = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
 
-            data = try(device.cellular.gateway.port_forwarding_rules, null)
-          } if try(device.cellular.gateway.lan, null) != null
+            data = try(device.cellular_gateway.port_forwarding_rules, null)
+          } if try(device.cellular_gateway.lan, null) != null
         ] if try(organization.networks, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null

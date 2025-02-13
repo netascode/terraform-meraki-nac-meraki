@@ -225,8 +225,8 @@ locals {
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
 
-          data = try(network.cellular.gateway.dhcp, null)
-        } if try(network.cellular.gateway.dhcp, null) != null
+          data = try(network.cellular_gateway.dhcp, null)
+        } if try(network.cellular_gateway.dhcp, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -250,8 +250,8 @@ locals {
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
 
-          data = try(network.cellular.gateway.subnet_pool, null)
-        } if try(network.cellular.gateway.subnet_pool, null) != null
+          data = try(network.cellular_gateway.subnet_pool, null)
+        } if try(network.cellular_gateway.subnet_pool, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -274,8 +274,8 @@ locals {
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
 
-          data = try(network.cellular.gateway.uplink, null)
-        } if try(network.cellular.gateway.uplink, null) != null
+          data = try(network.cellular_gateway.uplink, null)
+        } if try(network.cellular_gateway.uplink, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
@@ -298,8 +298,8 @@ locals {
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
 
-          data = try(network.cellular.gateway.connectivity_monitoring_destinations, null)
-        } if try(network.cellular.gateway.connectivity_monitoring_destinations, null) != null
+          data = try(network.cellular_gateway.connectivity_monitoring_destinations, null)
+        } if try(network.cellular_gateway.connectivity_monitoring_destinations, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
