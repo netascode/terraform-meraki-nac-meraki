@@ -46,7 +46,7 @@ def generate_loop(path, depth, prev_var, path_from_networks):
             items_from_networks += [p]
         return (
             """
-    {spaces}network_id = meraki_network.network["${{domain.name}}/${{organization.name}}/${{network.name}}"].id\n{ids}
+    {spaces}network_id = meraki_network.network["${{organization.name}}/${{network.name}}"].id\n{ids}
     {spaces}data = try({prev_var}, null)""".format(
                 spaces=" " * depth * 2,
                 prev_var=prev_var
