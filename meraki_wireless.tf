@@ -1,7 +1,3 @@
-
-//TODO: @jon-humphries need to ensure that this data model is correct as its currently not validating
-
-# Apply the Meraki Wireless RF Profiles
 locals {
   per_ssid_settings_list = flatten([
 
