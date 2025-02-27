@@ -329,7 +329,7 @@ locals {
   ])
 }
 
-resource "meraki_device_cellular_gateway_lan" "net_devices_cellular_gateway_lan" {
+resource "meraki_cellular_gateway_lan" "net_devices_cellular_gateway_lan" {
   for_each = { for i, v in local.networks_devices_cellular_gateway_lan : i => v }
   serial   = each.value.serial
 
@@ -355,7 +355,7 @@ locals {
   ])
 }
 
-resource "meraki_device_cellular_gateway_port_forwarding_rules" "net_devices_cellular_gateway_port_forwarding_rules" {
+resource "meraki_cellular_gateway_port_forwarding_rules" "net_devices_cellular_gateway_port_forwarding_rules" {
   for_each = { for i, v in local.networks_devices_cellular_gateway_port_forwarding_rules : i => v }
   serial   = each.value.serial
 

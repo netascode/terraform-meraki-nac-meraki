@@ -232,7 +232,7 @@ locals {
   ])
 }
 
-resource "meraki_network_cellular_gateway_dhcp" "net_networks_cellular_gateway_dhcp" {
+resource "meraki_cellular_gateway_dhcp" "net_networks_cellular_gateway_dhcp" {
   for_each   = { for i, v in local.networks_networks_cellular_gateway_dhcp : i => v }
   network_id = each.value.network_id
 
@@ -257,7 +257,7 @@ locals {
   ])
 }
 
-resource "meraki_network_cellular_gateway_subnet_pool" "net_networks_cellular_gateway_subnet_pool" {
+resource "meraki_cellular_gateway_subnet_pool" "net_networks_cellular_gateway_subnet_pool" {
   for_each   = { for i, v in local.networks_networks_cellular_gateway_subnet_pool : i => v }
   network_id = each.value.network_id
 
@@ -281,7 +281,7 @@ locals {
   ])
 }
 
-resource "meraki_network_cellular_gateway_uplink" "net_networks_cellular_gateway_uplink" {
+resource "meraki_cellular_gateway_uplink" "net_networks_cellular_gateway_uplink" {
   for_each   = { for i, v in local.networks_networks_cellular_gateway_uplink : i => v }
   network_id = each.value.network_id
 
@@ -305,7 +305,7 @@ locals {
   ])
 }
 
-resource "meraki_network_cellular_gateway_connectivity_monitoring_destinations" "net_networks_cellular_gateway_connectivity_monitoring_destinations" {
+resource "meraki_cellular_gateway_connectivity_monitoring_destinations" "net_networks_cellular_gateway_connectivity_monitoring_destinations" {
   for_each   = { for i, v in local.networks_networks_cellular_gateway_connectivity_monitoring_destinations : i => v }
   network_id = each.value.network_id
 
