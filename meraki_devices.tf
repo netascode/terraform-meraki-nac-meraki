@@ -381,7 +381,7 @@ locals {
 }
 
 resource "meraki_device_cellular_sims" "net_devices_cellular_sims" {
-  for_each   = { for i, v in local.networks_devices_cellular_sims : i => v }
+  for_each = { for i, v in local.networks_devices_cellular_sims : i => v }
   serial   = each.value.serial
 
   sims                 = try(each.value.data.sims, local.defaults.meraki.networks.devices_cellular_sims.sims, null)
