@@ -168,7 +168,7 @@ locals {
           }
         ]
         orders  = try(org.inventory.orders, [])
-        devices = try(org.inventory.devices, [])
+        serials = try(org.inventory.serials, [])
       } if try(org.inventory, null) != null
     ]
   ])
@@ -184,7 +184,7 @@ resource "meraki_organization_inventory_claim" "organization_claim" {
     }
   ]
   orders  = each.value.orders
-  serials = each.value.devices
+  serials = each.value.serials
 }
 # Apply Organization Adaptive Policy Settings
 # Use existing network data in adaptive policy settings
