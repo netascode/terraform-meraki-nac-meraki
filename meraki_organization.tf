@@ -251,8 +251,8 @@ locals {
           destination_group_id   = meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/adaptive_policy_groups/%s", organization.name, policy.destination_group.name)].id
           acls = [
             for acl in policy.acls : {
-              id   = meraki_organization_adaptive_policy_acl.organizations_adaptive_policy_acl[format("%s/adaptive_policy_acls/%s", organization.name, acl.name)].id
-              name = acl.name
+              id   = meraki_organization_adaptive_policy_acl.organizations_adaptive_policy_acl[format("%s/adaptive_policy_acls/%s", organization.name, acl)].id
+              name = acl
             }
           ]
         } if try(organization.adaptive_policy.policies, null) != null

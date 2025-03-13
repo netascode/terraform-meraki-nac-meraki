@@ -160,7 +160,7 @@ locals {
 resource "meraki_switch_dscp_to_cos_mappings" "net_switch_dscp_to_cos_mappings" {
   for_each   = { for i, v in local.networks_switch_dscp_to_cos_mappings : i => v }
   network_id = each.value.network_id
-  mappings   = try(each.value.data.mappings, local.defaults.meraki.networks.switch_dscp_to_cos_mappings.mappings, null)
+  mappings   = try(each.value.data, local.defaults.meraki.networks.switch_dscp_to_cos_mappings, null)
   depends_on = [meraki_network_device_claim.net_device_claim]
 }
 

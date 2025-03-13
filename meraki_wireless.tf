@@ -199,7 +199,7 @@ resource "meraki_wireless_ssid" "net_wireless_ssids" {
   dot11r_adaptive                                                             = try(each.value.data.dot11r.adaptive, local.defaults.meraki.networks.wireless_ssids.dot11r.adaptive, null)
   splash_page                                                                 = try(each.value.data.splash_page, local.defaults.meraki.networks.wireless_ssids.splash_page, null)
   splash_guest_sponsor_domains                                                = try(each.value.data.splash_guest_sponsor_domains, local.defaults.meraki.networks.wireless_ssids.splash_guest_sponsor_domains, null)
-  oauth_allowed_domains                                                       = try(each.value.data.oauth.allowed_domains, local.defaults.meraki.networks.wireless_ssids.oauth.allowed_domains, null)
+  oauth_allowed_domains                                                       = try(each.value.data.oauth_allowed_domains, local.defaults.meraki.networks.wireless_ssids.oauth_allowed_domains, null)
   local_radius_cache_timeout                                                  = try(each.value.data.local_radius.cache_timeout, local.defaults.meraki.networks.wireless_ssids.local_radius.cache_timeout, null)
   local_radius_password_authentication_enabled                                = try(each.value.data.local_radius.password_authentication.enabled, local.defaults.meraki.networks.wireless_ssids.local_radius.password_authentication, null)
   local_radius_certificate_authentication_enabled                             = try(each.value.data.local_radius.certificate_authentication.enabled, local.defaults.meraki.networks.wireless_ssids.local_radius.certificate_authentication, null)
@@ -259,7 +259,7 @@ resource "meraki_wireless_ssid" "net_wireless_ssids" {
   adult_content_filtering_enabled                                             = try(each.value.data.adult_content_filtering, local.defaults.meraki.networks.wireless_ssids.adult_content_filtering, null)
   dns_rewrite_enabled                                                         = try(each.value.data.dns_rewrite, local.defaults.meraki.networks.wireless_ssids.dns_rewrite, null)
   dns_rewrite_dns_custom_nameservers                                          = try(each.value.data.dns_rewrite.dns_custom_nameservers, local.defaults.meraki.networks.wireless_ssids.dns_rewrite.dns_custom_nameservers, null)
-  speed_burst_enabled                                                         = try(each.value.data.speed_burst.enabled, local.defaults.meraki.networks.wireless_ssids.speed_burst.enabled, null)
+  speed_burst_enabled                                                         = try(each.value.data.speed_burst, local.defaults.meraki.networks.wireless_ssids.speed_burst, null)
   named_vlans_tagging_enabled                                                 = try(each.value.data.named_vlans.tagging, local.defaults.meraki.networks.wireless_ssids.named_vlans.tagging, null)
   named_vlans_tagging_default_vlan_name                                       = try(each.value.data.named_vlans.tagging.default_vlan_name, local.defaults.meraki.networks.wireless_ssids.named_vlans.tagging.default_vlan_name, null)
   named_vlans_tagging_by_ap_tags                                              = try(each.value.data.named_vlans.tagging.by_ap_tags, local.defaults.meraki.networks.wireless_ssids.named_vlans.tagging.by_ap_tags, null)
@@ -554,7 +554,7 @@ resource "meraki_wireless_ssid_bonjour_forwarding" "wireless_ssids_bonjour_forwa
   number            = each.value.number
   enabled           = try(each.value.data.enabled, local.defaults.meraki.networks.wireless_ssids_bonjour_forwarding.enabled, null)
   rules             = try(each.value.data.rules, local.defaults.meraki.networks.wireless_ssids_bonjour_forwarding.rules, null)
-  exception_enabled = try(each.value.data.exception.enabled, local.defaults.meraki.networks.wireless_ssids_bonjour_forwarding.exception.enabled, null)
+  exception_enabled = try(each.value.data.exception, local.defaults.meraki.networks.wireless_ssids_bonjour_forwarding.exception, null)
   depends_on = [
     meraki_wireless_ssid.net_wireless_ssids
   ]
