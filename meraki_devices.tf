@@ -118,7 +118,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : [
-            for switch_port in try(device.switch_ports, []) : [
+            for switch_port in try(device.switch.ports, []) : [
               for port_id in split(",", switch_port.port_ids) : {
                 device_serial            = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
                 data                     = merge(switch_port, { port_id = port_id })
@@ -136,7 +136,7 @@ locals {
         for organization in try(domain.organizations, []) : [
           for network in try(organization.networks, []) : [
             for device in try(network.devices, []) : [
-              for switch_port in try(device.switch_ports, []) : [
+              for switch_port in try(device.switch.ports, []) : [
                 for port_range in split(",", switch_port.port_ids) : [
                   for p in range(split("-", port_range)[0], split("-", port_range)[1]) : {
                     device_serial            = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
@@ -185,7 +185,7 @@ resource "meraki_switch_port" "devices_switch_port" {
   profile_enabled             = try(each.value.data.profile.enabled, local.defaults.meraki.networks.devices_switch_ports.profile.enabled, null)
   # profile_id                  = try(each.value.data.profile.id, local.defaults.meraki.networks.devices_switch_ports.profile.id, null)
   profile_iname  = try(each.value.data.profile.iname, local.defaults.meraki.networks.devices_switch_ports.profile.iname, null)
-  dot3az_enabled = try(each.value.data.dot3az.enabled, local.defaults.meraki.networks.devices_switch_ports.dot3az.enabled, null)
+  dot3az_enabled = try(each.value.data.dot3az, local.defaults.meraki.networks.devices_switch_ports.dot3az, null)
 
 }
 
