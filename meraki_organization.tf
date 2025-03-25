@@ -364,7 +364,7 @@ locals {
       for organization in try(domain.organizations, []) : {
         org_id = meraki_organization.organization[organization.name].id
         peers = [
-          for peer in try(organization.appliance.vpn_third_party_vpn_peers, []) : {
+          for peer in try(organization.appliance.third_party_vpn_peers, []) : {
             name                                    = try(peer.name, null)
             public_ip                               = try(peer.public_ip, null)
             remote_id                               = try(peer.remote_id, null)
