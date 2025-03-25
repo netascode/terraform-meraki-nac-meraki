@@ -359,7 +359,7 @@ resource "meraki_organization_policy_object_group" "policy_object_group" {
   object_ids      = each.value.object_ids
 }
 locals {
-  networks_organizations_appliance_vpn_third_party_vpn_peers = flatten([
+  networks_organizations_appliance_third_party_vpn_peers = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : {
         org_id = meraki_organization.organization[organization.name].id
@@ -384,13 +384,13 @@ locals {
             ipsec_policies_child_lifetime           = try(peer.ipsec_policies.child_lifetime, null)
           }
         ]
-      } if length(try(organization.appliance.vpn_third_party_vpn_peers, [])) > 0
+      } if length(try(organization.appliance.third_party_vpn_peers, [])) > 0
     ] if try(local.meraki.domains, null) != null
   ])
 }
 
-resource "meraki_appliance_third_party_vpn_peers" "organizations_appliance_vpn_third_party_vpn_peers" {
-  for_each        = { for i, v in local.networks_organizations_appliance_vpn_third_party_vpn_peers : i => v }
+resource "meraki_appliance_third_party_vpn_peers" "organizations_appliance_third_party_vpn_peers" {
+  for_each        = { for i, v in local.networks_organizations_appliance_third_party_vpn_peers : i => v }
   organization_id = each.value.org_id
   peers           = length(each.value.peers) > 0 ? each.value.peers : null
   depends_on      = [meraki_network.network]

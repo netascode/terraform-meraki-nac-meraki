@@ -83,7 +83,7 @@ module "meraki" {
 | [meraki_appliance_settings.appliance_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_settings) | resource |
 | [meraki_appliance_single_lan.appliance_single_lan](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_single_lan) | resource |
 | [meraki_appliance_site_to_site_vpn.appliance_vpn_site_to_site_vpn](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_site_to_site_vpn) | resource |
-| [meraki_appliance_third_party_vpn_peers.organizations_appliance_vpn_third_party_vpn_peers](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_third_party_vpn_peers) | resource |
+| [meraki_appliance_third_party_vpn_peers.organizations_appliance_third_party_vpn_peers](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_third_party_vpn_peers) | resource |
 | [meraki_appliance_uplinks_settings.devices_appliance_uplinks_setting](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_uplinks_settings) | resource |
 | [meraki_appliance_vlan.appliance_vlans](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vlan) | resource |
 | [meraki_appliance_vlan_dhcp.appliance_vlans_dhcp](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vlan_dhcp) | resource |
