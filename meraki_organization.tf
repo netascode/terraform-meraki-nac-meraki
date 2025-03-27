@@ -168,7 +168,7 @@ locals {
           }
         ]
         orders  = try(org.inventory.orders, [])
-        devices = try(org.inventory.devices, [])
+        serials = try(org.inventory.serials, [])
       } if try(org.inventory, null) != null
     ]
   ])
@@ -184,7 +184,7 @@ resource "meraki_organization_inventory_claim" "organization_claim" {
     }
   ]
   orders  = each.value.orders
-  serials = each.value.devices
+  serials = each.value.serials
 }
 # Apply Organization Adaptive Policy Settings
 # Use existing network data in adaptive policy settings
@@ -249,10 +249,11 @@ locals {
           destination_group_name = try(policy.destination_group.name, local.defaults.meraki.organizations.adaptive_policy.policies.destination_group.name, null)
           destination_group_sgt  = try(policy.destination_group.sgt, local.defaults.meraki.organizations.adaptive_policy.policies.destination_group.sgt, null)
           destination_group_id   = meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/adaptive_policy_groups/%s", organization.name, policy.destination_group.name)].id
+          last_entry_rule        = try(policy.last_entry_rule, local.defaults.meraki.organizations.adaptive_policy.policies.last_entry_rule, null)
           acls = [
             for acl in policy.acls : {
-              id   = meraki_organization_adaptive_policy_acl.organizations_adaptive_policy_acl[format("%s/adaptive_policy_acls/%s", organization.name, acl.name)].id
-              name = acl.name
+              id   = meraki_organization_adaptive_policy_acl.organizations_adaptive_policy_acl[format("%s/adaptive_policy_acls/%s", organization.name, acl)].id
+              name = acl
             }
           ]
         } if try(organization.adaptive_policy.policies, null) != null
@@ -296,7 +297,7 @@ resource "meraki_organization_adaptive_policy" "organizations_adaptive_policy_po
   destination_group_name = each.value.destination_group_name
   destination_group_sgt  = each.value.destination_group_sgt
   acls                   = each.value.acls
-  # last_entry_rule = "allow"
+  last_entry_rule        = each.value.last_entry_rule
   depends_on = [
     meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group,
     meraki_organization_adaptive_policy_acl.organizations_adaptive_policy_acl
@@ -359,12 +360,12 @@ resource "meraki_organization_policy_object_group" "policy_object_group" {
   object_ids      = each.value.object_ids
 }
 locals {
-  networks_organizations_appliance_vpn_third_party_vpn_peers = flatten([
+  networks_organizations_appliance_third_party_vpn_peers = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : {
         org_id = meraki_organization.organization[organization.name].id
         peers = [
-          for peer in try(organization.appliance.vpn_third_party_vpn_peers, []) : {
+          for peer in try(organization.appliance.third_party_vpn_peers, []) : {
             name                                    = try(peer.name, null)
             public_ip                               = try(peer.public_ip, null)
             remote_id                               = try(peer.remote_id, null)
@@ -384,13 +385,13 @@ locals {
             ipsec_policies_child_lifetime           = try(peer.ipsec_policies.child_lifetime, null)
           }
         ]
-      } if length(try(organization.appliance.vpn_third_party_vpn_peers, [])) > 0
+      } if length(try(organization.appliance.third_party_vpn_peers, [])) > 0
     ] if try(local.meraki.domains, null) != null
   ])
 }
 
-resource "meraki_appliance_third_party_vpn_peers" "organizations_appliance_vpn_third_party_vpn_peers" {
-  for_each        = { for i, v in local.networks_organizations_appliance_vpn_third_party_vpn_peers : i => v }
+resource "meraki_appliance_third_party_vpn_peers" "organizations_appliance_third_party_vpn_peers" {
+  for_each        = { for i, v in local.networks_organizations_appliance_third_party_vpn_peers : i => v }
   organization_id = each.value.org_id
   peers           = length(each.value.peers) > 0 ? each.value.peers : null
   depends_on      = [meraki_network.network]

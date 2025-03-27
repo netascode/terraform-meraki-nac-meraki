@@ -35,8 +35,8 @@ locals {
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : {
             device_serial = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
-            data          = try(device.appliance_uplinks_settings, null)
-          } if try(device.appliance_uplinks_settings, null) != null
+            data          = try(device.appliance.uplinks_settings, null)
+          } if try(device.appliance.uplinks_settings, null) != null
         ]
       ]
     ]
@@ -46,36 +46,36 @@ locals {
 resource "meraki_appliance_uplinks_settings" "devices_appliance_uplinks_setting" {
   for_each                                        = { for i, v in local.devices_appliance_uplinks_settings : i => v }
   serial                                          = each.value.device_serial
-  interfaces_wan1_enabled                         = try(each.value.data.interfaces.wan1.enabled, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan1.enabled, null)
-  interfaces_wan1_vlan_tagging_enabled            = try(each.value.data.interfaces.wan1.vlan_tagging.enabled, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan1.vlan_tagging.enabled, null)
-  interfaces_wan1_vlan_tagging_vlan_id            = try(each.value.data.interfaces.wan1.vlan_tagging.vlan_id, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan1.vlan_tagging.vlan_id, null)
-  interfaces_wan1_svis_ipv4_assignment_mode       = try(each.value.data.interfaces.wan1.svis.ipv4.assignment_mode, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan1.svis.ipv4.assignment_mode, null)
-  interfaces_wan1_svis_ipv4_address               = try(each.value.data.interfaces.wan1.svis.ipv4.address, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan1.svis.ipv4.address, null)
-  interfaces_wan1_svis_ipv4_gateway               = try(each.value.data.interfaces.wan1.svis.ipv4.gateway, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan1.svis.ipv4.gateway, null)
-  interfaces_wan1_svis_ipv4_nameservers_addresses = try(each.value.data.interfaces.wan1.svis.ipv4.nameservers.addresses, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan1.svis.ipv4.nameservers.addresses, null)
-  interfaces_wan1_svis_ipv6_assignment_mode       = try(each.value.data.interfaces.wan1.svis.ipv6.assignment_mode, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan1.svis.ipv6.assignment_mode, null)
-  interfaces_wan1_svis_ipv6_address               = try(each.value.data.interfaces.wan1.svis.ipv6.address, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan1.svis.ipv6.address, null)
-  interfaces_wan1_svis_ipv6_gateway               = try(each.value.data.interfaces.wan1.svis.ipv6.gateway, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan1.svis.ipv6.gateway, null)
-  interfaces_wan1_svis_ipv6_nameservers_addresses = try(each.value.data.interfaces.wan1.svis.ipv6.nameservers.addresses, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan1.svis.ipv6.nameservers.addresses, null)
-  interfaces_wan1_pppoe_enabled                   = try(each.value.data.interfaces.wan1.pppoe.enabled, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan1.pppoe.enabled, null)
-  interfaces_wan1_pppoe_authentication_enabled    = try(each.value.data.interfaces.wan1.pppoe.authentication.enabled, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan1.pppoe.authentication.enabled, null)
-  interfaces_wan1_pppoe_authentication_username   = try(each.value.data.interfaces.wan1.pppoe.authentication.username, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan1.pppoe.authentication.username, null)
-  interfaces_wan1_pppoe_authentication_password   = try(each.value.data.interfaces.wan1.pppoe.authentication.password, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan1.pppoe.authentication.password, null)
-  interfaces_wan2_enabled                         = try(each.value.data.interfaces.wan2.enabled, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan2.enabled, null)
-  interfaces_wan2_vlan_tagging_enabled            = try(each.value.data.interfaces.wan2.vlan_tagging.enabled, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan2.vlan_tagging.enabled, null)
-  interfaces_wan2_vlan_tagging_vlan_id            = try(each.value.data.interfaces.wan2.vlan_tagging.vlan_id, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan2.vlan_tagging.vlan_id, null)
-  interfaces_wan2_svis_ipv4_assignment_mode       = try(each.value.data.interfaces.wan2.svis.ipv4.assignment_mode, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan2.svis.ipv4.assignment_mode, null)
-  interfaces_wan2_svis_ipv4_address               = try(each.value.data.interfaces.wan2.svis.ipv4.address, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan2.svis.ipv4.address, null)
-  interfaces_wan2_svis_ipv4_gateway               = try(each.value.data.interfaces.wan2.svis.ipv4.gateway, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan2.svis.ipv4.gateway, null)
-  interfaces_wan2_svis_ipv4_nameservers_addresses = try(each.value.data.interfaces.wan2.svis.ipv4.nameservers.addresses, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan2.svis.ipv4.nameservers.addresses, null)
-  interfaces_wan2_svis_ipv6_assignment_mode       = try(each.value.data.interfaces.wan2.svis.ipv6.assignment_mode, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan2.svis.ipv6.assignment_mode, null)
-  interfaces_wan2_svis_ipv6_address               = try(each.value.data.interfaces.wan2.svis.ipv6.address, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan2.svis.ipv6.address, null)
-  interfaces_wan2_svis_ipv6_gateway               = try(each.value.data.interfaces.wan2.svis.ipv6.gateway, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan2.svis.ipv6.gateway, null)
-  interfaces_wan2_svis_ipv6_nameservers_addresses = try(each.value.data.interfaces.wan2.svis.ipv6.nameservers.addresses, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan2.svis.ipv6.nameservers.addresses, null)
-  interfaces_wan2_pppoe_enabled                   = try(each.value.data.interfaces.wan2.pppoe.enabled, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan2.pppoe.enabled, null)
-  interfaces_wan2_pppoe_authentication_enabled    = try(each.value.data.interfaces.wan2.pppoe.authentication.enabled, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan2.pppoe.authentication.enabled, null)
-  interfaces_wan2_pppoe_authentication_username   = try(each.value.data.interfaces.wan2.pppoe.authentication.username, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan2.pppoe.authentication.username, null)
-  interfaces_wan2_pppoe_authentication_password   = try(each.value.data.interfaces.wan2.pppoe.authentication.password, local.defaults.meraki.networks.devices_appliance_uplinks_settings.interfaces.wan2.pppoe.authentication.password, null)
+  interfaces_wan1_enabled                         = try(each.value.data.wan1.enabled, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan1.enabled, null)
+  interfaces_wan1_vlan_tagging_enabled            = try(each.value.data.wan1.vlan_tagging.enabled, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan1.vlan_tagging.enabled, null)
+  interfaces_wan1_vlan_tagging_vlan_id            = try(each.value.data.wan1.vlan_tagging.vlan_id, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan1.vlan_tagging.vlan_id, null)
+  interfaces_wan1_svis_ipv4_assignment_mode       = try(each.value.data.wan1.svis.ipv4.assignment_mode, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan1.svis.ipv4.assignment_mode, null)
+  interfaces_wan1_svis_ipv4_address               = try(each.value.data.wan1.svis.ipv4.address, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan1.svis.ipv4.address, null)
+  interfaces_wan1_svis_ipv4_gateway               = try(each.value.data.wan1.svis.ipv4.gateway, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan1.svis.ipv4.gateway, null)
+  interfaces_wan1_svis_ipv4_nameservers_addresses = try(each.value.data.wan1.svis.ipv4.nameservers, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan1.svis.ipv4.nameservers, null)
+  interfaces_wan1_svis_ipv6_assignment_mode       = try(each.value.data.wan1.svis.ipv6.assignment_mode, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan1.svis.ipv6.assignment_mode, null)
+  interfaces_wan1_svis_ipv6_address               = try(each.value.data.wan1.svis.ipv6.address, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan1.svis.ipv6.address, null)
+  interfaces_wan1_svis_ipv6_gateway               = try(each.value.data.wan1.svis.ipv6.gateway, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan1.svis.ipv6.gateway, null)
+  interfaces_wan1_svis_ipv6_nameservers_addresses = try(each.value.data.wan1.svis.ipv6.nameservers, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan1.svis.ipv6.nameservers, null)
+  interfaces_wan1_pppoe_enabled                   = try(each.value.data.wan1.pppoe.enabled, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan1.pppoe.enabled, null)
+  interfaces_wan1_pppoe_authentication_enabled    = try(each.value.data.wan1.pppoe.authentication.enabled, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan1.pppoe.authentication.enabled, null)
+  interfaces_wan1_pppoe_authentication_username   = try(each.value.data.wan1.pppoe.authentication.username, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan1.pppoe.authentication.username, null)
+  interfaces_wan1_pppoe_authentication_password   = try(each.value.data.wan1.pppoe.authentication.password, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan1.pppoe.authentication.password, null)
+  interfaces_wan2_enabled                         = try(each.value.data.wan2.enabled, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan2.enabled, null)
+  interfaces_wan2_vlan_tagging_enabled            = try(each.value.data.wan2.vlan_tagging.enabled, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan2.vlan_tagging.enabled, null)
+  interfaces_wan2_vlan_tagging_vlan_id            = try(each.value.data.wan2.vlan_tagging.vlan_id, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan2.vlan_tagging.vlan_id, null)
+  interfaces_wan2_svis_ipv4_assignment_mode       = try(each.value.data.wan2.svis.ipv4.assignment_mode, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan2.svis.ipv4.assignment_mode, null)
+  interfaces_wan2_svis_ipv4_address               = try(each.value.data.wan2.svis.ipv4.address, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan2.svis.ipv4.address, null)
+  interfaces_wan2_svis_ipv4_gateway               = try(each.value.data.wan2.svis.ipv4.gateway, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan2.svis.ipv4.gateway, null)
+  interfaces_wan2_svis_ipv4_nameservers_addresses = try(each.value.data.wan2.svis.ipv4.nameservers, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan2.svis.ipv4.nameservers, null)
+  interfaces_wan2_svis_ipv6_assignment_mode       = try(each.value.data.wan2.svis.ipv6.assignment_mode, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan2.svis.ipv6.assignment_mode, null)
+  interfaces_wan2_svis_ipv6_address               = try(each.value.data.wan2.svis.ipv6.address, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan2.svis.ipv6.address, null)
+  interfaces_wan2_svis_ipv6_gateway               = try(each.value.data.wan2.svis.ipv6.gateway, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan2.svis.ipv6.gateway, null)
+  interfaces_wan2_svis_ipv6_nameservers_addresses = try(each.value.data.wan2.svis.ipv6.nameservers, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan2.svis.ipv6.nameservers, null)
+  interfaces_wan2_pppoe_enabled                   = try(each.value.data.wan2.pppoe.enabled, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan2.pppoe.enabled, null)
+  interfaces_wan2_pppoe_authentication_enabled    = try(each.value.data.wan2.pppoe.authentication.enabled, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan2.pppoe.authentication.enabled, null)
+  interfaces_wan2_pppoe_authentication_username   = try(each.value.data.wan2.pppoe.authentication.username, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan2.pppoe.authentication.username, null)
+  interfaces_wan2_pppoe_authentication_password   = try(each.value.data.wan2.pppoe.authentication.password, local.defaults.meraki.networks.devices_appliance_uplinks_settings.wan2.pppoe.authentication.password, null)
 }
 
 locals {
@@ -118,7 +118,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : [
-            for switch_port in try(device.switch_ports, []) : [
+            for switch_port in try(device.switch.ports, []) : [
               for port_id in split(",", switch_port.port_ids) : {
                 device_serial            = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
                 data                     = merge(switch_port, { port_id = port_id })
@@ -136,7 +136,7 @@ locals {
         for organization in try(domain.organizations, []) : [
           for network in try(organization.networks, []) : [
             for device in try(network.devices, []) : [
-              for switch_port in try(device.switch_ports, []) : [
+              for switch_port in try(device.switch.ports, []) : [
                 for port_range in split(",", switch_port.port_ids) : [
                   for p in range(split("-", port_range)[0], split("-", port_range)[1]) : {
                     device_serial            = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
@@ -185,7 +185,7 @@ resource "meraki_switch_port" "devices_switch_port" {
   profile_enabled             = try(each.value.data.profile.enabled, local.defaults.meraki.networks.devices_switch_ports.profile.enabled, null)
   # profile_id                  = try(each.value.data.profile.id, local.defaults.meraki.networks.devices_switch_ports.profile.id, null)
   profile_iname  = try(each.value.data.profile.iname, local.defaults.meraki.networks.devices_switch_ports.profile.iname, null)
-  dot3az_enabled = try(each.value.data.dot3az.enabled, local.defaults.meraki.networks.devices_switch_ports.dot3az.enabled, null)
+  dot3az_enabled = try(each.value.data.dot3az, local.defaults.meraki.networks.devices_switch_ports.dot3az, null)
 
 }
 
@@ -267,11 +267,11 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : [
-            for switch_routing_static_route in try(device.switch_routing_static_routes, []) : {
+            for switch_routing_static_route in try(device.switch.routing_static_routes, []) : {
               device_serial = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
               data          = switch_routing_static_route
             }
-          ] if try(device.switch_routing_static_routes, null) != null
+          ] if try(device.switch.routing_static_routes, null) != null
         ]
       ]
     ]
@@ -296,8 +296,8 @@ locals {
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : {
             device_serial = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
-            data          = device.wireless_bluetooth_settings
-          } if try(device.wireless_bluetooth_settings, null) != null
+            data          = device.wireless.bluetooth_settings
+          } if try(device.wireless.bluetooth_settings, null) != null
         ]
       ]
     ]

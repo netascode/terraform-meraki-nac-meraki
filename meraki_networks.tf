@@ -88,10 +88,11 @@ resource "meraki_network_settings" "net_settings" {
   network_id                                = each.value.network_id
   local_status_page_enabled                 = try(each.value.data.local_status_page_enabled, local.defaults.meraki.networks.settings.local_status_page_enabled, null)
   remote_status_page_enabled                = try(each.value.data.remote_status_page, local.defaults.meraki.networks.settings.remote_status_page, null)
-  local_status_page_authentication_enabled  = try(each.value.data.local_status_page.authentication.enabled, local.defaults.meraki.networks.settings.local_status_page.authentication.enabled, null)
-  local_status_page_authentication_password = try(each.value.data.local_status_page.authentication.password, local.defaults.meraki.networks.settings.local_status_page.authentication.password, null)
-  secure_port_enabled                       = try(each.value.data.secure_port.enabled, local.defaults.meraki.networks.settings.secure_port.enabled, null)
-  named_vlans_enabled                       = try(each.value.data.named_vlans.enabled, local.defaults.meraki.networks.settings.named_vlans.enabled, null)
+  local_status_page_authentication_enabled  = try(each.value.data.local_status_page_authentication.enabled, local.defaults.meraki.networks.settings.local_status_page_authentication.enabled, null)
+  local_status_page_authentication_username = try(each.value.data.local_status_page_authentication.username, local.defaults.meraki.networks.settings.local_status_page_authentication.username, null)
+  local_status_page_authentication_password = try(each.value.data.local_status_page_authentication.password, local.defaults.meraki.networks.settings.local_status_page_authentication.password, null)
+  secure_port_enabled                       = try(each.value.data.secure_port, local.defaults.meraki.networks.settings.secure_port, null)
+  named_vlans_enabled                       = try(each.value.data.named_vlans, local.defaults.meraki.networks.settings.named_vlans, null)
 }
 
 locals {
@@ -131,7 +132,7 @@ locals {
 resource "meraki_network_syslog_servers" "net_syslog_servers" {
   for_each   = { for i, v in local.networks_syslog_servers : i => v }
   network_id = each.value.network_id
-  servers    = try(each.value.data.servers, local.defaults.meraki.networks.syslog_servers.servers, [])
+  servers    = try(each.value.data, local.defaults.meraki.networks.syslog_servers, [])
 }
 
 locals {

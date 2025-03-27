@@ -6,7 +6,7 @@ locals {
         for network in try(org.networks, []) : {
           network_id = meraki_network.network["${org.name}/${network.name}"].id
           rules = [
-            for rule in try(network.switch.access_control_lists.rules, []) : {
+            for rule in try(network.switch.access_control_lists_rules, []) : {
               comment    = try(rule.comment, null)
               dst_cidr   = try(rule.destination_cidr, null)
               dst_port   = try(rule.destination_port, null)
@@ -18,7 +18,7 @@ locals {
               vlan       = try(rule.vlan, null)
             }
           ]
-        } if try(network.switch.access_control_lists.rules, null) != null
+        } if try(network.switch.access_control_lists_rules, null) != null
       ]
     ]
   ])
@@ -113,11 +113,11 @@ locals {
 resource "meraki_switch_dhcp_server_policy" "net_switch_dhcp_server_policy" {
   for_each               = { for i, v in local.networks_switch_dhcp_server_policy : i => v }
   network_id             = each.value.network_id
-  alerts_email_enabled   = try(each.value.data.alerts.email.enabled, local.defaults.meraki.networks.switch_dhcp_server_policy.alerts.email.enabled, null)
+  alerts_email_enabled   = try(each.value.data.alerts_email, local.defaults.meraki.networks.switch_dhcp_server_policy.alerts_email, null)
   default_policy         = try(each.value.data.default_policy, local.defaults.meraki.networks.switch_dhcp_server_policy.default_policy, null)
   allowed_servers        = try(each.value.data.allowed_servers, local.defaults.meraki.networks.switch_dhcp_server_policy.allowed_servers, null)
   blocked_servers        = try(each.value.data.blocked_servers, local.defaults.meraki.networks.switch_dhcp_server_policy.blocked_servers, null)
-  arp_inspection_enabled = try(each.value.data.arp_inspection.enabled, local.defaults.meraki.networks.switch_dhcp_server_policy.arp_inspection.enabled, null)
+  arp_inspection_enabled = try(each.value.data.arp_inspection, local.defaults.meraki.networks.switch_dhcp_server_policy.arp_inspection, null)
 
 }
 
@@ -127,11 +127,11 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : [
         for network in try(org.networks, []) : [
-          for trusted_server in try(network.switch.dhcp_server_policy_arp_inspection_trusted_servers, []) : {
+          for trusted_server in try(network.switch.dhcp_server_policy.arp_inspection_trusted_servers, []) : {
             data       = trusted_server
             network_id = meraki_network.network["${org.name}/${network.name}"].id
           }
-        ] if try(network.switch.dhcp_server_policy_arp_inspection_trusted_servers, null) != null
+        ] if try(network.switch.dhcp_server_policy.arp_inspection_trusted_servers, null) != null
       ]
     ]
   ])
@@ -142,7 +142,7 @@ resource "meraki_switch_dhcp_server_policy_arp_inspection_trusted_server" "net_s
   network_id   = each.value.network_id
   mac          = try(each.value.data.mac, local.defaults.meraki.networks.switch_dhcp_server_policy_arp_inspection_trusted_servers.mac, null)
   vlan         = try(each.value.data.vlan, local.defaults.meraki.networks.switch_dhcp_server_policy_arp_inspection_trusted_servers.vlan, null)
-  ipv4_address = try(each.value.data.ipv4.address, local.defaults.meraki.networks.switch_dhcp_server_policy_arp_inspection_trusted_servers.ipv4.address, null)
+  ipv4_address = try(each.value.data.ipv4_address, local.defaults.meraki.networks.switch_dhcp_server_policy_arp_inspection_trusted_servers.ipv4_address, null)
 }
 locals {
   networks_switch_dscp_to_cos_mappings = flatten([
@@ -160,7 +160,7 @@ locals {
 resource "meraki_switch_dscp_to_cos_mappings" "net_switch_dscp_to_cos_mappings" {
   for_each   = { for i, v in local.networks_switch_dscp_to_cos_mappings : i => v }
   network_id = each.value.network_id
-  mappings   = try(each.value.data.mappings, local.defaults.meraki.networks.switch_dscp_to_cos_mappings.mappings, null)
+  mappings   = try(each.value.data, local.defaults.meraki.networks.switch_dscp_to_cos_mappings, null)
   depends_on = [meraki_network_device_claim.net_device_claim]
 }
 
@@ -334,10 +334,10 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
-          for switch_routing_multicast_rendezvous_point in try(network.switch.routing_multicast.rendezvous_points, []) : {
+          for switch_routing_multicast_rendezvous_point in try(network.switch.routing_multicast_rendezvous_points, []) : {
             network_id = meraki_network.network["${organization.name}/${network.name}"].id
             data       = try(switch_routing_multicast_rendezvous_point, null)
-          } if try(network.switch.routing_multicast.rendezvous_points, null) != null
+          } if try(network.switch.routing_multicast_rendezvous_points, null) != null
         ] if try(organization.networks, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
@@ -401,8 +401,8 @@ resource "meraki_switch_settings" "net_switch_settings" {
   vlan                           = try(each.value.data.vlan, local.defaults.meraki.networks.switch_settings.vlan, null)
   use_combined_power             = try(each.value.data.use_combined_power, local.defaults.meraki.networks.switch_settings.use_combined_power, null)
   power_exceptions               = try(each.value.data.power_exceptions, local.defaults.meraki.networks.switch_settings.power_exceptions, null)
-  uplink_client_sampling_enabled = try(each.value.data.uplink_client_sampling.enabled, local.defaults.meraki.networks.switch_settings.uplink_client_sampling.enabled, null)
-  mac_blocklist_enabled          = try(each.value.data.mac_blocklist.enabled, local.defaults.meraki.networks.switch_settings.mac_blocklist.enabled, null)
+  uplink_client_sampling_enabled = try(each.value.data.uplink_client_sampling, local.defaults.meraki.networks.switch_settings.uplink_client_sampling, null)
+  mac_blocklist_enabled          = try(each.value.data.mac_blocklist, local.defaults.meraki.networks.switch_settings.mac_blocklist, null)
   depends_on                     = [meraki_network_device_claim.net_device_claim]
 }
 locals {
