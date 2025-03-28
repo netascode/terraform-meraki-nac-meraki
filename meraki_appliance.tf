@@ -776,7 +776,6 @@ locals {
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
-  # marcin_debug = local.networks_devices_appliance_radio_settings
 }
 
 resource "meraki_appliance_radio_settings" "net_devices_appliance_radio_settings" {
