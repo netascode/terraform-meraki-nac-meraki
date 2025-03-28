@@ -44,9 +44,9 @@ module "meraki" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
-| <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.5.1 |
-| <a name="requirement_meraki"></a> [meraki](#requirement\_meraki) | >= 0.1.7 |
-| <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 0.2.5 |
+| <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.5.2 |
+| <a name="requirement_meraki"></a> [meraki](#requirement\_meraki) | >= 0.1.9 |
+| <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 0.2.6 |
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -88,7 +88,7 @@ module "meraki" {
 | [meraki_appliance_site_to_site_vpn.appliance_vpn_site_to_site_vpn](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_site_to_site_vpn) | resource |
 | [meraki_appliance_ssid.net_networks_appliance_ssids](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_ssid) | resource |
 | [meraki_appliance_static_route.net_networks_appliance_static_routes](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_static_route) | resource |
-| [meraki_appliance_third_party_vpn_peers.organizations_appliance_vpn_third_party_vpn_peers](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_third_party_vpn_peers) | resource |
+| [meraki_appliance_third_party_vpn_peers.organizations_appliance_third_party_vpn_peers](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_third_party_vpn_peers) | resource |
 | [meraki_appliance_traffic_shaping.net_networks_appliance_traffic_shaping](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_traffic_shaping) | resource |
 | [meraki_appliance_traffic_shaping_custom_performance_class.net_networks_appliance_traffic_shaping_custom_performance_classes](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_traffic_shaping_custom_performance_class) | resource |
 | [meraki_appliance_traffic_shaping_rules.net_networks_appliance_traffic_shaping_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_traffic_shaping_rules) | resource |
