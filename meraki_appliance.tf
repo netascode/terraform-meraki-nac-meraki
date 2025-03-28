@@ -713,7 +713,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for appliance_rf_profile in try(network.appliance.rf_profiles, []) : [
-            for settings in appliance_rf_profile.per_ssid_settings : {
+            for settings in try(appliance_rf_profile.per_ssid_settings, []) : {
               key  = format("${organization.name}/${network.name}/${appliance_rf_profile.name}/%s", meraki_appliance_ssid.net_networks_appliance_ssids["${organization.name}/${network.name}/ssids/${settings.ssid_name}"].number)
               data = settings
             }
