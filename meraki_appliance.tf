@@ -497,7 +497,29 @@ locals {
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
 
-          data = try(network.appliance.sdwan_internet_policies, null)
+          wan_traffic_uplink_preferences = [for sdwan_internet_policy in try(network.appliance.sdwan_internet_policies, []) : {
+            fail_over_criterion = try(sdwan_internet_policy.fail_over_criterion, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.fail_over_criterion, null)
+            preferred_uplink    = try(sdwan_internet_policy.preferred_uplink, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.preferred_uplink, null)
+
+            builtin_performance_class_name = try(sdwan_internet_policy.performance_class.builtin_performance_class_name, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.performance_class.builtin_performance_class_name, null)
+            custom_performance_class_id    = try(sdwan_internet_policy.performance_class.custom_performance_class_id, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.performance_class.custom_performance_class_id, null)
+            performance_class_type         = try(sdwan_internet_policy.performance_class.type, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.performance_class.type, null)
+
+            traffic_filters = [for traffic_filter in try(sdwan_internet_policy.traffic_filters, []) : {
+              type = try(traffic_filter.type, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.traffic_filters.type, null)
+
+              protocol = try(traffic_filter.value.protocol, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.traffic_filters.value.protocol, null)
+
+              destination_cidr         = try(traffic_filter.value.destination.cidr, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.traffic_filters.value.destination.cidr, null)
+              destination_port         = try(traffic_filter.value.destination.port, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.traffic_filters.value.destination.port, null)
+              destination_applications = try(traffic_filter.value.destination.applications, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.traffic_filters.value.destination.applications, null)
+
+              source_cidr = try(traffic_filter.value.source.cidr, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.traffic_filters.value.source.cidr, null)
+              source_host = try(traffic_filter.value.source.host, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.traffic_filters.value.source.host, null)
+              source_port = try(traffic_filter.value.source.port, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.traffic_filters.value.source.port, null)
+              source_vlan = try(traffic_filter.value.source.vlan, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.traffic_filters.value.source.vlan, null)
+            }]
+          }]
         } if try(network.appliance.sdwan_internet_policies, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
@@ -508,7 +530,7 @@ resource "meraki_appliance_sdwan_internet_policies" "net_networks_appliance_sdwa
   for_each   = { for i, v in local.networks_networks_appliance_sdwan_internet_policies : i => v }
   network_id = each.value.network_id
 
-  wan_traffic_uplink_preferences = try(each.value.data.wan_traffic_uplink_preferences, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.wan_traffic_uplink_preferences, null)
+  wan_traffic_uplink_preferences = try(each.value.wan_traffic_uplink_preferences, null)
 
 }
 
