@@ -726,6 +726,7 @@ resource "meraki_appliance_ssid" "net_networks_appliance_ssids" {
   dot11w_enabled                         = try(each.value.data.dot11w_enabled, local.defaults.meraki.networks.networks_appliance_ssids.dot11w.enabled, null)
   dot11w_required                        = try(each.value.data.dot11w_required, local.defaults.meraki.networks.networks_appliance_ssids.dot11w.required, null)
 
+  depends_on = [meraki_network_device_claim.net_device_claim]
 }
 
 locals {
@@ -780,6 +781,7 @@ resource "meraki_appliance_rf_profile" "net_networks_appliance_rf_profiles" {
   per_ssid_settings_4_band_operation_mode   = try(each.value.data.per_ssid_settings[3].band_operation_mode, local.defaults.meraki.networks.networks_appliance_rf_profiles.per_ssid_settings[3].band_operation_mode, null)
   per_ssid_settings_4_band_steering_enabled = try(each.value.data.per_ssid_settings[3].band_steering_enabled, local.defaults.meraki.networks.networks_appliance_rf_profiles.per_ssid_settings[3].band_steering_enabled, null)
 
+  depends_on = [meraki_network_device_claim.net_device_claim]
 }
 
 locals {
