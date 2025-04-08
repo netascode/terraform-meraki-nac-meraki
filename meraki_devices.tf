@@ -359,7 +359,7 @@ resource "meraki_cellular_gateway_port_forwarding_rules" "net_devices_cellular_g
   for_each = { for i, v in local.networks_devices_cellular_gateway_port_forwarding_rules : i => v }
   serial   = each.value.serial
 
-  rules = try(each.value.data.rules, local.defaults.meraki.networks.devices_cellular_gateway_port_forwarding_rules.rules, null)
+  rules = try(each.value.data, local.defaults.meraki.networks.devices_cellular_gateway_port_forwarding_rules, null)
 
 }
 

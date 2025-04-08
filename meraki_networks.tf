@@ -268,26 +268,26 @@ resource "meraki_cellular_gateway_subnet_pool" "net_networks_cellular_gateway_su
 }
 
 locals {
-  networks_networks_cellular_gateway_uplink = flatten([
+  networks_networks_cellular_gateway_uplink_bandwidth_limits = flatten([
 
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           network_id = meraki_network.network["${organization.name}/${network.name}"].id
 
-          data = try(network.cellular_gateway.uplink, null)
-        } if try(network.cellular_gateway.uplink, null) != null
+          data = try(network.cellular_gateway.uplink_bandwidth_limits, null)
+        } if try(network.cellular_gateway.uplink_bandwidth_limits, null) != null
       ] if try(domain.organizations, null) != null
     ] if try(local.meraki.domains, null) != null
   ])
 }
 
 resource "meraki_cellular_gateway_uplink" "net_networks_cellular_gateway_uplink" {
-  for_each   = { for i, v in local.networks_networks_cellular_gateway_uplink : i => v }
+  for_each   = { for i, v in local.networks_networks_cellular_gateway_uplink_bandwidth_limits : i => v }
   network_id = each.value.network_id
 
-  bandwidth_limits_limit_up   = try(each.value.data.bandwidth_limits.limit_up, local.defaults.meraki.networks.networks_cellular_gateway_uplink.bandwidth_limits.limit_up, null)
-  bandwidth_limits_limit_down = try(each.value.data.bandwidth_limits.limit_down, local.defaults.meraki.networks.networks_cellular_gateway_uplink.bandwidth_limits.limit_down, null)
+  bandwidth_limits_limit_up   = try(each.value.data.limit_up, local.defaults.meraki.networks.networks_cellular_gateway_uplink_bandwidth_limits.limit_up, null)
+  bandwidth_limits_limit_down = try(each.value.data.limit_down, local.defaults.meraki.networks.networks_cellular_gateway_uplink_bandwidth_limits.limit_down, null)
 
 }
 
@@ -310,6 +310,6 @@ resource "meraki_cellular_gateway_connectivity_monitoring_destinations" "net_net
   for_each   = { for i, v in local.networks_networks_cellular_gateway_connectivity_monitoring_destinations : i => v }
   network_id = each.value.network_id
 
-  destinations = try(each.value.data.destinations, local.defaults.meraki.networks.networks_cellular_gateway_connectivity_monitoring_destinations.destinations, null)
+  destinations = try(each.value.data, local.defaults.meraki.networks.networks_cellular_gateway_connectivity_monitoring_destinations, null)
 
 }

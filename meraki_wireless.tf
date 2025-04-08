@@ -5,7 +5,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for wireless_rf_profile in try(network.wireless.rf_profiles, []) : [
-            for settings in wireless_rf_profile.per_ssid_settings : {
+            for settings in try(wireless_rf_profile.per_ssid_settings, []) : {
               key  = format("${organization.name}/${network.name}/${wireless_rf_profile.name}/%s", meraki_wireless_ssid.net_wireless_ssids["${organization.name}/${network.name}/ssids/${settings.ssid_name}"].number)
               data = settings
             }
