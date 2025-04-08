@@ -311,3 +311,82 @@ resource "meraki_wireless_device_bluetooth_settings" "devices_wireless_bluetooth
   major    = try(each.value.data.major, local.defaults.meraki.networks.devices_wireless_bluetooth_settings.major, null)
   minor    = try(each.value.data.minor, local.defaults.meraki.networks.devices_wireless_bluetooth_settings.minor, null)
 }
+
+locals {
+  networks_devices_cellular_gateway_lan = flatten([
+
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for device in try(network.devices, []) : {
+            serial = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
+
+            data = try(device.cellular_gateway.lan, null)
+          } if try(device.cellular_gateway.lan, null) != null
+        ] if try(organization.networks, null) != null
+      ] if try(domain.organizations, null) != null
+    ] if try(local.meraki.domains, null) != null
+  ])
+}
+
+resource "meraki_cellular_gateway_lan" "net_devices_cellular_gateway_lan" {
+  for_each = { for i, v in local.networks_devices_cellular_gateway_lan : i => v }
+  serial   = each.value.serial
+
+  reserved_ip_ranges   = try(each.value.data.reserved_ip_ranges, local.defaults.meraki.networks.devices_cellular_gateway_lan.reserved_ip_ranges, null)
+  fixed_ip_assignments = try(each.value.data.fixed_ip_assignments, local.defaults.meraki.networks.devices_cellular_gateway_lan.fixed_ip_assignments, null)
+
+}
+
+locals {
+  networks_devices_cellular_gateway_port_forwarding_rules = flatten([
+
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for device in try(network.devices, []) : {
+            serial = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
+
+            data = try(device.cellular_gateway.port_forwarding_rules, null)
+          } if try(device.cellular_gateway.port_forwarding_rules, null) != null
+        ] if try(organization.networks, null) != null
+      ] if try(domain.organizations, null) != null
+    ] if try(local.meraki.domains, null) != null
+  ])
+}
+
+resource "meraki_cellular_gateway_port_forwarding_rules" "net_devices_cellular_gateway_port_forwarding_rules" {
+  for_each = { for i, v in local.networks_devices_cellular_gateway_port_forwarding_rules : i => v }
+  serial   = each.value.serial
+
+  rules = try(each.value.data.rules, local.defaults.meraki.networks.devices_cellular_gateway_port_forwarding_rules.rules, null)
+
+}
+
+locals {
+  networks_devices_cellular_sims = flatten([
+
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for device in try(network.devices, []) : {
+            serial = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
+
+            data = try(device.cellular_sims, null)
+          } if try(device.cellular_sims, null) != null
+        ] if try(organization.networks, null) != null
+      ] if try(domain.organizations, null) != null
+    ] if try(local.meraki.domains, null) != null
+  ])
+}
+
+resource "meraki_device_cellular_sims" "net_devices_cellular_sims" {
+  for_each = { for i, v in local.networks_devices_cellular_sims : i => v }
+  serial   = each.value.serial
+
+  sims                 = try(each.value.data.sims, local.defaults.meraki.networks.devices_cellular_sims.sims, null)
+  sim_ordering         = try(each.value.data.sim_ordering, local.defaults.meraki.networks.devices_cellular_sims.sim_ordering, null)
+  sim_failover_enabled = try(each.value.data.sim_failover.enabled, local.defaults.meraki.networks.devices_cellular_sims.sim_failover.enabled, null)
+  sim_failover_timeout = try(each.value.data.sim_failover.timeout, local.defaults.meraki.networks.devices_cellular_sims.sim_failover.timeout, null)
+
+}
