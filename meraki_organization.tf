@@ -450,3 +450,29 @@ resource "meraki_appliance_vpn_firewall_rules" "organizations_vpn_firewall_rules
   rules           = length(each.value.rules) > 0 ? each.value.rules : null
   depends_on      = [meraki_network.network]
 }
+
+locals {
+  organizations_early_access_features_opt_ins = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for early_access_features_opt_in in try(organization.early_access_features_opt_ins, []) : {
+          key    = "${organization.name}/${early_access_features_opt_in.short_name}"
+          org_id = meraki_organization.organization[organization.name].id
+
+          data = try(early_access_features_opt_in, null)
+          limit_scope_to_networks = [
+            for network_name in try(early_access_features_opt_in.limit_scope_to_networks, []) :
+            meraki_network.network["${organization.name}/${network_name}"].id
+          ]
+        } if try(organization.early_access_features_opt_ins, null) != null
+      ] if try(domain.organizations, null) != null
+    ] if try(local.meraki.domains, null) != null
+  ])
+}
+
+resource "meraki_organization_early_access_features_opt_in" "organizations_early_access_features_opt_in" {
+  for_each                = { for opt_in in local.organizations_early_access_features_opt_ins : opt_in.key => opt_in }
+  organization_id         = each.value.org_id
+  short_name              = each.value.data.short_name
+  limit_scope_to_networks = length(each.value.limit_scope_to_networks) > 0 ? each.value.limit_scope_to_networks : null
+}
