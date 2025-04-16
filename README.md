@@ -43,7 +43,7 @@ module "meraki" {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.8.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.5.2 |
 | <a name="requirement_meraki"></a> [meraki](#requirement\_meraki) | >= 0.1.9 |
 | <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 0.2.6 |
@@ -154,8 +154,7 @@ module "meraki" {
 | [meraki_wireless_ssid_schedules.net_wireless_ssids_schedules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_ssid_schedules) | resource |
 | [meraki_wireless_ssid_splash_settings.net_wireless_ssids_splash_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_ssid_splash_settings) | resource |
 | [meraki_wireless_ssid_traffic_shaping_rules.net_wireless_ssids_traffic_shaping_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_ssid_traffic_shaping_rules) | resource |
-| [utils_yaml_merge.defaults](https://registry.terraform.io/providers/netascode/utils/latest/docs/data-sources/yaml_merge) | data source |
-| [utils_yaml_merge.model](https://registry.terraform.io/providers/netascode/utils/latest/docs/data-sources/yaml_merge) | data source |
+| [terraform_data.validation](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 ## Modules
 
 No modules.
