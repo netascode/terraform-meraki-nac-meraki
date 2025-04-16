@@ -2,16 +2,42 @@ locals {
   organizations = flatten([
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : {
-        organization_name = org.name,
+        organization_name = org.name
+        managed           = try(org.managed, true)
       }
     ]
   ])
+
+  managed_organizations = [
+    for organization in local.organizations :
+    organization if organization.managed
+  ]
+
+  unmanaged_organizations = [
+    for organization in local.organizations :
+    organization if !organization.managed
+  ]
 }
 
 # Create Organizations
 resource "meraki_organization" "organization" {
-  for_each = { for org in local.organizations : org.organization_name => org }
+  for_each = { for org in local.managed_organizations : org.organization_name => org }
   name     = each.value.organization_name
+}
+
+data "meraki_organization" "organization" {
+  for_each = { for org in local.unmanaged_organizations : org.organization_name => org }
+  name     = each.value.organization_name
+}
+
+locals {
+  organization_ids = {
+    for organization in local.organizations :
+    organization.organization_name =>
+    organization.managed ?
+    meraki_organization.organization[organization.organization_name].id :
+    data.meraki_organization.organization[organization.organization_name].id
+  }
 }
 
 #  Create a Network
@@ -21,7 +47,7 @@ locals {
       for org in try(domain.organizations, []) : [
         for network in try(org.networks, []) : {
           key             = format("%s/%s", org.name, network.name)
-          organization_id = meraki_organization.organization[org.name].id
+          organization_id = local.organization_ids[org.name]
           name            = try(network.name, local.defaults.meraki.organizations.networks.name)
           notes           = try(network.notes, local.defaults.meraki.organizations.networks.notes, "")
           product_types   = try(network.product_types, local.defaults.meraki.organizations.networks.product_types, ["appliance", "switch", "wireless"])
@@ -50,7 +76,7 @@ locals {
   login_security = flatten([
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : {
-        organization_id                                     = meraki_organization.organization[org.name].id
+        organization_id                                     = local.organization_ids[org.name]
         enforce_password_expiration                         = try(org.login_security.enforce_password_expiration, local.defaults.meraki.organizations.login_security.enforce_password_expiration, null)
         password_expiration_days                            = try(org.login_security.password_expiration_days, local.defaults.meraki.organizations.login_security.password_expiration_days, null)
         enforce_different_passwords                         = try(org.login_security.enforce_different_passwords, local.defaults.meraki.organizations.login_security.enforce_different_passwords, null)
@@ -96,7 +122,7 @@ locals {
   snmp = flatten([
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : {
-        organization_id = meraki_organization.organization[org.name].id
+        organization_id = local.organization_ids[org.name]
         v2c             = try(org.snmp.v2c, local.defaults.meraki.organizations.snmp.v2c, null)
         v3              = try(org.snmp.v3, local.defaults.meraki.organizations.snmp.v3, null)
         v3_auth_mode    = try(org.snmp.v3_auth_mode, local.defaults.meraki.organizations.snmp.v3_auth_mode, null)
@@ -127,7 +153,7 @@ locals {
       for org in try(domain.organizations, []) : [
         for admin in try(org.admins, []) : {
           key             = format("%s/%s", org.name, try(admin.name, local.defaults.meraki.organizations.admins.name, null))
-          organization_id = meraki_organization.organization[org.name].id
+          organization_id = local.organization_ids[org.name]
           name            = try(admin.name, local.defaults.meraki.organizations.admins.name, null)
           email           = try(admin.email, local.defaults.meraki.organizations.admins.email, null)
           # authentication_method = try(admin.authentication_method, local.defaults.meraki.organizations.admins.authentication_method, null)
@@ -160,7 +186,7 @@ locals {
   inventory = flatten([
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : {
-        organization_id = meraki_organization.organization[org.name].id
+        organization_id = local.organization_ids[org.name]
         licenses = [
           for license in try(org.inventory.licenses, []) : {
             key  = license.key
@@ -192,7 +218,7 @@ locals {
   adaptive_policy_settings = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : {
-        org_id = meraki_organization.organization[organization.name].id
+        org_id = local.organization_ids[organization.name]
         enabled_networks = [
           for network in try(organization.adaptive_policy.settings.enabled_networks, []) :
           meraki_network.network[format("%s/%s", organization.name, network)].id
@@ -214,7 +240,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for group in try(organization.adaptive_policy.groups, []) : {
-          org_id      = meraki_organization.organization[organization.name].id
+          org_id      = local.organization_ids[organization.name]
           key         = format("%s/adaptive_policy_groups/%s", organization.name, group.name)
           group_name  = try(group.name, local.defaults.meraki.organizations.adaptive_policy.groups.name, null)
           sgt         = try(group.sgt, local.defaults.meraki.organizations.adaptive_policy.groups.sgt, null)
@@ -227,7 +253,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for acl in try(organization.adaptive_policy.acls, []) : {
-          org_id      = meraki_organization.organization[organization.name].id
+          org_id      = local.organization_ids[organization.name]
           acl_name    = try(acl.name, local.defaults.meraki.organizations.adaptive_policy.acls.name, null)
           description = try(acl.description, local.defaults.meraki.organizations.adaptive_policy.acls.description, null)
           rules       = try(acl.rules, local.defaults.meraki.organizations.adaptive_policy.acls.rules, [])
@@ -241,7 +267,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for policy in try(organization.adaptive_policy.policies, []) : {
-          org_id                 = meraki_organization.organization[organization.name].id
+          org_id                 = local.organization_ids[organization.name]
           policy_name            = try(policy.name, local.defaults.meraki.organizations.adaptive_policy.policies.name, null)
           source_group_name      = try(policy.source_group.name, local.defaults.meraki.organizations.adaptive_policy.policies.source_group.name, null)
           source_group_sgt       = try(policy.source_group.sgt, local.defaults.meraki.organizations.adaptive_policy.policies.source_group.sgt, null)
@@ -308,7 +334,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for obj in try(organization.policy_objects, []) : {
-          org_id   = meraki_organization.organization[organization.name].id
+          org_id   = local.organization_ids[organization.name]
           key      = "${organization.name}/${obj.name}"
           name     = try(obj.name, local.defaults.meraki.organizations.adaptive_policy_object.name, null)
           category = try(obj.category, local.defaults.meraki.organizations.adaptive_policy_object.category, null)
@@ -340,7 +366,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for group in try(organization.policy_objects_groups, []) : {
-          org_id     = meraki_organization.organization[organization.name].id
+          org_id     = local.organization_ids[organization.name]
           name       = group.name
           key        = "${organization.name}/${group.name}"
           category   = group.category
@@ -363,7 +389,7 @@ locals {
   networks_organizations_appliance_third_party_vpn_peers = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : {
-        org_id = meraki_organization.organization[organization.name].id
+        org_id = local.organization_ids[organization.name]
         peers = [
           for peer in try(organization.appliance.third_party_vpn_peers, []) : {
             name                                    = try(peer.name, null)
@@ -401,7 +427,7 @@ locals {
   networks_organizations_appliance_vpn_firewall_rules = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : {
-        org_id = meraki_organization.organization[organization.name].id
+        org_id = local.organization_ids[organization.name]
         rules = [
           for rule in try(organization.appliance.vpn_firewall_rules.rules, []) : {
             comment        = try(rule.comment, null)
