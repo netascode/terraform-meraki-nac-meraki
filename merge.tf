@@ -31,6 +31,6 @@ resource "local_file" "merged_yaml_output" {
 
 resource "local_sensitive_file" "defaults" {
   count    = var.write_default_values_file != "" ? 1 : 0
-  content  = data.defaults_string
+  content  = local.defaults_string
   filename = var.write_default_values_file
 }
