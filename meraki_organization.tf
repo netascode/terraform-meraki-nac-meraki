@@ -11,7 +11,7 @@ locals {
 
 # Create Organizations
 resource "meraki_organization" "organization" {
-  for_each = { for org in local.organizations : org.key => org }
+  for_each = { for organization in local.organizations : organization.key => organization }
   name     = each.value.organization_name
 }
 
