@@ -163,7 +163,7 @@ locals {
           # authentication_method = try(admin.authentication_method, local.defaults.meraki.organizations.admins.authentication_method, null)
           org_access = try(admin.organization_access, local.defaults.meraki.organizations.admins.organization_access, null)
           networks = try(length(admin.networks) == 0, true) ? null : [for network in try(admin.networks, []) : {
-            id     = meraki_network.network["${organization.name}/${network.id}"].id
+            id     = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.id)].id
             access = try(network.access, local.defaults.meraki.organizations.admins.networks.access, null)
           }]
           tags = try(length(admin.tags) == 0, true) ? null : [for tag in try(admin.tags, []) : {
@@ -225,7 +225,7 @@ locals {
         organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
         enabled_networks = try(length(organization.adaptive_policy.settings.enabled_networks) == 0, true) ? null : [
           for network in try(organization.adaptive_policy.settings.enabled_networks, []) :
-          meraki_network.network[format("%s/%s", organization.name, network)].id
+          meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network)].id
         ]
       } if try(organization.adaptive_policy.settings, null) != null
     ]
