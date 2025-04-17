@@ -2,9 +2,9 @@
 locals {
   networks_switch_access_control_lists = flatten([
     for domain in try(local.meraki.domains, []) : [
-      for org in try(domain.organizations, []) : [
-        for network in try(org.networks, []) : {
-          network_id = meraki_network.network[format("%s/%s/%s", domain.name, org.name, network.name)].id
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : {
+          network_id = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
           rules = [
             for rule in try(network.switch.access_control_lists_rules, []) : {
               comment    = try(rule.comment, null)
@@ -33,12 +33,12 @@ resource "meraki_switch_access_control_lists" "net_switch_access_control_lists" 
 locals {
   networks_switch_access_policies = flatten([
     for domain in try(local.meraki.domains, []) : [
-      for org in try(domain.organizations, []) : [
-        for network in try(org.networks, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
           for switch_access_policy in try(network.switch.access_policies, []) : {
-            policy_key = format("%s/%s/switch_access_policies/%s", org.name, network.name, switch_access_policy.name)
+            policy_key = format("%s/%s/switch_access_policies/%s", organization.name, network.name, switch_access_policy.name)
             data       = switch_access_policy
-            network_id = meraki_network.network[format("%s/%s/%s", domain.name, org.name, network.name)].id
+            network_id = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
           }
         ] if try(network.switch.access_policies, null) != null
       ]
@@ -77,9 +77,9 @@ resource "meraki_switch_access_policy" "net_switch_access_policy" {
 locals {
   networks_switch_alternate_management_interface = flatten([
     for domain in try(local.meraki.domains, []) : [
-      for org in try(domain.organizations, []) : [
-        for network in try(org.networks, []) : {
-          network_id = meraki_network.network[format("%s/%s/%s", domain.name, org.name, network.name)].id
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : {
+          network_id = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
           data       = network.switch.alternate_management_interface
         } if try(network.switch.alternate_management_interface, null) != null
       ]
@@ -100,9 +100,9 @@ resource "meraki_switch_alternate_management_interface" "net_switch_alternate_ma
 locals {
   networks_switch_dhcp_server_policy = flatten([
     for domain in try(local.meraki.domains, []) : [
-      for org in try(domain.organizations, []) : [
-        for network in try(org.networks, []) : {
-          network_id = meraki_network.network[format("%s/%s/%s", domain.name, org.name, network.name)].id
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : {
+          network_id = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
           data       = network.switch.dhcp_server_policy
         } if try(network.switch.dhcp_server_policy, null) != null
       ]
@@ -125,11 +125,11 @@ resource "meraki_switch_dhcp_server_policy" "net_switch_dhcp_server_policy" {
 locals {
   networks_switch_dhcp_server_policy_arp_inspection_trusted_servers = flatten([
     for domain in try(local.meraki.domains, []) : [
-      for org in try(domain.organizations, []) : [
-        for network in try(org.networks, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
           for trusted_server in try(network.switch.dhcp_server_policy.arp_inspection_trusted_servers, []) : {
             data       = trusted_server
-            network_id = meraki_network.network[format("%s/%s/%s", domain.name, org.name, network.name)].id
+            network_id = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
           }
         ] if try(network.switch.dhcp_server_policy.arp_inspection_trusted_servers, null) != null
       ]
@@ -147,9 +147,9 @@ resource "meraki_switch_dhcp_server_policy_arp_inspection_trusted_server" "net_s
 locals {
   networks_switch_dscp_to_cos_mappings = flatten([
     for domain in try(local.meraki.domains, []) : [
-      for org in try(domain.organizations, []) : [
-        for network in try(org.networks, []) : {
-          network_id = meraki_network.network[format("%s/%s/%s", domain.name, org.name, network.name)].id
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : {
+          network_id = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
           data       = network.switch.dscp_to_cos_mappings
         } if try(network.switch.dscp_to_cos_mappings, null) != null
       ]
@@ -436,16 +436,16 @@ locals {
 locals {
   networks_switch_stp = flatten([
     for domain in try(local.meraki.domains, []) : [
-      for org in try(domain.organizations, []) : [
-        for network in try(org.networks, []) : {
-          network_id = meraki_network.network[format("%s/%s/%s", domain.name, org.name, network.name)].id
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : {
+          network_id = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
           data       = network.switch.stp
           stp_bridge_priority = [for p in network.switch.stp.stp_bridge_priority : {
             switches     = try(p.switches, null)
             stp_priority = try(p.stp_priority, null)
             stacks = length(try(p.stacks, [])) > 0 ? [
               for s in p.stacks :
-              local.switch_stack_map["${org.name}/${network.name}/switch_stacks/${s}"]
+              local.switch_stack_map["${organization.name}/${network.name}/switch_stacks/${s}"]
             ] : null
           }]
         } if try(network.switch.stp, null) != null
