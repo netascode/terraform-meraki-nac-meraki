@@ -196,7 +196,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : {
         key    = format("%s/%s", domain.name, organization.name)
-        org_id = meraki_organization.organization[organization.name].id
+        org_id = meraki_organization.organization[format("%s/%s", domain.name, organization.name)].id
         enabled_networks = try(length(organization.adaptive_policy.settings.enabled_networks) == 0, true) ? null : [
           for network in try(organization.adaptive_policy.settings.enabled_networks, []) :
           meraki_network.network[format("%s/%s", organization.name, network)].id
