@@ -22,12 +22,12 @@ locals {
 
 # Create Organizations
 resource "meraki_organization" "organization" {
-  for_each = { for org in local.managed_organizations : org.key => org }
+  for_each = { for organization in local.managed_organizations : organization.key => organization }
   name     = each.value.organization_name
 }
 
 data "meraki_organization" "organization" {
-  for_each = { for org in local.unmanaged_organizations : org.key => org }
+  for_each = { for organization in local.unmanaged_organizations : organization.key => organization }
   name     = each.value.organization_name
 }
 
