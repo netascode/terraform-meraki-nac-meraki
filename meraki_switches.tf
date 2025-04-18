@@ -221,7 +221,7 @@ locals {
         for network in try(organization.networks, []) : [
           for switch_port_schedule in try(network.switch.port_schedules, []) : {
             network_id = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-            key        = format("%s/%s/port_schedules/%s", organization.name, network.name, switch_port_schedule.name)
+            key        = format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port_schedule.name)
             data       = try(switch_port_schedule, null)
           } if try(network.switch.port_schedules, null) != null
         ] if try(organization.networks, null) != null
