@@ -3,7 +3,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for org in try(domain.organizations, []) : {
         organization_name = org.name
-        managed           = try(org.managed, true)
+        managed           = try(org.managed, local.defaults.meraki.domains.organizations.managed, true)
       }
     ]
   ])
