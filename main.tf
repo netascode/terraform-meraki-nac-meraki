@@ -1,4 +1,5 @@
 locals {
+  template_yaml_strings = [for template in try(local.model.meraki.template.networks, []) : yamlencode(template)]
   meraki = {
     domains = [
       for domain in try(local.model.meraki.domains, []) : merge(
@@ -11,7 +12,7 @@ locals {
                 networks = [
                   for network in try(organization.networks, []) :
                   yamldecode(provider::utils::yaml_merge(concat(
-                    [for t in try(network.templates, []) : [for template in try(local.model.meraki.template.networks, []) : yamlencode(templatestring(network.variables, template)) if template.name == t][0]],
+                    [for t in try(network.templates, []) : [for template in local.template_yaml_strings : templatestring(template, try(network.variables, {})) if yamldecode(template).name == t][0]],
                     [yamlencode(network)]
                   )))
                 ]
