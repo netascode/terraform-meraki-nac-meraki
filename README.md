@@ -44,16 +44,14 @@ module "meraki" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.8.0 |
-| <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.5.2 |
 | <a name="requirement_meraki"></a> [meraki](#requirement\_meraki) | >= 0.1.9 |
-| <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 0.2.6 |
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_model"></a> [model](#input\_model) | As an alternative to YAML files, a native Terraform data structure can be provided as well. | `map(any)` | `{}` | no |
 | <a name="input_write_default_values_file"></a> [write\_default\_values\_file](#input\_write\_default\_values\_file) | Write all default values to a YAML file. Value is a path pointing to the file to be created. | `string` | `""` | no |
-| <a name="input_write_merged_yaml_file"></a> [write\_merged\_yaml\_file](#input\_write\_merged\_yaml\_file) | The path where the merged YAML output should be written | `string` | `""` | no |
+| <a name="input_write_model_file"></a> [write\_model\_file](#input\_write\_model\_file) | Write the full model including all resolved templates to a single YAML file. Value is a path pointing to the file to be created. | `string` | `""` | no |
 | <a name="input_yaml_directories"></a> [yaml\_directories](#input\_yaml\_directories) | List of paths to YAML directories. | `list(string)` | `[]` | no |
 | <a name="input_yaml_files"></a> [yaml\_files](#input\_yaml\_files) | List of paths to YAML files. | `list(string)` | `[]` | no |
 ## Outputs
@@ -66,8 +64,6 @@ module "meraki" {
 
 | Name | Type |
 |------|------|
-| [local_file.merged_yaml_output](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
-| [local_sensitive_file.defaults](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
 | [meraki_appliance_content_filtering.appliance_content_filtering](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_content_filtering) | resource |
 | [meraki_appliance_firewall_settings.appliance_firewall_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_firewall_settings) | resource |
 | [meraki_appliance_firewalled_service.appliance_firewall_firewalled_services](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_firewalled_service) | resource |
@@ -154,9 +150,10 @@ module "meraki" {
 | [meraki_wireless_ssid_schedules.net_wireless_ssids_schedules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_ssid_schedules) | resource |
 | [meraki_wireless_ssid_splash_settings.net_wireless_ssids_splash_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_ssid_splash_settings) | resource |
 | [meraki_wireless_ssid_traffic_shaping_rules.net_wireless_ssids_traffic_shaping_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_ssid_traffic_shaping_rules) | resource |
-| [terraform_data.validation](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [meraki_organization.organization](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/data-sources/organization) | data source |
 ## Modules
 
-No modules.
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_model"></a> [model](#module\_model) | ./modules/model | n/a |
 <!-- END_TF_DOCS -->

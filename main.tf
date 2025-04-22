@@ -1,26 +1,15 @@
+module "model" {
+  source = "./modules/model"
+
+  yaml_directories          = var.yaml_directories
+  yaml_files                = var.yaml_files
+  model                     = var.model
+  write_model_file          = var.write_model_file
+  write_default_values_file = var.write_default_values_file
+}
+
 locals {
-  template_yaml_strings = [for template in try(local.model.meraki.template.networks, []) : yamlencode(template)]
-  meraki = {
-    domains = [
-      for domain in try(local.model.meraki.domains, []) : merge(
-        { for k, v in domain : k => v if k != "organizations" },
-        {
-          organizations = [
-            for organization in try(domain.organizations, []) : merge(
-              { for k, v in organization : k => v if k != "networks" },
-              {
-                networks = [
-                  for network in try(organization.networks, []) :
-                  yamldecode(provider::utils::yaml_merge(concat(
-                    [for t in try(network.templates, []) : [for template in local.template_yaml_strings : templatestring(template, try(network.variables, {})) if yamldecode(template).name == t][0]],
-                    [yamlencode(network)]
-                  )))
-                ]
-              }
-            )
-          ]
-        }
-      )
-    ]
-  }
+  model    = module.model.model
+  defaults = module.model.default_values
+  meraki   = try(local.model.meraki, {})
 }
