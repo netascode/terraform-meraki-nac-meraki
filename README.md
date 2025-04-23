@@ -45,7 +45,7 @@ module "meraki" {
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.5.2 |
-| <a name="requirement_meraki"></a> [meraki](#requirement\_meraki) | >= 0.1.9 |
+| <a name="requirement_meraki"></a> [meraki](#requirement\_meraki) | >= 0.1.12 |
 | <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 0.2.6 |
 ## Inputs
 
