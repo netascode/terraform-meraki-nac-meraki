@@ -125,6 +125,7 @@ module "meraki" {
 | [meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_adaptive_policy_group) | resource |
 | [meraki_organization_adaptive_policy_settings.organizations_adaptive_policy_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_adaptive_policy_settings) | resource |
 | [meraki_organization_admin.organization_admin](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_admin) | resource |
+| [meraki_organization_early_access_features_opt_in.organizations_early_access_features_opt_in](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_early_access_features_opt_in) | resource |
 | [meraki_organization_inventory_claim.organization_claim](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_inventory_claim) | resource |
 | [meraki_organization_login_security.login_security](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_login_security) | resource |
 | [meraki_organization_policy_object.policy_object](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_policy_object) | resource |
