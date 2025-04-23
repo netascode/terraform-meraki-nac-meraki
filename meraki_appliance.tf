@@ -158,6 +158,7 @@ locals {
               uplink    = try(rule.uplink, local.defaults.meraki.networks.appliance.firewall.one_to_many_nat_rules.uplink, null)
               port_rules = try(length(rule.port_rules) == 0, true) ? null : [
                 for pr in try(rule.port_rules, []) : {
+                  name        = try(pr.name, local.defaults.meraki.networks.appliance.firewall.one_to_many_nat_rules.port_rules.name, null)
                   allowed_ips = try(pr.allowed_ips, local.defaults.meraki.networks.appliance.firewall.one_to_many_nat_rules.port_rules.allowed_ips, null)
                   local_ip    = try(pr.local_ip, local.defaults.meraki.networks.appliance.firewall.one_to_many_nat_rules.port_rules.local_ip, null)
                   local_port  = try(pr.local_port, local.defaults.meraki.networks.appliance.firewall.one_to_many_nat_rules.port_rules.local_port, null)
@@ -422,16 +423,17 @@ locals {
             vlan_id                   = try(appliance_vlan.vlan_id, local.defaults.meraki.networks.appliance.vlans.vlan_id, null)
             appliance_ip              = try(appliance_vlan.appliance_ip, local.defaults.meraki.networks.appliance.vlans.appliance_ip, null)
             group_policy_id           = try(appliance_vlan.group_policy_id, local.defaults.meraki.networks.appliance.vlans.group_policy_id, null)
-            ipv6                      = try(appliance_vlan.ipv6.enabled, local.defaults.meraki.networks.appliance.vlans.ipv6.enabled, null)
+            ipv6_enabled              = try(appliance_vlan.ipv6.enabled, local.defaults.meraki.networks.appliance.vlans.ipv6.enabled, null)
             ipv6_prefix_assignments   = try(appliance_vlan.ipv6.prefix_assignments, local.defaults.meraki.networks.appliance.vlans.ipv6.prefix_assignments, null)
             name                      = try(appliance_vlan.name, local.defaults.meraki.networks.appliance.vlans.name, null)
             subnet                    = try(appliance_vlan.subnet, local.defaults.meraki.networks.appliance.vlans.subnet, null)
             vpn_nat_subnet            = try(appliance_vlan.vpn_nat_subnet, local.defaults.meraki.networks.appliance.vlans.vpn_nat_subnet, null)
-            dhcp_boot_options_enabled = try(appliance_vlan.dhcp_boot_options_enabled, local.defaults.meraki.networks.appliance.vlans.dhcp_boot_options, null)
+            dhcp_boot_options_enabled = try(appliance_vlan.dhcp_boot_options, local.defaults.meraki.networks.appliance.vlans.dhcp_boot_options, null)
+            dhcp_handling             = try(appliance_vlan.dhcp_handling, local.defaults.meraki.networks.appliance.vlans.dhcp_handling, null)
             dhcp_lease_time           = try(appliance_vlan.dhcp_lease_time, local.defaults.meraki.networks.appliance.vlans.dhcp_lease_time, null)
             dhcp_options              = try(appliance_vlan.dhcp_options, local.defaults.meraki.networks.appliance.vlans.dhcp_options, null)
             dns_nameservers           = try(appliance_vlan.dns_nameservers, local.defaults.meraki.networks.appliance.vlans.dns_nameservers, null)
-            mandatory_dhcp_enabled    = try(appliance_vlan.mandatory_dhcp_enabled, local.defaults.meraki.networks.appliance.vlans.mandatory_dhcp, null)
+            mandatory_dhcp_enabled    = try(appliance_vlan.mandatory_dhcp, local.defaults.meraki.networks.appliance.vlans.mandatory_dhcp, null)
             reserved_ip_ranges        = try(appliance_vlan.reserved_ip_ranges, local.defaults.meraki.networks.appliance.vlans.reserved_ip_ranges, null)
           }
         ]
