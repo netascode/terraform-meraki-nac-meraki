@@ -302,7 +302,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for policy in try(organization.adaptive_policy.policies, []) : {
-          key                    = format("%s/%s/%s", domain.name, organization.name, policy.policy_name)
+          key                    = format("%s/%s/%s", domain.name, organization.name, policy.name)
           org_id                 = local.organization_ids[format("%s/%s", domain.name, organization.name)]
           policy_name            = try(policy.name, local.defaults.meraki.organizations.adaptive_policy.policies.name, null)
           source_group_name      = try(policy.source_group.name, local.defaults.meraki.organizations.adaptive_policy.policies.source_group.name, null)
@@ -410,7 +410,7 @@ locals {
         peers = try(length(organization.appliance.third_party_vpn_peers) == 0, true) ? null : [
           for peer in try(organization.appliance.third_party_vpn_peers, []) : {
             name                                    = try(peer.name, local.defaults.meraki.organizations.appliance.third_party_vpn_peers.name, null)
-            public_ip                               = try(peer.public_ip.local.defaults.meraki.organizations.appliance.third_party_vpn_peers.public_ip, null)
+            public_ip                               = try(peer.public_ip, local.defaults.meraki.organizations.appliance.third_party_vpn_peers.public_ip, null)
             remote_id                               = try(peer.remote_id, local.defaults.meraki.organizations.appliance.third_party_vpn_peers.remote_id, null)
             secret                                  = try(peer.secret, local.defaults.meraki.organizations.appliance.third_party_vpn_peers.secret, null)
             ike_version                             = try(peer.ike_version, local.defaults.meraki.organizations.appliance.third_party_vpn_peers.ike_version, null)
