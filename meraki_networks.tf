@@ -54,8 +54,8 @@ locals {
                 comment   = try(l3_firewall_rule.comment, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.l3_firewall_rules.comment, null)
                 policy    = try(l3_firewall_rule.policy, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.l3_firewall_rules.policy, null)
                 protocol  = try(l3_firewall_rule.protocol, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.l3_firewall_rules.protocol, null)
-                dest_port = try(l3_firewall_rule.dest_port, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.l3_firewall_rules.dest_port, null)
-                dest_cidr = try(l3_firewall_rule.dest_cidr, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.l3_firewall_rules.dest_cidr, null)
+                dest_port = try(l3_firewall_rule.destination_port, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.l3_firewall_rules.destination_port, null)
+                dest_cidr = try(l3_firewall_rule.destination_cidr, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.l3_firewall_rules.destination_cidr, null)
               }
             ]
             l7_firewall_rules = try(length(group_policy.firewall_and_traffic_shaping.l7_firewall_rules) == 0, true) ? null : [
@@ -143,12 +143,12 @@ locals {
           key                                       = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id                                = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
           local_status_page_enabled                 = try(network.settings.local_status_page_enabled, local.defaults.meraki.networks.settings.local_status_page_enabled, null)
-          remote_status_page_enabled                = try(network.settings.remote_status_page_enabled, local.defaults.meraki.networks.settings.remote_status_page_enabled, null)
-          local_status_page_authentication_enabled  = try(network.settings.local_status_page.authentication.enabled, local.defaults.meraki.networks.settings.local_status_page.authentication.enabled, null)
-          local_status_page_authentication_username = try(network.settings.local_status_page.authentication.username, local.defaults.meraki.networks.settings.local_status_page.authentication.username, null)
-          local_status_page_authentication_password = try(network.settings.local_status_page.authentication.password, local.defaults.meraki.networks.settings.local_status_page.authentication.password, null)
-          secure_port_enabled                       = try(network.settings.secure_port.enabled, local.defaults.meraki.networks.settings.secure_port.enabled, null)
-          named_vlans_enabled                       = try(network.settings.named_vlans.enabled, local.defaults.meraki.networks.settings.named_vlans.enabled, null)
+          remote_status_page_enabled                = try(network.settings.remote_status_page, local.defaults.meraki.networks.settings.remote_status_page, null)
+          local_status_page_authentication_enabled  = try(network.settings.local_status_page_authentication.enabled, local.defaults.meraki.networks.settings.local_status_page_authentication.enabled, null)
+          local_status_page_authentication_username = try(network.settings.local_status_page_authentication.username, local.defaults.meraki.networks.settings.local_status_page_authentication.username, null)
+          local_status_page_authentication_password = try(network.settings.local_status_page_authentication.password, local.defaults.meraki.networks.settings.local_status_page_authentication.password, null)
+          secure_port_enabled                       = try(network.settings.secure_port, local.defaults.meraki.networks.settings.secure_port, null)
+          named_vlans_enabled                       = try(network.settings.named_vlans, local.defaults.meraki.networks.settings.named_vlans, null)
         } if try(network.settings, null) != null
       ]
     ]
@@ -204,10 +204,10 @@ locals {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
           servers = [
-            for server in try(network.syslog_servers.servers, []) : {
-              host  = try(server.host, local.defaults.meraki.networks.syslog_servers.servers.host, null)
-              port  = try(server.port, local.defaults.meraki.networks.syslog_servers.servers.port, null)
-              roles = try(server.roles, local.defaults.meraki.networks.syslog_servers.servers.roles, null)
+            for server in try(network.syslog_servers, []) : {
+              host  = try(server.host, local.defaults.meraki.networks.syslog_servers.host, null)
+              port  = try(server.port, local.defaults.meraki.networks.syslog_servers.port, null)
+              roles = try(server.roles, local.defaults.meraki.networks.syslog_servers.roles, null)
             }
           ]
         } if try(network.syslog_servers, null) != null
@@ -235,7 +235,7 @@ locals {
               for vlan_name in try(vlan_profile.vlan_names, []) : {
                 name                     = try(vlan_name.name, local.defaults.meraki.networks.vlan_profiles.vlan_names.name, null)
                 vlan_id                  = try(vlan_name.vlan_id, local.defaults.meraki.networks.vlan_profiles.vlan_names.vlan_id, null)
-                adaptive_policy_group_id = try(vlan_name.adaptive_policy_group.id, local.defaults.meraki.networks.vlan_profiles.vlan_names.adaptive_policy_group.id, null)
+                adaptive_policy_group_id = try(vlan_name.adaptive_policy_group, local.defaults.meraki.networks.vlan_profiles.vlan_names.adaptive_policy_group, null)
               }
             ]
             vlan_groups = [
