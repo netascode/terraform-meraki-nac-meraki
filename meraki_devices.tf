@@ -175,7 +175,8 @@ locals {
               for port_id in split(",", switch_port.port_ids) : {
                 key                      = format("%s/%s/%s/%s/%s/%s", domain.name, organization.name, network.name, device.name, switch_port.name, port_id)
                 device_serial            = meraki_device.device[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)].serial
-                data                     = merge(switch_port, { port_id = port_id })
+                port_id                  = port_id
+                data                     = switch_port
                 port_schedule_id         = meraki_switch_port_schedule.net_switch_port_schedules[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.port_schedule_name)].id
                 adaptive_policy_group_id = try(meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/%s/%s", domain.name, organization.name, switch_port.adaptive_policy_group_name)].id, null)
               } if replace(port_id, "-", "") == port_id
@@ -195,7 +196,8 @@ locals {
                   for p in range(split("-", port_range)[0], split("-", port_range)[1]) : {
                     key                      = format("%s/%s/%s/%s/%s/%s", domain.name, organization.name, network.name, device.name, switch_port.name, p)
                     device_serial            = meraki_device.device[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)].serial
-                    data                     = merge(switch_port, { port_id = p })
+                    port_id                  = p
+                    data                     = switch_port
                     port_schedule_id         = meraki_switch_port_schedule.net_switch_port_schedules[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.port_schedule_name)].id
                     adaptive_policy_group_id = try(meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/%s/%s", domain.name, organization.name, switch_port.adaptive_policy_group_name)].id, null)
                   }
@@ -212,36 +214,35 @@ locals {
 resource "meraki_switch_port" "devices_switch_port" {
   for_each                    = { for v in local.devices_switch_ports : v.key => v }
   serial                      = each.value.device_serial
-  port_id                     = each.value.data.port_id
-  name                        = try(each.value.data.name, local.defaults.meraki.networks.devices_switch_ports.name, null)
-  tags                        = try(each.value.data.tags, local.defaults.meraki.networks.devices_switch_ports.tags, null)
-  enabled                     = try(each.value.data.enabled, local.defaults.meraki.networks.devices_switch_ports.enabled, null)
-  poe_enabled                 = try(each.value.data.poe, local.defaults.meraki.networks.switch.port_schedules.poe, null)
-  type                        = try(each.value.data.type, local.defaults.meraki.networks.devices_switch_ports.type, null)
-  vlan                        = try(each.value.data.vlan, local.defaults.meraki.networks.devices_switch_ports.vlan, null)
-  voice_vlan                  = try(each.value.data.voice_vlan, local.defaults.meraki.networks.devices_switch_ports.voice_vlan, null)
-  allowed_vlans               = try(each.value.data.allowed_vlans, local.defaults.meraki.networks.devices_switch_ports.allowed_vlans, null)
-  isolation_enabled           = try(each.value.data.isolation, local.defaults.meraki.networks.switch.port_schedules.isolation, null)
-  rstp_enabled                = try(each.value.data.rstp, local.defaults.meraki.networks.switch.port_schedules.rstp, null)
-  stp_guard                   = try(each.value.data.stp_guard, local.defaults.meraki.networks.devices_switch_ports.stp_guard, null)
-  link_negotiation            = try(each.value.data.link_negotiation, local.defaults.meraki.networks.devices_switch_ports.link_negotiation, null)
+  port_id                     = each.value.port_id
+  name                        = try(each.value.data.name, local.defaults.meraki.networks.devices.switch.ports.name, null)
+  tags                        = try(each.value.data.tags, local.defaults.meraki.networks.devices.switch.ports.tags, null)
+  enabled                     = try(each.value.data.enabled, local.defaults.meraki.networks.devices.switch.ports.enabled, null)
+  poe_enabled                 = try(each.value.data.poe, local.defaults.meraki.networks.switch.ports.poe, null)
+  type                        = try(each.value.data.type, local.defaults.meraki.networks.devices.switch.ports.type, null)
+  vlan                        = try(each.value.data.vlan, local.defaults.meraki.networks.devices.switch.ports.vlan, null)
+  voice_vlan                  = try(each.value.data.voice_vlan, local.defaults.meraki.networks.devices.switch.ports.voice_vlan, null)
+  allowed_vlans               = try(each.value.data.allowed_vlans, local.defaults.meraki.networks.devices.switch.ports.allowed_vlans, null)
+  isolation_enabled           = try(each.value.data.isolation, local.defaults.meraki.networks.switch.ports.isolation, null)
+  rstp_enabled                = try(each.value.data.rstp, local.defaults.meraki.networks.switch.ports.rstp, null)
+  stp_guard                   = try(each.value.data.stp_guard, local.defaults.meraki.networks.devices.switch.ports.stp_guard, null)
+  link_negotiation            = try(each.value.data.link_negotiation, local.defaults.meraki.networks.devices.switch.ports.link_negotiation, null)
   port_schedule_id            = each.value.port_schedule_id
-  udld                        = try(each.value.data.udld, local.defaults.meraki.networks.devices_switch_ports.udld, null)
-  access_policy_type          = try(each.value.data.access_policy_type, local.defaults.meraki.networks.devices_switch_ports.access_policy_type, null)
-  access_policy_number        = try(each.value.data.access_policy_number, local.defaults.meraki.networks.devices_switch_ports.access_policy_number, null)
-  mac_allow_list              = try(each.value.data.mac_allow_list, local.defaults.meraki.networks.devices_switch_ports.mac_allow_list, null)
-  sticky_mac_allow_list       = try(each.value.data.sticky_mac_allow_list, local.defaults.meraki.networks.devices_switch_ports.sticky_mac_allow_list, null)
-  sticky_mac_allow_list_limit = try(each.value.data.sticky_mac_allow_list_limit, local.defaults.meraki.networks.devices_switch_ports.sticky_mac_allow_list_limit, null)
-  storm_control_enabled       = try(each.value.data.storm_control, local.defaults.meraki.networks.switch.port_schedules.storm_control, null)
+  udld                        = try(each.value.data.udld, local.defaults.meraki.networks.devices.switch.ports.udld, null)
+  access_policy_type          = try(each.value.data.access_policy_type, local.defaults.meraki.networks.devices.switch.ports.access_policy_type, null)
+  access_policy_number        = try(each.value.data.access_policy_number, local.defaults.meraki.networks.devices.switch.ports.access_policy_number, null)
+  mac_allow_list              = try(each.value.data.mac_allow_list, local.defaults.meraki.networks.devices.switch.ports.mac_allow_list, null)
+  sticky_mac_allow_list       = try(each.value.data.sticky_mac_allow_list, local.defaults.meraki.networks.devices.switch.ports.sticky_mac_allow_list, null)
+  sticky_mac_allow_list_limit = try(each.value.data.sticky_mac_allow_list_limit, local.defaults.meraki.networks.devices.switch.ports.sticky_mac_allow_list_limit, null)
+  storm_control_enabled       = try(each.value.data.storm_control, local.defaults.meraki.networks.switch.ports.storm_control, null)
   adaptive_policy_group_id    = each.value.adaptive_policy_group_id
-  peer_sgt_capable            = try(each.value.data.peer_sgt_capable, local.defaults.meraki.networks.devices_switch_ports.peer_sgt_capable, null)
-  flexible_stacking_enabled   = try(each.value.data.flexible_stacking, local.defaults.meraki.networks.switch.port_schedules.flexible_stacking, null)
-  dai_trusted                 = try(each.value.data.dai_trusted, local.defaults.meraki.networks.devices_switch_ports.dai_trusted, null)
-  profile_enabled             = try(each.value.data.profile.enabled, local.defaults.meraki.networks.devices_switch_ports.profile.enabled, null)
-  # profile_id                  = try(each.value.data.profile.id, local.defaults.meraki.networks.devices_switch_ports.profile.id, null)
-  profile_iname  = try(each.value.data.profile.iname, local.defaults.meraki.networks.devices_switch_ports.profile.iname, null)
-  dot3az_enabled = try(each.value.data.dot3az, local.defaults.meraki.networks.devices_switch_ports.dot3az, null)
-
+  peer_sgt_capable            = try(each.value.data.peer_sgt_capable, local.defaults.meraki.networks.devices.switch.ports.peer_sgt_capable, null)
+  flexible_stacking_enabled   = try(each.value.data.flexible_stacking, local.defaults.meraki.networks.switch.ports.flexible_stacking, null)
+  dai_trusted                 = try(each.value.data.dai_trusted, local.defaults.meraki.networks.devices.switch.ports.dai_trusted, null)
+  profile_enabled             = try(each.value.data.profile.enabled, local.defaults.meraki.networks.devices.switch.ports.profile.enabled, null)
+  # profile_id                  = try(each.value.data.profile.id, local.defaults.meraki.networks.devices.switch.ports.profile.id, null)
+  profile_iname  = try(each.value.data.profile.iname, local.defaults.meraki.networks.devices.switch.ports.profile.iname, null)
+  dot3az_enabled = try(each.value.data.dot3az, local.defaults.meraki.networks.devices.switch.ports.dot3az, null)
 }
 
 locals {
