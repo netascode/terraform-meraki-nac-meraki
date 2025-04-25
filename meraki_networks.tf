@@ -270,8 +270,8 @@ locals {
           network_id = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
           serials    = [for d in network.devices : d.serial]
         } if try(network.devices, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+      ]
+    ]
   ])
 }
 
