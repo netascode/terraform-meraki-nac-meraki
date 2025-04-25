@@ -29,10 +29,41 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for wireless_rf_profile in try(network.wireless.rf_profiles, []) : {
-            key               = format("%s/%s/%s/%s", domain.name, organization.name, network.name, wireless_rf_profile.name)
-            network_id        = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-            per_ssid_settings = [for i in range(15) : try(local.per_ssid_settings[format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, wireless_rf_profile.name, i)], null)]
-            data              = try(wireless_rf_profile, null)
+            key                                       = format("%s/%s/%s/%s", domain.name, organization.name, network.name, wireless_rf_profile.name)
+            network_id                                = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+            per_ssid_settings                         = [for i in range(15) : try(local.per_ssid_settings[format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, wireless_rf_profile.name, i)], null)]
+            name                                      = try(wireless_rf_profile.name, local.defaults.meraki.networks.wireless_rf_profiles.name, null)
+            client_balancing_enabled                  = try(wireless_rf_profile.client_balancing_enabled, local.defaults.meraki.networks.wireless_rf_profiles.client_balancing_enabled, null)
+            min_bitrate_type                          = try(wireless_rf_profile.min_bitrate_type, local.defaults.meraki.networks.wireless_rf_profiles.min_bitrate_type, null)
+            band_selection_type                       = try(wireless_rf_profile.band_selection_type, local.defaults.meraki.networks.wireless_rf_profiles.band_selection_type, null)
+            ap_band_settings_band_operation_mode      = try(wireless_rf_profile.ap_band_settings.band_operation_mode, local.defaults.meraki.networks.wireless_rf_profiles.ap_band_settings.band_operation_mode, null)
+            ap_band_settings_bands_enabled            = try(wireless_rf_profile.ap_band_settings.bands.enabled, local.defaults.meraki.networks.wireless_rf_profiles.ap_band_settings.bands.enabled, null)
+            ap_band_settings_band_steering_enabled    = try(wireless_rf_profile.ap_band_settings.band_steering_enabled, local.defaults.meraki.networks.wireless_rf_profiles.ap_band_settings.band_steering_enabled, null)
+            two_four_ghz_settings_max_power           = try(wireless_rf_profile.two_four_ghz_settings.max_power, local.defaults.meraki.networks.wireless_rf_profiles.two_four_ghz_settings.max_power, null)
+            two_four_ghz_settings_min_power           = try(wireless_rf_profile.two_four_ghz_settings.min_power, local.defaults.meraki.networks.wireless_rf_profiles.two_four_ghz_settings.min_power, null)
+            two_four_ghz_settings_min_bitrate         = try(wireless_rf_profile.two_four_ghz_settings.min_bitrate, local.defaults.meraki.networks.wireless_rf_profiles.two_four_ghz_settings.min_bitrate, null)
+            two_four_ghz_settings_valid_auto_channels = try(wireless_rf_profile.two_four_ghz_settings.valid_auto_channels, local.defaults.meraki.networks.wireless_rf_profiles.two_four_ghz_settings.valid_auto_channels, null)
+            two_four_ghz_settings_ax_enabled          = try(wireless_rf_profile.two_four_ghz_settings.ax_enabled, local.defaults.meraki.networks.wireless_rf_profiles.two_four_ghz_settings.ax_enabled, null)
+            two_four_ghz_settings_rxsop               = try(wireless_rf_profile.two_four_ghz_settings.rxsop, local.defaults.meraki.networks.wireless_rf_profiles.two_four_ghz_settings.rxsop, null)
+            five_ghz_settings_max_power               = try(wireless_rf_profile.five_ghz_settings.max_power, local.defaults.meraki.networks.wireless_rf_profiles.five_ghz_settings.max_power, null)
+            five_ghz_settings_min_power               = try(wireless_rf_profile.five_ghz_settings.min_power, local.defaults.meraki.networks.wireless_rf_profiles.five_ghz_settings.min_power, null)
+            five_ghz_settings_min_bitrate             = try(wireless_rf_profile.five_ghz_settings.min_bitrate, local.defaults.meraki.networks.wireless_rf_profiles.five_ghz_settings.min_bitrate, null)
+            five_ghz_settings_valid_auto_channels     = try(wireless_rf_profile.five_ghz_settings.valid_auto_channels, local.defaults.meraki.networks.wireless_rf_profiles.five_ghz_settings.valid_auto_channels, null)
+            five_ghz_settings_channel_width           = try(wireless_rf_profile.five_ghz_settings.channel_width, local.defaults.meraki.networks.wireless_rf_profiles.five_ghz_settings.channel_width, null)
+            five_ghz_settings_rxsop                   = try(wireless_rf_profile.five_ghz_settings.rxsop, local.defaults.meraki.networks.wireless_rf_profiles.five_ghz_settings.rxsop, null)
+            six_ghz_settings_max_power                = try(wireless_rf_profile.six_ghz_settings.max_power, local.defaults.meraki.networks.wireless_rf_profiles.six_ghz_settings.max_power, null)
+            six_ghz_settings_min_power                = try(wireless_rf_profile.six_ghz_settings.min_power, local.defaults.meraki.networks.wireless_rf_profiles.six_ghz_settings.min_power, null)
+            six_ghz_settings_min_bitrate              = try(wireless_rf_profile.six_ghz_settings.min_bitrate, local.defaults.meraki.networks.wireless_rf_profiles.six_ghz_settings.min_bitrate, null)
+            six_ghz_settings_valid_auto_channels      = try(wireless_rf_profile.six_ghz_settings.valid_auto_channels, local.defaults.meraki.networks.wireless_rf_profiles.six_ghz_settings.valid_auto_channels, null)
+            six_ghz_settings_channel_width            = try(wireless_rf_profile.six_ghz_settings.channel_width, local.defaults.meraki.networks.wireless_rf_profiles.six_ghz_settings.channel_width, null)
+            six_ghz_settings_rxsop                    = try(wireless_rf_profile.six_ghz_settings.rxsop, local.defaults.meraki.networks.wireless_rf_profiles.six_ghz_settings.rxsop, null)
+            transmission_enabled                      = try(wireless_rf_profile.transmission.enabled, local.defaults.meraki.networks.wireless_rf_profiles.transmission.enabled, null)
+            flex_radios_by_model = try(length(wireless_rf_profile.flex_radios.by_model) == 0, true) ? null : [
+              for by_model in try(wireless_rf_profile.flex_radios.by_model, []) : {
+                model = try(by_model.model, local.defaults.meraki.networks.wireless_rf_profiles.flex_radios.by_model.model, null)
+                bands = try(by_model.bands, local.defaults.meraki.networks.wireless_rf_profiles.flex_radios.by_model.bands, null)
+              }
+            ]
           }
         ]
       ]
@@ -41,35 +72,34 @@ locals {
 }
 
 resource "meraki_wireless_rf_profile" "net_wireless_rf_profiles" {
-  for_each   = { for v in local.networks_wireless_rf_profiles : v.key => v }
-  network_id = each.value.network_id
-
-  name                                       = try(each.value.data.name, local.defaults.meraki.networks.wireless.rf_profiles.name, null)
-  client_balancing_enabled                   = try(each.value.data.client_balancing, local.defaults.meraki.networks.wireless.rf_profiles.client_balancing, null)
-  min_bitrate_type                           = try(each.value.data.min_bitrate_type, local.defaults.meraki.networks.wireless.rf_profiles.min_bitrate_type, null)
-  band_selection_type                        = try(each.value.data.band_selection_type, local.defaults.meraki.networks.wireless.rf_profiles.band_selection_type, null)
-  ap_band_settings_band_operation_mode       = try(each.value.data.ap_band_settings.band_operation_mode, local.defaults.meraki.networks.wireless.rf_profiles.ap_band_settings.band_operation_mode, null)
-  ap_band_settings_bands_enabled             = try(each.value.data.ap_band_settings.bands, local.defaults.meraki.networks.wireless.rf_profiles.ap_band_settings.bands, null)
-  ap_band_settings_band_steering_enabled     = try(each.value.data.ap_band_settings.band_steering_enabled, local.defaults.meraki.networks.wireless.rf_profiles.ap_band_settings.band_steering_enabled, null)
-  two_four_ghz_settings_max_power            = try(each.value.data.two_four_ghz_settings.max_power, local.defaults.meraki.networks.wireless.rf_profiles.two_four_ghz_settings.max_power, null)
-  two_four_ghz_settings_min_power            = try(each.value.data.two_four_ghz_settings.min_power, local.defaults.meraki.networks.wireless.rf_profiles.two_four_ghz_settings.min_power, null)
-  two_four_ghz_settings_min_bitrate          = try(each.value.data.two_four_ghz_settings.min_bitrate, local.defaults.meraki.networks.wireless.rf_profiles.two_four_ghz_settings.min_bitrate, null)
-  two_four_ghz_settings_valid_auto_channels  = try(each.value.data.two_four_ghz_settings.valid_auto_channels, local.defaults.meraki.networks.wireless.rf_profiles.two_four_ghz_settings.valid_auto_channels, null)
-  two_four_ghz_settings_ax_enabled           = try(each.value.data.two_four_ghz_settings.ax, local.defaults.meraki.networks.wireless.rf_profiles.two_four_ghz_settings.ax, null)
-  two_four_ghz_settings_rxsop                = try(each.value.data.two_four_ghz_settings.rxsop, local.defaults.meraki.networks.wireless.rf_profiles.two_four_ghz_settings.rxsop, null)
-  five_ghz_settings_max_power                = try(each.value.data.five_ghz_settings.max_power, local.defaults.meraki.networks.wireless.rf_profiles.five_ghz_settings.max_power, null)
-  five_ghz_settings_min_power                = try(each.value.data.five_ghz_settings.min_power, local.defaults.meraki.networks.wireless.rf_profiles.five_ghz_settings.min_power, null)
-  five_ghz_settings_min_bitrate              = try(each.value.data.five_ghz_settings.min_bitrate, local.defaults.meraki.networks.wireless.rf_profiles.five_ghz_settings.min_bitrate, null)
-  five_ghz_settings_valid_auto_channels      = try(each.value.data.five_ghz_settings.valid_auto_channels, local.defaults.meraki.networks.wireless.rf_profiles.five_ghz_settings.valid_auto_channels, null)
-  five_ghz_settings_channel_width            = try(each.value.data.five_ghz_settings.channel_width, local.defaults.meraki.networks.wireless.rf_profiles.five_ghz_settings.channel_width, null)
-  five_ghz_settings_rxsop                    = try(each.value.data.five_ghz_settings.rxsop, local.defaults.meraki.networks.wireless.rf_profiles.five_ghz_settings.rxsop, null)
-  six_ghz_settings_max_power                 = try(each.value.data.six_ghz_settings.max_power, local.defaults.meraki.networks.wireless.rf_profiles.six_ghz_settings.max_power, null)
-  six_ghz_settings_min_power                 = try(each.value.data.six_ghz_settings.min_power, local.defaults.meraki.networks.wireless.rf_profiles.six_ghz_settings.min_power, null)
-  six_ghz_settings_min_bitrate               = try(each.value.data.six_ghz_settings.min_bitrate, local.defaults.meraki.networks.wireless.rf_profiles.six_ghz_settings.min_bitrate, null)
-  six_ghz_settings_valid_auto_channels       = try(each.value.data.six_ghz_settings.valid_auto_channels, local.defaults.meraki.networks.wireless.rf_profiles.six_ghz_settings.valid_auto_channels, null)
-  six_ghz_settings_channel_width             = try(each.value.data.six_ghz_settings.channel_width, local.defaults.meraki.networks.wireless.rf_profiles.six_ghz_settings.channel_width, null)
-  six_ghz_settings_rxsop                     = try(each.value.data.six_ghz_settings.rxsop, local.defaults.meraki.networks.wireless.rf_profiles.six_ghz_settings.rxsop, null)
-  transmission_enabled                       = try(each.value.data.transmission, local.defaults.meraki.networks.wireless.rf_profiles.transmission, null)
+  for_each                                   = { for v in local.networks_wireless_rf_profiles : v.key => v }
+  network_id                                 = each.value.network_id
+  name                                       = each.value.name
+  client_balancing_enabled                   = each.value.client_balancing_enabled
+  min_bitrate_type                           = each.value.min_bitrate_type
+  band_selection_type                        = each.value.band_selection_type
+  ap_band_settings_band_operation_mode       = each.value.ap_band_settings_band_operation_mode
+  ap_band_settings_bands_enabled             = each.value.ap_band_settings_bands_enabled
+  ap_band_settings_band_steering_enabled     = each.value.ap_band_settings_band_steering_enabled
+  two_four_ghz_settings_max_power            = each.value.two_four_ghz_settings_max_power
+  two_four_ghz_settings_min_power            = each.value.two_four_ghz_settings_min_power
+  two_four_ghz_settings_min_bitrate          = each.value.two_four_ghz_settings_min_bitrate
+  two_four_ghz_settings_valid_auto_channels  = each.value.two_four_ghz_settings_valid_auto_channels
+  two_four_ghz_settings_ax_enabled           = each.value.two_four_ghz_settings_ax_enabled
+  two_four_ghz_settings_rxsop                = each.value.two_four_ghz_settings_rxsop
+  five_ghz_settings_max_power                = each.value.five_ghz_settings_max_power
+  five_ghz_settings_min_power                = each.value.five_ghz_settings_min_power
+  five_ghz_settings_min_bitrate              = each.value.five_ghz_settings_min_bitrate
+  five_ghz_settings_valid_auto_channels      = each.value.five_ghz_settings_valid_auto_channels
+  five_ghz_settings_channel_width            = each.value.five_ghz_settings_channel_width
+  five_ghz_settings_rxsop                    = each.value.five_ghz_settings_rxsop
+  six_ghz_settings_max_power                 = each.value.six_ghz_settings_max_power
+  six_ghz_settings_min_power                 = each.value.six_ghz_settings_min_power
+  six_ghz_settings_min_bitrate               = each.value.six_ghz_settings_min_bitrate
+  six_ghz_settings_valid_auto_channels       = each.value.six_ghz_settings_valid_auto_channels
+  six_ghz_settings_channel_width             = each.value.six_ghz_settings_channel_width
+  six_ghz_settings_rxsop                     = each.value.six_ghz_settings_rxsop
+  transmission_enabled                       = each.value.transmission_enabled
   per_ssid_settings_0_min_bitrate            = try(each.value.per_ssid_settings[0].min_bitrate, null)
   per_ssid_settings_0_band_operation_mode    = try(each.value.per_ssid_settings[0].band_operation_mode, null)
   per_ssid_settings_0_bands_enabled          = try(each.value.per_ssid_settings[0].bands, null)
@@ -130,8 +160,9 @@ resource "meraki_wireless_rf_profile" "net_wireless_rf_profiles" {
   per_ssid_settings_14_band_operation_mode   = try(each.value.per_ssid_settings[14].band_operation_mode, null)
   per_ssid_settings_14_bands_enabled         = try(each.value.per_ssid_settings[14].bands, null)
   per_ssid_settings_14_band_steering_enabled = try(each.value.per_ssid_settings[14].band_steering_enabled, null)
-  flex_radios_by_model                       = try(each.value.data.flex_radios, local.defaults.meraki.networks.wireless.rf_profiles.flex_radios, null)
+  flex_radios_by_model                       = each.value.flex_radios_by_model
 }
+
 # Apply the Wireless Settings
 locals {
   networks_wireless_settings = flatten([
