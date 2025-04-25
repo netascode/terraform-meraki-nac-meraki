@@ -14,7 +14,7 @@ locals {
             notes           = try(device.notes, local.defaults.meraki.networks.devices.notes, null)
             move_map_marker = try(device.move_map_marker, local.defaults.meraki.networks.devices.move_map_marker, null)
             #switch_profile_id = try(device.switch_profile_id, local.defaults.meraki.networks.devices.switch_profile_id, null)
-            #floor_plan_id     = try(device.floor_plan_id, local.defaults.meraki.networks.devices.floor_plan_id, null)
+            floor_plan_id = try(meraki_network_floor_plan.net_floor_plans[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.floor_plan_name)].id, null)
           }
         ]
       ]
@@ -33,8 +33,8 @@ resource "meraki_device" "device" {
   notes           = each.value.notes
   move_map_marker = each.value.move_map_marker
   #switch_profile_id = each.value.switch_profile_id
-  #floor_plan_id     = each.value.floor_plan_id
-  depends_on = [meraki_network_device_claim.net_device_claim]
+  floor_plan_id = each.value.floor_plan_id
+  depends_on    = [meraki_network_device_claim.net_device_claim]
 }
 
 locals {
