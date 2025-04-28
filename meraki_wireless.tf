@@ -859,7 +859,7 @@ locals {
           protocols  = try(network.wireless.alternate_management_interface.protocols, local.defaults.meraki.networks.wireless.alternate_management_interface.protocols, null)
           access_points = try(length(network.wireless.alternate_management_interface.access_points) == 0, true) ? null : [
             for access_point in try(network.wireless.alternate_management_interface.access_points, []) : {
-              serial                  = try(access_point.serial, local.defaults.meraki.networks.wireless.alternate_management_interface.access_points.serial, null)
+              serial                  = meraki_device.device[format("%s/%s/%s/%s", domain.name, organization.name, network.name, access_point.device)].serial
               alternate_management_ip = try(access_point.alternate_management_ip, local.defaults.meraki.networks.wireless.alternate_management_interface.access_points.alternate_management_ip, null)
               subnet_mask             = try(access_point.subnet_mask, local.defaults.meraki.networks.wireless.alternate_management_interface.access_points.subnet_mask, null)
               gateway                 = try(access_point.gateway, local.defaults.meraki.networks.wireless.alternate_management_interface.access_points.gateway, null)
