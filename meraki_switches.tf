@@ -537,7 +537,7 @@ locals {
           use_combined_power = try(network.switch.settings.use_combined_power, local.defaults.meraki.networks.switch.settings.use_combined_power, null)
           power_exceptions = try(length(network.switch.settings.power_exceptions) == 0, true) ? null : [
             for power_exception in try(network.switch.settings.power_exceptions, []) : {
-              serial     = try(power_exception.serial, local.defaults.meraki.networks.switch.settings.power_exceptions.serial, null)
+              serial     = meraki_device.device[format("%s/%s/%s/%s", domain.name, organization.name, network.name, power_exception.device)].serial
               power_type = try(power_exception.power_type, local.defaults.meraki.networks.switch.settings.power_exceptions.power_type, null)
             }
           ]
