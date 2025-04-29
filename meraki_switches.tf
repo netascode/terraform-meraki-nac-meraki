@@ -237,7 +237,7 @@ locals {
             network_id = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
             switch_ports = try(length(switch_link_aggregation.switch_ports) == 0, true) ? null : [
               for switch_port in try(switch_link_aggregation.switch_ports, []) : {
-                serial  = try(switch_port.serial, local.defaults.meraki.networks.switch.link_aggregations.switch_ports.serial, null)
+                serial  = meraki_device.device[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.device)].serial
                 port_id = try(switch_port.port_id, local.defaults.meraki.networks.switch.link_aggregations.switch_ports.port_id, null)
               }
             ]
