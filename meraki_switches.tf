@@ -727,81 +727,79 @@ resource "meraki_switch_stack_routing_interface" "net_switch_stack_routing_inter
 }
 
 locals {
-  networks_switch_stacks_routing_interfaces_dhcp_first = flatten([
-    for domain in try(local.meraki.domains, []) : [
-      for organization in try(domain.organizations, []) : [
-        for network in try(organization.networks, []) : [
-          for switch_stack in try(network.switch_stacks, []) : [
-            for routing_interface in try(switch_stack.routing_interfaces, []) : {
-              key             = format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name, routing_interface.name)
-              network_id      = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-              switch_stack_id = meraki_switch_stack.net_switch_stacks[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name)].id
-              interface_id    = meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_first[format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name, routing_interface.name)].id
-              data            = try(routing_interface.dhcp, null)
-            } if try(routing_interface.default_gateway, null) != null && try(routing_interface.dhcp, null) != null
-          ] if try(network.switch_stacks, null) != null
-        ] if try(organization.networks, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
-  ])
-}
-
-resource "meraki_switch_stack_routing_interface_dhcp" "net_switch_stacks_routing_interfaces_dhcp_first" {
-  for_each               = { for v in local.networks_switch_stacks_routing_interfaces_dhcp_first : v.key => v }
-  network_id             = each.value.network_id
-  switch_stack_id        = each.value.switch_stack_id
-  interface_id           = each.value.interface_id
-  dhcp_mode              = try(each.value.data.dhcp_mode, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.dhcp_mode, null)
-  dhcp_relay_server_ips  = try(each.value.data.dhcp_relay_server_ips, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.dhcp_relay_server_ips, null)
-  dhcp_lease_time        = try(each.value.data.dhcp_lease_time, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.dhcp_lease_time, null)
-  dns_nameservers_option = try(each.value.data.dns_nameservers_option, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.dns_nameservers_option, null)
-  dns_custom_nameservers = try(each.value.data.dns_custom_nameservers, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.dns_custom_nameservers, null)
-  boot_options_enabled   = try(each.value.data.boot_options, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.boot_options, null)
-  boot_next_server       = try(each.value.data.boot_next_server, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.boot_next_server, null)
-  boot_file_name         = try(each.value.data.boot_file_name, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.boot_file_name, null)
-  dhcp_options           = try(each.value.data.dhcp_options, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.dhcp_options, null)
-  reserved_ip_ranges     = try(each.value.data.reserved_ip_ranges, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.reserved_ip_ranges, null)
-  fixed_ip_assignments   = try(each.value.data.fixed_ip_assignments, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.fixed_ip_assignments, null)
-  depends_on             = [meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_first]
+  net_switch_stack_routing_interface_ids = {
+    for routing_interface in local.networks_switch_stacks_routing_interfaces :
+    routing_interface.key =>
+    routing_interface.default_gateway != null ?
+    meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_first[routing_interface.key].id :
+    meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_not_first[routing_interface.key].id
+  }
 }
 
 locals {
-  networks_switch_stacks_routing_interfaces_dhcp_not_first = flatten([
+  networks_switch_stacks_routing_interfaces_dhcp = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for switch_stack in try(network.switch_stacks, []) : [
             for routing_interface in try(switch_stack.routing_interfaces, []) : {
-              key             = format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name, routing_interface.name)
-              network_id      = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-              switch_stack_id = meraki_switch_stack.net_switch_stacks[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name)].id
-              interface_id    = meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_not_first[format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name, routing_interface.name)].id
-              data            = try(routing_interface.dhcp, null)
-            } if try(routing_interface.default_gateway, null) == null && try(routing_interface.dhcp, null) != null
-          ] if try(network.switch_stacks, null) != null
-        ] if try(organization.networks, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+              key                    = format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name, routing_interface.name)
+              network_id             = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+              switch_stack_id        = meraki_switch_stack.net_switch_stacks[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name)].id
+              interface_id           = local.net_switch_stack_routing_interface_ids[format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name, routing_interface.name)]
+              dhcp_mode              = try(routing_interface.dhcp.dhcp_mode, local.defaults.meraki.networks.switch_stacks.routing_interfaces.dhcp.dhcp_mode, null)
+              dhcp_relay_server_ips  = try(routing_interface.dhcp.dhcp_relay_server_ips, local.defaults.meraki.networks.switch_stacks.routing_interfaces.dhcp.dhcp_relay_server_ips, null)
+              dhcp_lease_time        = try(routing_interface.dhcp.dhcp_lease_time, local.defaults.meraki.networks.switch_stacks.routing_interfaces.dhcp.dhcp_lease_time, null)
+              dns_nameservers_option = try(routing_interface.dhcp.dns_nameservers_option, local.defaults.meraki.networks.switch_stacks.routing_interfaces.dhcp.dns_nameservers_option, null)
+              dns_custom_nameservers = try(routing_interface.dhcp.dns_custom_nameservers, local.defaults.meraki.networks.switch_stacks.routing_interfaces.dhcp.dns_custom_nameservers, null)
+              boot_options_enabled   = try(routing_interface.dhcp.boot_options, local.defaults.meraki.networks.switch_stacks.routing_interfaces.dhcp.boot_options, null)
+              boot_next_server       = try(routing_interface.dhcp.boot_next_server, local.defaults.meraki.networks.switch_stacks.routing_interfaces.dhcp.boot_next_server, null)
+              boot_file_name         = try(routing_interface.dhcp.boot_file_name, local.defaults.meraki.networks.switch_stacks.routing_interfaces.dhcp.boot_file_name, null)
+              dhcp_options = try(length(routing_interface.dhcp.dhcp_options) == 0, true) ? null : [
+                for dhcp_option in try(routing_interface.dhcp.dhcp_options, []) : {
+                  code  = try(dhcp_option.code, local.defaults.meraki.networks.switch_stacks.routing_interfaces.dhcp.dhcp_options.code, null)
+                  type  = try(dhcp_option.type, local.defaults.meraki.networks.switch_stacks.routing_interfaces.dhcp.dhcp_options.type, null)
+                  value = try(dhcp_option.value, local.defaults.meraki.networks.switch_stacks.routing_interfaces.dhcp.dhcp_options.value, null)
+                }
+              ]
+              reserved_ip_ranges = try(length(routing_interface.dhcp.reserved_ip_ranges) == 0, true) ? null : [
+                for reserved_ip_range in try(routing_interface.dhcp.reserved_ip_ranges, []) : {
+                  start   = try(reserved_ip_range.start, local.defaults.meraki.networks.switch_stacks.routing_interfaces.dhcp.reserved_ip_ranges.start, null)
+                  end     = try(reserved_ip_range.end, local.defaults.meraki.networks.switch_stacks.routing_interfaces.dhcp.reserved_ip_ranges.end, null)
+                  comment = try(reserved_ip_range.comment, local.defaults.meraki.networks.switch_stacks.routing_interfaces.dhcp.reserved_ip_ranges.comment, null)
+                }
+              ]
+              fixed_ip_assignments = try(length(routing_interface.dhcp.fixed_ip_assignments) == 0, true) ? null : [
+                for fixed_ip_assignment in try(routing_interface.dhcp.fixed_ip_assignments, []) : {
+                  name = try(fixed_ip_assignment.name, local.defaults.meraki.networks.switch_stacks.routing_interfaces.dhcp.fixed_ip_assignments.name, null)
+                  mac  = try(fixed_ip_assignment.mac, local.defaults.meraki.networks.switch_stacks.routing_interfaces.dhcp.fixed_ip_assignments.mac, null)
+                  ip   = try(fixed_ip_assignment.ip, local.defaults.meraki.networks.switch_stacks.routing_interfaces.dhcp.fixed_ip_assignments.ip, null)
+                }
+              ]
+            } if try(routing_interface.dhcp, null) != null
+          ]
+        ]
+      ]
+    ]
   ])
 }
 
-resource "meraki_switch_stack_routing_interface_dhcp" "net_switch_stacks_routing_interfaces_dhcp_not_first" {
-  for_each               = { for v in local.networks_switch_stacks_routing_interfaces_dhcp_not_first : v.key => v }
+resource "meraki_switch_stack_routing_interface_dhcp" "net_switch_stacks_routing_interfaces_dhcp" {
+  for_each               = { for v in local.networks_switch_stacks_routing_interfaces_dhcp : v.key => v }
   network_id             = each.value.network_id
   switch_stack_id        = each.value.switch_stack_id
   interface_id           = each.value.interface_id
-  dhcp_mode              = try(each.value.data.dhcp_mode, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.dhcp_mode, null)
-  dhcp_relay_server_ips  = try(each.value.data.dhcp_relay_server_ips, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.dhcp_relay_server_ips, null)
-  dhcp_lease_time        = try(each.value.data.dhcp_lease_time, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.dhcp_lease_time, null)
-  dns_nameservers_option = try(each.value.data.dns_nameservers_option, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.dns_nameservers_option, null)
-  dns_custom_nameservers = try(each.value.data.dns_custom_nameservers, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.dns_custom_nameservers, null)
-  boot_options_enabled   = try(each.value.data.boot_options, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.boot_options, null)
-  boot_next_server       = try(each.value.data.boot_next_server, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.boot_next_server, null)
-  boot_file_name         = try(each.value.data.boot_file_name, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.boot_file_name, null)
-  dhcp_options           = try(each.value.data.dhcp_options, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.dhcp_options, null)
-  reserved_ip_ranges     = try(each.value.data.reserved_ip_ranges, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.reserved_ip_ranges, null)
-  fixed_ip_assignments   = try(each.value.data.fixed_ip_assignments, local.defaults.meraki.networks.switch_stacks_routing_interfaces_dhcp.fixed_ip_assignments, null)
-  depends_on             = [meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_not_first]
+  dhcp_mode              = each.value.dhcp_mode
+  dhcp_relay_server_ips  = each.value.dhcp_relay_server_ips
+  dhcp_lease_time        = each.value.dhcp_lease_time
+  dns_nameservers_option = each.value.dns_nameservers_option
+  dns_custom_nameservers = each.value.dns_custom_nameservers
+  boot_options_enabled   = each.value.boot_options_enabled
+  boot_next_server       = each.value.boot_next_server
+  boot_file_name         = each.value.boot_file_name
+  dhcp_options           = each.value.dhcp_options
+  reserved_ip_ranges     = each.value.reserved_ip_ranges
+  fixed_ip_assignments   = each.value.fixed_ip_assignments
 }
 
 locals {
