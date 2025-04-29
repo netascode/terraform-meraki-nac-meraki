@@ -124,7 +124,7 @@ locals {
           protocols  = try(network.switch.alternate_management_interface.protocols, local.defaults.meraki.networks.switch.alternate_management_interface.protocols, null)
           switches = try(length(network.switch.alternate_management_interface.switches) == 0, true) ? null : [
             for switch in try(network.switch.alternate_management_interface.switches, []) : {
-              serial                  = try(switch.serial, local.defaults.meraki.networks.switch.alternate_management_interface.switches.serial, null)
+              serial                  = meraki_device.device[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch.device)].serial
               alternate_management_ip = try(switch.alternate_management_ip, local.defaults.meraki.networks.switch.alternate_management_interface.switches.alternate_management_ip, null)
               subnet_mask             = try(switch.subnet_mask, local.defaults.meraki.networks.switch.alternate_management_interface.switches.subnet_mask, null)
               gateway                 = try(switch.gateway, local.defaults.meraki.networks.switch.alternate_management_interface.switches.gateway, null)
