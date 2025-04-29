@@ -179,7 +179,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for switch_dhcp_server_policy_arp_inspection_trusted_server in try(network.switch.dhcp_server_policy.arp_inspection_trusted_servers, []) : {
-            key          = format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_dhcp_server_policy_arp_inspection_trusted_server.name)
+            key          = format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_dhcp_server_policy_arp_inspection_trusted_server.trusted_server_name)
             network_id   = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
             mac          = try(switch_dhcp_server_policy_arp_inspection_trusted_server.mac, local.defaults.meraki.networks.switch.dhcp_server_policy.arp_inspection_trusted_servers.mac, null)
             vlan         = try(switch_dhcp_server_policy_arp_inspection_trusted_server.vlan, local.defaults.meraki.networks.switch.dhcp_server_policy.arp_inspection_trusted_servers.vlan, null)
