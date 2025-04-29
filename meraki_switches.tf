@@ -588,12 +588,6 @@ resource "meraki_switch_storm_control" "net_switch_storm_control" {
 }
 
 locals {
-  switch_stack_map = {
-    for key, s in meraki_switch_stack.net_switch_stacks : key => s.id
-  }
-}
-
-locals {
   networks_switch_stp = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
@@ -604,9 +598,13 @@ locals {
           stp_bridge_priority = try(length(network.switch.stp.stp_bridge_priority) == 0, true) ? null : [
             for stp_bridge_priority in try(network.switch.stp.stp_bridge_priority, []) : {
               switch_profiles = try(stp_bridge_priority.switch_profiles, local.defaults.meraki.networks.switch.stp.stp_bridge_priority.switch_profiles, null)
-              switches        = try(stp_bridge_priority.switches, local.defaults.meraki.networks.switch.stp.stp_bridge_priority.switches, null)
-              stacks          = try(stp_bridge_priority.stacks, local.defaults.meraki.networks.switch.stp.stp_bridge_priority.stacks, null)
-              stp_priority    = try(stp_bridge_priority.stp_priority, local.defaults.meraki.networks.switch.stp.stp_bridge_priority.stp_priority, null)
+              # TODO Map from device names to serials?
+              switches = try(stp_bridge_priority.switches, local.defaults.meraki.networks.switch.stp.stp_bridge_priority.switches, null)
+              stacks = try(length(stp_bridge_priority.stacks) == 0, true) ? null : [
+                for stack in stp_bridge_priority.stacks :
+                meraki_switch_stack.net_switch_stacks[format("%s/%s/%s/%s", domain.name, organization.name, network.name, stack)].id
+              ]
+              stp_priority = try(stp_bridge_priority.stp_priority, local.defaults.meraki.networks.switch.stp.stp_bridge_priority.stp_priority, null)
             }
           ]
         } if try(network.switch.stp, null) != null
