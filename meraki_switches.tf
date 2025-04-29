@@ -630,7 +630,7 @@ locals {
             key        = format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name)
             network_id = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
             name       = try(switch_stack.name, local.defaults.meraki.networks.switch_stacks.name, null)
-            serials    = try(switch_stack.serials, local.defaults.meraki.networks.switch_stacks.serials, null)
+            serials    = [for device in switch_stack.devices : meraki_device.device[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device)].serial]
           }
         ]
       ]
