@@ -402,8 +402,8 @@ locals {
           network_id = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
           rule_ids   = [for r in network.switch.qos_rules : meraki_switch_qos_rule.net_switch_qos_rule[format("%s/%s/%s/%s", domain.name, organization.name, network.name, r.qos_rule_name)].id]
         } if try(network.switch.qos_rules, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+      ]
+    ]
   ])
 }
 
