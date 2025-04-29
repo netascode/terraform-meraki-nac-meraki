@@ -647,76 +647,82 @@ resource "meraki_switch_stack" "net_switch_stacks" {
 }
 
 locals {
-  networks_switch_stacks_routing_interfaces_first = flatten([
+  networks_switch_stacks_routing_interfaces = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for switch_stack in try(network.switch_stacks, []) : [
             for routing_interface in try(switch_stack.routing_interfaces, []) : {
-              key             = format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name, routing_interface.name)
-              network_id      = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-              switch_stack_id = meraki_switch_stack.net_switch_stacks[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name)].id
-              data            = try(routing_interface, null)
-            } if try(routing_interface.default_gateway, null) != null
-          ] if try(network.switch_stacks, null) != null
-        ] if try(organization.networks, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+              key                              = format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name, routing_interface.name)
+              network_id                       = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+              switch_stack_id                  = meraki_switch_stack.net_switch_stacks[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name)].id
+              name                             = try(routing_interface.name, local.defaults.meraki.networks.switch_stacks.routing_interfaces.name, null)
+              subnet                           = try(routing_interface.subnet, local.defaults.meraki.networks.switch_stacks.routing_interfaces.subnet, null)
+              interface_ip                     = try(routing_interface.interface_ip, local.defaults.meraki.networks.switch_stacks.routing_interfaces.interface_ip, null)
+              multicast_routing                = try(routing_interface.multicast_routing, local.defaults.meraki.networks.switch_stacks.routing_interfaces.multicast_routing, null)
+              vlan_id                          = try(routing_interface.vlan_id, local.defaults.meraki.networks.switch_stacks.routing_interfaces.vlan_id, null)
+              default_gateway                  = try(routing_interface.default_gateway, local.defaults.meraki.networks.switch_stacks.routing_interfaces.default_gateway, null)
+              ospf_settings_area               = try(routing_interface.ospf_settings.area, local.defaults.meraki.networks.switch_stacks.routing_interfaces.ospf_settings.area, null)
+              ospf_settings_cost               = try(routing_interface.ospf_settings.cost, local.defaults.meraki.networks.switch_stacks.routing_interfaces.ospf_settings.cost, null)
+              ospf_settings_is_passive_enabled = try(routing_interface.ospf_settings.is_passive, local.defaults.meraki.networks.switch_stacks.routing_interfaces.ospf_settings.is_passive, null)
+              ipv6_assignment_mode             = try(routing_interface.ipv6.assignment_mode, local.defaults.meraki.networks.switch_stacks.routing_interfaces.ipv6.assignment_mode, null)
+              ipv6_prefix                      = try(routing_interface.ipv6.prefix, local.defaults.meraki.networks.switch_stacks.routing_interfaces.ipv6.prefix, null)
+              ipv6_address                     = try(routing_interface.ipv6.address, local.defaults.meraki.networks.switch_stacks.routing_interfaces.ipv6.address, null)
+              ipv6_gateway                     = try(routing_interface.ipv6.gateway, local.defaults.meraki.networks.switch_stacks.routing_interfaces.ipv6.gateway, null)
+            }
+          ]
+        ]
+      ]
+    ]
   ])
-  networks_switch_stacks_routing_interfaces_not_first = flatten([
-    for domain in try(local.meraki.domains, []) : [
-      for organization in try(domain.organizations, []) : [
-        for network in try(organization.networks, []) : [
-          for switch_stack in try(network.switch_stacks, []) : [
-            for routing_interface in try(switch_stack.routing_interfaces, []) : {
-              key             = format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name, routing_interface.name)
-              network_id      = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-              switch_stack_id = meraki_switch_stack.net_switch_stacks[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name)].id
-              data            = try(routing_interface, null)
-            } if try(routing_interface.default_gateway, null) == null
-          ] if try(network.switch_stacks, null) != null
-        ] if try(organization.networks, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
-  ])
+  networks_switch_stacks_routing_interfaces_first = [
+    for routing_interface in local.networks_switch_stacks_routing_interfaces :
+    routing_interface
+    if routing_interface.default_gateway != null
+  ]
+  networks_switch_stacks_routing_interfaces_not_first = [
+    for routing_interface in local.networks_switch_stacks_routing_interfaces :
+    routing_interface
+    if routing_interface.default_gateway == null
+  ]
 }
 
 resource "meraki_switch_stack_routing_interface" "net_switch_stack_routing_interface_first" {
   for_each                         = { for i in local.networks_switch_stacks_routing_interfaces_first : i.key => i }
   network_id                       = each.value.network_id
   switch_stack_id                  = each.value.switch_stack_id
-  name                             = try(each.value.data.name, local.defaults.meraki.networks.switch_stacks_routing_interfaces.name, null)
-  subnet                           = try(each.value.data.subnet, local.defaults.meraki.networks.switch_stacks_routing_interfaces.subnet, null)
-  interface_ip                     = try(each.value.data.interface_ip, local.defaults.meraki.networks.switch_stacks_routing_interfaces.interface_ip, null)
-  multicast_routing                = try(each.value.data.multicast_routing, local.defaults.meraki.networks.switch_stacks_routing_interfaces.multicast_routing, null)
-  vlan_id                          = try(each.value.data.vlan_id, local.defaults.meraki.networks.switch_stacks_routing_interfaces.vlan_id, null)
-  default_gateway                  = try(each.value.data.default_gateway, local.defaults.meraki.networks.switch_stacks_routing_interfaces.default_gateway, null)
-  ospf_settings_area               = try(each.value.data.ospf_settings.area, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ospf_settings.area, null)
-  ospf_settings_cost               = try(each.value.data.ospf_settings.cost, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ospf_settings.cost, null)
-  ospf_settings_is_passive_enabled = try(each.value.data.ospf_settings.is_passive, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ospf_settings.is_passive, null)
-  ipv6_assignment_mode             = try(each.value.data.ipv6.assignment_mode, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ipv6.assignment_mode, null)
-  ipv6_prefix                      = try(each.value.data.ipv6.prefix, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ipv6.prefix, null)
-  ipv6_address                     = try(each.value.data.ipv6.address, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ipv6.address, null)
-  ipv6_gateway                     = try(each.value.data.ipv6.gateway, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ipv6.gateway, null)
+  name                             = each.value.name
+  subnet                           = each.value.subnet
+  interface_ip                     = each.value.interface_ip
+  multicast_routing                = each.value.multicast_routing
+  vlan_id                          = each.value.vlan_id
+  default_gateway                  = each.value.default_gateway
+  ospf_settings_area               = each.value.ospf_settings_area
+  ospf_settings_cost               = each.value.ospf_settings_cost
+  ospf_settings_is_passive_enabled = each.value.ospf_settings_is_passive_enabled
+  ipv6_assignment_mode             = each.value.ipv6_assignment_mode
+  ipv6_prefix                      = each.value.ipv6_prefix
+  ipv6_address                     = each.value.ipv6_address
+  ipv6_gateway                     = each.value.ipv6_gateway
   depends_on                       = [meraki_network_device_claim.net_device_claim]
 }
 resource "meraki_switch_stack_routing_interface" "net_switch_stack_routing_interface_not_first" {
   for_each                         = { for i in local.networks_switch_stacks_routing_interfaces_not_first : i.key => i }
   network_id                       = each.value.network_id
   switch_stack_id                  = each.value.switch_stack_id
-  name                             = try(each.value.data.name, local.defaults.meraki.networks.switch_stacks_routing_interfaces.name, null)
-  subnet                           = try(each.value.data.subnet, local.defaults.meraki.networks.switch_stacks_routing_interfaces.subnet, null)
-  interface_ip                     = try(each.value.data.interface_ip, local.defaults.meraki.networks.switch_stacks_routing_interfaces.interface_ip, null)
-  multicast_routing                = try(each.value.data.multicast_routing, local.defaults.meraki.networks.switch_stacks_routing_interfaces.multicast_routing, null)
-  vlan_id                          = try(each.value.data.vlan_id, local.defaults.meraki.networks.switch_stacks_routing_interfaces.vlan_id, null)
-  default_gateway                  = try(each.value.data.default_gateway, local.defaults.meraki.networks.switch_stacks_routing_interfaces.default_gateway, null)
-  ospf_settings_area               = try(each.value.data.ospf_settings.area, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ospf_settings.area, null)
-  ospf_settings_cost               = try(each.value.data.ospf_settings.cost, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ospf_settings.cost, null)
-  ospf_settings_is_passive_enabled = try(each.value.data.ospf_settings.is_passive, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ospf_settings.is_passive, null)
-  ipv6_assignment_mode             = try(each.value.data.ipv6.assignment_mode, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ipv6.assignment_mode, null)
-  ipv6_prefix                      = try(each.value.data.ipv6.prefix, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ipv6.prefix, null)
-  ipv6_address                     = try(each.value.data.ipv6.address, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ipv6.address, null)
-  ipv6_gateway                     = try(each.value.data.ipv6.gateway, local.defaults.meraki.networks.switch_stacks_routing_interfaces.ipv6.gateway, null)
+  name                             = each.value.name
+  subnet                           = each.value.subnet
+  interface_ip                     = each.value.interface_ip
+  multicast_routing                = each.value.multicast_routing
+  vlan_id                          = each.value.vlan_id
+  default_gateway                  = each.value.default_gateway
+  ospf_settings_area               = each.value.ospf_settings_area
+  ospf_settings_cost               = each.value.ospf_settings_cost
+  ospf_settings_is_passive_enabled = each.value.ospf_settings_is_passive_enabled
+  ipv6_assignment_mode             = each.value.ipv6_assignment_mode
+  ipv6_prefix                      = each.value.ipv6_prefix
+  ipv6_address                     = each.value.ipv6_address
+  ipv6_gateway                     = each.value.ipv6_gateway
   depends_on                       = [meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_first]
 }
 
