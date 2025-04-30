@@ -133,13 +133,13 @@ locals {
       for organization in try(domain.organizations, []) : {
         key             = format("%s/%s", domain.name, organization.name)
         organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
-        v2c             = try(organization.snmp.v2c, local.defaults.meraki.organizations.snmp.v2c, null)
-        v3              = try(organization.snmp.v3, local.defaults.meraki.organizations.snmp.v3, null)
+        v2c_enabled     = try(organization.snmp.v2c, local.defaults.meraki.organizations.snmp.v2c, null)
+        v3_enabled      = try(organization.snmp.v3, local.defaults.meraki.organizations.snmp.v3, null)
         v3_auth_mode    = try(organization.snmp.v3_auth_mode, local.defaults.meraki.organizations.snmp.v3_auth_mode, null)
         v3_auth_pass    = try(organization.snmp.v3_auth_pass, local.defaults.meraki.organizations.snmp.v3_auth_pass, null)
         v3_priv_mode    = try(organization.snmp.v3_priv_mode, local.defaults.meraki.organizations.snmp.v3_priv_mode, null)
         v3_priv_pass    = try(organization.snmp.v3_priv_pass, local.defaults.meraki.organizations.snmp.v3_priv_pass, null)
-        peer_ips        = try(organization.snmp.peer_ips, null)
+        peer_ips        = try(organization.snmp.peer_ips, local.defaults.meraki.organizations.snmp.peer_ips, null)
       } if try(organization.snmp, null) != null
     ]
   ])
@@ -148,8 +148,8 @@ locals {
 resource "meraki_organization_snmp" "snmp" {
   for_each        = { for v in local.snmp : v.key => v }
   organization_id = each.value.organization_id
-  v2c_enabled     = each.value.v2c
-  v3_enabled      = each.value.v3
+  v2c_enabled     = each.value.v2c_enabled
+  v3_enabled      = each.value.v3_enabled
   v3_auth_mode    = each.value.v3_auth_mode
   v3_auth_pass    = each.value.v3_auth_pass
   v3_priv_mode    = each.value.v3_priv_mode
