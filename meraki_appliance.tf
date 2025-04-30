@@ -389,13 +389,21 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
-          key                     = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id              = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-          subnet                  = try(network.appliance.single_lan.subnet, local.defaults.meraki.networks.appliance.single_lan.subnet, null)
-          appliance_ip            = try(network.appliance.single_lan.appliance_ip, local.defaults.meraki.networks.appliance.single_lan.appliance_ip, null)
-          ipv6_enabled            = try(network.appliance.single_lan.ipv6.enabled, local.defaults.meraki.networks.appliance.single_lan.ipv6.enabled, null)
-          ipv6_prefix_assignments = try(network.appliance.single_lan.ipv6.prefix_assignments, local.defaults.meraki.networks.appliance.single_lan.ipv6.prefix_assignments, null)
-          mandatory_dhcp_enabled  = try(network.appliance.single_lan.mandatory_dhcp.enabled, local.defaults.meraki.networks.appliance.single_lan.mandatory_dhcp.enabled, null)
+          key          = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id   = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          subnet       = try(network.appliance.single_lan.subnet, local.defaults.meraki.networks.appliance.single_lan.subnet, null)
+          appliance_ip = try(network.appliance.single_lan.appliance_ip, local.defaults.meraki.networks.appliance.single_lan.appliance_ip, null)
+          ipv6_enabled = try(network.appliance.single_lan.ipv6.enabled, local.defaults.meraki.networks.appliance.single_lan.ipv6.enabled, null)
+          ipv6_prefix_assignments = try(length(network.appliance.single_lan.ipv6.prefix_assignments) == 0, true) ? null : [
+            for ipv6_prefix_assignment in try(network.appliance.single_lan.ipv6.prefix_assignments, []) : {
+              autonomous           = try(ipv6_prefix_assignment.autonomous, local.defaults.meraki.networks.appliance.single_lan.ipv6.prefix_assignments.autonomous, null)
+              static_prefix        = try(ipv6_prefix_assignment.static_prefix, local.defaults.meraki.networks.appliance.single_lan.ipv6.prefix_assignments.static_prefix, null)
+              static_appliance_ip6 = try(ipv6_prefix_assignment.static_appliance_ip6, local.defaults.meraki.networks.appliance.single_lan.ipv6.prefix_assignments.static_appliance_ip6, null)
+              origin_type          = try(ipv6_prefix_assignment.origin.type, local.defaults.meraki.networks.appliance.single_lan.ipv6.prefix_assignments.origin.type, null)
+              origin_interfaces    = try(ipv6_prefix_assignment.origin.interfaces, local.defaults.meraki.networks.appliance.single_lan.ipv6.prefix_assignments.origin.interfaces, null)
+            }
+          ]
+          mandatory_dhcp_enabled = try(network.appliance.single_lan.mandatory_dhcp, local.defaults.meraki.networks.appliance.single_lan.mandatory_dhcp, null)
         } if try(network.appliance.single_lan, null) != null
       ]
     ]
