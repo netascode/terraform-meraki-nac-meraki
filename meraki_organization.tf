@@ -2,9 +2,15 @@ locals {
   organizations = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : {
-        key               = format("%s/%s", domain.name, organization.name)
-        organization_name = organization.name
-        managed           = try(organization.managed, local.defaults.meraki.domains.organizations.managed, true)
+        key     = format("%s/%s", domain.name, organization.name)
+        name    = try(organization.name, local.defaults.meraki.domains.organizations.name, null)
+        managed = try(organization.managed, local.defaults.meraki.domains.organizations.managed, true)
+        management_details = try(length(organization.management) == 0, true) ? null : [
+          for management in try(organization.management, []) : {
+            name  = try(management.name, local.defaults.meraki.domains.organizations.management.name, null)
+            value = try(management.value, local.defaults.meraki.domains.organizations.management.value, null)
+          }
+        ]
       }
     ]
   ])
@@ -22,13 +28,14 @@ locals {
 
 # Create Organizations
 resource "meraki_organization" "organization" {
-  for_each = { for organization in local.managed_organizations : organization.key => organization }
-  name     = each.value.organization_name
+  for_each           = { for organization in local.managed_organizations : organization.key => organization }
+  name               = each.value.name
+  management_details = each.value.management_details
 }
 
 data "meraki_organization" "organization" {
   for_each = { for organization in local.unmanaged_organizations : organization.key => organization }
-  name     = each.value.organization_name
+  name     = each.value.name
 }
 
 locals {
