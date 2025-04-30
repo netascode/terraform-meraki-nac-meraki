@@ -339,11 +339,21 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
-          key           = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id    = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-          mode          = try(network.appliance.security_malware.mode, local.defaults.meraki.networks.appliance.security_malware.mode, null)
-          allowed_urls  = try(network.appliance.security_malware.allowed_urls, local.defaults.meraki.networks.appliance.security_malware.allowed_urls, null)
-          allowed_files = try(network.appliance.security_malware.allowed_files, local.defaults.meraki.networks.appliance.security_malware.allowed_files, null)
+          key        = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          mode       = try(network.appliance.security_malware.mode, local.defaults.meraki.networks.appliance.security_malware.mode, null)
+          allowed_urls = try(length(network.appliance.security_malware.allowed_urls) == 0, true) ? null : [
+            for allowed_url in try(network.appliance.security_malware.allowed_urls, []) : {
+              url     = try(allowed_url.url, local.defaults.meraki.networks.appliance.security_malware.allowed_urls.url, null)
+              comment = try(allowed_url.comment, local.defaults.meraki.networks.appliance.security_malware.allowed_urls.comment, null)
+            }
+          ]
+          allowed_files = try(length(network.appliance.security_malware.allowed_files) == 0, true) ? null : [
+            for allowed_file in try(network.appliance.security_malware.allowed_files, []) : {
+              sha256  = try(allowed_file.sha256, local.defaults.meraki.networks.appliance.security_malware.allowed_files.sha256, null)
+              comment = try(allowed_file.comment, local.defaults.meraki.networks.appliance.security_malware.allowed_files.comment, null)
+            }
+          ]
         } if try(network.appliance.security_malware, null) != null
       ]
     ]
