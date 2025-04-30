@@ -71,6 +71,7 @@ locals {
               syslog_enabled = try(rule.syslog, local.defaults.meraki.networks.appliance.firewall.inbound_firewall_rules.rules.syslog, null)
             }
           ]
+          syslog_default_rule = try(network.appliance.firewall.inbound_firewall_rules.syslog_default_rule, local.defaults.meraki.networks.appliance.firewall.inbound_firewall_rules.syslog_default_rule, null)
         } if length(try(network.appliance.firewall.inbound_firewall_rules.rules, [])) > 0
       ]
     ]
@@ -78,10 +79,11 @@ locals {
 }
 
 resource "meraki_appliance_inbound_firewall_rules" "appliance_firewall_inbound_firewall_rules" {
-  for_each   = { for v in local.networks_networks_appliance_firewall_inbound_firewall_rules : v.key => v }
-  network_id = each.value.network_id
-  rules      = each.value.rules
-  depends_on = [meraki_network_device_claim.net_device_claim]
+  for_each            = { for v in local.networks_networks_appliance_firewall_inbound_firewall_rules : v.key => v }
+  network_id          = each.value.network_id
+  rules               = each.value.rules
+  syslog_default_rule = each.value.syslog_default_rule
+  depends_on          = [meraki_network_device_claim.net_device_claim]
 }
 
 locals {
