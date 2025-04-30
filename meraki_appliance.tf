@@ -448,7 +448,13 @@ locals {
             ]
             dns_nameservers        = try(appliance_vlan.dns_nameservers, local.defaults.meraki.networks.appliance.vlans.dns_nameservers, null)
             mandatory_dhcp_enabled = try(appliance_vlan.mandatory_dhcp, local.defaults.meraki.networks.appliance.vlans.mandatory_dhcp, null)
-            reserved_ip_ranges     = try(appliance_vlan.reserved_ip_ranges, local.defaults.meraki.networks.appliance.vlans.reserved_ip_ranges, null)
+            reserved_ip_ranges = try(length(appliance_vlan.reserved_ip_ranges) == 0, true) ? null : [
+              for reserved_ip_range in try(appliance_vlan.reserved_ip_ranges, []) : {
+                start   = try(reserved_ip_range.start, local.defaults.meraki.networks.appliance.vlans.reserved_ip_ranges.start, null)
+                end     = try(reserved_ip_range.end, local.defaults.meraki.networks.appliance.vlans.reserved_ip_ranges.end, null)
+                comment = try(reserved_ip_range.comment, local.defaults.meraki.networks.appliance.vlans.reserved_ip_ranges.comment, null)
+              }
+            ]
           }
         ]
       ]
@@ -483,7 +489,6 @@ resource "meraki_appliance_vlan_dhcp" "appliance_vlans_dhcp" {
   reserved_ip_ranges        = each.value.reserved_ip_ranges
   depends_on                = [meraki_appliance_vlan.appliance_vlans]
 }
-
 locals {
   networks_networks_appliance_vlans_settings = flatten([
     for domain in try(local.meraki.domains, []) : [
