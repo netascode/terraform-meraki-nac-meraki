@@ -438,13 +438,21 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for appliance_vlan in try(network.appliance.vlans, []) : {
-            key                       = format("%s/%s/%s/%s", domain.name, organization.name, network.name, appliance_vlan.vlan_id)
-            network_id                = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-            vlan_id                   = try(appliance_vlan.vlan_id, local.defaults.meraki.networks.appliance.vlans.vlan_id, null)
-            appliance_ip              = try(appliance_vlan.appliance_ip, local.defaults.meraki.networks.appliance.vlans.appliance_ip, null)
-            group_policy_id           = try(appliance_vlan.group_policy_id, local.defaults.meraki.networks.appliance.vlans.group_policy_id, null)
-            ipv6_enabled              = try(appliance_vlan.ipv6.enabled, local.defaults.meraki.networks.appliance.vlans.ipv6.enabled, null)
-            ipv6_prefix_assignments   = try(appliance_vlan.ipv6.prefix_assignments, local.defaults.meraki.networks.appliance.vlans.ipv6.prefix_assignments, null)
+            key             = format("%s/%s/%s/%s", domain.name, organization.name, network.name, appliance_vlan.vlan_id)
+            network_id      = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+            vlan_id         = try(appliance_vlan.vlan_id, local.defaults.meraki.networks.appliance.vlans.vlan_id, null)
+            appliance_ip    = try(appliance_vlan.appliance_ip, local.defaults.meraki.networks.appliance.vlans.appliance_ip, null)
+            group_policy_id = try(appliance_vlan.group_policy_id, local.defaults.meraki.networks.appliance.vlans.group_policy_id, null)
+            ipv6_enabled    = try(appliance_vlan.ipv6.enabled, local.defaults.meraki.networks.appliance.vlans.ipv6.enabled, null)
+            ipv6_prefix_assignments = try(length(appliance_vlan.ipv6.prefix_assignments) == 0, true) ? null : [
+              for ipv6_prefix_assignment in try(appliance_vlan.ipv6.prefix_assignments, []) : {
+                autonomous           = try(ipv6_prefix_assignment.autonomous, local.defaults.meraki.networks.appliance.single_lan.ipv6.prefix_assignments.autonomous, null)
+                static_prefix        = try(ipv6_prefix_assignment.static_prefix, local.defaults.meraki.networks.appliance.single_lan.ipv6.prefix_assignments.static_prefix, null)
+                static_appliance_ip6 = try(ipv6_prefix_assignment.static_appliance_ip6, local.defaults.meraki.networks.appliance.single_lan.ipv6.prefix_assignments.static_appliance_ip6, null)
+                origin_type          = try(ipv6_prefix_assignment.origin.type, local.defaults.meraki.networks.appliance.single_lan.ipv6.prefix_assignments.origin.type, null)
+                origin_interfaces    = try(ipv6_prefix_assignment.origin.interfaces, local.defaults.meraki.networks.appliance.single_lan.ipv6.prefix_assignments.origin.interfaces, null)
+              }
+            ]
             name                      = try(appliance_vlan.name, local.defaults.meraki.networks.appliance.vlans.name, null)
             subnet                    = try(appliance_vlan.subnet, local.defaults.meraki.networks.appliance.vlans.subnet, null)
             vpn_nat_subnet            = try(appliance_vlan.vpn_nat_subnet, local.defaults.meraki.networks.appliance.vlans.vpn_nat_subnet, null)
