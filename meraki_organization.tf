@@ -274,20 +274,22 @@ locals {
   adaptive_policy_acls = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
-        for acl in try(organization.adaptive_policy.acls, []) : {
-          key             = format("%s/%s/%s", domain.name, organization.name, acl.name)
+        for adaptive_policy_acl in try(organization.adaptive_policy.acls, []) : {
+          key             = format("%s/%s/%s", domain.name, organization.name, adaptive_policy_acl.name)
           organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
-          acl_name        = try(acl.name, local.defaults.meraki.organizations.adaptive_policy.acls.name, null)
-          description     = try(acl.description, local.defaults.meraki.organizations.adaptive_policy.acls.description, null)
-          rules = try(length(acl.rules) == 0, true) ? null : [
-            for network in try(acl.rules, []) : {
-              policy   = try(network.policy, local.defaults.meraki.organizations.adaptive_policy.acls.rules.policy, null)
-              protocol = try(network.protocol, local.defaults.meraki.organizations.adaptive_policy.acls.rules.protocol, null)
-              src_port = try(network.source_port, local.defaults.meraki.organizations.adaptive_policy.acls.rules.source_port, null)
-              dst_port = try(network.destination_port, local.defaults.meraki.organizations.adaptive_policy.acls.rules.destination_port, null)
+          name            = try(adaptive_policy_acl.name, local.defaults.meraki.organizations.adaptive_policy.acls.name, null)
+          description     = try(adaptive_policy_acl.description, local.defaults.meraki.organizations.adaptive_policy.acls.description, null)
+          rules = [
+            for rule in try(adaptive_policy_acl.rules, []) : {
+              policy          = try(rule.policy, local.defaults.meraki.organizations.adaptive_policy.acls.rules.policy, null)
+              protocol        = try(rule.protocol, local.defaults.meraki.organizations.adaptive_policy.acls.rules.protocol, null)
+              src_port        = try(rule.source_port, local.defaults.meraki.organizations.adaptive_policy.acls.rules.source_port, null)
+              dst_port        = try(rule.destination_port, local.defaults.meraki.organizations.adaptive_policy.acls.rules.destination_port, null)
+              log             = try(rule.log, local.defaults.meraki.organizations.adaptive_policy.acls.rules.log, null)
+              tcp_established = try(rule.tcp_established, local.defaults.meraki.organizations.adaptive_policy.acls.rules.tcp_established, null)
             }
           ]
-          ip_version = try(acl.ip_version, local.defaults.meraki.organizations.adaptive_policy.acls.ip_version, null)
+          ip_version = try(adaptive_policy_acl.ip_version, local.defaults.meraki.organizations.adaptive_policy.acls.ip_version, null)
         }
       ]
     ]
@@ -297,10 +299,10 @@ locals {
 resource "meraki_organization_adaptive_policy_acl" "organizations_adaptive_policy_acl" {
   for_each        = { for i in local.adaptive_policy_acls : i.key => i }
   organization_id = each.value.organization_id
-  name            = each.value.acl_name
+  name            = each.value.name
   description     = each.value.description
-  ip_version      = each.value.ip_version
   rules           = each.value.rules
+  ip_version      = each.value.ip_version
   depends_on      = [meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group]
 }
 
