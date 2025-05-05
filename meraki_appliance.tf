@@ -1,5 +1,5 @@
 locals {
-  networks_networks_appliance_content_filtering = flatten([
+  networks_appliance_content_filtering = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
@@ -15,8 +15,8 @@ locals {
   ])
 }
 
-resource "meraki_appliance_content_filtering" "appliance_content_filtering" {
-  for_each               = { for v in local.networks_networks_appliance_content_filtering : v.key => v }
+resource "meraki_appliance_content_filtering" "networks_appliance_content_filtering" {
+  for_each               = { for v in local.networks_appliance_content_filtering : v.key => v }
   network_id             = each.value.network_id
   allowed_url_patterns   = each.value.allowed_url_patterns
   blocked_url_patterns   = each.value.blocked_url_patterns
@@ -26,7 +26,7 @@ resource "meraki_appliance_content_filtering" "appliance_content_filtering" {
 }
 
 locals {
-  networks_networks_appliance_firewall_firewalled_services = flatten([
+  networks_appliance_firewall_firewalled_services = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
@@ -43,8 +43,8 @@ locals {
   ])
 }
 
-resource "meraki_appliance_firewalled_service" "appliance_firewall_firewalled_services" {
-  for_each    = { for v in local.networks_networks_appliance_firewall_firewalled_services : v.key => v }
+resource "meraki_appliance_firewalled_service" "networks_appliance_firewall_firewalled_services" {
+  for_each    = { for v in local.networks_appliance_firewall_firewalled_services : v.key => v }
   network_id  = each.value.network_id
   access      = each.value.access
   allowed_ips = each.value.allowed_ips
@@ -53,7 +53,7 @@ resource "meraki_appliance_firewalled_service" "appliance_firewall_firewalled_se
 }
 
 locals {
-  networks_networks_appliance_firewall_inbound_firewall_rules = flatten([
+  networks_appliance_firewall_inbound_firewall_rules = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
@@ -78,8 +78,8 @@ locals {
   ])
 }
 
-resource "meraki_appliance_inbound_firewall_rules" "appliance_firewall_inbound_firewall_rules" {
-  for_each            = { for v in local.networks_networks_appliance_firewall_inbound_firewall_rules : v.key => v }
+resource "meraki_appliance_inbound_firewall_rules" "networks_appliance_firewall_inbound_firewall_rules" {
+  for_each            = { for v in local.networks_appliance_firewall_inbound_firewall_rules : v.key => v }
   network_id          = each.value.network_id
   rules               = each.value.rules
   syslog_default_rule = each.value.syslog_default_rule
@@ -87,7 +87,7 @@ resource "meraki_appliance_inbound_firewall_rules" "appliance_firewall_inbound_f
 }
 
 locals {
-  networks_networks_appliance_firewall_l3_firewall_rules = flatten([
+  networks_appliance_firewall_l3_firewall_rules = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
@@ -112,8 +112,8 @@ locals {
   ])
 }
 
-resource "meraki_appliance_l3_firewall_rules" "appliance_firewall_l3_firewall_rules" {
-  for_each            = { for v in local.networks_networks_appliance_firewall_l3_firewall_rules : v.key => v }
+resource "meraki_appliance_l3_firewall_rules" "networks_appliance_firewall_l3_firewall_rules" {
+  for_each            = { for v in local.networks_appliance_firewall_l3_firewall_rules : v.key => v }
   network_id          = each.value.network_id
   syslog_default_rule = each.value.syslog_default_rule
   rules               = each.value.rules
@@ -121,7 +121,7 @@ resource "meraki_appliance_l3_firewall_rules" "appliance_firewall_l3_firewall_ru
 }
 
 locals {
-  networks_networks_appliance_firewall_l7_firewall_rules = flatten([
+  networks_appliance_firewall_l7_firewall_rules = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
@@ -140,15 +140,15 @@ locals {
   ])
 }
 
-resource "meraki_appliance_l7_firewall_rules" "appliance_firewall_l7_firewall_rules" {
-  for_each   = { for v in local.networks_networks_appliance_firewall_l7_firewall_rules : v.key => v }
+resource "meraki_appliance_l7_firewall_rules" "networks_appliance_firewall_l7_firewall_rules" {
+  for_each   = { for v in local.networks_appliance_firewall_l7_firewall_rules : v.key => v }
   network_id = each.value.network_id
   rules      = each.value.rules
   depends_on = [meraki_network_device_claim.net_device_claim]
 }
 
 locals {
-  networks_networks_appliance_firewall_one_to_many_nat_rules = flatten([
+  networks_appliance_firewall_one_to_many_nat_rules = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
@@ -176,15 +176,15 @@ locals {
   ])
 }
 
-resource "meraki_appliance_one_to_many_nat_rules" "appliance_firewall_one_to_many_nat_rules" {
-  for_each   = { for v in local.networks_networks_appliance_firewall_one_to_many_nat_rules : v.key => v }
+resource "meraki_appliance_one_to_many_nat_rules" "networks_appliance_firewall_one_to_many_nat_rules" {
+  for_each   = { for v in local.networks_appliance_firewall_one_to_many_nat_rules : v.key => v }
   network_id = each.value.network_id
   rules      = each.value.rules
   depends_on = [meraki_network_device_claim.net_device_claim]
 }
 
 locals {
-  networks_networks_appliance_firewall_one_to_one_nat_rules = flatten([
+  networks_appliance_firewall_one_to_one_nat_rules = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
@@ -211,15 +211,15 @@ locals {
   ])
 }
 
-resource "meraki_appliance_one_to_one_nat_rules" "appliance_firewall_one_to_one_nat_rules" {
-  for_each   = { for v in local.networks_networks_appliance_firewall_one_to_one_nat_rules : v.key => v }
+resource "meraki_appliance_one_to_one_nat_rules" "networks_appliance_firewall_one_to_one_nat_rules" {
+  for_each   = { for v in local.networks_appliance_firewall_one_to_one_nat_rules : v.key => v }
   network_id = each.value.network_id
   rules      = each.value.rules
   depends_on = [meraki_network_device_claim.net_device_claim]
 }
 
 locals {
-  networks_networks_appliance_firewall_port_forwarding_rules = flatten([
+  networks_appliance_firewall_port_forwarding_rules = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
@@ -242,36 +242,36 @@ locals {
   ])
 }
 
-resource "meraki_appliance_port_forwarding_rules" "appliance_firewall_port_forwarding_rules" {
-  for_each   = { for v in local.networks_networks_appliance_firewall_port_forwarding_rules : v.key => v }
+resource "meraki_appliance_port_forwarding_rules" "networks_appliance_firewall_port_forwarding_rules" {
+  for_each   = { for v in local.networks_appliance_firewall_port_forwarding_rules : v.key => v }
   network_id = each.value.network_id
   rules      = each.value.rules
   depends_on = [meraki_network_device_claim.net_device_claim]
 }
 
 locals {
-  networks_networks_appliance_firewall_settings = flatten([
+  networks_appliance_firewall_settings_spoofing_protection_ip_source_guard_mode = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key                                      = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id                               = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
           spoofing_protection_ip_source_guard_mode = try(network.appliance.firewall_settings.spoofing_protection.ip_source_guard.mode, local.defaults.meraki.domains.organizations.networks.appliance.firewall_settings.spoofing_protection.ip_source_guard.mode, null)
-        } if try(network.appliance.firewall_settings, null) != null
+        } if try(network.appliance.firewall.settings_spoofing_protection_ip_source_guard_mode, null) != null
       ]
     ]
   ])
 }
 
-resource "meraki_appliance_firewall_settings" "appliance_firewall_settings" {
-  for_each                                 = { for v in local.networks_networks_appliance_firewall_settings : v.key => v }
+resource "meraki_appliance_firewall_settings" "networks_appliance_firewall_settings_spoofing_protection_ip_source_guard_mode" {
+  for_each                                 = { for v in local.networks_appliance_firewall_settings_spoofing_protection_ip_source_guard_mode : v.key => v }
   network_id                               = each.value.network_id
   spoofing_protection_ip_source_guard_mode = each.value.spoofing_protection_ip_source_guard_mode
   depends_on                               = [meraki_network_device_claim.net_device_claim]
 }
 
 locals {
-  networks_networks_appliance_ports = flatten([
+  networks_appliance_ports = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
@@ -292,8 +292,8 @@ locals {
   ])
 }
 
-resource "meraki_appliance_port" "appliance_ports" {
-  for_each              = { for v in local.networks_networks_appliance_ports : v.key => v }
+resource "meraki_appliance_port" "networks_appliance_ports" {
+  for_each              = { for v in local.networks_appliance_ports : v.key => v }
   network_id            = each.value.network_id
   enabled               = each.value.enabled
   drop_untagged_traffic = each.value.drop_untagged_traffic
@@ -306,7 +306,7 @@ resource "meraki_appliance_port" "appliance_ports" {
 }
 
 locals {
-  networks_networks_appliance_security_intrusion = flatten([
+  networks_appliance_security_intrusion = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
@@ -323,8 +323,8 @@ locals {
   ])
 }
 
-resource "meraki_appliance_network_security_intrusion" "appliance_security_intrusion" {
-  for_each                         = { for v in local.networks_networks_appliance_security_intrusion : v.key => v }
+resource "meraki_appliance_network_security_intrusion" "networks_appliance_security_intrusion" {
+  for_each                         = { for v in local.networks_appliance_security_intrusion : v.key => v }
   network_id                       = each.value.network_id
   mode                             = each.value.mode
   ids_rulesets                     = each.value.ids_rulesets
@@ -335,7 +335,7 @@ resource "meraki_appliance_network_security_intrusion" "appliance_security_intru
 }
 
 locals {
-  networks_networks_appliance_security_malware = flatten([
+  networks_appliance_security_malware = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
@@ -360,8 +360,8 @@ locals {
   ])
 }
 
-resource "meraki_appliance_security_malware" "appliance_security_malware" {
-  for_each      = { for v in local.networks_networks_appliance_security_malware : v.key => v }
+resource "meraki_appliance_security_malware" "networks_appliance_security_malware" {
+  for_each      = { for v in local.networks_appliance_security_malware : v.key => v }
   network_id    = each.value.network_id
   mode          = each.value.mode
   allowed_urls  = each.value.allowed_urls
@@ -370,7 +370,7 @@ resource "meraki_appliance_security_malware" "appliance_security_malware" {
 }
 
 locals {
-  networks_networks_appliance_settings = flatten([
+  networks_appliance_settings = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
@@ -386,8 +386,8 @@ locals {
   ])
 }
 
-resource "meraki_appliance_settings" "appliance_settings" {
-  for_each               = { for v in local.networks_networks_appliance_settings : v.key => v }
+resource "meraki_appliance_settings" "networks_appliance_settings" {
+  for_each               = { for v in local.networks_appliance_settings : v.key => v }
   network_id             = each.value.network_id
   client_tracking_method = each.value.client_tracking_method
   deployment_mode        = each.value.deployment_mode
@@ -397,7 +397,7 @@ resource "meraki_appliance_settings" "appliance_settings" {
 }
 
 locals {
-  networks_networks_appliance_single_lan = flatten([
+  networks_appliance_single_lan = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
@@ -422,8 +422,8 @@ locals {
   ])
 }
 
-resource "meraki_appliance_single_lan" "appliance_single_lan" {
-  for_each                = { for v in local.networks_networks_appliance_single_lan : v.key => v }
+resource "meraki_appliance_single_lan" "networks_appliance_single_lan" {
+  for_each                = { for v in local.networks_appliance_single_lan : v.key => v }
   network_id              = each.value.network_id
   subnet                  = each.value.subnet
   appliance_ip            = each.value.appliance_ip
@@ -432,8 +432,9 @@ resource "meraki_appliance_single_lan" "appliance_single_lan" {
   mandatory_dhcp_enabled  = each.value.mandatory_dhcp_enabled
   depends_on              = [meraki_network_device_claim.net_device_claim]
 }
+
 locals {
-  networks_networks_appliance_vlans = flatten([
+  networks_appliance_vlans = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
@@ -482,8 +483,8 @@ locals {
   ])
 }
 
-resource "meraki_appliance_vlan" "appliance_vlans" {
-  for_each                = { for v in local.networks_networks_appliance_vlans : v.key => v }
+resource "meraki_appliance_vlan" "networks_appliance_vlans" {
+  for_each                = { for v in local.networks_appliance_vlans : v.key => v }
   network_id              = each.value.network_id
   vlan_id                 = each.value.vlan_id
   appliance_ip            = each.value.appliance_ip
@@ -496,8 +497,8 @@ resource "meraki_appliance_vlan" "appliance_vlans" {
   depends_on              = [meraki_appliance_vlans_settings.appliance_vlans_settings]
 }
 
-resource "meraki_appliance_vlan_dhcp" "appliance_vlans_dhcp" {
-  for_each                  = { for v in local.networks_networks_appliance_vlans : v.key => v }
+resource "meraki_appliance_vlan_dhcp" "networks_appliance_vlans_dhcp" {
+  for_each                  = { for v in local.networks_appliance_vlans : v.key => v }
   network_id                = each.value.network_id
   vlan_id                   = each.value.vlan_id
   dhcp_boot_options_enabled = each.value.dhcp_boot_options_enabled
@@ -509,8 +510,9 @@ resource "meraki_appliance_vlan_dhcp" "appliance_vlans_dhcp" {
   reserved_ip_ranges        = each.value.reserved_ip_ranges
   depends_on                = [meraki_appliance_vlan.appliance_vlans]
 }
+
 locals {
-  networks_networks_appliance_vlans_settings = flatten([
+  networks_appliance_vlans_settings = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
@@ -523,15 +525,15 @@ locals {
   ])
 }
 
-resource "meraki_appliance_vlans_settings" "appliance_vlans_settings" {
-  for_each      = { for v in local.networks_networks_appliance_vlans_settings : v.key => v }
+resource "meraki_appliance_vlans_settings" "networks_appliance_vlans_settings" {
+  for_each      = { for v in local.networks_appliance_vlans_settings : v.key => v }
   network_id    = each.value.network_id
   vlans_enabled = each.value.vlans_enabled
   depends_on    = [meraki_network_device_claim.net_device_claim]
 }
 
 locals {
-  networks_networks_appliance_vpn_bgp = flatten([
+  networks_appliance_vpn_bgp = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
@@ -561,8 +563,8 @@ locals {
   ])
 }
 
-resource "meraki_appliance_vpn_bgp" "appliance_vpn_bgp" {
-  for_each        = { for v in local.networks_networks_appliance_vpn_bgp : v.key => v }
+resource "meraki_appliance_vpn_bgp" "networks_appliance_vpn_bgp" {
+  for_each        = { for v in local.networks_appliance_vpn_bgp : v.key => v }
   network_id      = each.value.network_id
   enabled         = each.value.enabled
   as_number       = each.value.as_number
@@ -572,7 +574,7 @@ resource "meraki_appliance_vpn_bgp" "appliance_vpn_bgp" {
 }
 
 locals {
-  networks_networks_appliance_vpn_site_to_site_vpn = flatten([
+  networks_appliance_vpn_site_to_site_vpn = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
@@ -599,8 +601,8 @@ locals {
   ])
 }
 
-resource "meraki_appliance_site_to_site_vpn" "appliance_vpn_site_to_site_vpn" {
-  for_each   = { for v in local.networks_networks_appliance_vpn_site_to_site_vpn : v.key => v }
+resource "meraki_appliance_site_to_site_vpn" "networks_appliance_vpn_site_to_site_vpn" {
+  for_each   = { for v in local.networks_appliance_vpn_site_to_site_vpn : v.key => v }
   network_id = each.value.network_id
   mode       = each.value.mode
   hubs       = each.value.hubs
@@ -609,7 +611,7 @@ resource "meraki_appliance_site_to_site_vpn" "appliance_vpn_site_to_site_vpn" {
 }
 
 locals {
-  networks_networks_appliance_warm_spare = flatten([
+  networks_appliance_warm_spare = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
@@ -626,8 +628,8 @@ locals {
   ])
 }
 
-resource "meraki_appliance_warm_spare" "appliance_warm_spare" {
-  for_each     = { for v in local.networks_networks_appliance_warm_spare : v.key => v }
+resource "meraki_appliance_warm_spare" "networks_appliance_warm_spare" {
+  for_each     = { for v in local.networks_appliance_warm_spare : v.key => v }
   network_id   = each.value.network_id
   enabled      = each.value.enabled
   spare_serial = each.value.spare_serial
