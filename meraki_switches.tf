@@ -400,7 +400,7 @@ locals {
         for network in try(organization.networks, []) : {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-          rule_ids   = [for r in network.switch.qos_rules : meraki_switch_qos_rule.net_switch_qos_rule[format("%s/%s/%s/%s", domain.name, organization.name, network.name, r.qos_rule_name)].id]
+          rule_ids   = [for r in network.switch.qos_rules : meraki_switch_qos_rule.networks_switch_qos_rules[format("%s/%s/%s/%s", domain.name, organization.name, network.name, r.qos_rule_name)].id]
         } if try(network.switch.qos_rules, null) != null
       ]
     ]
