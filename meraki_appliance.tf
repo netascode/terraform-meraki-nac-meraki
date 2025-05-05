@@ -583,7 +583,7 @@ locals {
           mode       = try(network.appliance.vpn_site_to_site_vpn.mode, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.mode, null)
           hubs = try(length(network.appliance.vpn_site_to_site_vpn.hubs) == 0, true) ? null : [
             for hub in try(network.appliance.vpn_site_to_site_vpn.hubs, []) : {
-              hub_id            = try(hub.hub_id, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.hubs.hub_id, null)
+              hub_id            = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, hub.hub_network_name)].id
               use_default_route = try(hub.use_default_route, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.hubs.use_default_route, null)
             }
           ]
