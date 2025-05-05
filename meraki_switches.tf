@@ -259,7 +259,7 @@ resource "meraki_switch_link_aggregation" "networks_switch_link_aggregations" {
   network_id           = each.value.network_id
   switch_ports         = each.value.switch_ports
   switch_profile_ports = each.value.switch_profile_ports
-  depends_on           = [meraki_switch_stack.net_switch_stacks]
+  depends_on           = [meraki_switch_stack.networks_switch_stacks]
 }
 
 locals {
@@ -602,7 +602,7 @@ locals {
               switches = try(stp_bridge_priority.switches, local.defaults.meraki.networks.switch.stp.stp_bridge_priority.switches, null)
               stacks = try(length(stp_bridge_priority.stacks) == 0, true) ? null : [
                 for stack in stp_bridge_priority.stacks :
-                meraki_switch_stack.net_switch_stacks[format("%s/%s/%s/%s", domain.name, organization.name, network.name, stack)].id
+                meraki_switch_stack.networks_switch_stacks[format("%s/%s/%s/%s", domain.name, organization.name, network.name, stack)].id
               ]
               stp_priority = try(stp_bridge_priority.stp_priority, local.defaults.meraki.networks.switch.stp.stp_bridge_priority.stp_priority, null)
             }
@@ -655,7 +655,7 @@ locals {
             for routing_interface in try(switch_stack.routing_interfaces, []) : {
               key                              = format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name, routing_interface.name)
               network_id                       = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-              switch_stack_id                  = meraki_switch_stack.net_switch_stacks[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name)].id
+              switch_stack_id                  = meraki_switch_stack.networks_switch_stacks[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name)].id
               name                             = try(routing_interface.name, local.defaults.meraki.networks.switch_stacks.routing_interfaces.name, null)
               subnet                           = try(routing_interface.subnet, local.defaults.meraki.networks.switch_stacks.routing_interfaces.subnet, null)
               interface_ip                     = try(routing_interface.interface_ip, local.defaults.meraki.networks.switch_stacks.routing_interfaces.interface_ip, null)
@@ -745,7 +745,7 @@ locals {
             for routing_interface in try(switch_stack.routing_interfaces, []) : {
               key                    = format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name, routing_interface.name)
               network_id             = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-              switch_stack_id        = meraki_switch_stack.net_switch_stacks[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name)].id
+              switch_stack_id        = meraki_switch_stack.networks_switch_stacks[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name)].id
               interface_id           = local.networks_switch_stacks_routing_interface_ids[format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name, routing_interface.name)]
               dhcp_mode              = try(routing_interface.dhcp.dhcp_mode, local.defaults.meraki.networks.switch_stacks.routing_interfaces.dhcp.dhcp_mode, null)
               dhcp_relay_server_ips  = try(routing_interface.dhcp.dhcp_relay_server_ips, local.defaults.meraki.networks.switch_stacks.routing_interfaces.dhcp.dhcp_relay_server_ips, null)
@@ -811,7 +811,7 @@ locals {
             for routing_static_route in try(switch_stack.routing_static_routes, []) : {
               key                             = format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name, routing_static_route.name)
               network_id                      = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-              switch_stack_id                 = meraki_switch_stack.net_switch_stacks[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name)].id
+              switch_stack_id                 = meraki_switch_stack.networks_switch_stacks[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name)].id
               name                            = try(routing_static_route.name, local.defaults.meraki.networks.switch_stacks.routing_static_routes.name, null)
               subnet                          = try(routing_static_route.subnet, local.defaults.meraki.networks.switch_stacks.routing_static_routes.subnet, null)
               next_hop_ip                     = try(routing_static_route.next_hop_ip, local.defaults.meraki.networks.switch_stacks.routing_static_routes.next_hop_ip, null)
