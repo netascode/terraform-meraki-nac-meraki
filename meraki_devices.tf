@@ -22,7 +22,7 @@ locals {
   ])
 }
 
-resource "meraki_device" "device" {
+resource "meraki_device" "devices" {
   for_each        = { for dev in local.devices : dev.key => dev }
   serial          = each.value.serial
   name            = each.value.name
@@ -82,7 +82,7 @@ locals {
   ])
 }
 
-resource "meraki_appliance_uplinks_settings" "devices_appliance_uplinks_setting" {
+resource "meraki_appliance_uplinks_settings" "devices_appliance_uplinks_settings" {
   for_each                                        = { for v in local.devices_appliance_uplinks_settings : v.key => v }
   serial                                          = each.value.serial
   interfaces_wan1_enabled                         = each.value.interfaces_wan1_enabled
@@ -211,7 +211,7 @@ locals {
   )
 }
 
-resource "meraki_switch_port" "devices_switch_port" {
+resource "meraki_switch_port" "devices_switch_ports" {
   for_each                    = { for v in local.devices_switch_ports : v.key => v }
   serial                      = each.value.device_serial
   port_id                     = each.value.port_id
@@ -275,7 +275,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_routing_interface" "devices_switch_routing_interface" {
+resource "meraki_switch_routing_interface" "devices_switch_routing_interfaces" {
   for_each                         = { for i in local.devices_switch_routing_interfaces : i.key => i }
   serial                           = each.value.serial
   name                             = each.value.name
