@@ -89,7 +89,7 @@ locals {
   ])
 }
 
-resource "meraki_network_group_policy" "net_group_policies" {
+resource "meraki_network_group_policy" "networks_group_policies" {
   for_each                                          = { for v in local.networks_group_policies : v.key => v }
   network_id                                        = each.value.network_id
   name                                              = each.value.name
@@ -155,7 +155,7 @@ locals {
   ])
 }
 
-resource "meraki_network_settings" "net_settings" {
+resource "meraki_network_settings" "networks_settings" {
   for_each                                  = { for v in local.networks_settings : v.key => v }
   network_id                                = each.value.network_id
   local_status_page_enabled                 = each.value.local_status_page_enabled
@@ -188,7 +188,7 @@ locals {
   ])
 }
 
-resource "meraki_network_snmp" "net_snmp" {
+resource "meraki_network_snmp" "networks_snmp" {
   for_each         = { for v in local.networks_snmp : v.key => v }
   network_id       = each.value.network_id
   access           = each.value.access
@@ -216,7 +216,7 @@ locals {
   ])
 }
 
-resource "meraki_network_syslog_servers" "net_syslog_servers" {
+resource "meraki_network_syslog_servers" "networks_syslog_servers" {
   for_each   = { for v in local.networks_syslog_servers : v.key => v }
   network_id = each.value.network_id
   servers    = each.value.servers
@@ -252,7 +252,7 @@ locals {
   ])
 }
 
-resource "meraki_network_vlan_profile" "net_vlan_profiles" {
+resource "meraki_network_vlan_profile" "networks_vlan_profiles" {
   for_each    = { for v in local.networks_vlan_profiles : v.key => v }
   network_id  = each.value.network_id
   name        = each.value.name
@@ -275,7 +275,7 @@ locals {
   ])
 }
 
-resource "meraki_network_device_claim" "net_device_claim" {
+resource "meraki_network_device_claim" "networks_devices_claim" {
   for_each   = { for v in local.networks_devices_claim : v.key => v }
   network_id = each.value.network_id
   serials    = each.value.serials
@@ -309,7 +309,7 @@ locals {
   ])
 }
 
-resource "meraki_network_floor_plan" "net_floor_plans" {
+resource "meraki_network_floor_plan" "networks_floor_plans" {
   for_each                = { for v in local.networks_floor_plans : v.key => v }
   network_id              = each.value.network_id
   name                    = each.value.name
