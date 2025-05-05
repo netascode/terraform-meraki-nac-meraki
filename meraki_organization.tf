@@ -296,7 +296,7 @@ resource "meraki_organization_adaptive_policy_acl" "organizations_adaptive_polic
   description     = each.value.description
   rules           = each.value.rules
   ip_version      = each.value.ip_version
-  depends_on      = [meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group]
+  depends_on      = [meraki_organization_adaptive_policy_group.organizations_adaptive_policy_groups]
 }
 
 locals {
@@ -309,10 +309,10 @@ locals {
           policy_name            = try(policy.name, local.defaults.meraki.domains.organizations.adaptive_policy.policies.name, null)
           source_group_name      = try(policy.source_group.name, local.defaults.meraki.domains.organizations.adaptive_policy.policies.source_group.name, null)
           source_group_sgt       = try(policy.source_group.sgt, local.defaults.meraki.domains.organizations.adaptive_policy.policies.source_group.sgt, null)
-          source_group_id        = meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/%s/%s", domain.name, organization.name, policy.source_group.name)].id
+          source_group_id        = meraki_organization_adaptive_policy_group.organizations_adaptive_policy_groups[format("%s/%s/%s", domain.name, organization.name, policy.source_group.name)].id
           destination_group_name = try(policy.destination_group.name, local.defaults.meraki.domains.organizations.adaptive_policy.policies.destination_group.name, null)
           destination_group_sgt  = try(policy.destination_group.sgt, local.defaults.meraki.domains.organizations.adaptive_policy.policies.destination_group.sgt, null)
-          destination_group_id   = meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/%s/%s", domain.name, organization.name, policy.destination_group.name)].id
+          destination_group_id   = meraki_organization_adaptive_policy_group.organizations_adaptive_policy_groups[format("%s/%s/%s", domain.name, organization.name, policy.destination_group.name)].id
           last_entry_rule        = try(policy.last_entry_rule, local.defaults.meraki.domains.organizations.adaptive_policy.policies.last_entry_rule, null)
           acls = try(length(policy.acls) == 0, true) ? null : [
             for acl in policy.acls : {
@@ -338,7 +338,7 @@ resource "meraki_organization_adaptive_policy" "organizations_adaptive_policy_po
   acls                   = each.value.acls
   last_entry_rule        = each.value.last_entry_rule
   depends_on = [
-    meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group,
+    meraki_organization_adaptive_policy_group.organizations_adaptive_policy_groups,
     meraki_organization_adaptive_policy_acl.organizations_adaptive_policy_acls
   ]
 }
