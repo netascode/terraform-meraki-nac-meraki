@@ -124,7 +124,7 @@ locals {
           protocols  = try(network.switch.alternate_management_interface.protocols, local.defaults.meraki.networks.switch.alternate_management_interface.protocols, null)
           switches = try(length(network.switch.alternate_management_interface.switches) == 0, true) ? null : [
             for switch in try(network.switch.alternate_management_interface.switches, []) : {
-              serial                  = meraki_device.device[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch.device)].serial
+              serial                  = meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch.device)].serial
               alternate_management_ip = try(switch.alternate_management_ip, local.defaults.meraki.networks.switch.alternate_management_interface.switches.alternate_management_ip, null)
               subnet_mask             = try(switch.subnet_mask, local.defaults.meraki.networks.switch.alternate_management_interface.switches.subnet_mask, null)
               gateway                 = try(switch.gateway, local.defaults.meraki.networks.switch.alternate_management_interface.switches.gateway, null)
@@ -237,7 +237,7 @@ locals {
             network_id = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
             switch_ports = try(length(switch_link_aggregation.switch_ports) == 0, true) ? null : [
               for switch_port in try(switch_link_aggregation.switch_ports, []) : {
-                serial  = meraki_device.device[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.device)].serial
+                serial  = meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.device)].serial
                 port_id = try(switch_port.port_id, local.defaults.meraki.networks.switch.link_aggregations.switch_ports.port_id, null)
               }
             ]
@@ -537,7 +537,7 @@ locals {
           use_combined_power = try(network.switch.settings.use_combined_power, local.defaults.meraki.networks.switch.settings.use_combined_power, null)
           power_exceptions = try(length(network.switch.settings.power_exceptions) == 0, true) ? null : [
             for power_exception in try(network.switch.settings.power_exceptions, []) : {
-              serial     = meraki_device.device[format("%s/%s/%s/%s", domain.name, organization.name, network.name, power_exception.device)].serial
+              serial     = meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, power_exception.device)].serial
               power_type = try(power_exception.power_type, local.defaults.meraki.networks.switch.settings.power_exceptions.power_type, null)
             }
           ]
@@ -630,7 +630,7 @@ locals {
             key        = format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name)
             network_id = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
             name       = try(switch_stack.name, local.defaults.meraki.networks.switch_stacks.name, null)
-            serials    = [for device in switch_stack.devices : meraki_device.device[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device)].serial]
+            serials    = [for device in switch_stack.devices : meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device)].serial]
           }
         ]
       ]
