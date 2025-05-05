@@ -302,7 +302,7 @@ locals {
             for switch_routing_interface in try(device.switch_routing_interfaces, []) : {
               key                    = format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, device.name, switch_routing_interface.name)
               serial                 = meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)].serial
-              interface_id           = meraki_switch_routing_interface.devices_switch_routing_interface[format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, device.name, switch_routing_interface.name)].id
+              interface_id           = meraki_switch_routing_interface.devices_switch_routing_interfaces[format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, device.name, switch_routing_interface.name)].id
               dhcp_mode              = try(switch_routing_interface.dhcp.dhcp_mode, local.defaults.meraki.networks.devices.switch_routing_interfaces.dhcp.dhcp_mode, null)
               dhcp_relay_server_ips  = try(switch_routing_interface.dhcp.dhcp_relay_server_ips, local.defaults.meraki.networks.devices.switch_routing_interfaces.dhcp.dhcp_relay_server_ips, null)
               dhcp_lease_time        = try(switch_routing_interface.dhcp.dhcp_lease_time, local.defaults.meraki.networks.devices.switch_routing_interfaces.dhcp.dhcp_lease_time, null)
@@ -355,7 +355,7 @@ resource "meraki_switch_routing_interface_dhcp" "devices_switch_routing_interfac
   dhcp_options           = each.value.dhcp_options
   reserved_ip_ranges     = each.value.reserved_ip_ranges
   fixed_ip_assignments   = each.value.fixed_ip_assignments
-  depends_on             = [meraki_switch_routing_interface.devices_switch_routing_interface]
+  depends_on             = [meraki_switch_routing_interface.devices_switch_routing_interfaces]
 }
 
 locals {
@@ -388,7 +388,7 @@ resource "meraki_switch_routing_static_route" "devices_switch_routing_static_rou
   next_hop_ip                     = each.value.next_hop_ip
   advertise_via_ospf_enabled      = each.value.advertise_via_ospf_enabled
   prefer_over_ospf_routes_enabled = each.value.prefer_over_ospf_routes_enabled
-  depends_on                      = [meraki_switch_routing_interface.devices_switch_routing_interface]
+  depends_on                      = [meraki_switch_routing_interface.devices_switch_routing_interfaces]
 }
 
 locals {
