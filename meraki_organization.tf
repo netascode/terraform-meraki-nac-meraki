@@ -316,7 +316,7 @@ locals {
           last_entry_rule        = try(policy.last_entry_rule, local.defaults.meraki.organizations.adaptive_policy.policies.last_entry_rule, null)
           acls = try(length(policy.acls) == 0, true) ? null : [
             for acl in policy.acls : {
-              id   = meraki_organization_adaptive_policy_acl.organizations_adaptive_policy_acl[format("%s/%s/%s", domain.name, organization.name, acl)].id
+              id   = meraki_organization_adaptive_policy_acl.organizations_adaptive_policy_acls[format("%s/%s/%s", domain.name, organization.name, acl)].id
               name = acl
             }
           ]
@@ -339,7 +339,7 @@ resource "meraki_organization_adaptive_policy" "organizations_adaptive_policy_po
   last_entry_rule        = each.value.last_entry_rule
   depends_on = [
     meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group,
-    meraki_organization_adaptive_policy_acl.organizations_adaptive_policy_acl
+    meraki_organization_adaptive_policy_acl.organizations_adaptive_policy_acls
   ]
 }
 
