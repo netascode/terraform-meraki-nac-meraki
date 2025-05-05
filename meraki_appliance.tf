@@ -302,7 +302,7 @@ resource "meraki_appliance_port" "networks_appliance_ports" {
   allowed_vlans         = each.value.allowed_vlans
   access_policy         = each.value.access_policy
   port_id               = each.value.port_id
-  depends_on            = [meraki_network_device_claim.net_device_claim, meraki_appliance_vlan.appliance_vlans, meraki_appliance_single_lan.appliance_single_lan]
+  depends_on            = [meraki_network_device_claim.net_device_claim, meraki_appliance_vlan.appliance_vlans, meraki_appliance_single_lan.networks_appliance_single_lan]
 }
 
 locals {
@@ -607,7 +607,7 @@ resource "meraki_appliance_site_to_site_vpn" "networks_appliance_vpn_site_to_sit
   mode       = each.value.mode
   hubs       = each.value.hubs
   subnets    = each.value.subnets
-  depends_on = [meraki_network_device_claim.net_device_claim, meraki_appliance_single_lan.appliance_single_lan, meraki_appliance_vlan.appliance_vlans]
+  depends_on = [meraki_network_device_claim.net_device_claim, meraki_appliance_single_lan.networks_appliance_single_lan, meraki_appliance_vlan.appliance_vlans]
 }
 
 locals {
