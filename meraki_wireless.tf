@@ -71,7 +71,7 @@ locals {
   ])
 }
 
-resource "meraki_wireless_rf_profile" "net_wireless_rf_profiles" {
+resource "meraki_wireless_rf_profile" "networks_wireless_rf_profiles" {
   for_each                                   = { for v in local.networks_wireless_rf_profiles : v.key => v }
   network_id                                 = each.value.network_id
   name                                       = each.value.name
@@ -163,7 +163,6 @@ resource "meraki_wireless_rf_profile" "net_wireless_rf_profiles" {
   flex_radios_by_model                       = each.value.flex_radios_by_model
 }
 
-# Apply the Wireless Settings
 locals {
   networks_wireless_settings = flatten([
     for domain in try(local.meraki.domains, []) : [
@@ -184,7 +183,7 @@ locals {
   ])
 }
 
-resource "meraki_wireless_settings" "net_wireless_settings" {
+resource "meraki_wireless_settings" "networks_wireless_settings" {
   for_each                                  = { for v in local.networks_wireless_settings : v.key => v }
   network_id                                = each.value.network_id
   meshing_enabled                           = each.value.meshing_enabled
@@ -196,7 +195,6 @@ resource "meraki_wireless_settings" "net_wireless_settings" {
   named_vlans_pool_dhcp_monitoring_duration = each.value.named_vlans_pool_dhcp_monitoring_duration
 }
 
-# Apply the Wireless SSIDs
 locals {
   networks_wireless_ssids = flatten([
     for domain in try(local.meraki.domains, []) : [
@@ -332,7 +330,7 @@ locals {
   ])
 }
 
-resource "meraki_wireless_ssid" "net_wireless_ssids" {
+resource "meraki_wireless_ssid" "networks_wireless_ssids" {
   for_each                                                                    = { for v in local.networks_wireless_ssids : v.key => v }
   network_id                                                                  = each.value.network_id
   number                                                                      = each.value.number
@@ -419,7 +417,7 @@ resource "meraki_wireless_ssid" "net_wireless_ssids" {
 }
 
 locals {
-  networks_wireless_ssid_eap_override = flatten([
+  networks_wireless_ssids_eap_override = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
@@ -440,8 +438,8 @@ locals {
   ])
 }
 
-resource "meraki_wireless_ssid_eap_override" "net_wireless_ssid_eap_override" {
-  for_each                = { for v in local.networks_wireless_ssid_eap_override : v.key => v }
+resource "meraki_wireless_ssid_eap_override" "networks_wireless_ssids_eap_override" {
+  for_each                = { for v in local.networks_wireless_ssids_eap_override : v.key => v }
   network_id              = each.value.network_id
   number                  = each.value.number
   timeout                 = each.value.timeout
@@ -480,7 +478,7 @@ locals {
   ])
 }
 
-resource "meraki_wireless_ssid_device_type_group_policies" "net_wireless_ssids_device_type_group_policies" {
+resource "meraki_wireless_ssid_device_type_group_policies" "networks_wireless_ssids_device_type_group_policies" {
   for_each             = { for v in local.networks_wireless_ssids_device_type_group_policies : v.key => v }
   network_id           = each.value.network_id
   number               = each.value.number
@@ -518,7 +516,7 @@ locals {
   ])
 }
 
-resource "meraki_wireless_ssid_l3_firewall_rules" "net_wireless_ssids_l3_firewall_rules" {
+resource "meraki_wireless_ssid_l3_firewall_rules" "networks_wireless_ssids_firewall_l3_firewall_rules" {
   for_each         = { for v in local.networks_wireless_ssids_firewall_l3_firewall_rules : v.key => v }
   network_id       = each.value.network_id
   number           = each.value.number
@@ -574,7 +572,7 @@ locals {
   ])
 }
 
-resource "meraki_wireless_ssid_hotspot_20" "net_wireless_ssids_hotspot20" {
+resource "meraki_wireless_ssid_hotspot_20" "networks_wireless_ssids_hotspot20" {
   for_each            = { for v in local.networks_wireless_ssids_hotspot20 : v.key => v }
   network_id          = each.value.network_id
   number              = each.value.number
@@ -615,7 +613,7 @@ locals {
   ])
 }
 
-resource "meraki_wireless_ssid_identity_psk" "net_wireless_ssids_identity_psks" {
+resource "meraki_wireless_ssid_identity_psk" "networks_wireless_ssids_identity_psks" {
   for_each        = { for v in local.networks_wireless_ssids_identity_psks : v.key => v }
   network_id      = each.value.network_id
   number          = each.value.number
@@ -659,7 +657,7 @@ locals {
   ])
 }
 
-resource "meraki_wireless_ssid_schedules" "net_wireless_ssids_schedules" {
+resource "meraki_wireless_ssid_schedules" "networks_wireless_ssids_schedules" {
   for_each          = { for v in local.networks_wireless_ssids_schedules : v.key => v }
   network_id        = each.value.network_id
   number            = each.value.number
@@ -721,7 +719,7 @@ locals {
   ])
 }
 
-resource "meraki_wireless_ssid_splash_settings" "net_wireless_ssids_splash_settings" {
+resource "meraki_wireless_ssid_splash_settings" "networks_wireless_ssids_splash_settings" {
   for_each                                      = { for v in local.networks_wireless_ssids_splash_settings : v.key => v }
   network_id                                    = each.value.network_id
   number                                        = each.value.number
@@ -797,7 +795,7 @@ locals {
   ])
 }
 
-resource "meraki_wireless_ssid_traffic_shaping_rules" "net_wireless_ssids_traffic_shaping_rules" {
+resource "meraki_wireless_ssid_traffic_shaping_rules" "networks_wireless_ssids_traffic_shaping_rules" {
   for_each                = { for v in local.networks_wireless_ssids_traffic_shaping_rules : v.key => v }
   network_id              = each.value.network_id
   number                  = each.value.number
@@ -835,7 +833,7 @@ locals {
   ])
 }
 
-resource "meraki_wireless_ssid_bonjour_forwarding" "wireless_ssids_bonjour_forwarding" {
+resource "meraki_wireless_ssid_bonjour_forwarding" "networks_wireless_ssids_bonjour_forwarding" {
   for_each          = { for v in local.networks_wireless_ssids_bonjour_forwarding : v.key => v }
   network_id        = each.value.network_id
   number            = each.value.number
@@ -873,7 +871,7 @@ locals {
   ])
 }
 
-resource "meraki_wireless_alternate_management_interface" "wireless_alternate_management_interface" {
+resource "meraki_wireless_alternate_management_interface" "networks_wireless_alternate_management_interface" {
   for_each      = { for v in local.networks_wireless_alternate_management_interface : v.key => v }
   network_id    = each.value.network_id
   enabled       = each.value.enabled
@@ -904,7 +902,7 @@ locals {
   ])
 }
 
-resource "meraki_wireless_network_bluetooth_settings" "wireless_bluetooth_settings" {
+resource "meraki_wireless_network_bluetooth_settings" "networks_wireless_bluetooth_settings" {
   for_each                    = { for v in local.networks_wireless_bluetooth_settings : v.key => v }
   network_id                  = each.value.network_id
   scanning_enabled            = each.value.scanning_enabled
