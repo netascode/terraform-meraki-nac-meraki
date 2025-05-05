@@ -34,7 +34,7 @@ resource "meraki_device" "devices" {
   move_map_marker = each.value.move_map_marker
   #switch_profile_id = each.value.switch_profile_id
   floor_plan_id = each.value.floor_plan_id
-  depends_on    = [meraki_network_device_claim.net_device_claim]
+  depends_on    = [meraki_network_device_claim.networks_devices_claim]
 }
 
 locals {
