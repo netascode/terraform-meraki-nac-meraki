@@ -74,7 +74,7 @@ resource "meraki_network" "organizations_networks" {
   tags            = each.value.tags
   time_zone       = each.value.time_zone
   depends_on = [
-    meraki_organization_inventory_claim.organization_claim,
+    meraki_organization_inventory_claim.organizations_inventory,
     meraki_organization.organizations,
   ]
 }
