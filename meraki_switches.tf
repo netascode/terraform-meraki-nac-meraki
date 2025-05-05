@@ -470,7 +470,7 @@ resource "meraki_switch_routing_multicast_rendezvous_point" "networks_switch_rou
   network_id      = each.value.network_id
   interface_ip    = each.value.interface_ip
   multicast_group = each.value.multicast_group
-  depends_on      = [meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_not_first]
+  depends_on      = [meraki_switch_stack_routing_interface.networks_switch_stacks_routing_interfaces_not_first]
 }
 
 locals {
@@ -723,7 +723,7 @@ resource "meraki_switch_stack_routing_interface" "networks_switch_stacks_routing
   ipv6_prefix                      = each.value.ipv6_prefix
   ipv6_address                     = each.value.ipv6_address
   ipv6_gateway                     = each.value.ipv6_gateway
-  depends_on                       = [meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_first]
+  depends_on                       = [meraki_switch_stack_routing_interface.networks_switch_stacks_routing_interfaces_first]
 }
 
 locals {
@@ -834,5 +834,5 @@ resource "meraki_switch_stack_routing_static_route" "networks_switch_stacks_rout
   next_hop_ip                     = each.value.next_hop_ip
   advertise_via_ospf_enabled      = each.value.advertise_via_ospf_enabled
   prefer_over_ospf_routes_enabled = each.value.prefer_over_ospf_routes_enabled
-  depends_on                      = [meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_not_first]
+  depends_on                      = [meraki_switch_stack_routing_interface.networks_switch_stacks_routing_interfaces_not_first]
 }
