@@ -460,7 +460,7 @@ locals {
             syslog_enabled = try(rule.syslog, local.defaults.meraki.domains.organizations.appliance.vpn_firewall_rules.rules.syslog, null)
           }
         ]
-        syslog_default_rule = try(organization.appliance.vpn_firewall_rules.syslog_default_rule, local.defaults.meraki.organizations.appliance.vpn_firewall_rules.syslog_default_rule, null)
+        syslog_default_rule = try(organization.appliance.vpn_firewall_rules.syslog_default_rule, local.defaults.meraki.domains.organizations.appliance.vpn_firewall_rules.syslog_default_rule, null)
       } if length(try(organization.appliance.vpn_firewall_rules.rules, [])) > 0
     ]
   ])
