@@ -494,7 +494,7 @@ resource "meraki_appliance_vlan" "networks_appliance_vlans" {
   name                    = each.value.name
   subnet                  = each.value.subnet
   vpn_nat_subnet          = each.value.vpn_nat_subnet
-  depends_on              = [meraki_appliance_vlans_settings.appliance_vlans_settings]
+  depends_on              = [meraki_appliance_vlans_settings.networks_appliance_vlans_settings]
 }
 
 resource "meraki_appliance_vlan_dhcp" "networks_appliance_vlans_dhcp" {
