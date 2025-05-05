@@ -617,7 +617,7 @@ locals {
         for network in try(organization.networks, []) : {
           key          = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id   = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-          spare_serial = try(meraki_device.device[format("%s/%s/%s/%s", domain.name, organization.name, network.name, network.appliance.warm_spare.spare_device)].serial, null)
+          spare_serial = try(meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, network.appliance.warm_spare.spare_device)].serial, null)
           enabled      = try(network.appliance.warm_spare.enabled, local.defaults.meraki.domains.organizations.networks.appliance.warm_spare.enabled, null)
           uplink_mode  = try(network.appliance.warm_spare.uplink_mode, local.defaults.meraki.domains.organizations.networks.appliance.warm_spare.uplink_mode, null)
           virtual_ip1  = try(network.appliance.warm_spare.virtual_ip1, local.defaults.meraki.domains.organizations.networks.appliance.warm_spare.virtual_ip1, null)
