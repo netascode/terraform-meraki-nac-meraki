@@ -1,5 +1,5 @@
 locals {
-  networks_switch_access_control_lists = flatten([
+  networks_switch_access_control_lists_rules = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
@@ -24,8 +24,8 @@ locals {
   ])
 }
 
-resource "meraki_switch_access_control_lists" "net_switch_access_control_lists" {
-  for_each   = { for v in local.networks_switch_access_control_lists : v.key => v }
+resource "meraki_switch_access_control_lists" "networks_switch_access_control_lists_rules" {
+  for_each   = { for v in local.networks_switch_access_control_lists_rules : v.key => v }
   network_id = each.value.network_id
   rules      = each.value.rules
 }
@@ -84,7 +84,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_access_policy" "net_switch_access_policy" {
+resource "meraki_switch_access_policy" "networks_switch_access_policies" {
   for_each                                 = { for v in local.networks_switch_access_policies : v.key => v }
   network_id                               = each.value.network_id
   name                                     = each.value.name
@@ -136,7 +136,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_alternate_management_interface" "net_switch_alternate_management_interface" {
+resource "meraki_switch_alternate_management_interface" "networks_switch_alternate_management_interface" {
   for_each   = { for v in local.networks_switch_alternate_management_interface : v.key => v }
   network_id = each.value.network_id
   enabled    = each.value.enabled
@@ -163,7 +163,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_dhcp_server_policy" "net_switch_dhcp_server_policy" {
+resource "meraki_switch_dhcp_server_policy" "networks_switch_dhcp_server_policy" {
   for_each               = { for v in local.networks_switch_dhcp_server_policy : v.key => v }
   network_id             = each.value.network_id
   alerts_email_enabled   = each.value.alerts_email_enabled
@@ -191,7 +191,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_dhcp_server_policy_arp_inspection_trusted_server" "net_switch_dhcp_server_policy_arp_inspection_trusted_server" {
+resource "meraki_switch_dhcp_server_policy_arp_inspection_trusted_server" "networks_switch_dhcp_server_policy_arp_inspection_trusted_servers" {
   for_each     = { for v in local.networks_switch_dhcp_server_policy_arp_inspection_trusted_servers : v.key => v }
   network_id   = each.value.network_id
   mac          = each.value.mac
@@ -219,7 +219,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_dscp_to_cos_mappings" "net_switch_dscp_to_cos_mappings" {
+resource "meraki_switch_dscp_to_cos_mappings" "networks_switch_dscp_to_cos_mappings" {
   for_each   = { for v in local.networks_switch_dscp_to_cos_mappings : v.key => v }
   network_id = each.value.network_id
   mappings   = each.value.mappings
@@ -254,7 +254,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_link_aggregation" "net_switch_link_aggregation" {
+resource "meraki_switch_link_aggregation" "networks_switch_link_aggregations" {
   for_each             = { for v in local.networks_switch_link_aggregations : v.key => v }
   network_id           = each.value.network_id
   switch_ports         = each.value.switch_ports
@@ -284,7 +284,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_mtu" "net_switch_mtu" {
+resource "meraki_switch_mtu" "networks_switch_mtu" {
   for_each         = { for v in local.networks_switch_mtu : v.key => v }
   network_id       = each.value.network_id
   default_mtu_size = each.value.default_mtu_size
@@ -329,7 +329,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_port_schedule" "net_switch_port_schedules" {
+resource "meraki_switch_port_schedule" "networks_switch_port_schedules" {
   for_each                       = { for i in local.networks_switch_port_schedules : i.key => i }
   network_id                     = each.value.network_id
   name                           = each.value.name
@@ -380,7 +380,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_qos_rule" "net_switch_qos_rule" {
+resource "meraki_switch_qos_rule" "networks_switch_qos_rules" {
   for_each       = { for v in local.networks_switch_qos_rules : v.key => v }
   network_id     = each.value.network_id
   vlan           = each.value.vlan
@@ -394,7 +394,7 @@ resource "meraki_switch_qos_rule" "net_switch_qos_rule" {
 }
 
 locals {
-  networks_switch_qos_rules_orders = flatten([
+  networks_switch_qos_rules_order = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
@@ -407,8 +407,8 @@ locals {
   ])
 }
 
-resource "meraki_switch_qos_rule_order" "net_switch_qos_rule_order" {
-  for_each   = { for v in local.networks_switch_qos_rules_orders : v.key => v }
+resource "meraki_switch_qos_rule_order" "networks_switch_qos_rules_order" {
+  for_each   = { for v in local.networks_switch_qos_rules_order : v.key => v }
   network_id = each.value.network_id
   rule_ids   = each.value.rule_ids
 }
@@ -439,7 +439,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_routing_multicast" "net_switch_routing_multicast" {
+resource "meraki_switch_routing_multicast" "networks_switch_routing_multicast" {
   for_each                                                 = { for v in local.networks_switch_routing_multicast : v.key => v }
   network_id                                               = each.value.network_id
   default_settings_igmp_snooping_enabled                   = each.value.default_settings_igmp_snooping_enabled
@@ -465,7 +465,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_routing_multicast_rendezvous_point" "net_switch_routing_multicast_rendezvous_point" {
+resource "meraki_switch_routing_multicast_rendezvous_point" "networks_switch_routing_multicast_rendezvous_points" {
   for_each        = { for v in local.networks_switch_routing_multicast_rendezvous_points : v.key => v }
   network_id      = each.value.network_id
   interface_ip    = each.value.interface_ip
@@ -509,7 +509,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_routing_ospf" "net_switch_routing_ospf" {
+resource "meraki_switch_routing_ospf" "networks_switch_routing_ospf" {
   for_each                          = { for v in local.networks_switch_routing_ospf : v.key => v }
   network_id                        = each.value.network_id
   enabled                           = each.value.enabled
@@ -549,7 +549,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_settings" "net_switch_settings" {
+resource "meraki_switch_settings" "networks_switch_settings" {
   for_each                       = { for v in local.networks_switch_settings : v.key => v }
   network_id                     = each.value.network_id
   vlan                           = each.value.vlan
@@ -577,7 +577,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_storm_control" "net_switch_storm_control" {
+resource "meraki_switch_storm_control" "networks_switch_storm_control" {
   for_each                                   = { for v in local.networks_switch_storm_control : v.key => v }
   network_id                                 = each.value.network_id
   broadcast_threshold                        = each.value.broadcast_threshold
@@ -613,7 +613,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_stp" "net_switch_stp" {
+resource "meraki_switch_stp" "networks_switch_stp" {
   for_each            = { for v in local.networks_switch_stp : v.key => v }
   network_id          = each.value.network_id
   rstp_enabled        = each.value.rstp_enabled
@@ -638,7 +638,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_stack" "net_switch_stacks" {
+resource "meraki_switch_stack" "networks_switch_stacks" {
   for_each   = { for v in local.networks_switch_stacks : v.key => v }
   network_id = each.value.network_id
   name       = each.value.name
@@ -687,7 +687,7 @@ locals {
   ]
 }
 
-resource "meraki_switch_stack_routing_interface" "net_switch_stack_routing_interface_first" {
+resource "meraki_switch_stack_routing_interface" "networks_switch_stacks_routing_interfaces_first" {
   for_each                         = { for i in local.networks_switch_stacks_routing_interfaces_first : i.key => i }
   network_id                       = each.value.network_id
   switch_stack_id                  = each.value.switch_stack_id
@@ -706,7 +706,7 @@ resource "meraki_switch_stack_routing_interface" "net_switch_stack_routing_inter
   ipv6_gateway                     = each.value.ipv6_gateway
   depends_on                       = [meraki_network_device_claim.net_device_claim]
 }
-resource "meraki_switch_stack_routing_interface" "net_switch_stack_routing_interface_not_first" {
+resource "meraki_switch_stack_routing_interface" "networks_switch_stacks_routing_interfaces_not_first" {
   for_each                         = { for i in local.networks_switch_stacks_routing_interfaces_not_first : i.key => i }
   network_id                       = each.value.network_id
   switch_stack_id                  = each.value.switch_stack_id
@@ -727,12 +727,12 @@ resource "meraki_switch_stack_routing_interface" "net_switch_stack_routing_inter
 }
 
 locals {
-  net_switch_stack_routing_interface_ids = {
+  networks_switch_stacks_routing_interface_ids = {
     for routing_interface in local.networks_switch_stacks_routing_interfaces :
     routing_interface.key =>
     routing_interface.default_gateway != null ?
-    meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_first[routing_interface.key].id :
-    meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_not_first[routing_interface.key].id
+    meraki_switch_stack_routing_interface.networks_switch_stacks_routing_interfaces_first[routing_interface.key].id :
+    meraki_switch_stack_routing_interface.networks_switch_stacks_routing_interfaces_not_first[routing_interface.key].id
   }
 }
 
@@ -746,7 +746,7 @@ locals {
               key                    = format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name, routing_interface.name)
               network_id             = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
               switch_stack_id        = meraki_switch_stack.net_switch_stacks[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name)].id
-              interface_id           = local.net_switch_stack_routing_interface_ids[format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name, routing_interface.name)]
+              interface_id           = local.networks_switch_stacks_routing_interface_ids[format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name, routing_interface.name)]
               dhcp_mode              = try(routing_interface.dhcp.dhcp_mode, local.defaults.meraki.networks.switch_stacks.routing_interfaces.dhcp.dhcp_mode, null)
               dhcp_relay_server_ips  = try(routing_interface.dhcp.dhcp_relay_server_ips, local.defaults.meraki.networks.switch_stacks.routing_interfaces.dhcp.dhcp_relay_server_ips, null)
               dhcp_lease_time        = try(routing_interface.dhcp.dhcp_lease_time, local.defaults.meraki.networks.switch_stacks.routing_interfaces.dhcp.dhcp_lease_time, null)
@@ -784,7 +784,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_stack_routing_interface_dhcp" "net_switch_stacks_routing_interfaces_dhcp" {
+resource "meraki_switch_stack_routing_interface_dhcp" "networks_switch_stacks_routing_interfaces_dhcp" {
   for_each               = { for v in local.networks_switch_stacks_routing_interfaces_dhcp : v.key => v }
   network_id             = each.value.network_id
   switch_stack_id        = each.value.switch_stack_id
@@ -825,7 +825,7 @@ locals {
   ])
 }
 
-resource "meraki_switch_stack_routing_static_route" "net_switch_stacks_routing_static_route" {
+resource "meraki_switch_stack_routing_static_route" "networks_switch_stacks_routing_static_routes" {
   for_each                        = { for v in local.networks_switch_stacks_routing_static_routes : v.key => v }
   network_id                      = each.value.network_id
   switch_stack_id                 = each.value.switch_stack_id
