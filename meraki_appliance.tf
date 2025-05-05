@@ -570,7 +570,7 @@ resource "meraki_appliance_vpn_bgp" "networks_appliance_vpn_bgp" {
   as_number       = each.value.as_number
   ibgp_hold_timer = each.value.ibgp_hold_timer
   neighbors       = each.value.neighbors
-  depends_on      = [meraki_appliance_site_to_site_vpn.appliance_vpn_site_to_site_vpn]
+  depends_on      = [meraki_appliance_site_to_site_vpn.networks_appliance_vpn_site_to_site_vpn]
 }
 
 locals {
