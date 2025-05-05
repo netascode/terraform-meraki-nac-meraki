@@ -165,7 +165,7 @@ locals {
           # authentication_method = try(admin.authentication_method, local.defaults.meraki.domains.organizations.admins.authentication_method, null)
           org_access = try(admin.organization_access, local.defaults.meraki.domains.organizations.admins.organization_access, null)
           networks = try(length(admin.networks) == 0, true) ? null : [for network in try(admin.networks, []) : {
-            id     = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+            id     = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
             access = try(network.access, local.defaults.meraki.domains.organizations.admins.networks.access, null)
           }]
           tags = try(length(admin.tags) == 0, true) ? null : [for tag in try(admin.tags, []) : {
@@ -225,7 +225,7 @@ locals {
         organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
         enabled_networks = try(length(organization.adaptive_policy.settings_enabled_networks) == 0, true) ? null : [
           for network in try(organization.adaptive_policy.settings_enabled_networks, []) :
-          meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network)].id
+          meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network)].id
         ]
       } if try(organization.adaptive_policy.settings_enabled_networks, null) != null
     ]
@@ -236,7 +236,7 @@ resource "meraki_organization_adaptive_policy_settings" "organizations_adaptive_
   for_each         = { for v in local.organizations_adaptive_policy_settings_enabled_networks : v.key => v }
   organization_id  = each.value.organization_id
   enabled_networks = each.value.enabled_networks
-  depends_on       = [meraki_network.network]
+  depends_on       = [meraki_network.organizations_networks]
 }
 
 locals {
@@ -437,7 +437,7 @@ resource "meraki_appliance_third_party_vpn_peers" "organizations_appliance_third
   for_each        = { for v in local.organizations_appliance_third_party_vpn_peers : v.key => v }
   organization_id = each.value.organization_id
   peers           = each.value.peers
-  depends_on      = [meraki_network.network]
+  depends_on      = [meraki_network.organizations_networks]
 }
 
 locals {
@@ -467,5 +467,5 @@ resource "meraki_appliance_vpn_firewall_rules" "organizations_appliance_vpn_fire
   for_each        = { for v in local.organizations_appliance_vpn_firewall_rules : v.key => v }
   organization_id = each.value.organization_id
   rules           = each.value.rules
-  depends_on      = [meraki_network.network]
+  depends_on      = [meraki_network.organizations_networks]
 }
