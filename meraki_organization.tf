@@ -460,14 +460,16 @@ locals {
             syslog_enabled = try(rule.syslog, local.defaults.meraki.domains.organizations.appliance.vpn_firewall_rules.rules.syslog, null)
           }
         ]
+        syslog_default_rule = try(organization.appliance.vpn_firewall_rules.syslog_default_rule, local.defaults.meraki.organizations.appliance.vpn_firewall_rules.syslog_default_rule, null)
       } if length(try(organization.appliance.vpn_firewall_rules.rules, [])) > 0
     ]
   ])
 }
 
 resource "meraki_appliance_vpn_firewall_rules" "organizations_appliance_vpn_firewall_rules" {
-  for_each        = { for v in local.organizations_appliance_vpn_firewall_rules : v.key => v }
-  organization_id = each.value.organization_id
-  rules           = each.value.rules
-  depends_on      = [meraki_network.organizations_networks]
+  for_each            = { for v in local.organizations_appliance_vpn_firewall_rules : v.key => v }
+  organization_id     = each.value.organization_id
+  rules               = each.value.rules
+  syslog_default_rule = each.value.syslog_default_rule
+  depends_on          = [meraki_network.organizations_networks]
 }
