@@ -456,8 +456,8 @@ locals {
           for switch_routing_multicast_rendezvous_point in try(network.switch.routing_multicast_rendezvous_points, []) : {
             key             = format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_routing_multicast_rendezvous_point.rendezvous_point_name)
             network_id      = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-            interface_ip    = try(switch_routing_multicast_rendezvous_point.interface_ip, local.defaults.meraki.networks.switch.routing.multicast.rendezvous_points.interface_ip, null)
-            multicast_group = try(switch_routing_multicast_rendezvous_point.multicast_group, local.defaults.meraki.networks.switch.routing.multicast.rendezvous_points.multicast_group, null)
+            interface_ip    = try(switch_routing_multicast_rendezvous_point.interface_ip, local.defaults.meraki.networks.switch.routing_multicast_rendezvous_points.interface_ip, null)
+            multicast_group = try(switch_routing_multicast_rendezvous_point.multicast_group, local.defaults.meraki.networks.switch.routing_multicast_rendezvous_points.multicast_group, null)
           }
         ]
       ]
