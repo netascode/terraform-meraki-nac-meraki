@@ -256,7 +256,7 @@ locals {
         for network in try(organization.networks, []) : {
           key                                      = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id                               = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-          spoofing_protection_ip_source_guard_mode = try(network.appliance.firewall_settings.spoofing_protection.ip_source_guard.mode, local.defaults.meraki.networks.appliance.firewall_settings.spoofing_protection.ip_source_guard.mode, null)
+          spoofing_protection_ip_source_guard_mode = try(network.appliance.firewall.settings_spoofing_protection_ip_source_guard_mode, local.defaults.meraki.networks.appliance.firewall.settings_spoofing_protection_ip_source_guard_mode, null)
         } if try(network.appliance.firewall.settings_spoofing_protection_ip_source_guard_mode, null) != null
       ]
     ]
