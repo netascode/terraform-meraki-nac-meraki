@@ -582,8 +582,8 @@ locals {
           subnets = try(length(network.appliance.vpn_site_to_site_vpn.subnets) == 0, true) ? null : [
             for subnet in try(network.appliance.vpn_site_to_site_vpn.subnets, []) : {
               local_subnet      = try(subnet.local_subnet, local.defaults.meraki.networks.appliance.vpn_site_to_site_vpn.subnets.local_subnet, null)
-              nat_enabled       = try(subnet.nat_enabled, local.defaults.meraki.networks.appliance.vpn_site_to_site_vpn.subnets.nat_enabled, null)
-              nat_remote_subnet = try(subnet.nat_remote_subnet, local.defaults.meraki.networks.appliance.vpn_site_to_site_vpn.subnets.nat_remote_subnet, null)
+              nat_enabled       = try(subnet.nat.enabled, local.defaults.meraki.networks.appliance.vpn_site_to_site_vpn.subnets.nat.enabled, null)
+              nat_remote_subnet = try(subnet.nat.remote_subnet, local.defaults.meraki.networks.appliance.vpn_site_to_site_vpn.subnets.nat.remote_subnet, null)
               use_vpn           = try(subnet.use_vpn, local.defaults.meraki.networks.appliance.vpn_site_to_site_vpn.subnets.use_vpn, null)
             }
           ]
