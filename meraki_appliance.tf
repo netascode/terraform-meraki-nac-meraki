@@ -987,28 +987,43 @@ resource "meraki_appliance_ssid" "networks_appliance_ssids" {
   depends_on                             = [meraki_network_device_claim.networks_devices_claim]
 }
 
-# TODO per_ssid_settings needs an index/key mapping (as in wireless).
 locals {
+  networks_appliance_rf_profiles_per_ssid_settings_list = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for appliance_rf_profile in try(network.appliance.rf_profiles, []) : [
+            for per_ssid_setting in try(appliance_rf_profile.per_ssid_settings, []) : {
+              key = format(
+                "%s/%s/%s/%s/%s",
+                domain.name,
+                organization.name,
+                network.name,
+                appliance_rf_profile.name,
+                meraki_appliance_ssid.networks_appliance_ssids[format("%s/%s/%s/%s", domain.name, organization.name, network.name, per_ssid_setting.ssid_name)].number,
+              )
+              band_operation_mode   = try(per_ssid_setting.band_operation_mode, local.defaults.meraki.networks.appliance.rf_profiles.per_ssid_settings.band_operation_mode, null)
+              band_steering_enabled = try(per_ssid_setting.band_steering, local.defaults.meraki.networks.appliance.rf_profiles.per_ssid_settings.band_steering, null)
+            }
+          ]
+        ]
+      ]
+    ]
+  ])
+  networks_appliance_rf_profiles_per_ssid_settings = { for s in local.networks_appliance_rf_profiles_per_ssid_settings_list : s.key => s }
   networks_appliance_rf_profiles = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for appliance_rf_profile in try(network.appliance.rf_profiles, []) : {
-            key                                       = format("%s/%s/%s/%s", domain.name, organization.name, network.name, appliance_rf_profile.name)
-            network_id                                = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-            name                                      = try(appliance_rf_profile.name, local.defaults.meraki.networks.appliance.rf_profiles.name, null)
-            two_four_ghz_settings_min_bitrate         = try(appliance_rf_profile.two_four_ghz_settings.min_bitrate, local.defaults.meraki.networks.appliance.rf_profiles.two_four_ghz_settings.min_bitrate, null)
-            two_four_ghz_settings_ax_enabled          = try(appliance_rf_profile.two_four_ghz_settings.ax, local.defaults.meraki.networks.appliance.rf_profiles.two_four_ghz_settings.ax, null)
-            five_ghz_settings_min_bitrate             = try(appliance_rf_profile.five_ghz_settings.min_bitrate, local.defaults.meraki.networks.appliance.rf_profiles.five_ghz_settings.min_bitrate, null)
-            five_ghz_settings_ax_enabled              = try(appliance_rf_profile.five_ghz_settings.ax, local.defaults.meraki.networks.appliance.rf_profiles.five_ghz_settings.ax, null)
-            per_ssid_settings_1_band_operation_mode   = try(appliance_rf_profile.per_ssid_settings.1.band_operation_mode, local.defaults.meraki.networks.appliance.rf_profiles.per_ssid_settings.1.band_operation_mode, null)
-            per_ssid_settings_1_band_steering_enabled = try(appliance_rf_profile.per_ssid_settings.1.band_steering, local.defaults.meraki.networks.appliance.rf_profiles.per_ssid_settings.1.band_steering, null)
-            per_ssid_settings_2_band_operation_mode   = try(appliance_rf_profile.per_ssid_settings.2.band_operation_mode, local.defaults.meraki.networks.appliance.rf_profiles.per_ssid_settings.2.band_operation_mode, null)
-            per_ssid_settings_2_band_steering_enabled = try(appliance_rf_profile.per_ssid_settings.2.band_steering, local.defaults.meraki.networks.appliance.rf_profiles.per_ssid_settings.2.band_steering, null)
-            per_ssid_settings_3_band_operation_mode   = try(appliance_rf_profile.per_ssid_settings.3.band_operation_mode, local.defaults.meraki.networks.appliance.rf_profiles.per_ssid_settings.3.band_operation_mode, null)
-            per_ssid_settings_3_band_steering_enabled = try(appliance_rf_profile.per_ssid_settings.3.band_steering, local.defaults.meraki.networks.appliance.rf_profiles.per_ssid_settings.3.band_steering, null)
-            per_ssid_settings_4_band_operation_mode   = try(appliance_rf_profile.per_ssid_settings.4.band_operation_mode, local.defaults.meraki.networks.appliance.rf_profiles.per_ssid_settings.4.band_operation_mode, null)
-            per_ssid_settings_4_band_steering_enabled = try(appliance_rf_profile.per_ssid_settings.4.band_steering, local.defaults.meraki.networks.appliance.rf_profiles.per_ssid_settings.4.band_steering, null)
+            key                               = format("%s/%s/%s/%s", domain.name, organization.name, network.name, appliance_rf_profile.name)
+            network_id                        = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+            per_ssid_settings                 = [for i in range(4) : try(local.networks_appliance_rf_profiles_per_ssid_settings[format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, appliance_rf_profile.name, i)], null)]
+            name                              = try(appliance_rf_profile.name, local.defaults.meraki.networks.appliance.rf_profiles.name, null)
+            two_four_ghz_settings_min_bitrate = try(appliance_rf_profile.two_four_ghz_settings.min_bitrate, local.defaults.meraki.networks.appliance.rf_profiles.two_four_ghz_settings.min_bitrate, null)
+            two_four_ghz_settings_ax_enabled  = try(appliance_rf_profile.two_four_ghz_settings.ax, local.defaults.meraki.networks.appliance.rf_profiles.two_four_ghz_settings.ax, null)
+            five_ghz_settings_min_bitrate     = try(appliance_rf_profile.five_ghz_settings.min_bitrate, local.defaults.meraki.networks.appliance.rf_profiles.five_ghz_settings.min_bitrate, null)
+            five_ghz_settings_ax_enabled      = try(appliance_rf_profile.five_ghz_settings.ax, local.defaults.meraki.networks.appliance.rf_profiles.five_ghz_settings.ax, null)
           }
         ]
       ]
@@ -1024,14 +1039,14 @@ resource "meraki_appliance_rf_profile" "networks_appliance_rf_profiles" {
   two_four_ghz_settings_ax_enabled          = each.value.two_four_ghz_settings_ax_enabled
   five_ghz_settings_min_bitrate             = each.value.five_ghz_settings_min_bitrate
   five_ghz_settings_ax_enabled              = each.value.five_ghz_settings_ax_enabled
-  per_ssid_settings_1_band_operation_mode   = each.value.per_ssid_settings_1_band_operation_mode
-  per_ssid_settings_1_band_steering_enabled = each.value.per_ssid_settings_1_band_steering_enabled
-  per_ssid_settings_2_band_operation_mode   = each.value.per_ssid_settings_2_band_operation_mode
-  per_ssid_settings_2_band_steering_enabled = each.value.per_ssid_settings_2_band_steering_enabled
-  per_ssid_settings_3_band_operation_mode   = each.value.per_ssid_settings_3_band_operation_mode
-  per_ssid_settings_3_band_steering_enabled = each.value.per_ssid_settings_3_band_steering_enabled
-  per_ssid_settings_4_band_operation_mode   = each.value.per_ssid_settings_4_band_operation_mode
-  per_ssid_settings_4_band_steering_enabled = each.value.per_ssid_settings_4_band_steering_enabled
+  per_ssid_settings_1_band_operation_mode   = try(each.value.per_ssid_settings[0].band_operation_mode, null)
+  per_ssid_settings_1_band_steering_enabled = try(each.value.per_ssid_settings[0].band_steering_enabled, null)
+  per_ssid_settings_2_band_operation_mode   = try(each.value.per_ssid_settings[1].band_operation_mode, null)
+  per_ssid_settings_2_band_steering_enabled = try(each.value.per_ssid_settings[1].band_steering_enabled, null)
+  per_ssid_settings_3_band_operation_mode   = try(each.value.per_ssid_settings[2].band_operation_mode, null)
+  per_ssid_settings_3_band_steering_enabled = try(each.value.per_ssid_settings[2].band_steering_enabled, null)
+  per_ssid_settings_4_band_operation_mode   = try(each.value.per_ssid_settings[3].band_operation_mode, null)
+  per_ssid_settings_4_band_steering_enabled = try(each.value.per_ssid_settings[3].band_steering_enabled, null)
   depends_on                                = [meraki_network_device_claim.networks_devices_claim]
 }
 
