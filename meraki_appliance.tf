@@ -934,7 +934,6 @@ resource "meraki_appliance_traffic_shaping_vpn_exclusions" "networks_appliance_t
   major_applications = each.value.major_applications
 }
 
-# TODO Specify number.
 locals {
   networks_appliance_ssids = flatten([
     for domain in try(local.meraki.domains, []) : [
@@ -943,6 +942,7 @@ locals {
           for appliance_ssid in try(network.appliance.ssids, []) : {
             key             = format("%s/%s/%s/%s", domain.name, organization.name, network.name, appliance_ssid.name)
             network_id      = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+            number          = try(appliance_ssid.number, local.defaults.meraki.networks.appliance.ssids.number, null)
             name            = try(appliance_ssid.name, local.defaults.meraki.networks.appliance.ssids.name, null)
             enabled         = try(appliance_ssid.enabled, local.defaults.meraki.networks.appliance.ssids.enabled, null)
             default_vlan_id = try(appliance_ssid.default_vlan_id, local.defaults.meraki.networks.appliance.ssids.default_vlan_id, null)
@@ -971,6 +971,7 @@ locals {
 resource "meraki_appliance_ssid" "networks_appliance_ssids" {
   for_each                               = { for v in local.networks_appliance_ssids : v.key => v }
   network_id                             = each.value.network_id
+  number                                 = each.value.number
   name                                   = each.value.name
   enabled                                = each.value.enabled
   default_vlan_id                        = each.value.default_vlan_id
