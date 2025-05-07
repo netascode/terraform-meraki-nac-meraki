@@ -902,7 +902,6 @@ resource "meraki_appliance_traffic_shaping_uplink_selection" "networks_appliance
   vpn_traffic_uplink_preferences          = each.value.vpn_traffic_uplink_preferences
 }
 
-# TODO Use major_applications[] for major_applications[].name.
 locals {
   networks_appliance_traffic_shaping_vpn_exclusions = flatten([
     for domain in try(local.meraki.domains, []) : [
@@ -919,8 +918,7 @@ locals {
           ]
           major_applications = try(length(network.appliance.traffic_shaping.vpn_exclusions.major_applications) == 0, true) ? null : [
             for major_application in try(network.appliance.traffic_shaping.vpn_exclusions.major_applications, []) : {
-              id   = try(major_application.id, local.defaults.meraki.networks.appliance.traffic_shaping.vpn_exclusions.major_applications.id, null)
-              name = try(major_application.name, local.defaults.meraki.networks.appliance.traffic_shaping.vpn_exclusions.major_applications.name, null)
+              id = major_application
             }
           ]
         } if try(network.appliance.traffic_shaping.vpn_exclusions, null) != null
