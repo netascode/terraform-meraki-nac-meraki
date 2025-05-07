@@ -476,7 +476,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for early_access_features_opt_in in try(organization.early_access_features_opt_ins, []) : {
           key             = format("%s/%s/%s", domain.name, organization.name, early_access_features_opt_in.name)
-          organization_id = meraki_organization.organizations[format("%s/%s", domain.name, organization.name)].id
+          organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
           short_name      = try(early_access_features_opt_in.short_name, local.defaults.meraki.organizations.early_access_features_opt_ins.short_name, null)
           limit_scope_to_networks = try(length(early_access_features_opt_in.limit_scope_to_networks) == 0, true) ? null : [
             for network_name in try(early_access_features_opt_in.limit_scope_to_networks, []) :
