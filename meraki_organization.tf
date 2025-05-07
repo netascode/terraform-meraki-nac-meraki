@@ -470,16 +470,18 @@ resource "meraki_appliance_vpn_firewall_rules" "organizations_appliance_vpn_fire
   depends_on      = [meraki_network.organizations_networks]
 }
 
-# TODO Map limit_scope_to_networks from network name to id.
 locals {
   organizations_early_access_features_opt_ins = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for early_access_features_opt_in in try(organization.early_access_features_opt_ins, []) : {
-          key                     = format("%s/%s/%s", domain.name, organization.name, early_access_features_opt_in.name)
-          organization_id         = meraki_organization.organizations[format("%s/%s", domain.name, organization.name)].id
-          short_name              = try(early_access_features_opt_in.short_name, local.defaults.meraki.organizations.early_access_features_opt_ins.short_name, null)
-          limit_scope_to_networks = try(early_access_features_opt_in.limit_scope_to_networks, local.defaults.meraki.organizations.early_access_features_opt_ins.limit_scope_to_networks, null)
+          key             = format("%s/%s/%s", domain.name, organization.name, early_access_features_opt_in.name)
+          organization_id = meraki_organization.organizations[format("%s/%s", domain.name, organization.name)].id
+          short_name      = try(early_access_features_opt_in.short_name, local.defaults.meraki.organizations.early_access_features_opt_ins.short_name, null)
+          limit_scope_to_networks = try(length(early_access_features_opt_in.limit_scope_to_networks) == 0, true) ? null : [
+            for network_name in try(early_access_features_opt_in.limit_scope_to_networks, []) :
+            meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network_name)].id
+          ]
         }
       ]
     ]
