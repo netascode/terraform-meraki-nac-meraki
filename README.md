@@ -98,12 +98,12 @@ module "meraki" {
 | [meraki_appliance_vpn_bgp.networks_appliance_vpn_bgp](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vpn_bgp) | resource |
 | [meraki_appliance_vpn_firewall_rules.organizations_appliance_vpn_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vpn_firewall_rules) | resource |
 | [meraki_appliance_warm_spare.networks_appliance_warm_spare](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_warm_spare) | resource |
-| [meraki_cellular_gateway_connectivity_monitoring_destinations.net_networks_cellular_gateway_connectivity_monitoring_destinations](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/cellular_gateway_connectivity_monitoring_destinations) | resource |
-| [meraki_cellular_gateway_dhcp.net_networks_cellular_gateway_dhcp](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/cellular_gateway_dhcp) | resource |
+| [meraki_cellular_gateway_connectivity_monitoring_destinations.networks_cellular_gateway_connectivity_monitoring_destinations](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/cellular_gateway_connectivity_monitoring_destinations) | resource |
+| [meraki_cellular_gateway_dhcp.networks_cellular_gateway_dhcp](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/cellular_gateway_dhcp) | resource |
 | [meraki_cellular_gateway_lan.devices_cellular_gateway_lan](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/cellular_gateway_lan) | resource |
 | [meraki_cellular_gateway_port_forwarding_rules.devices_cellular_gateway_port_forwarding_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/cellular_gateway_port_forwarding_rules) | resource |
-| [meraki_cellular_gateway_subnet_pool.net_networks_cellular_gateway_subnet_pool](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/cellular_gateway_subnet_pool) | resource |
-| [meraki_cellular_gateway_uplink.net_networks_cellular_gateway_uplink](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/cellular_gateway_uplink) | resource |
+| [meraki_cellular_gateway_subnet_pool.networks_cellular_gateway_subnet_pool](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/cellular_gateway_subnet_pool) | resource |
+| [meraki_cellular_gateway_uplink.networks_cellular_gateway_uplink_bandwidth_limits](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/cellular_gateway_uplink) | resource |
 | [meraki_device.devices](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/device) | resource |
 | [meraki_device_cellular_sims.devices_cellular_sims](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/device_cellular_sims) | resource |
 | [meraki_device_management_interface.devices_management_interface](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/device_management_interface) | resource |
