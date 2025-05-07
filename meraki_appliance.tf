@@ -1050,7 +1050,6 @@ resource "meraki_appliance_rf_profile" "networks_appliance_rf_profiles" {
   depends_on                                = [meraki_network_device_claim.networks_devices_claim]
 }
 
-# TODO Map rf_profile_id from rf_profile_name.
 locals {
   devices_appliance_radio_settings = flatten([
     for domain in try(local.meraki.domains, []) : [
@@ -1059,7 +1058,7 @@ locals {
           for device in try(network.devices, []) : {
             key                                = format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)
             serial                             = meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)].serial
-            rf_profile_id                      = try(device.appliance.radio_settings.rf_profile_id, local.defaults.meraki.networks.devices.appliance.radio_settings.rf_profile_id, null)
+            rf_profile_id                      = try(meraki_appliance_rf_profile.networks_appliance_rf_profiles[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.appliance.radio_settings.rf_profile_name)].id, null)
             two_four_ghz_settings_channel      = try(device.appliance.radio_settings.two_four_ghz_settings.channel, local.defaults.meraki.networks.devices.appliance.radio_settings.two_four_ghz_settings.channel, null)
             two_four_ghz_settings_target_power = try(device.appliance.radio_settings.two_four_ghz_settings.target_power, local.defaults.meraki.networks.devices.appliance.radio_settings.two_four_ghz_settings.target_power, null)
             five_ghz_settings_channel          = try(device.appliance.radio_settings.five_ghz_settings.channel, local.defaults.meraki.networks.devices.appliance.radio_settings.five_ghz_settings.channel, null)
