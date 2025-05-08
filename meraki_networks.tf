@@ -5,7 +5,7 @@ locals {
         for network in try(organization.networks, []) : [
           for group_policy in try(network.group_policies, []) : {
             key                                   = format("%s/%s/%s/%s", domain.name, organization.name, network.name, group_policy.name)
-            network_id                            = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+            network_id                            = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
             name                                  = try(group_policy.name, local.defaults.meraki.domains.organizations.networks.group_policies.name, null)
             scheduling_enabled                    = try(group_policy.scheduling.enabled, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.enabled, null)
             scheduling_monday_active              = try(group_policy.scheduling.monday.active, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.monday.active, null)
@@ -89,7 +89,7 @@ locals {
   ])
 }
 
-resource "meraki_network_group_policy" "net_group_policies" {
+resource "meraki_network_group_policy" "networks_group_policies" {
   for_each                                          = { for v in local.networks_group_policies : v.key => v }
   network_id                                        = each.value.network_id
   name                                              = each.value.name
@@ -141,7 +141,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key                                       = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id                                = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          network_id                                = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
           local_status_page_enabled                 = try(network.settings.local_status_page_enabled, local.defaults.meraki.domains.organizations.networks.settings.local_status_page_enabled, null)
           remote_status_page_enabled                = try(network.settings.remote_status_page, local.defaults.meraki.domains.organizations.networks.settings.remote_status_page, null)
           local_status_page_authentication_enabled  = try(network.settings.local_status_page_authentication.enabled, local.defaults.meraki.domains.organizations.networks.settings.local_status_page_authentication.enabled, null)
@@ -155,7 +155,7 @@ locals {
   ])
 }
 
-resource "meraki_network_settings" "net_settings" {
+resource "meraki_network_settings" "networks_settings" {
   for_each                                  = { for v in local.networks_settings : v.key => v }
   network_id                                = each.value.network_id
   local_status_page_enabled                 = each.value.local_status_page_enabled
@@ -173,7 +173,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key              = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id       = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          network_id       = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
           access           = try(network.snmp.access, local.defaults.meraki.domains.organizations.networks.snmp.access, null)
           community_string = try(network.snmp.community_string, local.defaults.meraki.domains.organizations.networks.snmp.community_string, null)
           users = try(length(network.snmp.users) == 0, true) ? null : [
@@ -188,7 +188,7 @@ locals {
   ])
 }
 
-resource "meraki_network_snmp" "net_snmp" {
+resource "meraki_network_snmp" "networks_snmp" {
   for_each         = { for v in local.networks_snmp : v.key => v }
   network_id       = each.value.network_id
   access           = each.value.access
@@ -202,7 +202,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
           servers = [
             for server in try(network.syslog_servers, []) : {
               host  = try(server.host, local.defaults.meraki.domains.organizations.networks.syslog_servers.host, null)
@@ -216,7 +216,7 @@ locals {
   ])
 }
 
-resource "meraki_network_syslog_servers" "net_syslog_servers" {
+resource "meraki_network_syslog_servers" "networks_syslog_servers" {
   for_each   = { for v in local.networks_syslog_servers : v.key => v }
   network_id = each.value.network_id
   servers    = each.value.servers
@@ -229,7 +229,7 @@ locals {
         for network in try(organization.networks, []) : [
           for vlan_profile in try(network.vlan_profiles, []) : {
             key        = format("%s/%s/%s/%s", domain.name, organization.name, network.name, vlan_profile.name)
-            network_id = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+            network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
             name       = try(vlan_profile.name, local.defaults.meraki.domains.organizations.networks.vlan_profiles.name, null)
             vlan_names = [
               for vlan_name in try(vlan_profile.vlan_names, []) : {
@@ -252,7 +252,7 @@ locals {
   ])
 }
 
-resource "meraki_network_vlan_profile" "net_vlan_profiles" {
+resource "meraki_network_vlan_profile" "networks_vlan_profiles" {
   for_each    = { for v in local.networks_vlan_profiles : v.key => v }
   network_id  = each.value.network_id
   name        = each.value.name
@@ -267,7 +267,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
           serials    = [for d in network.devices : d.serial]
         } if try(network.devices, null) != null
       ]
@@ -275,7 +275,7 @@ locals {
   ])
 }
 
-resource "meraki_network_device_claim" "net_device_claim" {
+resource "meraki_network_device_claim" "networks_devices_claim" {
   for_each   = { for v in local.networks_devices_claim : v.key => v }
   network_id = each.value.network_id
   serials    = each.value.serials
@@ -288,7 +288,7 @@ locals {
         for network in try(organization.networks, []) : [
           for floor_plan in try(network.floor_plans, []) : {
             key                     = format("%s/%s/%s/%s", domain.name, organization.name, network.name, floor_plan.name)
-            network_id              = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+            network_id              = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
             name                    = try(floor_plan.name, local.defaults.meraki.domains.organizations.networks.floor_plans.name, null)
             center_lat              = try(floor_plan.center.lat, local.defaults.meraki.domains.organizations.networks.floor_plans.center.lat, null)
             center_lng              = try(floor_plan.center.lng, local.defaults.meraki.domains.organizations.networks.floor_plans.center.lng, null)
@@ -309,7 +309,7 @@ locals {
   ])
 }
 
-resource "meraki_network_floor_plan" "net_floor_plans" {
+resource "meraki_network_floor_plan" "networks_floor_plans" {
   for_each                = { for v in local.networks_floor_plans : v.key => v }
   network_id              = each.value.network_id
   name                    = each.value.name
@@ -325,6 +325,6 @@ resource "meraki_network_floor_plan" "net_floor_plans" {
   top_right_corner_lng    = each.value.top_right_corner_lng
   floor_number            = each.value.floor_number
   image_contents          = each.value.image_contents
-  depends_on              = [meraki_network.network]
+  depends_on              = [meraki_network.organizations_networks]
 }
 
