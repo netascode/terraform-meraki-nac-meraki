@@ -130,8 +130,7 @@ module "meraki" {
 | [meraki_switch_stack.net_switch_stacks](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_stack) | resource |
 | [meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_first](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_stack_routing_interface) | resource |
 | [meraki_switch_stack_routing_interface.net_switch_stack_routing_interface_not_first](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_stack_routing_interface) | resource |
-| [meraki_switch_stack_routing_interface_dhcp.net_switch_stacks_routing_interfaces_dhcp_first](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_stack_routing_interface_dhcp) | resource |
-| [meraki_switch_stack_routing_interface_dhcp.net_switch_stacks_routing_interfaces_dhcp_not_first](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_stack_routing_interface_dhcp) | resource |
+| [meraki_switch_stack_routing_interface_dhcp.net_switch_stacks_routing_interfaces_dhcp](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_stack_routing_interface_dhcp) | resource |
 | [meraki_switch_stack_routing_static_route.net_switch_stacks_routing_static_route](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_stack_routing_static_route) | resource |
 | [meraki_switch_storm_control.net_switch_storm_control](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_storm_control) | resource |
 | [meraki_switch_stp.net_switch_stp](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_stp) | resource |
