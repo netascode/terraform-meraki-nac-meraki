@@ -56,11 +56,11 @@ locals {
         for network in try(organization.networks, []) : {
           key             = format("%s/%s/%s", domain.name, organization.name, network.name)
           organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
-          name            = try(network.name, local.defaults.meraki.organizations.networks.name)
-          notes           = try(network.notes, local.defaults.meraki.organizations.networks.notes, "")
-          product_types   = try(network.product_types, local.defaults.meraki.organizations.networks.product_types, ["appliance", "switch", "wireless"])
-          tags            = try(network.tags, local.defaults.meraki.organizations.networks.tags, null)
-          time_zone       = try(network.time_zone, local.defaults.meraki.organizations.networks.time_zone, "America/Los_Angeles")
+          name            = try(network.name, local.defaults.meraki.domains.organizations.networks.name)
+          notes           = try(network.notes, local.defaults.meraki.domains.organizations.networks.notes, "")
+          product_types   = try(network.product_types, local.defaults.meraki.domains.organizations.networks.product_types, ["appliance", "switch", "wireless"])
+          tags            = try(network.tags, local.defaults.meraki.domains.organizations.networks.tags, null)
+          time_zone       = try(network.time_zone, local.defaults.meraki.domains.organizations.networks.time_zone, "America/Los_Angeles")
         }
       ]
     ]
@@ -88,20 +88,20 @@ locals {
       for organization in try(domain.organizations, []) : {
         key                                                 = format("%s/%s", domain.name, organization.name)
         organization_id                                     = local.organization_ids[format("%s/%s", domain.name, organization.name)]
-        enforce_password_expiration                         = try(organization.login_security.enforce_password_expiration, local.defaults.meraki.organizations.login_security.enforce_password_expiration, null)
-        password_expiration_days                            = try(organization.login_security.password_expiration_days, local.defaults.meraki.organizations.login_security.password_expiration_days, null)
-        enforce_different_passwords                         = try(organization.login_security.enforce_different_passwords, local.defaults.meraki.organizations.login_security.enforce_different_passwords, null)
-        num_different_passwords                             = try(organization.login_security.num_different_passwords, local.defaults.meraki.organizations.login_security.num_different_passwords, null)
-        enforce_strong_passwords                            = try(organization.login_security.enforce_strong_passwords, local.defaults.meraki.organizations.login_security.enforce_strong_passwords, null)
-        enforce_account_lockout                             = try(organization.login_security.enforce_account_lockout, local.defaults.meraki.organizations.login_security.enforce_account_lockout, null)
-        account_lockout_attempts                            = try(organization.login_security.account_lockout_attempts, local.defaults.meraki.organizations.login_security.account_lockout_attempts, null)
-        enforce_idle_timeout                                = try(organization.login_security.enforce_idle_timeout, local.defaults.meraki.organizations.login_security.enforce_idle_timeout, null)
-        idle_timeout_minutes                                = try(organization.login_security.idle_timeout_minutes, local.defaults.meraki.organizations.login_security.idle_timeout_minutes, null)
-        enforce_two_factor_auth                             = try(organization.login_security.enforce_two_factor_auth, local.defaults.meraki.organizations.login_security.enforce_two_factor_auth, null)
-        enforce_login_ip_ranges                             = try(organization.login_security.enforce_login_ip_ranges, local.defaults.meraki.organizations.login_security.enforce_login_ip_ranges, null)
-        login_ip_ranges                                     = try(organization.login_security.login_ip_ranges, local.defaults.meraki.organizations.login_security.login_ip_ranges, null)
-        api_authentication_ip_restrictions_for_keys_enabled = try(organization.login_security.api_authentication.enabled, local.defaults.meraki.organizations.login_security.api_authentication.enabled, null)
-        api_authentication_ip_restrictions_for_keys_ranges  = try(organization.login_security.api_authentication.ranges, local.defaults.meraki.organizations.login_security.api_authentication.ranges, null)
+        enforce_password_expiration                         = try(organization.login_security.enforce_password_expiration, local.defaults.meraki.domains.organizations.login_security.enforce_password_expiration, null)
+        password_expiration_days                            = try(organization.login_security.password_expiration_days, local.defaults.meraki.domains.organizations.login_security.password_expiration_days, null)
+        enforce_different_passwords                         = try(organization.login_security.enforce_different_passwords, local.defaults.meraki.domains.organizations.login_security.enforce_different_passwords, null)
+        num_different_passwords                             = try(organization.login_security.num_different_passwords, local.defaults.meraki.domains.organizations.login_security.num_different_passwords, null)
+        enforce_strong_passwords                            = try(organization.login_security.enforce_strong_passwords, local.defaults.meraki.domains.organizations.login_security.enforce_strong_passwords, null)
+        enforce_account_lockout                             = try(organization.login_security.enforce_account_lockout, local.defaults.meraki.domains.organizations.login_security.enforce_account_lockout, null)
+        account_lockout_attempts                            = try(organization.login_security.account_lockout_attempts, local.defaults.meraki.domains.organizations.login_security.account_lockout_attempts, null)
+        enforce_idle_timeout                                = try(organization.login_security.enforce_idle_timeout, local.defaults.meraki.domains.organizations.login_security.enforce_idle_timeout, null)
+        idle_timeout_minutes                                = try(organization.login_security.idle_timeout_minutes, local.defaults.meraki.domains.organizations.login_security.idle_timeout_minutes, null)
+        enforce_two_factor_auth                             = try(organization.login_security.enforce_two_factor_auth, local.defaults.meraki.domains.organizations.login_security.enforce_two_factor_auth, null)
+        enforce_login_ip_ranges                             = try(organization.login_security.enforce_login_ip_ranges, local.defaults.meraki.domains.organizations.login_security.enforce_login_ip_ranges, null)
+        login_ip_ranges                                     = try(organization.login_security.login_ip_ranges, local.defaults.meraki.domains.organizations.login_security.login_ip_ranges, null)
+        api_authentication_ip_restrictions_for_keys_enabled = try(organization.login_security.api_authentication.enabled, local.defaults.meraki.domains.organizations.login_security.api_authentication.enabled, null)
+        api_authentication_ip_restrictions_for_keys_ranges  = try(organization.login_security.api_authentication.ranges, local.defaults.meraki.domains.organizations.login_security.api_authentication.ranges, null)
       } if try(organization.login_security, null) != null
     ]
   ])
@@ -133,13 +133,13 @@ locals {
       for organization in try(domain.organizations, []) : {
         key             = format("%s/%s", domain.name, organization.name)
         organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
-        v2c_enabled     = try(organization.snmp.v2c, local.defaults.meraki.organizations.snmp.v2c, null)
-        v3_enabled      = try(organization.snmp.v3, local.defaults.meraki.organizations.snmp.v3, null)
-        v3_auth_mode    = try(organization.snmp.v3_auth_mode, local.defaults.meraki.organizations.snmp.v3_auth_mode, null)
-        v3_auth_pass    = try(organization.snmp.v3_auth_pass, local.defaults.meraki.organizations.snmp.v3_auth_pass, null)
-        v3_priv_mode    = try(organization.snmp.v3_priv_mode, local.defaults.meraki.organizations.snmp.v3_priv_mode, null)
-        v3_priv_pass    = try(organization.snmp.v3_priv_pass, local.defaults.meraki.organizations.snmp.v3_priv_pass, null)
-        peer_ips        = try(organization.snmp.peer_ips, local.defaults.meraki.organizations.snmp.peer_ips, null)
+        v2c_enabled     = try(organization.snmp.v2c, local.defaults.meraki.domains.organizations.snmp.v2c, null)
+        v3_enabled      = try(organization.snmp.v3, local.defaults.meraki.domains.organizations.snmp.v3, null)
+        v3_auth_mode    = try(organization.snmp.v3_auth_mode, local.defaults.meraki.domains.organizations.snmp.v3_auth_mode, null)
+        v3_auth_pass    = try(organization.snmp.v3_auth_pass, local.defaults.meraki.domains.organizations.snmp.v3_auth_pass, null)
+        v3_priv_mode    = try(organization.snmp.v3_priv_mode, local.defaults.meraki.domains.organizations.snmp.v3_priv_mode, null)
+        v3_priv_pass    = try(organization.snmp.v3_priv_pass, local.defaults.meraki.domains.organizations.snmp.v3_priv_pass, null)
+        peer_ips        = try(organization.snmp.peer_ips, local.defaults.meraki.domains.organizations.snmp.peer_ips, null)
       } if try(organization.snmp, null) != null
     ]
   ])
@@ -163,19 +163,19 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for admin in try(organization.admins, []) : {
-          key             = format("%s/%s/%s", domain.name, organization.name, try(admin.name, local.defaults.meraki.organizations.admins.name, null))
+          key             = format("%s/%s/%s", domain.name, organization.name, try(admin.name, local.defaults.meraki.domains.organizations.admins.name, null))
           organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
-          name            = try(admin.name, local.defaults.meraki.organizations.admins.name, null)
-          email           = try(admin.email, local.defaults.meraki.organizations.admins.email, null)
-          # authentication_method = try(admin.authentication_method, local.defaults.meraki.organizations.admins.authentication_method, null)
-          org_access = try(admin.organization_access, local.defaults.meraki.organizations.admins.organization_access, null)
+          name            = try(admin.name, local.defaults.meraki.domains.organizations.admins.name, null)
+          email           = try(admin.email, local.defaults.meraki.domains.organizations.admins.email, null)
+          # authentication_method = try(admin.authentication_method, local.defaults.meraki.domains.organizations.admins.authentication_method, null)
+          org_access = try(admin.organization_access, local.defaults.meraki.domains.organizations.admins.organization_access, null)
           networks = try(length(admin.networks) == 0, true) ? null : [for network in try(admin.networks, []) : {
             id     = meraki_network.network[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-            access = try(network.access, local.defaults.meraki.organizations.admins.networks.access, null)
+            access = try(network.access, local.defaults.meraki.domains.organizations.admins.networks.access, null)
           }]
           tags = try(length(admin.tags) == 0, true) ? null : [for tag in try(admin.tags, []) : {
             tag    = tag.tag
-            access = try(tag.access, local.defaults.meraki.organizations.admins.tags.access, null)
+            access = try(tag.access, local.defaults.meraki.domains.organizations.admins.tags.access, null)
           }]
         }
       ]
@@ -253,9 +253,9 @@ locals {
         for group in try(organization.adaptive_policy.groups, []) : {
           key             = format("%s/%s/%s", domain.name, organization.name, group.name)
           organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
-          group_name      = try(group.name, local.defaults.meraki.organizations.adaptive_policy.groups.name, null)
-          sgt             = try(group.sgt, local.defaults.meraki.organizations.adaptive_policy.groups.sgt, null)
-          description     = try(group.description, local.defaults.meraki.organizations.adaptive_policy.groups.description, null)
+          group_name      = try(group.name, local.defaults.meraki.domains.organizations.adaptive_policy.groups.name, null)
+          sgt             = try(group.sgt, local.defaults.meraki.domains.organizations.adaptive_policy.groups.sgt, null)
+          description     = try(group.description, local.defaults.meraki.domains.organizations.adaptive_policy.groups.description, null)
         }
       ]
     ]
@@ -277,19 +277,19 @@ locals {
         for adaptive_policy_acl in try(organization.adaptive_policy.acls, []) : {
           key             = format("%s/%s/%s", domain.name, organization.name, adaptive_policy_acl.name)
           organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
-          name            = try(adaptive_policy_acl.name, local.defaults.meraki.organizations.adaptive_policy.acls.name, null)
-          description     = try(adaptive_policy_acl.description, local.defaults.meraki.organizations.adaptive_policy.acls.description, null)
+          name            = try(adaptive_policy_acl.name, local.defaults.meraki.domains.organizations.adaptive_policy.acls.name, null)
+          description     = try(adaptive_policy_acl.description, local.defaults.meraki.domains.organizations.adaptive_policy.acls.description, null)
           rules = [
             for rule in try(adaptive_policy_acl.rules, []) : {
-              policy          = try(rule.policy, local.defaults.meraki.organizations.adaptive_policy.acls.rules.policy, null)
-              protocol        = try(rule.protocol, local.defaults.meraki.organizations.adaptive_policy.acls.rules.protocol, null)
-              src_port        = try(rule.source_port, local.defaults.meraki.organizations.adaptive_policy.acls.rules.source_port, null)
-              dst_port        = try(rule.destination_port, local.defaults.meraki.organizations.adaptive_policy.acls.rules.destination_port, null)
-              log             = try(rule.log, local.defaults.meraki.organizations.adaptive_policy.acls.rules.log, null)
-              tcp_established = try(rule.tcp_established, local.defaults.meraki.organizations.adaptive_policy.acls.rules.tcp_established, null)
+              policy          = try(rule.policy, local.defaults.meraki.domains.organizations.adaptive_policy.acls.rules.policy, null)
+              protocol        = try(rule.protocol, local.defaults.meraki.domains.organizations.adaptive_policy.acls.rules.protocol, null)
+              src_port        = try(rule.source_port, local.defaults.meraki.domains.organizations.adaptive_policy.acls.rules.source_port, null)
+              dst_port        = try(rule.destination_port, local.defaults.meraki.domains.organizations.adaptive_policy.acls.rules.destination_port, null)
+              log             = try(rule.log, local.defaults.meraki.domains.organizations.adaptive_policy.acls.rules.log, null)
+              tcp_established = try(rule.tcp_established, local.defaults.meraki.domains.organizations.adaptive_policy.acls.rules.tcp_established, null)
             }
           ]
-          ip_version = try(adaptive_policy_acl.ip_version, local.defaults.meraki.organizations.adaptive_policy.acls.ip_version, null)
+          ip_version = try(adaptive_policy_acl.ip_version, local.defaults.meraki.domains.organizations.adaptive_policy.acls.ip_version, null)
         }
       ]
     ]
@@ -313,14 +313,14 @@ locals {
         for policy in try(organization.adaptive_policy.policies, []) : {
           key                    = format("%s/%s/%s", domain.name, organization.name, policy.name)
           organization_id        = local.organization_ids[format("%s/%s", domain.name, organization.name)]
-          policy_name            = try(policy.name, local.defaults.meraki.organizations.adaptive_policy.policies.name, null)
-          source_group_name      = try(policy.source_group.name, local.defaults.meraki.organizations.adaptive_policy.policies.source_group.name, null)
-          source_group_sgt       = try(policy.source_group.sgt, local.defaults.meraki.organizations.adaptive_policy.policies.source_group.sgt, null)
+          policy_name            = try(policy.name, local.defaults.meraki.domains.organizations.adaptive_policy.policies.name, null)
+          source_group_name      = try(policy.source_group.name, local.defaults.meraki.domains.organizations.adaptive_policy.policies.source_group.name, null)
+          source_group_sgt       = try(policy.source_group.sgt, local.defaults.meraki.domains.organizations.adaptive_policy.policies.source_group.sgt, null)
           source_group_id        = meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/%s/%s", domain.name, organization.name, policy.source_group.name)].id
-          destination_group_name = try(policy.destination_group.name, local.defaults.meraki.organizations.adaptive_policy.policies.destination_group.name, null)
-          destination_group_sgt  = try(policy.destination_group.sgt, local.defaults.meraki.organizations.adaptive_policy.policies.destination_group.sgt, null)
+          destination_group_name = try(policy.destination_group.name, local.defaults.meraki.domains.organizations.adaptive_policy.policies.destination_group.name, null)
+          destination_group_sgt  = try(policy.destination_group.sgt, local.defaults.meraki.domains.organizations.adaptive_policy.policies.destination_group.sgt, null)
           destination_group_id   = meraki_organization_adaptive_policy_group.organizations_adaptive_policy_group[format("%s/%s/%s", domain.name, organization.name, policy.destination_group.name)].id
-          last_entry_rule        = try(policy.last_entry_rule, local.defaults.meraki.organizations.adaptive_policy.policies.last_entry_rule, null)
+          last_entry_rule        = try(policy.last_entry_rule, local.defaults.meraki.domains.organizations.adaptive_policy.policies.last_entry_rule, null)
           acls = try(length(policy.acls) == 0, true) ? null : [
             for acl in policy.acls : {
               id   = meraki_organization_adaptive_policy_acl.organizations_adaptive_policy_acl[format("%s/%s/%s", domain.name, organization.name, acl)].id
@@ -357,13 +357,13 @@ locals {
         for obj in try(organization.policy_objects, []) : {
           key             = format("%s/%s/%s", domain.name, organization.name, obj.name)
           organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
-          name            = try(obj.name, local.defaults.meraki.organizations.adaptive_policy_object.name, null)
-          category        = try(obj.category, local.defaults.meraki.organizations.adaptive_policy_object.category, null)
-          type            = try(obj.type, local.defaults.meraki.organizations.adaptive_policy_object.type, null)
-          cidr            = try(obj.cidr, local.defaults.meraki.organizations.adaptive_policy_object.cidr, null)
-          fqdn            = try(obj.fqdn, local.defaults.meraki.organizations.adaptive_policy_object.fqdn, null)
-          mask            = try(obj.mask, local.defaults.meraki.organizations.adaptive_policy_object.mask, null)
-          ip              = try(obj.ip, local.defaults.meraki.organizations.adaptive_policy_object.ip, null)
+          name            = try(obj.name, local.defaults.meraki.domains.organizations.adaptive_policy_object.name, null)
+          category        = try(obj.category, local.defaults.meraki.domains.organizations.adaptive_policy_object.category, null)
+          type            = try(obj.type, local.defaults.meraki.domains.organizations.adaptive_policy_object.type, null)
+          cidr            = try(obj.cidr, local.defaults.meraki.domains.organizations.adaptive_policy_object.cidr, null)
+          fqdn            = try(obj.fqdn, local.defaults.meraki.domains.organizations.adaptive_policy_object.fqdn, null)
+          mask            = try(obj.mask, local.defaults.meraki.domains.organizations.adaptive_policy_object.mask, null)
+          ip              = try(obj.ip, local.defaults.meraki.domains.organizations.adaptive_policy_object.ip, null)
         }
       ]
     ]
@@ -390,8 +390,8 @@ locals {
         for group in try(organization.policy_objects_groups, []) : {
           key             = format("%s/%s/%s", domain.name, organization.name, group.name)
           organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
-          name            = try(group.name, local.defaults.meraki.organizations.policy_objects_groups.name, null)
-          category        = try(group.category, local.defaults.meraki.organizations.policy_objects_groups.category, null)
+          name            = try(group.name, local.defaults.meraki.domains.organizations.policy_objects_groups.name, null)
+          category        = try(group.category, local.defaults.meraki.domains.organizations.policy_objects_groups.category, null)
           object_ids = try(length(group.object_names) == 0, true) ? null : [
             for name in try(group.object_names, []) : meraki_organization_policy_object.policy_object[format("%s/%s/%s", domain.name, organization.name, name)].id
           ]
@@ -418,23 +418,23 @@ locals {
         organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
         peers = try(length(organization.appliance.third_party_vpn_peers) == 0, true) ? null : [
           for peer in try(organization.appliance.third_party_vpn_peers, []) : {
-            name                                    = try(peer.name, local.defaults.meraki.organizations.appliance.third_party_vpn_peers.name, null)
-            public_ip                               = try(peer.public_ip, local.defaults.meraki.organizations.appliance.third_party_vpn_peers.public_ip, null)
-            remote_id                               = try(peer.remote_id, local.defaults.meraki.organizations.appliance.third_party_vpn_peers.remote_id, null)
-            secret                                  = try(peer.secret, local.defaults.meraki.organizations.appliance.third_party_vpn_peers.secret, null)
-            ike_version                             = try(peer.ike_version, local.defaults.meraki.organizations.appliance.third_party_vpn_peers.ike_version, null)
-            local_id                                = try(peer.local_id, local.defaults.meraki.organizations.appliance.third_party_vpn_peers.local_id, null)
-            private_subnets                         = try(peer.private_subnets, local.defaults.meraki.organizations.appliance.third_party_vpn_peers.private_subnets, null)
-            network_tags                            = try(peer.network_tags, local.defaults.meraki.organizations.appliance.third_party_vpn_peers.network_tags, null)
-            ipsec_policies_ike_cipher_algo          = try(peer.ipsec_policies.ike_cipher_algo, local.defaults.meraki.organizations.appliance.third_party_vpn_peers.ipsec_policies.ike_cipher_algo, null)
-            ipsec_policies_ike_auth_algo            = try(peer.ipsec_policies.ike_auth_algo, local.defaults.meraki.organizations.appliance.third_party_vpn_peers.ipsec_policies.ike_auth_algo, null)
-            ipsec_policies_ike_prf_algo             = try(peer.ipsec_policies.ike_prf_algo, local.defaults.meraki.organizations.appliance.third_party_vpn_peers.ipsec_policies.ike_prf_algo, null)
-            ipsec_policies_ike_diffie_hellman_group = try(peer.ipsec_policies.ike_diffie_hellman_group, local.defaults.meraki.organizations.appliance.third_party_vpn_peers.ipsec_policies.ike_diffie_hellman_group, null)
-            ipsec_policies_ike_lifetime             = try(peer.ipsec_policies.ike_lifetime, local.defaults.meraki.organizations.appliance.third_party_vpn_peers.ipsec_policies.ike_lifetime, null)
-            ipsec_policies_child_cipher_algo        = try(peer.ipsec_policies.child_cipher_algo, local.defaults.meraki.organizations.appliance.third_party_vpn_peers.ipsec_policies.child_cipher_algo, null)
-            ipsec_policies_child_auth_algo          = try(peer.ipsec_policies.child_auth_algo, local.defaults.meraki.organizations.appliance.third_party_vpn_peers.ipsec_policies.child_auth_algo, null)
-            ipsec_policies_child_pfs_group          = try(peer.ipsec_policies.child_pfs_group, local.defaults.meraki.organizations.appliance.third_party_vpn_peers.ipsec_policies.child_pfs_group, null)
-            ipsec_policies_child_lifetime           = try(peer.ipsec_policies.child_lifetime, local.defaults.meraki.organizations.appliance.third_party_vpn_peers.ipsec_policies.child_lifetime, null)
+            name                                    = try(peer.name, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.name, null)
+            public_ip                               = try(peer.public_ip, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.public_ip, null)
+            remote_id                               = try(peer.remote_id, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.remote_id, null)
+            secret                                  = try(peer.secret, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.secret, null)
+            ike_version                             = try(peer.ike_version, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ike_version, null)
+            local_id                                = try(peer.local_id, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.local_id, null)
+            private_subnets                         = try(peer.private_subnets, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.private_subnets, null)
+            network_tags                            = try(peer.network_tags, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.network_tags, null)
+            ipsec_policies_ike_cipher_algo          = try(peer.ipsec_policies.ike_cipher_algo, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ipsec_policies.ike_cipher_algo, null)
+            ipsec_policies_ike_auth_algo            = try(peer.ipsec_policies.ike_auth_algo, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ipsec_policies.ike_auth_algo, null)
+            ipsec_policies_ike_prf_algo             = try(peer.ipsec_policies.ike_prf_algo, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ipsec_policies.ike_prf_algo, null)
+            ipsec_policies_ike_diffie_hellman_group = try(peer.ipsec_policies.ike_diffie_hellman_group, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ipsec_policies.ike_diffie_hellman_group, null)
+            ipsec_policies_ike_lifetime             = try(peer.ipsec_policies.ike_lifetime, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ipsec_policies.ike_lifetime, null)
+            ipsec_policies_child_cipher_algo        = try(peer.ipsec_policies.child_cipher_algo, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ipsec_policies.child_cipher_algo, null)
+            ipsec_policies_child_auth_algo          = try(peer.ipsec_policies.child_auth_algo, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ipsec_policies.child_auth_algo, null)
+            ipsec_policies_child_pfs_group          = try(peer.ipsec_policies.child_pfs_group, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ipsec_policies.child_pfs_group, null)
+            ipsec_policies_child_lifetime           = try(peer.ipsec_policies.child_lifetime, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ipsec_policies.child_lifetime, null)
           }
         ]
       } if length(try(organization.appliance.third_party_vpn_peers, [])) > 0
@@ -457,14 +457,14 @@ locals {
         organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
         rules = try(length(organization.appliance.vpn_firewall_rules.rules) == 0, true) ? null : [
           for rule in try(organization.appliance.vpn_firewall_rules.rules, []) : {
-            comment        = try(rule.comment, local.defaults.meraki.organizations.appliance.vpn_firewall_rules.rules.comment, null)
-            policy         = try(rule.policy, local.defaults.meraki.organizations.appliance.vpn_firewall_rules.rules.policy, null)
-            protocol       = try(rule.protocol, local.defaults.meraki.organizations.appliance.vpn_firewall_rules.rules.protocol, null)
-            src_port       = try(rule.source_port, local.defaults.meraki.organizations.appliance.vpn_firewall_rules.rules.source_port, null)
-            src_cidr       = try(rule.source_cidr, local.defaults.meraki.organizations.appliance.vpn_firewall_rules.rules.source_cidr, null)
-            dest_port      = try(rule.destination_port, local.defaults.meraki.organizations.appliance.vpn_firewall_rules.rules.destination_port, null)
-            dest_cidr      = try(rule.destination_cidr, local.defaults.meraki.organizations.appliance.vpn_firewall_rules.rules.destination_cidr, null)
-            syslog_enabled = try(rule.syslog, local.defaults.meraki.organizations.appliance.vpn_firewall_rules.rules.syslog, null)
+            comment        = try(rule.comment, local.defaults.meraki.domains.organizations.appliance.vpn_firewall_rules.rules.comment, null)
+            policy         = try(rule.policy, local.defaults.meraki.domains.organizations.appliance.vpn_firewall_rules.rules.policy, null)
+            protocol       = try(rule.protocol, local.defaults.meraki.domains.organizations.appliance.vpn_firewall_rules.rules.protocol, null)
+            src_port       = try(rule.source_port, local.defaults.meraki.domains.organizations.appliance.vpn_firewall_rules.rules.source_port, null)
+            src_cidr       = try(rule.source_cidr, local.defaults.meraki.domains.organizations.appliance.vpn_firewall_rules.rules.source_cidr, null)
+            dest_port      = try(rule.destination_port, local.defaults.meraki.domains.organizations.appliance.vpn_firewall_rules.rules.destination_port, null)
+            dest_cidr      = try(rule.destination_cidr, local.defaults.meraki.domains.organizations.appliance.vpn_firewall_rules.rules.destination_cidr, null)
+            syslog_enabled = try(rule.syslog, local.defaults.meraki.domains.organizations.appliance.vpn_firewall_rules.rules.syslog, null)
           }
         ]
       } if length(try(organization.appliance.vpn_firewall_rules.rules, [])) > 0
