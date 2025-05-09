@@ -94,7 +94,7 @@ locals {
           key                 = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id          = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
           syslog_default_rule = try(network.appliance.firewall.l3_firewall_rules.syslog_default_rule, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l3_firewall_rules.syslog_default_rule, null)
-          rules = try(length(network.appliance.firewall.l3_firewall_rules.rules) == 0, true) ? null : [
+          rules = [
             for rule in try(network.appliance.firewall.l3_firewall_rules.rules, []) : {
               comment        = try(rule.comment, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l3_firewall_rules.rules.comment, null)
               dest_cidr      = try(rule.destination_cidr, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l3_firewall_rules.rules.destination_cidr, null)
@@ -106,7 +106,7 @@ locals {
               syslog_enabled = try(rule.syslog, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l3_firewall_rules.rules.syslog, null)
             }
           ]
-        }
+        } if try(network.appliance.firewall.l3_firewall_rules, null) != null
       ]
     ]
   ])
