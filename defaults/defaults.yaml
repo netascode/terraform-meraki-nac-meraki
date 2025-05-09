@@ -3,3 +3,14 @@ defaults:
     domains:
       organizations:
         managed: true
+        networks:
+          wireless_ssids:
+            eap_override:
+              max_retries: 5
+              timeout: 5
+              eapol_key:
+                retries: 3
+                timeout_in_ms: 10000
+              identity:
+                retries: 3
+                timeout: 10
