@@ -4,69 +4,135 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for group_policy in try(network.group_policies, []) : {
-            network_id = meraki_network.network["${organization.name}/${network.name}"].id
-            data       = try(group_policy, null)
-            rules = [
-              for rule in try(group_policy.firewall_and_traffic_shaping.l3_firewall_rules, []) : {
-                comment   = try(rule.comment, null)
-                dest_cidr = try(rule.destination_cidr, null)
-                dest_port = try(rule.destination_port, null)
-                policy    = try(rule.policy, null)
-                protocol  = try(rule.protocol, null)
+            key                                   = format("%s/%s/%s/%s", domain.name, organization.name, network.name, group_policy.name)
+            network_id                            = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+            name                                  = try(group_policy.name, local.defaults.meraki.domains.organizations.networks.group_policies.name, null)
+            scheduling_enabled                    = try(group_policy.scheduling.enabled, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.enabled, null)
+            scheduling_monday_active              = try(group_policy.scheduling.monday.active, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.monday.active, null)
+            scheduling_monday_from                = try(group_policy.scheduling.monday.from, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.monday.from, null)
+            scheduling_monday_to                  = try(group_policy.scheduling.monday.to, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.monday.to, null)
+            scheduling_tuesday_active             = try(group_policy.scheduling.tuesday.active, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.tuesday.active, null)
+            scheduling_tuesday_from               = try(group_policy.scheduling.tuesday.from, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.tuesday.from, null)
+            scheduling_tuesday_to                 = try(group_policy.scheduling.tuesday.to, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.tuesday.to, null)
+            scheduling_wednesday_active           = try(group_policy.scheduling.wednesday.active, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.wednesday.active, null)
+            scheduling_wednesday_from             = try(group_policy.scheduling.wednesday.from, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.wednesday.from, null)
+            scheduling_wednesday_to               = try(group_policy.scheduling.wednesday.to, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.wednesday.to, null)
+            scheduling_thursday_active            = try(group_policy.scheduling.thursday.active, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.thursday.active, null)
+            scheduling_thursday_from              = try(group_policy.scheduling.thursday.from, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.thursday.from, null)
+            scheduling_thursday_to                = try(group_policy.scheduling.thursday.to, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.thursday.to, null)
+            scheduling_friday_active              = try(group_policy.scheduling.friday.active, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.friday.active, null)
+            scheduling_friday_from                = try(group_policy.scheduling.friday.from, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.friday.from, null)
+            scheduling_friday_to                  = try(group_policy.scheduling.friday.to, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.friday.to, null)
+            scheduling_saturday_active            = try(group_policy.scheduling.saturday.active, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.saturday.active, null)
+            scheduling_saturday_from              = try(group_policy.scheduling.saturday.from, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.saturday.from, null)
+            scheduling_saturday_to                = try(group_policy.scheduling.saturday.to, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.saturday.to, null)
+            scheduling_sunday_active              = try(group_policy.scheduling.sunday.active, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.sunday.active, null)
+            scheduling_sunday_from                = try(group_policy.scheduling.sunday.from, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.sunday.from, null)
+            scheduling_sunday_to                  = try(group_policy.scheduling.sunday.to, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.sunday.to, null)
+            bandwidth_settings                    = try(group_policy.bandwidth.settings, local.defaults.meraki.domains.organizations.networks.group_policies.bandwidth.settings, null)
+            bandwidth_limit_up                    = try(group_policy.bandwidth.bandwidth_limits.limit_up, local.defaults.meraki.domains.organizations.networks.group_policies.bandwidth.bandwidth_limits.limit_up, null)
+            bandwidth_limit_down                  = try(group_policy.bandwidth.bandwidth_limits.limit_down, local.defaults.meraki.domains.organizations.networks.group_policies.bandwidth.bandwidth_limits.limit_down, null)
+            firewall_and_traffic_shaping_settings = try(group_policy.firewall_and_traffic_shaping.settings, local.defaults.meraki.domains.organizations.networks.group_policies.firewall_and_traffic_shaping.settings, null)
+            traffic_shaping_rules = try(length(group_policy.firewall_and_traffic_shaping.traffic_shaping_rules) == 0, true) ? null : [
+              for traffic_shaping_rule in try(group_policy.firewall_and_traffic_shaping.traffic_shaping_rules, []) : {
+                definitions = [
+                  for definition in try(traffic_shaping_rule.definitions, []) : {
+                    type  = try(definition.type, local.defaults.meraki.domains.organizations.networks.group_policies.firewall_and_traffic_shaping.traffic_shaping_rules.definitions.type, null)
+                    value = try(definition.value, local.defaults.meraki.domains.organizations.networks.group_policies.firewall_and_traffic_shaping.traffic_shaping_rules.definitions.value, null)
+                  }
+                ]
+                per_client_bandwidth_limits_settings                    = try(traffic_shaping_rule.per_client_bandwidth_limits.settings, local.defaults.meraki.domains.organizations.networks.group_policies.firewall_and_traffic_shaping.traffic_shaping_rules.per_client_bandwidth_limits.settings, null)
+                per_client_bandwidth_limits_bandwidth_limits_limit_up   = try(traffic_shaping_rule.per_client_bandwidth_limits.bandwidth_limits.limit_up, local.defaults.meraki.domains.organizations.networks.group_policies.firewall_and_traffic_shaping.traffic_shaping_rules.per_client_bandwidth_limits.bandwidth_limits.limit_up, null)
+                per_client_bandwidth_limits_bandwidth_limits_limit_down = try(traffic_shaping_rule.per_client_bandwidth_limits.bandwidth_limits.limit_down, local.defaults.meraki.domains.organizations.networks.group_policies.firewall_and_traffic_shaping.traffic_shaping_rules.per_client_bandwidth_limits.bandwidth_limits.limit_down, null)
+                dscp_tag_value                                          = try(traffic_shaping_rule.dscp_tag_value, local.defaults.meraki.domains.organizations.networks.group_policies.firewall_and_traffic_shaping.traffic_shaping_rules.dscp_tag_value, null)
+                pcp_tag_value                                           = try(traffic_shaping_rule.pcp_tag_value, local.defaults.meraki.domains.organizations.networks.group_policies.firewall_and_traffic_shaping.traffic_shaping_rules.pcp_tag_value, null)
+                priority                                                = try(traffic_shaping_rule.priority, local.defaults.meraki.domains.organizations.networks.group_policies.firewall_and_traffic_shaping.traffic_shaping_rules.priority, null)
               }
             ]
-          } if try(network.group_policies, null) != null
-        ] if try(organization.networks, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+            l3_firewall_rules = try(length(group_policy.firewall_and_traffic_shaping.l3_firewall_rules) == 0, true) ? null : [
+              for l3_firewall_rule in try(group_policy.firewall_and_traffic_shaping.l3_firewall_rules, []) : {
+                comment   = try(l3_firewall_rule.comment, local.defaults.meraki.domains.organizations.networks.group_policies.firewall_and_traffic_shaping.l3_firewall_rules.comment, null)
+                policy    = try(l3_firewall_rule.policy, local.defaults.meraki.domains.organizations.networks.group_policies.firewall_and_traffic_shaping.l3_firewall_rules.policy, null)
+                protocol  = try(l3_firewall_rule.protocol, local.defaults.meraki.domains.organizations.networks.group_policies.firewall_and_traffic_shaping.l3_firewall_rules.protocol, null)
+                dest_port = try(l3_firewall_rule.destination_port, local.defaults.meraki.domains.organizations.networks.group_policies.firewall_and_traffic_shaping.l3_firewall_rules.destination_port, null)
+                dest_cidr = try(l3_firewall_rule.destination_cidr, local.defaults.meraki.domains.organizations.networks.group_policies.firewall_and_traffic_shaping.l3_firewall_rules.destination_cidr, null)
+              }
+            ]
+            l7_firewall_rules = try(length(group_policy.firewall_and_traffic_shaping.l7_firewall_rules) == 0, true) ? null : [
+              for l7_firewall_rule in try(group_policy.firewall_and_traffic_shaping.l7_firewall_rules, []) : {
+                policy = try(l7_firewall_rule.policy, local.defaults.meraki.domains.organizations.networks.group_policies.firewall_and_traffic_shaping.l7_firewall_rules.policy, null)
+                type   = try(l7_firewall_rule.type, local.defaults.meraki.domains.organizations.networks.group_policies.firewall_and_traffic_shaping.l7_firewall_rules.type, null)
+                value  = try(l7_firewall_rule.value, local.defaults.meraki.domains.organizations.networks.group_policies.firewall_and_traffic_shaping.l7_firewall_rules.value, null)
+              }
+            ]
+            content_filtering_allowed_url_patterns_settings   = try(group_policy.content_filtering.allowed_url_patterns.settings, local.defaults.meraki.domains.organizations.networks.group_policies.content_filtering.allowed_url_patterns.settings, null)
+            content_filtering_allowed_url_patterns            = try(group_policy.content_filtering.allowed_url_patterns.patterns, local.defaults.meraki.domains.organizations.networks.group_policies.content_filtering.allowed_url_patterns.patterns, null)
+            content_filtering_blocked_url_patterns_settings   = try(group_policy.content_filtering.blocked_url_patterns.settings, local.defaults.meraki.domains.organizations.networks.group_policies.content_filtering.blocked_url_patterns.settings, null)
+            content_filtering_blocked_url_patterns            = try(group_policy.content_filtering.blocked_url_patterns.patterns, local.defaults.meraki.domains.organizations.networks.group_policies.content_filtering.blocked_url_patterns.patterns, null)
+            content_filtering_blocked_url_categories_settings = try(group_policy.content_filtering.blocked_url_categories.settings, local.defaults.meraki.domains.organizations.networks.group_policies.content_filtering.blocked_url_categories.settings, null)
+            content_filtering_blocked_url_categories          = try(group_policy.content_filtering.blocked_url_categories.categories, local.defaults.meraki.domains.organizations.networks.group_policies.content_filtering.blocked_url_categories.categories, null)
+            splash_auth_settings                              = try(group_policy.splash_auth_settings, local.defaults.meraki.domains.organizations.networks.group_policies.splash_auth_settings, null)
+            vlan_tagging_settings                             = try(group_policy.vlan_tagging.settings, local.defaults.meraki.domains.organizations.networks.group_policies.vlan_tagging.settings, null)
+            vlan_tagging_vlan_id                              = try(group_policy.vlan_tagging.vlan_id, local.defaults.meraki.domains.organizations.networks.group_policies.vlan_tagging.vlan_id, null)
+            bonjour_forwarding_settings                       = try(group_policy.bonjour_forwarding.settings, local.defaults.meraki.domains.organizations.networks.group_policies.bonjour_forwarding.settings, null)
+            bonjour_forwarding_rules = try(length(group_policy.bonjour_forwarding.rules) == 0, true) ? null : [
+              for rule in try(group_policy.bonjour_forwarding.rules, []) : {
+                description = try(rule.description, local.defaults.meraki.domains.organizations.networks.group_policies.bonjour_forwarding.rules.description, null)
+                vlan_id     = try(rule.vlan_id, local.defaults.meraki.domains.organizations.networks.group_policies.bonjour_forwarding.rules.vlan_id, null)
+                services    = try(rule.services, local.defaults.meraki.domains.organizations.networks.group_policies.bonjour_forwarding.rules.services, null)
+              }
+            ]
+          }
+        ]
+      ]
+    ]
   ])
 }
 
-resource "meraki_network_group_policy" "net_group_policies" {
-  for_each                                          = { for i, v in local.networks_group_policies : i => v }
+resource "meraki_network_group_policy" "networks_group_policies" {
+  for_each                                          = { for v in local.networks_group_policies : v.key => v }
   network_id                                        = each.value.network_id
-  name                                              = try(each.value.data.name, local.defaults.meraki.networks.group_policies.name, null)
-  scheduling_enabled                                = try(each.value.data.scheduling.enabled, local.defaults.meraki.networks.group_policies.scheduling.enabled, null)
-  scheduling_monday_active                          = try(each.value.data.scheduling.monday.active, local.defaults.meraki.networks.group_policies.scheduling.monday.active, null)
-  scheduling_monday_from                            = try(each.value.data.scheduling.monday.from, local.defaults.meraki.networks.group_policies.scheduling.monday.from, null)
-  scheduling_monday_to                              = try(each.value.data.scheduling.monday.to, local.defaults.meraki.networks.group_policies.scheduling.monday.to, null)
-  scheduling_tuesday_active                         = try(each.value.data.scheduling.tuesday.active, local.defaults.meraki.networks.group_policies.scheduling.tuesday.active, null)
-  scheduling_tuesday_from                           = try(each.value.data.scheduling.tuesday.from, local.defaults.meraki.networks.group_policies.scheduling.tuesday.from, null)
-  scheduling_tuesday_to                             = try(each.value.data.scheduling.tuesday.to, local.defaults.meraki.networks.group_policies.scheduling.tuesday.to, null)
-  scheduling_wednesday_active                       = try(each.value.data.scheduling.wednesday.active, local.defaults.meraki.networks.group_policies.scheduling.wednesday.active, null)
-  scheduling_wednesday_from                         = try(each.value.data.scheduling.wednesday.from, local.defaults.meraki.networks.group_policies.scheduling.wednesday.from, null)
-  scheduling_wednesday_to                           = try(each.value.data.scheduling.wednesday.to, local.defaults.meraki.networks.group_policies.scheduling.wednesday.to, null)
-  scheduling_thursday_active                        = try(each.value.data.scheduling.thursday.active, local.defaults.meraki.networks.group_policies.scheduling.thursday.active, null)
-  scheduling_thursday_from                          = try(each.value.data.scheduling.thursday.from, local.defaults.meraki.networks.group_policies.scheduling.thursday.from, null)
-  scheduling_thursday_to                            = try(each.value.data.scheduling.thursday.to, local.defaults.meraki.networks.group_policies.scheduling.thursday.to, null)
-  scheduling_friday_active                          = try(each.value.data.scheduling.friday.active, local.defaults.meraki.networks.group_policies.scheduling.friday.active, null)
-  scheduling_friday_from                            = try(each.value.data.scheduling.friday.from, local.defaults.meraki.networks.group_policies.scheduling.friday.from, null)
-  scheduling_friday_to                              = try(each.value.data.scheduling.friday.to, local.defaults.meraki.networks.group_policies.scheduling.friday.to, null)
-  scheduling_saturday_active                        = try(each.value.data.scheduling.saturday.active, local.defaults.meraki.networks.group_policies.scheduling.saturday.active, null)
-  scheduling_saturday_from                          = try(each.value.data.scheduling.saturday.from, local.defaults.meraki.networks.group_policies.scheduling.saturday.from, null)
-  scheduling_saturday_to                            = try(each.value.data.scheduling.saturday.to, local.defaults.meraki.networks.group_policies.scheduling.saturday.to, null)
-  scheduling_sunday_active                          = try(each.value.data.scheduling.sunday.active, local.defaults.meraki.networks.group_policies.scheduling.sunday.active, null)
-  scheduling_sunday_from                            = try(each.value.data.scheduling.sunday.from, local.defaults.meraki.networks.group_policies.scheduling.sunday.from, null)
-  scheduling_sunday_to                              = try(each.value.data.scheduling.sunday.to, local.defaults.meraki.networks.group_policies.scheduling.sunday.to, null)
-  bandwidth_settings                                = try(each.value.data.bandwidth.settings, local.defaults.meraki.networks.group_policies.bandwidth.settings, null)
-  bandwidth_limit_up                                = try(each.value.data.bandwidth.bandwidth_limits.limit_up, local.defaults.meraki.networks.group_policies.bandwidth.bandwidth_limits.limit_up, null)
-  bandwidth_limit_down                              = try(each.value.data.bandwidth.bandwidth_limits.limit_down, local.defaults.meraki.networks.group_policies.bandwidth.bandwidth_limits.limit_down, null)
-  firewall_and_traffic_shaping_settings             = try(each.value.data.firewall_and_traffic_shaping.settings, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.settings, null)
-  traffic_shaping_rules                             = try(each.value.data.firewall_and_traffic_shaping.traffic_shaping_rules, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.traffic_shaping_rules, null)
-  l3_firewall_rules                                 = try(length(each.value.rules) > 0 ? each.value.rules : null, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.l3_firewall_rules, null)
-  l7_firewall_rules                                 = try(each.value.data.firewall_and_traffic_shaping.l7_firewall_rules, local.defaults.meraki.networks.group_policies.firewall_and_traffic_shaping.l7_firewall_rules, null)
-  content_filtering_allowed_url_patterns_settings   = try(each.value.data.content_filtering.allowed_url_patterns.settings, local.defaults.meraki.networks.group_policies.content_filtering.allowed_url_patterns.settings, null)
-  content_filtering_allowed_url_patterns            = try(each.value.data.content_filtering.allowed_url_patterns.patterns, local.defaults.meraki.networks.group_policies.content_filtering.allowed_url_patterns.patterns, null)
-  content_filtering_blocked_url_patterns_settings   = try(each.value.data.content_filtering.blocked_url_patterns.settings, local.defaults.meraki.networks.group_policies.content_filtering.blocked_url_patterns.settings, null)
-  content_filtering_blocked_url_patterns            = try(each.value.data.content_filtering.blocked_url_patterns.patterns, local.defaults.meraki.networks.group_policies.content_filtering.blocked_url_patterns.patterns, null)
-  content_filtering_blocked_url_categories_settings = try(each.value.data.content_filtering.blocked_url_categories.settings, local.defaults.meraki.networks.group_policies.content_filtering.blocked_url_categories.settings, null)
-  content_filtering_blocked_url_categories          = try(each.value.data.content_filtering.blocked_url_categories.categories, local.defaults.meraki.networks.group_policies.content_filtering.blocked_url_categories.categories, null)
-  splash_auth_settings                              = try(each.value.data.splash_auth_settings, local.defaults.meraki.networks.group_policies.splash_auth_settings, null)
-  vlan_tagging_settings                             = try(each.value.data.vlan_tagging.settings, local.defaults.meraki.networks.group_policies.vlan_tagging.settings, null)
-  vlan_tagging_vlan_id                              = try(each.value.data.vlan_tagging.vlan_id, local.defaults.meraki.networks.group_policies.vlan_tagging.vlan_id, null)
-  bonjour_forwarding_settings                       = try(each.value.data.bonjour_forwarding.settings, local.defaults.meraki.networks.group_policies.bonjour_forwarding.settings, null)
-  bonjour_forwarding_rules                          = try(each.value.data.bonjour_forwarding.rules, local.defaults.meraki.networks.group_policies.bonjour_forwarding.rules, null)
-
+  name                                              = each.value.name
+  scheduling_enabled                                = each.value.scheduling_enabled
+  scheduling_monday_active                          = each.value.scheduling_monday_active
+  scheduling_monday_from                            = each.value.scheduling_monday_from
+  scheduling_monday_to                              = each.value.scheduling_monday_to
+  scheduling_tuesday_active                         = each.value.scheduling_tuesday_active
+  scheduling_tuesday_from                           = each.value.scheduling_tuesday_from
+  scheduling_tuesday_to                             = each.value.scheduling_tuesday_to
+  scheduling_wednesday_active                       = each.value.scheduling_wednesday_active
+  scheduling_wednesday_from                         = each.value.scheduling_wednesday_from
+  scheduling_wednesday_to                           = each.value.scheduling_wednesday_to
+  scheduling_thursday_active                        = each.value.scheduling_thursday_active
+  scheduling_thursday_from                          = each.value.scheduling_thursday_from
+  scheduling_thursday_to                            = each.value.scheduling_thursday_to
+  scheduling_friday_active                          = each.value.scheduling_friday_active
+  scheduling_friday_from                            = each.value.scheduling_friday_from
+  scheduling_friday_to                              = each.value.scheduling_friday_to
+  scheduling_saturday_active                        = each.value.scheduling_saturday_active
+  scheduling_saturday_from                          = each.value.scheduling_saturday_from
+  scheduling_saturday_to                            = each.value.scheduling_saturday_to
+  scheduling_sunday_active                          = each.value.scheduling_sunday_active
+  scheduling_sunday_from                            = each.value.scheduling_sunday_from
+  scheduling_sunday_to                              = each.value.scheduling_sunday_to
+  bandwidth_settings                                = each.value.bandwidth_settings
+  bandwidth_limit_up                                = each.value.bandwidth_limit_up
+  bandwidth_limit_down                              = each.value.bandwidth_limit_down
+  firewall_and_traffic_shaping_settings             = each.value.firewall_and_traffic_shaping_settings
+  traffic_shaping_rules                             = each.value.traffic_shaping_rules
+  l3_firewall_rules                                 = each.value.l3_firewall_rules
+  l7_firewall_rules                                 = each.value.l7_firewall_rules
+  content_filtering_allowed_url_patterns_settings   = each.value.content_filtering_allowed_url_patterns_settings
+  content_filtering_allowed_url_patterns            = each.value.content_filtering_allowed_url_patterns
+  content_filtering_blocked_url_patterns_settings   = each.value.content_filtering_blocked_url_patterns_settings
+  content_filtering_blocked_url_patterns            = each.value.content_filtering_blocked_url_patterns
+  content_filtering_blocked_url_categories_settings = each.value.content_filtering_blocked_url_categories_settings
+  content_filtering_blocked_url_categories          = each.value.content_filtering_blocked_url_categories
+  splash_auth_settings                              = each.value.splash_auth_settings
+  vlan_tagging_settings                             = each.value.vlan_tagging_settings
+  vlan_tagging_vlan_id                              = each.value.vlan_tagging_vlan_id
+  bonjour_forwarding_settings                       = each.value.bonjour_forwarding_settings
+  bonjour_forwarding_rules                          = each.value.bonjour_forwarding_rules
 }
 
 locals {
@@ -74,25 +140,31 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
-          network_id = meraki_network.network["${organization.name}/${network.name}"].id
-          data       = try(network.settings, null)
+          key                                       = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id                                = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          local_status_page_enabled                 = try(network.settings.local_status_page_enabled, local.defaults.meraki.domains.organizations.networks.settings.local_status_page_enabled, null)
+          remote_status_page_enabled                = try(network.settings.remote_status_page, local.defaults.meraki.domains.organizations.networks.settings.remote_status_page, null)
+          local_status_page_authentication_enabled  = try(network.settings.local_status_page_authentication.enabled, local.defaults.meraki.domains.organizations.networks.settings.local_status_page_authentication.enabled, null)
+          local_status_page_authentication_username = try(network.settings.local_status_page_authentication.username, local.defaults.meraki.domains.organizations.networks.settings.local_status_page_authentication.username, null)
+          local_status_page_authentication_password = try(network.settings.local_status_page_authentication.password, local.defaults.meraki.domains.organizations.networks.settings.local_status_page_authentication.password, null)
+          secure_port_enabled                       = try(network.settings.secure_port, local.defaults.meraki.domains.organizations.networks.settings.secure_port, null)
+          named_vlans_enabled                       = try(network.settings.named_vlans, local.defaults.meraki.domains.organizations.networks.settings.named_vlans, null)
         } if try(network.settings, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+      ]
     ]
-  )
+  ])
 }
 
-resource "meraki_network_settings" "net_settings" {
-  for_each                                  = { for i, v in local.networks_settings : i => v }
+resource "meraki_network_settings" "networks_settings" {
+  for_each                                  = { for v in local.networks_settings : v.key => v }
   network_id                                = each.value.network_id
-  local_status_page_enabled                 = try(each.value.data.local_status_page_enabled, local.defaults.meraki.networks.settings.local_status_page_enabled, null)
-  remote_status_page_enabled                = try(each.value.data.remote_status_page, local.defaults.meraki.networks.settings.remote_status_page, null)
-  local_status_page_authentication_enabled  = try(each.value.data.local_status_page_authentication.enabled, local.defaults.meraki.networks.settings.local_status_page_authentication.enabled, null)
-  local_status_page_authentication_username = try(each.value.data.local_status_page_authentication.username, local.defaults.meraki.networks.settings.local_status_page_authentication.username, null)
-  local_status_page_authentication_password = try(each.value.data.local_status_page_authentication.password, local.defaults.meraki.networks.settings.local_status_page_authentication.password, null)
-  secure_port_enabled                       = try(each.value.data.secure_port, local.defaults.meraki.networks.settings.secure_port, null)
-  named_vlans_enabled                       = try(each.value.data.named_vlans, local.defaults.meraki.networks.settings.named_vlans, null)
+  local_status_page_enabled                 = each.value.local_status_page_enabled
+  remote_status_page_enabled                = each.value.remote_status_page_enabled
+  local_status_page_authentication_enabled  = each.value.local_status_page_authentication_enabled
+  local_status_page_authentication_username = each.value.local_status_page_authentication_username
+  local_status_page_authentication_password = each.value.local_status_page_authentication_password
+  secure_port_enabled                       = each.value.secure_port_enabled
+  named_vlans_enabled                       = each.value.named_vlans_enabled
 }
 
 locals {
@@ -100,20 +172,28 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
-          network_id = meraki_network.network["${organization.name}/${network.name}"].id
-          data       = try(network.snmp, null)
+          key              = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id       = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          access           = try(network.snmp.access, local.defaults.meraki.domains.organizations.networks.snmp.access, null)
+          community_string = try(network.snmp.community_string, local.defaults.meraki.domains.organizations.networks.snmp.community_string, null)
+          users = try(length(network.snmp.users) == 0, true) ? null : [
+            for user in try(network.snmp.users, []) : {
+              username   = try(user.username, local.defaults.meraki.domains.organizations.networks.snmp.users.username, null)
+              passphrase = try(user.passphrase, local.defaults.meraki.domains.organizations.networks.snmp.users.passphrase, null)
+            }
+          ]
         } if try(network.snmp, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+      ]
+    ]
   ])
 }
 
-resource "meraki_network_snmp" "net_snmp" {
-  for_each         = { for i, v in local.networks_snmp : i => v }
+resource "meraki_network_snmp" "networks_snmp" {
+  for_each         = { for v in local.networks_snmp : v.key => v }
   network_id       = each.value.network_id
-  access           = try(each.value.data.access, local.defaults.meraki.networks.snmp.access, null)
-  community_string = try(each.value.data.community_string, local.defaults.meraki.networks.snmp.community_string, null)
-  users            = try(each.value.data.users, local.defaults.meraki.networks.snmp.users, null)
+  access           = each.value.access
+  community_string = each.value.community_string
+  users            = each.value.users
 }
 
 locals {
@@ -121,18 +201,25 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
-          network_id = meraki_network.network["${organization.name}/${network.name}"].id
-          data       = try(network.syslog_servers, null)
+          key        = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          servers = [
+            for server in try(network.syslog_servers, []) : {
+              host  = try(server.host, local.defaults.meraki.domains.organizations.networks.syslog_servers.host, null)
+              port  = try(server.port, local.defaults.meraki.domains.organizations.networks.syslog_servers.port, null)
+              roles = try(server.roles, local.defaults.meraki.domains.organizations.networks.syslog_servers.roles, null)
+            }
+          ]
         } if try(network.syslog_servers, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+      ]
+    ]
   ])
 }
 
-resource "meraki_network_syslog_servers" "net_syslog_servers" {
-  for_each   = { for i, v in local.networks_syslog_servers : i => v }
+resource "meraki_network_syslog_servers" "networks_syslog_servers" {
+  for_each   = { for v in local.networks_syslog_servers : v.key => v }
   network_id = each.value.network_id
-  servers    = try(each.value.data, local.defaults.meraki.networks.syslog_servers, [])
+  servers    = each.value.servers
 }
 
 locals {
@@ -141,38 +228,55 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for vlan_profile in try(network.vlan_profiles, []) : {
-            network_id = meraki_network.network["${organization.name}/${network.name}"].id
-            data       = try(vlan_profile, null)
-          } if try(network.vlan_profiles, null) != null
-        ] if try(organization.networks, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+            key        = format("%s/%s/%s/%s", domain.name, organization.name, network.name, vlan_profile.name)
+            network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+            name       = try(vlan_profile.name, local.defaults.meraki.domains.organizations.networks.vlan_profiles.name, null)
+            vlan_names = [
+              for vlan_name in try(vlan_profile.vlan_names, []) : {
+                name                     = try(vlan_name.name, local.defaults.meraki.domains.organizations.networks.vlan_profiles.vlan_names.name, null)
+                vlan_id                  = try(vlan_name.vlan_id, local.defaults.meraki.domains.organizations.networks.vlan_profiles.vlan_names.vlan_id, null)
+                adaptive_policy_group_id = try(vlan_name.adaptive_policy_group, local.defaults.meraki.domains.organizations.networks.vlan_profiles.vlan_names.adaptive_policy_group, null)
+              }
+            ]
+            vlan_groups = [
+              for vlan_group in try(vlan_profile.vlan_groups, []) : {
+                name     = try(vlan_group.name, local.defaults.meraki.domains.organizations.networks.vlan_profiles.vlan_groups.name, null)
+                vlan_ids = try(vlan_group.vlan_ids, local.defaults.meraki.domains.organizations.networks.vlan_profiles.vlan_groups.vlan_ids, null)
+              }
+            ]
+            iname = try(vlan_profile.iname, local.defaults.meraki.domains.organizations.networks.vlan_profiles.iname, null)
+          }
+        ]
+      ]
+    ]
   ])
 }
 
-resource "meraki_network_vlan_profile" "net_vlan_profiles" {
-  for_each    = { for i, v in local.networks_vlan_profiles : i => v }
+resource "meraki_network_vlan_profile" "networks_vlan_profiles" {
+  for_each    = { for v in local.networks_vlan_profiles : v.key => v }
   network_id  = each.value.network_id
-  iname       = each.value.data.iname
-  name        = try(each.value.data.name, local.defaults.meraki.networks.vlan_profiles.name, null)
-  vlan_names  = try(each.value.data.vlan_names, local.defaults.meraki.networks.vlan_profiles.vlan_names, [])
-  vlan_groups = try(each.value.data.vlan_groups, local.defaults.meraki.networks.vlan_profiles.vlan_groups, [])
+  name        = each.value.name
+  vlan_names  = each.value.vlan_names
+  vlan_groups = each.value.vlan_groups
+  iname       = each.value.iname
 }
+
 locals {
   networks_devices_claim = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
-          network_id = meraki_network.network["${organization.name}/${network.name}"].id
+          key        = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
           serials    = [for d in network.devices : d.serial]
         } if try(network.devices, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+      ]
+    ]
   ])
 }
 
-resource "meraki_network_device_claim" "net_device_claim" {
-  for_each   = { for i, v in local.networks_devices_claim : i => v }
+resource "meraki_network_device_claim" "networks_devices_claim" {
+  for_each   = { for v in local.networks_devices_claim : v.key => v }
   network_id = each.value.network_id
   serials    = each.value.serials
 }
@@ -183,39 +287,45 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for floor_plan in try(network.floor_plans, []) : {
-            network_id = meraki_network.network["${organization.name}/${network.name}"].id
-            data = {
-              name                    = try(floor_plan.name, null)
-              bottom_left_corner_lat  = try(floor_plan.bottom_left_corner.lat, null)
-              bottom_left_corner_lng  = try(floor_plan.bottom_left_corner.lng, null)
-              bottom_right_corner_lat = try(floor_plan.bottom_right_corner.lat, null)
-              bottom_right_corner_lng = try(floor_plan.bottom_right_corner.lng, null)
-              top_left_corner_lat     = try(floor_plan.top_left_corner.lat, null)
-              top_left_corner_lng     = try(floor_plan.top_left_corner.lng, null)
-              top_right_corner_lat    = try(floor_plan.top_right_corner.lat, null)
-              top_right_corner_lng    = try(floor_plan.top_right_corner.lng, null)
-              image_contents          = try(floor_plan.image_contents, null)
-            }
-          } if try(network.floor_plans, null) != null
-        ] if try(organization.networks, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+            key                     = format("%s/%s/%s/%s", domain.name, organization.name, network.name, floor_plan.name)
+            network_id              = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+            name                    = try(floor_plan.name, local.defaults.meraki.domains.organizations.networks.floor_plans.name, null)
+            center_lat              = try(floor_plan.center.lat, local.defaults.meraki.domains.organizations.networks.floor_plans.center.lat, null)
+            center_lng              = try(floor_plan.center.lng, local.defaults.meraki.domains.organizations.networks.floor_plans.center.lng, null)
+            bottom_left_corner_lat  = try(floor_plan.bottom_left_corner.lat, local.defaults.meraki.domains.organizations.networks.floor_plans.bottom_left_corner.lat, null)
+            bottom_left_corner_lng  = try(floor_plan.bottom_left_corner.lng, local.defaults.meraki.domains.organizations.networks.floor_plans.bottom_left_corner.lng, null)
+            bottom_right_corner_lat = try(floor_plan.bottom_right_corner.lat, local.defaults.meraki.domains.organizations.networks.floor_plans.bottom_right_corner.lat, null)
+            bottom_right_corner_lng = try(floor_plan.bottom_right_corner.lng, local.defaults.meraki.domains.organizations.networks.floor_plans.bottom_right_corner.lng, null)
+            top_left_corner_lat     = try(floor_plan.top_left_corner.lat, local.defaults.meraki.domains.organizations.networks.floor_plans.top_left_corner.lat, null)
+            top_left_corner_lng     = try(floor_plan.top_left_corner.lng, local.defaults.meraki.domains.organizations.networks.floor_plans.top_left_corner.lng, null)
+            top_right_corner_lat    = try(floor_plan.top_right_corner.lat, local.defaults.meraki.domains.organizations.networks.floor_plans.top_right_corner.lat, null)
+            top_right_corner_lng    = try(floor_plan.top_right_corner.lng, local.defaults.meraki.domains.organizations.networks.floor_plans.top_right_corner.lng, null)
+            floor_number            = try(floor_plan.floor_number, local.defaults.meraki.domains.organizations.networks.floor_plans.floor_number, null)
+            image_contents          = try(floor_plan.image_contents, local.defaults.meraki.domains.organizations.networks.floor_plans.image_contents, null)
+          }
+        ]
+      ]
+    ]
   ])
 }
-resource "meraki_network_floor_plan" "net_floor_plans" {
-  for_each                = { for i, v in local.networks_floor_plans : i => v }
+
+resource "meraki_network_floor_plan" "networks_floor_plans" {
+  for_each                = { for v in local.networks_floor_plans : v.key => v }
   network_id              = each.value.network_id
-  name                    = each.value.data.name
-  bottom_left_corner_lat  = each.value.data.bottom_left_corner_lat
-  bottom_left_corner_lng  = each.value.data.bottom_left_corner_lng
-  bottom_right_corner_lat = each.value.data.bottom_right_corner_lat
-  bottom_right_corner_lng = each.value.data.bottom_right_corner_lng
-  top_left_corner_lat     = each.value.data.top_left_corner_lat
-  top_left_corner_lng     = each.value.data.top_left_corner_lng
-  top_right_corner_lat    = each.value.data.top_right_corner_lat
-  top_right_corner_lng    = each.value.data.top_right_corner_lng
-  image_contents          = each.value.data.image_contents
-  depends_on              = [meraki_network.network]
+  name                    = each.value.name
+  center_lat              = each.value.center_lat
+  center_lng              = each.value.center_lng
+  bottom_left_corner_lat  = each.value.bottom_left_corner_lat
+  bottom_left_corner_lng  = each.value.bottom_left_corner_lng
+  bottom_right_corner_lat = each.value.bottom_right_corner_lat
+  bottom_right_corner_lng = each.value.bottom_right_corner_lng
+  top_left_corner_lat     = each.value.top_left_corner_lat
+  top_left_corner_lng     = each.value.top_left_corner_lng
+  top_right_corner_lat    = each.value.top_right_corner_lat
+  top_right_corner_lng    = each.value.top_right_corner_lng
+  floor_number            = each.value.floor_number
+  image_contents          = each.value.image_contents
+  depends_on              = [meraki_network.organizations_networks]
 }
 
 locals {
