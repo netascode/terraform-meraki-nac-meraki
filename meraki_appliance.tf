@@ -639,356 +639,445 @@ resource "meraki_appliance_warm_spare" "networks_appliance_warm_spare" {
   depends_on   = [meraki_network_device_claim.networks_devices_claim]
 }
 
-
 locals {
-  networks_networks_appliance_static_routes = flatten([
-
+  networks_appliance_static_routes = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for appliance_static_route in try(network.appliance.static_routes, []) : {
-            network_id = meraki_network.network["${organization.name}/${network.name}"].id
-
-            data = try(appliance_static_route, null)
-          } if try(network.appliance.static_routes, null) != null
-        ] if try(organization.networks, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+            key             = format("%s/%s/%s/%s", domain.name, organization.name, network.name, appliance_static_route.name)
+            network_id      = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+            name            = try(appliance_static_route.name, local.defaults.meraki.domains.organizations.networks.appliance.static_routes.name, null)
+            subnet          = try(appliance_static_route.subnet, local.defaults.meraki.domains.organizations.networks.appliance.static_routes.subnet, null)
+            gateway_ip      = try(appliance_static_route.gateway_ip, local.defaults.meraki.domains.organizations.networks.appliance.static_routes.gateway_ip, null)
+            gateway_vlan_id = try(appliance_static_route.gateway_vlan_id, local.defaults.meraki.domains.organizations.networks.appliance.static_routes.gateway_vlan_id, null)
+          }
+        ]
+      ]
+    ]
   ])
 }
 
-resource "meraki_appliance_static_route" "net_networks_appliance_static_routes" {
-  for_each   = { for i, v in local.networks_networks_appliance_static_routes : i => v }
-  network_id = each.value.network_id
-
-  name            = try(each.value.data.name, local.defaults.meraki.networks.networks_appliance_static_routes.name, null)
-  subnet          = try(each.value.data.subnet, local.defaults.meraki.networks.networks_appliance_static_routes.subnet, null)
-  gateway_ip      = try(each.value.data.gateway_ip, local.defaults.meraki.networks.networks_appliance_static_routes.gateway_ip, null)
-  gateway_vlan_id = try(each.value.data.gateway_vlan_id, local.defaults.meraki.networks.networks_appliance_static_routes.gateway_vlan_id, null)
+resource "meraki_appliance_static_route" "networks_appliance_static_routes" {
+  for_each        = { for v in local.networks_appliance_static_routes : v.key => v }
+  network_id      = each.value.network_id
+  name            = each.value.name
+  subnet          = each.value.subnet
+  gateway_ip      = each.value.gateway_ip
+  gateway_vlan_id = each.value.gateway_vlan_id
 }
 
 locals {
-  networks_networks_appliance_sdwan_internet_policies = flatten([
-
+  networks_appliance_sdwan_internet_policies = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
-          network_id = meraki_network.network["${organization.name}/${network.name}"].id
-
-          wan_traffic_uplink_preferences = [for sdwan_internet_policy in try(network.appliance.sdwan_internet_policies, []) : {
-            fail_over_criterion = try(sdwan_internet_policy.fail_over_criterion, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.fail_over_criterion, null)
-            preferred_uplink    = try(sdwan_internet_policy.preferred_uplink, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.preferred_uplink, null)
-
-            builtin_performance_class_name = try(sdwan_internet_policy.performance_class.builtin_performance_class_name, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.performance_class.builtin_performance_class_name, null)
-            custom_performance_class_id    = try(sdwan_internet_policy.performance_class.custom_performance_class_id, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.performance_class.custom_performance_class_id, null)
-            performance_class_type         = try(sdwan_internet_policy.performance_class.type, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.performance_class.type, null)
-
-            traffic_filters = [for traffic_filter in try(sdwan_internet_policy.traffic_filters, []) : {
-              type = try(traffic_filter.type, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.traffic_filters.type, null)
-
-              protocol = try(traffic_filter.value.protocol, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.traffic_filters.value.protocol, null)
-
-              destination_cidr         = try(traffic_filter.value.destination.cidr, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.traffic_filters.value.destination.cidr, null)
-              destination_port         = try(traffic_filter.value.destination.port, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.traffic_filters.value.destination.port, null)
-              destination_applications = try(traffic_filter.value.destination.applications, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.traffic_filters.value.destination.applications, null)
-
-              source_cidr = try(traffic_filter.value.source.cidr, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.traffic_filters.value.source.cidr, null)
-              source_host = try(traffic_filter.value.source.host, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.traffic_filters.value.source.host, null)
-              source_port = try(traffic_filter.value.source.port, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.traffic_filters.value.source.port, null)
-              source_vlan = try(traffic_filter.value.source.vlan, local.defaults.meraki.networks.networks_appliance_sdwan_internet_policies.traffic_filters.value.source.vlan, null)
-            }]
-          }]
+          key        = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          wan_traffic_uplink_preferences = [
+            for appliance_sdwan_internet_policy in try(network.appliance.sdwan_internet_policies, []) : {
+              preferred_uplink               = try(appliance_sdwan_internet_policy.preferred_uplink, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.preferred_uplink, null)
+              fail_over_criterion            = try(appliance_sdwan_internet_policy.fail_over_criterion, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.fail_over_criterion, null)
+              performance_class_type         = try(appliance_sdwan_internet_policy.performance_class.type, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.performance_class.type, null)
+              builtin_performance_class_name = try(appliance_sdwan_internet_policy.performance_class.builtin_performance_class_name, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.performance_class.builtin_performance_class_name, null)
+              custom_performance_class_id    = try(appliance_sdwan_internet_policy.performance_class.custom_performance_class_id, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.performance_class.custom_performance_class_id, null)
+              traffic_filters = [
+                for traffic_filter in try(appliance_sdwan_internet_policy.traffic_filters, []) : {
+                  type             = try(traffic_filter.type, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.traffic_filters.type, null)
+                  protocol         = try(traffic_filter.value.protocol, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.traffic_filters.value.protocol, null)
+                  source_port      = try(traffic_filter.value.source.port, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.traffic_filters.value.source.port, null)
+                  source_cidr      = try(traffic_filter.value.source.cidr, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.traffic_filters.value.source.cidr, null)
+                  source_vlan      = try(traffic_filter.value.source.vlan, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.traffic_filters.value.source.vlan, null)
+                  source_host      = try(traffic_filter.value.source.host, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.traffic_filters.value.source.host, null)
+                  destination_port = try(traffic_filter.value.destination.port, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.traffic_filters.value.destination.port, null)
+                  destination_cidr = try(traffic_filter.value.destination.cidr, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.traffic_filters.value.destination.cidr, null)
+                  destination_applications = try(length(traffic_filter.value.destination.applications) == 0, true) ? null : [
+                    for value_destination_application in try(traffic_filter.value.destination.applications, []) : {
+                      id   = try(value_destination_application.id, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.traffic_filters.value.destination.applications.id, null)
+                      name = try(value_destination_application.name, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.traffic_filters.value.destination.applications.name, null)
+                      type = try(value_destination_application.type, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.traffic_filters.value.destination.applications.type, null)
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         } if try(network.appliance.sdwan_internet_policies, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+      ]
+    ]
   ])
 }
 
-resource "meraki_appliance_sdwan_internet_policies" "net_networks_appliance_sdwan_internet_policies" {
-  for_each   = { for i, v in local.networks_networks_appliance_sdwan_internet_policies : i => v }
-  network_id = each.value.network_id
-
-  wan_traffic_uplink_preferences = try(each.value.wan_traffic_uplink_preferences, null)
-
+resource "meraki_appliance_sdwan_internet_policies" "networks_appliance_sdwan_internet_policies" {
+  for_each                       = { for v in local.networks_appliance_sdwan_internet_policies : v.key => v }
+  network_id                     = each.value.network_id
+  wan_traffic_uplink_preferences = each.value.wan_traffic_uplink_preferences
 }
 
 locals {
-  networks_networks_appliance_traffic_shaping = flatten([
-
+  networks_appliance_traffic_shaping = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
-          network_id = meraki_network.network["${organization.name}/${network.name}"].id
-
-          data = try(network.appliance.traffic_shaping, null)
+          key                         = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id                  = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          global_bandwidth_limit_up   = try(network.appliance.traffic_shaping.global_bandwidth_limits.limit_up, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.global_bandwidth_limits.limit_up, null)
+          global_bandwidth_limit_down = try(network.appliance.traffic_shaping.global_bandwidth_limits.limit_down, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.global_bandwidth_limits.limit_down, null)
         } if try(network.appliance.traffic_shaping, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+      ]
+    ]
   ])
 }
 
-resource "meraki_appliance_traffic_shaping" "net_networks_appliance_traffic_shaping" {
-  for_each   = { for i, v in local.networks_networks_appliance_traffic_shaping : i => v }
-  network_id = each.value.network_id
-
-  global_bandwidth_limit_up   = try(each.value.data.global_bandwidth_limits.limit_up, local.defaults.meraki.networks.networks_appliance_traffic_shaping.global_bandwidth_limits.limit_up, null)
-  global_bandwidth_limit_down = try(each.value.data.global_bandwidth_limits.limit_down, local.defaults.meraki.networks.networks_appliance_traffic_shaping.global_bandwidth_limits.limit_down, null)
-
+resource "meraki_appliance_traffic_shaping" "networks_appliance_traffic_shaping" {
+  for_each                    = { for v in local.networks_appliance_traffic_shaping : v.key => v }
+  network_id                  = each.value.network_id
+  global_bandwidth_limit_up   = each.value.global_bandwidth_limit_up
+  global_bandwidth_limit_down = each.value.global_bandwidth_limit_down
 }
 
 locals {
-  networks_networks_appliance_traffic_shaping_custom_performance_classes = flatten([
-
+  networks_appliance_traffic_shaping_custom_performance_classes = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for appliance_traffic_shaping_custom_performance_class in try(network.appliance.traffic_shaping.custom_performance_classes, []) : {
-            network_id = meraki_network.network["${organization.name}/${network.name}"].id
-
-            data = try(appliance_traffic_shaping_custom_performance_class, null)
-          } if try(network.appliance.traffic_shaping.custom_performance_classes, null) != null
-        ] if try(organization.networks, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+            key                 = format("%s/%s/%s/%s", domain.name, organization.name, network.name, appliance_traffic_shaping_custom_performance_class.name)
+            network_id          = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+            name                = try(appliance_traffic_shaping_custom_performance_class.name, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.custom_performance_classes.name, null)
+            max_latency         = try(appliance_traffic_shaping_custom_performance_class.max_latency, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.custom_performance_classes.max_latency, null)
+            max_jitter          = try(appliance_traffic_shaping_custom_performance_class.max_jitter, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.custom_performance_classes.max_jitter, null)
+            max_loss_percentage = try(appliance_traffic_shaping_custom_performance_class.max_loss_percentage, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.custom_performance_classes.max_loss_percentage, null)
+          }
+        ]
+      ]
+    ]
   ])
 }
 
-resource "meraki_appliance_traffic_shaping_custom_performance_class" "net_networks_appliance_traffic_shaping_custom_performance_classes" {
-  for_each   = { for i, v in local.networks_networks_appliance_traffic_shaping_custom_performance_classes : i => v }
-  network_id = each.value.network_id
-
-  name                = try(each.value.data.name, local.defaults.meraki.networks.networks_appliance_traffic_shaping_custom_performance_classes.name, null)
-  max_latency         = try(each.value.data.max_latency, local.defaults.meraki.networks.networks_appliance_traffic_shaping_custom_performance_classes.max_latency, null)
-  max_jitter          = try(each.value.data.max_jitter, local.defaults.meraki.networks.networks_appliance_traffic_shaping_custom_performance_classes.max_jitter, null)
-  max_loss_percentage = try(each.value.data.max_loss_percentage, local.defaults.meraki.networks.networks_appliance_traffic_shaping_custom_performance_classes.max_loss_percentage, null)
-
+resource "meraki_appliance_traffic_shaping_custom_performance_class" "networks_appliance_traffic_shaping_custom_performance_classes" {
+  for_each            = { for v in local.networks_appliance_traffic_shaping_custom_performance_classes : v.key => v }
+  network_id          = each.value.network_id
+  name                = each.value.name
+  max_latency         = each.value.max_latency
+  max_jitter          = each.value.max_jitter
+  max_loss_percentage = each.value.max_loss_percentage
 }
 
 locals {
-  networks_networks_appliance_traffic_shaping_rules = flatten([
-
+  networks_appliance_traffic_shaping_rules = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
-          network_id = meraki_network.network["${organization.name}/${network.name}"].id
-
-          data = try(network.appliance.traffic_shaping.rules, null)
+          key                   = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id            = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          default_rules_enabled = try(network.appliance.traffic_shaping.rules.default_rules, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.rules.default_rules, null)
+          rules = try(length(network.appliance.traffic_shaping.rules.rules) == 0, true) ? null : [
+            for rule in try(network.appliance.traffic_shaping.rules.rules, []) : {
+              definitions = [
+                for definition in try(rule.definitions, []) : {
+                  type  = try(definition.type, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.rules.rules.definitions.type, null)
+                  value = try(definition.value, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.rules.rules.definitions.value, null)
+                }
+              ]
+              per_client_bandwidth_limit_settings = try(rule.per_client_bandwidth_limits.settings, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.rules.rules.per_client_bandwidth_limits.settings, null)
+              per_client_bandwidth_limit_up       = try(rule.per_client_bandwidth_limits.bandwidth_limits.limit_up, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.rules.rules.per_client_bandwidth_limits.bandwidth_limits.limit_up, null)
+              per_client_bandwidth_limit_down     = try(rule.per_client_bandwidth_limits.bandwidth_limits.limit_down, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.rules.rules.per_client_bandwidth_limits.bandwidth_limits.limit_down, null)
+              dscp_tag_value                      = try(rule.dscp_tag_value, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.rules.rules.dscp_tag_value, null)
+              priority                            = try(rule.priority, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.rules.rules.priority, null)
+            }
+          ]
         } if try(network.appliance.traffic_shaping.rules, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+      ]
+    ]
   ])
 }
 
-resource "meraki_appliance_traffic_shaping_rules" "net_networks_appliance_traffic_shaping_rules" {
-  for_each   = { for i, v in local.networks_networks_appliance_traffic_shaping_rules : i => v }
-  network_id = each.value.network_id
-
-  default_rules_enabled = try(each.value.data.default_rules, local.defaults.meraki.networks.networks_appliance_traffic_shaping_rules.default_rules_enabled, null)
-  rules                 = try(each.value.data.rules, local.defaults.meraki.networks.networks_appliance_traffic_shaping_rules.rules, null)
-
+resource "meraki_appliance_traffic_shaping_rules" "networks_appliance_traffic_shaping_rules" {
+  for_each              = { for v in local.networks_appliance_traffic_shaping_rules : v.key => v }
+  network_id            = each.value.network_id
+  default_rules_enabled = each.value.default_rules_enabled
+  rules                 = each.value.rules
 }
 
 locals {
-  networks_networks_appliance_traffic_shaping_uplink_bandwidth = flatten([
-
+  networks_appliance_traffic_shaping_uplink_bandwidth_limits = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
-          network_id = meraki_network.network["${organization.name}/${network.name}"].id
-
-          data = try(network.appliance.traffic_shaping.uplink_bandwidth, null)
-        } if try(network.appliance.traffic_shaping.uplink_bandwidth, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+          key                 = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id          = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          wan1_limit_up       = try(network.appliance.traffic_shaping.uplink_bandwidth_limits.wan1.limit_up, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_bandwidth_limits.wan1.limit_up, null)
+          wan1_limit_down     = try(network.appliance.traffic_shaping.uplink_bandwidth_limits.wan1.limit_down, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_bandwidth_limits.wan1.limit_down, null)
+          wan2_limit_up       = try(network.appliance.traffic_shaping.uplink_bandwidth_limits.wan2.limit_up, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_bandwidth_limits.wan2.limit_up, null)
+          wan2_limit_down     = try(network.appliance.traffic_shaping.uplink_bandwidth_limits.wan2.limit_down, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_bandwidth_limits.wan2.limit_down, null)
+          cellular_limit_up   = try(network.appliance.traffic_shaping.uplink_bandwidth_limits.cellular.limit_up, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_bandwidth_limits.cellular.limit_up, null)
+          cellular_limit_down = try(network.appliance.traffic_shaping.uplink_bandwidth_limits.cellular.limit_down, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_bandwidth_limits.cellular.limit_down, null)
+        } if try(network.appliance.traffic_shaping.uplink_bandwidth_limits, null) != null
+      ]
+    ]
   ])
 }
 
-resource "meraki_appliance_traffic_shaping_uplink_bandwidth" "net_networks_appliance_traffic_shaping_uplink_bandwidth" {
-  for_each   = { for i, v in local.networks_networks_appliance_traffic_shaping_uplink_bandwidth : i => v }
-  network_id = each.value.network_id
-
-  wan1_limit_up       = try(each.value.data.wan1_limit_up, local.defaults.meraki.networks.networks_appliance_traffic_shaping_uplink_bandwidth.bandwidth_limits.wan1.limit_up, null)
-  wan1_limit_down     = try(each.value.data.wan1_limit_down, local.defaults.meraki.networks.networks_appliance_traffic_shaping_uplink_bandwidth.bandwidth_limits.wan1.limit_down, null)
-  wan2_limit_up       = try(each.value.data.wan2_limit_up, local.defaults.meraki.networks.networks_appliance_traffic_shaping_uplink_bandwidth.bandwidth_limits.wan2.limit_up, null)
-  wan2_limit_down     = try(each.value.data.wan2_limit_down, local.defaults.meraki.networks.networks_appliance_traffic_shaping_uplink_bandwidth.bandwidth_limits.wan2.limit_down, null)
-  cellular_limit_up   = try(each.value.data.cellular_limit_up, local.defaults.meraki.networks.networks_appliance_traffic_shaping_uplink_bandwidth.bandwidth_limits.cellular.limit_up, null)
-  cellular_limit_down = try(each.value.data.cellular_limit_down, local.defaults.meraki.networks.networks_appliance_traffic_shaping_uplink_bandwidth.bandwidth_limits.cellular.limit_down, null)
-
+resource "meraki_appliance_traffic_shaping_uplink_bandwidth" "networks_appliance_traffic_shaping_uplink_bandwidth_limits" {
+  for_each            = { for v in local.networks_appliance_traffic_shaping_uplink_bandwidth_limits : v.key => v }
+  network_id          = each.value.network_id
+  wan1_limit_up       = each.value.wan1_limit_up
+  wan1_limit_down     = each.value.wan1_limit_down
+  wan2_limit_up       = each.value.wan2_limit_up
+  wan2_limit_down     = each.value.wan2_limit_down
+  cellular_limit_up   = each.value.cellular_limit_up
+  cellular_limit_down = each.value.cellular_limit_down
 }
 
 locals {
-  networks_networks_appliance_traffic_shaping_uplink_selection = flatten([
-
+  networks_appliance_traffic_shaping_uplink_selection = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
-          network_id = meraki_network.network["${organization.name}/${network.name}"].id
-
-          data = try(network.appliance.traffic_shaping.uplink_selection, null)
+          key                                     = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id                              = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          active_active_auto_vpn_enabled          = try(network.appliance.traffic_shaping.uplink_selection.active_active_auto_vpn, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.active_active_auto_vpn, null)
+          default_uplink                          = try(network.appliance.traffic_shaping.uplink_selection.default_uplink, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.default_uplink, null)
+          load_balancing_enabled                  = try(network.appliance.traffic_shaping.uplink_selection.load_balancing, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.load_balancing, null)
+          failover_and_failback_immediate_enabled = try(network.appliance.traffic_shaping.uplink_selection.failover_and_failback_immediate, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.failover_and_failback_immediate, null)
+          wan_traffic_uplink_preferences = try(length(network.appliance.traffic_shaping.uplink_selection.wan_traffic_uplink_preferences) == 0, true) ? null : [
+            for wan_traffic_uplink_preference in try(network.appliance.traffic_shaping.uplink_selection.wan_traffic_uplink_preferences, []) : {
+              traffic_filters = [
+                for traffic_filter in try(wan_traffic_uplink_preference.traffic_filters, []) : {
+                  type             = try(traffic_filter.type, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.wan_traffic_uplink_preferences.traffic_filters.type, null)
+                  protocol         = try(traffic_filter.value.protocol, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.wan_traffic_uplink_preferences.traffic_filters.value.protocol, null)
+                  source_port      = try(traffic_filter.value.source.port, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.wan_traffic_uplink_preferences.traffic_filters.value.source.port, null)
+                  source_cidr      = try(traffic_filter.value.source.cidr, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.wan_traffic_uplink_preferences.traffic_filters.value.source.cidr, null)
+                  source_vlan      = try(traffic_filter.value.source.vlan, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.wan_traffic_uplink_preferences.traffic_filters.value.source.vlan, null)
+                  source_host      = try(traffic_filter.value.source.host, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.wan_traffic_uplink_preferences.traffic_filters.value.source.host, null)
+                  destination_port = try(traffic_filter.value.destination.port, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.wan_traffic_uplink_preferences.traffic_filters.value.destination.port, null)
+                  destination_cidr = try(traffic_filter.value.destination.cidr, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.wan_traffic_uplink_preferences.traffic_filters.value.destination.cidr, null)
+                }
+              ]
+              preferred_uplink = try(wan_traffic_uplink_preference.preferred_uplink, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.wan_traffic_uplink_preferences.preferred_uplink, null)
+            }
+          ]
+          vpn_traffic_uplink_preferences = try(length(network.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences) == 0, true) ? null : [
+            for vpn_traffic_uplink_preference in try(network.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences, []) : {
+              traffic_filters = [
+                for traffic_filter in try(vpn_traffic_uplink_preference.traffic_filters, []) : {
+                  type                = try(traffic_filter.type, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.traffic_filters.type, null)
+                  id                  = try(traffic_filter.value.id, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.traffic_filters.value.id, null)
+                  protocol            = try(traffic_filter.value.protocol, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.traffic_filters.value.protocol, null)
+                  source_port         = try(traffic_filter.value.source.port, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.traffic_filters.value.source.port, null)
+                  source_cidr         = try(traffic_filter.value.source.cidr, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.traffic_filters.value.source.cidr, null)
+                  source_network      = try(traffic_filter.value.source.network, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.traffic_filters.value.source.network, null)
+                  source_vlan         = try(traffic_filter.value.source.vlan, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.traffic_filters.value.source.vlan, null)
+                  source_host         = try(traffic_filter.value.source.host, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.traffic_filters.value.source.host, null)
+                  destination_port    = try(traffic_filter.value.destination.port, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.traffic_filters.value.destination.port, null)
+                  destination_cidr    = try(traffic_filter.value.destination.cidr, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.traffic_filters.value.destination.cidr, null)
+                  destination_network = try(traffic_filter.value.destination.network, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.traffic_filters.value.destination.network, null)
+                  destination_vlan    = try(traffic_filter.value.destination.vlan, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.traffic_filters.value.destination.vlan, null)
+                  destination_host    = try(traffic_filter.value.destination.host, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.traffic_filters.value.destination.host, null)
+                  destination_fqdn    = try(traffic_filter.value.destination.fqdn, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.traffic_filters.value.destination.fqdn, null)
+                }
+              ]
+              preferred_uplink               = try(vpn_traffic_uplink_preference.preferred_uplink, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.preferred_uplink, null)
+              fail_over_criterion            = try(vpn_traffic_uplink_preference.fail_over_criterion, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.fail_over_criterion, null)
+              performance_class_type         = try(vpn_traffic_uplink_preference.performance_class.type, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.performance_class.type, null)
+              builtin_performance_class_name = try(vpn_traffic_uplink_preference.performance_class.builtin_performance_class_name, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.performance_class.builtin_performance_class_name, null)
+              custom_performance_class_id    = try(vpn_traffic_uplink_preference.performance_class.custom_performance_class_id, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.performance_class.custom_performance_class_id, null)
+            }
+          ]
         } if try(network.appliance.traffic_shaping.uplink_selection, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+      ]
+    ]
   ])
 }
 
-resource "meraki_appliance_traffic_shaping_uplink_selection" "net_networks_appliance_traffic_shaping_uplink_selection" {
-  for_each   = { for i, v in local.networks_networks_appliance_traffic_shaping_uplink_selection : i => v }
-  network_id = each.value.network_id
-
-  active_active_auto_vpn_enabled          = try(each.value.data.active_active_auto_vpn, local.defaults.meraki.networks.networks_appliance_traffic_shaping_uplink_selection.active_active_auto_vpn_enabled, null)
-  default_uplink                          = try(each.value.data.default_uplink, local.defaults.meraki.networks.networks_appliance_traffic_shaping_uplink_selection.default_uplink, null)
-  load_balancing_enabled                  = try(each.value.data.load_balancing, local.defaults.meraki.networks.networks_appliance_traffic_shaping_uplink_selection.load_balancing_enabled, null)
-  failover_and_failback_immediate_enabled = try(each.value.data.failover_and_failback_immediate, local.defaults.meraki.networks.networks_appliance_traffic_shaping_uplink_selection.failover_and_failback_immediate, null)
-  wan_traffic_uplink_preferences          = try(each.value.data.wan_traffic_uplink_preferences, local.defaults.meraki.networks.networks_appliance_traffic_shaping_uplink_selection.wan_traffic_uplink_preferences, null)
-  vpn_traffic_uplink_preferences          = try(each.value.data.vpn_traffic_uplink_preferences, local.defaults.meraki.networks.networks_appliance_traffic_shaping_uplink_selection.vpn_traffic_uplink_preferences, null)
-
+resource "meraki_appliance_traffic_shaping_uplink_selection" "networks_appliance_traffic_shaping_uplink_selection" {
+  for_each                                = { for v in local.networks_appliance_traffic_shaping_uplink_selection : v.key => v }
+  network_id                              = each.value.network_id
+  active_active_auto_vpn_enabled          = each.value.active_active_auto_vpn_enabled
+  default_uplink                          = each.value.default_uplink
+  load_balancing_enabled                  = each.value.load_balancing_enabled
+  failover_and_failback_immediate_enabled = each.value.failover_and_failback_immediate_enabled
+  wan_traffic_uplink_preferences          = each.value.wan_traffic_uplink_preferences
+  vpn_traffic_uplink_preferences          = each.value.vpn_traffic_uplink_preferences
 }
 
 locals {
-  networks_networks_appliance_traffic_shaping_vpn_exclusions = flatten([
-
+  networks_appliance_traffic_shaping_vpn_exclusions = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
-          network_id = meraki_network.network["${organization.name}/${network.name}"].id
-
-          data = try(network.appliance.traffic_shaping.vpn_exclusions, null)
+          key        = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          custom = try(length(network.appliance.traffic_shaping.vpn_exclusions.custom) == 0, true) ? null : [
+            for custom in try(network.appliance.traffic_shaping.vpn_exclusions.custom, []) : {
+              protocol    = try(custom.protocol, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.vpn_exclusions.custom.protocol, null)
+              destination = try(custom.destination, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.vpn_exclusions.custom.destination, null)
+              port        = try(custom.port, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.vpn_exclusions.custom.port, null)
+            }
+          ]
+          major_applications = try(length(network.appliance.traffic_shaping.vpn_exclusions.major_applications) == 0, true) ? null : [
+            for major_application in try(network.appliance.traffic_shaping.vpn_exclusions.major_applications, []) : {
+              id = major_application
+            }
+          ]
         } if try(network.appliance.traffic_shaping.vpn_exclusions, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+      ]
+    ]
   ])
 }
 
-resource "meraki_appliance_traffic_shaping_vpn_exclusions" "net_networks_appliance_traffic_shaping_vpn_exclusions" {
-  for_each   = { for i, v in local.networks_networks_appliance_traffic_shaping_vpn_exclusions : i => v }
-  network_id = each.value.network_id
-
-  custom             = try(each.value.data.custom, local.defaults.meraki.networks.networks_appliance_traffic_shaping_vpn_exclusions.custom, null)
-  major_applications = try(each.value.data.major_applications, local.defaults.meraki.networks.networks_appliance_traffic_shaping_vpn_exclusions.major_applications, null)
-
+resource "meraki_appliance_traffic_shaping_vpn_exclusions" "networks_appliance_traffic_shaping_vpn_exclusions" {
+  for_each           = { for v in local.networks_appliance_traffic_shaping_vpn_exclusions : v.key => v }
+  network_id         = each.value.network_id
+  custom             = each.value.custom
+  major_applications = each.value.major_applications
 }
 
 locals {
-  networks_networks_appliance_ssids = flatten([
-
+  networks_appliance_ssids = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for appliance_ssid in try(network.appliance.ssids, []) : {
-            network_id = meraki_network.network["${organization.name}/${network.name}"].id
-            key        = "${organization.name}/${network.name}/ssids/${appliance_ssid.name}"
-
-            data = try(appliance_ssid, null)
-          } if try(network.appliance.ssids, null) != null
-        ] if try(organization.networks, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+            key             = format("%s/%s/%s/%s", domain.name, organization.name, network.name, appliance_ssid.name)
+            network_id      = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+            number          = try(appliance_ssid.number, local.defaults.meraki.domains.organizations.networks.appliance.ssids.number, null)
+            name            = try(appliance_ssid.name, local.defaults.meraki.domains.organizations.networks.appliance.ssids.name, null)
+            enabled         = try(appliance_ssid.enabled, local.defaults.meraki.domains.organizations.networks.appliance.ssids.enabled, null)
+            default_vlan_id = try(appliance_ssid.default_vlan_id, local.defaults.meraki.domains.organizations.networks.appliance.ssids.default_vlan_id, null)
+            auth_mode       = try(appliance_ssid.auth_mode, local.defaults.meraki.domains.organizations.networks.appliance.ssids.auth_mode, null)
+            psk             = try(appliance_ssid.psk, local.defaults.meraki.domains.organizations.networks.appliance.ssids.psk, null)
+            radius_servers = try(length(appliance_ssid.radius_servers) == 0, true) ? null : [
+              for radius_server in try(appliance_ssid.radius_servers, []) : {
+                host   = try(radius_server.host, local.defaults.meraki.domains.organizations.networks.appliance.ssids.radius_servers.host, null)
+                port   = try(radius_server.port, local.defaults.meraki.domains.organizations.networks.appliance.ssids.radius_servers.port, null)
+                secret = try(radius_server.secret, local.defaults.meraki.domains.organizations.networks.appliance.ssids.radius_servers.secret, null)
+              }
+            ]
+            encryption_mode                        = try(appliance_ssid.encryption_mode, local.defaults.meraki.domains.organizations.networks.appliance.ssids.encryption_mode, null)
+            wpa_encryption_mode                    = try(appliance_ssid.wpa_encryption_mode, local.defaults.meraki.domains.organizations.networks.appliance.ssids.wpa_encryption_mode, null)
+            visible                                = try(appliance_ssid.visible, local.defaults.meraki.domains.organizations.networks.appliance.ssids.visible, null)
+            dhcp_enforced_deauthentication_enabled = try(appliance_ssid.dhcp_enforced_deauthentication, local.defaults.meraki.domains.organizations.networks.appliance.ssids.dhcp_enforced_deauthentication, null)
+            dot11w_enabled                         = try(appliance_ssid.dot11w.enabled, local.defaults.meraki.domains.organizations.networks.appliance.ssids.dot11w.enabled, null)
+            dot11w_required                        = try(appliance_ssid.dot11w.required, local.defaults.meraki.domains.organizations.networks.appliance.ssids.dot11w.required, null)
+          }
+        ]
+      ]
+    ]
   ])
 }
 
-resource "meraki_appliance_ssid" "net_networks_appliance_ssids" {
-  for_each   = { for v in local.networks_networks_appliance_ssids : v.key => v }
-  network_id = each.value.network_id
-  number     = each.value.data.number
-
-  name                                   = try(each.value.data.name, local.defaults.meraki.networks.networks_appliance_ssids.name, null)
-  enabled                                = try(each.value.data.enabled, local.defaults.meraki.networks.networks_appliance_ssids.enabled, null)
-  default_vlan_id                        = try(each.value.data.default_vlan_id, local.defaults.meraki.networks.networks_appliance_ssids.default_vlan_id, null)
-  auth_mode                              = try(each.value.data.auth_mode, local.defaults.meraki.networks.networks_appliance_ssids.auth_mode, null)
-  psk                                    = try(each.value.data.psk, local.defaults.meraki.networks.networks_appliance_ssids.psk, null)
-  radius_servers                         = try(each.value.data.radius_servers, local.defaults.meraki.networks.networks_appliance_ssids.radius_servers, null)
-  encryption_mode                        = try(each.value.data.encryption_mode, local.defaults.meraki.networks.networks_appliance_ssids.encryption_mode, null)
-  wpa_encryption_mode                    = try(each.value.data.wpa_encryption_mode, local.defaults.meraki.networks.networks_appliance_ssids.wpa_encryption_mode, null)
-  visible                                = try(each.value.data.visible, local.defaults.meraki.networks.networks_appliance_ssids.visible, null)
-  dhcp_enforced_deauthentication_enabled = try(each.value.data.dhcp_enforced_deauthentication, local.defaults.meraki.networks.networks_appliance_ssids.dhcp_enforced_deauthentication, null)
-  dot11w_enabled                         = try(each.value.data.dot11w_enabled, local.defaults.meraki.networks.networks_appliance_ssids.dot11w.enabled, null)
-  dot11w_required                        = try(each.value.data.dot11w_required, local.defaults.meraki.networks.networks_appliance_ssids.dot11w.required, null)
-
-  depends_on = [meraki_network_device_claim.net_device_claim]
+resource "meraki_appliance_ssid" "networks_appliance_ssids" {
+  for_each                               = { for v in local.networks_appliance_ssids : v.key => v }
+  network_id                             = each.value.network_id
+  number                                 = each.value.number
+  name                                   = each.value.name
+  enabled                                = each.value.enabled
+  default_vlan_id                        = each.value.default_vlan_id
+  auth_mode                              = each.value.auth_mode
+  psk                                    = each.value.psk
+  radius_servers                         = each.value.radius_servers
+  encryption_mode                        = each.value.encryption_mode
+  wpa_encryption_mode                    = each.value.wpa_encryption_mode
+  visible                                = each.value.visible
+  dhcp_enforced_deauthentication_enabled = each.value.dhcp_enforced_deauthentication_enabled
+  dot11w_enabled                         = each.value.dot11w_enabled
+  dot11w_required                        = each.value.dot11w_required
+  depends_on                             = [meraki_network_device_claim.networks_devices_claim]
 }
 
 locals {
-  appliance_per_ssid_settings_list = flatten([
-
+  networks_appliance_rf_profiles_per_ssid_settings_list = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for appliance_rf_profile in try(network.appliance.rf_profiles, []) : [
-            for settings in try(appliance_rf_profile.per_ssid_settings, []) : {
-              key  = format("${organization.name}/${network.name}/${appliance_rf_profile.name}/%s", meraki_appliance_ssid.net_networks_appliance_ssids["${organization.name}/${network.name}/ssids/${settings.ssid_name}"].number)
-              data = settings
+            for per_ssid_setting in try(appliance_rf_profile.per_ssid_settings, []) : {
+              key = format(
+                "%s/%s/%s/%s/%s",
+                domain.name,
+                organization.name,
+                network.name,
+                appliance_rf_profile.name,
+                meraki_appliance_ssid.networks_appliance_ssids[format("%s/%s/%s/%s", domain.name, organization.name, network.name, per_ssid_setting.ssid_name)].number,
+              )
+              band_operation_mode   = try(per_ssid_setting.band_operation_mode, local.defaults.meraki.domains.organizations.networks.appliance.rf_profiles.per_ssid_settings.band_operation_mode, null)
+              band_steering_enabled = try(per_ssid_setting.band_steering, local.defaults.meraki.domains.organizations.networks.appliance.rf_profiles.per_ssid_settings.band_steering, null)
             }
           ]
         ]
       ]
     ]
   ])
-  appliance_per_ssid_settings = { for s in local.appliance_per_ssid_settings_list : s.key => s.data }
-  networks_networks_appliance_rf_profiles = flatten([
-
+  networks_appliance_rf_profiles_per_ssid_settings = { for s in local.networks_appliance_rf_profiles_per_ssid_settings_list : s.key => s }
+  networks_appliance_rf_profiles = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for appliance_rf_profile in try(network.appliance.rf_profiles, []) : {
-            network_id        = meraki_network.network["${organization.name}/${network.name}"].id
-            per_ssid_settings = [for i in range(15) : try(local.appliance_per_ssid_settings["${organization.name}/${network.name}/${appliance_rf_profile.name}/${i}"], null)]
-            key               = "${organization.name}/${network.name}/${appliance_rf_profile.name}"
-            data              = try(appliance_rf_profile, null)
-          } if try(network.appliance.rf_profiles, null) != null
-        ] if try(organization.networks, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+            key                               = format("%s/%s/%s/%s", domain.name, organization.name, network.name, appliance_rf_profile.name)
+            network_id                        = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+            per_ssid_settings                 = [for i in range(4) : try(local.networks_appliance_rf_profiles_per_ssid_settings[format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, appliance_rf_profile.name, i)], null)]
+            name                              = try(appliance_rf_profile.name, local.defaults.meraki.domains.organizations.networks.appliance.rf_profiles.name, null)
+            two_four_ghz_settings_min_bitrate = try(appliance_rf_profile.two_four_ghz_settings.min_bitrate, local.defaults.meraki.domains.organizations.networks.appliance.rf_profiles.two_four_ghz_settings.min_bitrate, null)
+            two_four_ghz_settings_ax_enabled  = try(appliance_rf_profile.two_four_ghz_settings.ax, local.defaults.meraki.domains.organizations.networks.appliance.rf_profiles.two_four_ghz_settings.ax, null)
+            five_ghz_settings_min_bitrate     = try(appliance_rf_profile.five_ghz_settings.min_bitrate, local.defaults.meraki.domains.organizations.networks.appliance.rf_profiles.five_ghz_settings.min_bitrate, null)
+            five_ghz_settings_ax_enabled      = try(appliance_rf_profile.five_ghz_settings.ax, local.defaults.meraki.domains.organizations.networks.appliance.rf_profiles.five_ghz_settings.ax, null)
+          }
+        ]
+      ]
+    ]
   ])
 }
 
-resource "meraki_appliance_rf_profile" "net_networks_appliance_rf_profiles" {
-  for_each   = { for v in local.networks_networks_appliance_rf_profiles : v.key => v }
-  network_id = each.value.network_id
-
-  name                                      = try(each.value.data.name, local.defaults.meraki.networks.networks_appliance_rf_profiles.name, null)
-  two_four_ghz_settings_min_bitrate         = try(each.value.data.two_four_ghz_settings.min_bitrate, local.defaults.meraki.networks.networks_appliance_rf_profiles.two_four_ghz_settings.min_bitrate, null)
-  two_four_ghz_settings_ax_enabled          = try(each.value.data.two_four_ghz_settings.ax_enabled, local.defaults.meraki.networks.networks_appliance_rf_profiles.two_four_ghz_settings.ax_enabled, null)
-  five_ghz_settings_min_bitrate             = try(each.value.data.five_ghz_settings.min_bitrate, local.defaults.meraki.networks.networks_appliance_rf_profiles.five_ghz_settings.min_bitrate, null)
-  five_ghz_settings_ax_enabled              = try(each.value.data.five_ghz_settings.ax_enabled, local.defaults.meraki.networks.networks_appliance_rf_profiles.five_ghz_settings.ax_enabled, null)
-  per_ssid_settings_1_band_operation_mode   = try(each.value.data.per_ssid_settings[0].band_operation_mode, local.defaults.meraki.networks.networks_appliance_rf_profiles.per_ssid_settings[0].band_operation_mode, null)
-  per_ssid_settings_1_band_steering_enabled = try(each.value.data.per_ssid_settings[0].band_steering_enabled, local.defaults.meraki.networks.networks_appliance_rf_profiles.per_ssid_settings[0].band_steering_enabled, null)
-  per_ssid_settings_2_band_operation_mode   = try(each.value.data.per_ssid_settings[1].band_operation_mode, local.defaults.meraki.networks.networks_appliance_rf_profiles.per_ssid_settings[1].band_operation_mode, null)
-  per_ssid_settings_2_band_steering_enabled = try(each.value.data.per_ssid_settings[1].band_steering_enabled, local.defaults.meraki.networks.networks_appliance_rf_profiles.per_ssid_settings[1].band_steering_enabled, null)
-  per_ssid_settings_3_band_operation_mode   = try(each.value.data.per_ssid_settings[2].band_operation_mode, local.defaults.meraki.networks.networks_appliance_rf_profiles.per_ssid_settings[2].band_operation_mode, null)
-  per_ssid_settings_3_band_steering_enabled = try(each.value.data.per_ssid_settings[2].band_steering_enabled, local.defaults.meraki.networks.networks_appliance_rf_profiles.per_ssid_settings[2].band_steering_enabled, null)
-  per_ssid_settings_4_band_operation_mode   = try(each.value.data.per_ssid_settings[3].band_operation_mode, local.defaults.meraki.networks.networks_appliance_rf_profiles.per_ssid_settings[3].band_operation_mode, null)
-  per_ssid_settings_4_band_steering_enabled = try(each.value.data.per_ssid_settings[3].band_steering_enabled, local.defaults.meraki.networks.networks_appliance_rf_profiles.per_ssid_settings[3].band_steering_enabled, null)
-
-  depends_on = [meraki_network_device_claim.net_device_claim]
+resource "meraki_appliance_rf_profile" "networks_appliance_rf_profiles" {
+  for_each                                  = { for v in local.networks_appliance_rf_profiles : v.key => v }
+  network_id                                = each.value.network_id
+  name                                      = each.value.name
+  two_four_ghz_settings_min_bitrate         = each.value.two_four_ghz_settings_min_bitrate
+  two_four_ghz_settings_ax_enabled          = each.value.two_four_ghz_settings_ax_enabled
+  five_ghz_settings_min_bitrate             = each.value.five_ghz_settings_min_bitrate
+  five_ghz_settings_ax_enabled              = each.value.five_ghz_settings_ax_enabled
+  per_ssid_settings_1_band_operation_mode   = try(each.value.per_ssid_settings[0].band_operation_mode, null)
+  per_ssid_settings_1_band_steering_enabled = try(each.value.per_ssid_settings[0].band_steering_enabled, null)
+  per_ssid_settings_2_band_operation_mode   = try(each.value.per_ssid_settings[1].band_operation_mode, null)
+  per_ssid_settings_2_band_steering_enabled = try(each.value.per_ssid_settings[1].band_steering_enabled, null)
+  per_ssid_settings_3_band_operation_mode   = try(each.value.per_ssid_settings[2].band_operation_mode, null)
+  per_ssid_settings_3_band_steering_enabled = try(each.value.per_ssid_settings[2].band_steering_enabled, null)
+  per_ssid_settings_4_band_operation_mode   = try(each.value.per_ssid_settings[3].band_operation_mode, null)
+  per_ssid_settings_4_band_steering_enabled = try(each.value.per_ssid_settings[3].band_steering_enabled, null)
+  depends_on                                = [meraki_network_device_claim.networks_devices_claim]
 }
 
 locals {
-  networks_devices_appliance_radio_settings = flatten([
-
+  devices_appliance_radio_settings = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : {
-            serial        = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
-            rf_profile_id = meraki_appliance_rf_profile.net_networks_appliance_rf_profiles["${organization.name}/${network.name}/${device.appliance.radio_settings.rf_profile_name}"].id
-
-            data = try(device.appliance.radio_settings, null)
+            key                                = format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)
+            serial                             = meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)].serial
+            rf_profile_id                      = try(meraki_appliance_rf_profile.networks_appliance_rf_profiles[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.appliance.radio_settings.rf_profile_name)].id, null)
+            two_four_ghz_settings_channel      = try(device.appliance.radio_settings.two_four_ghz_settings.channel, local.defaults.meraki.domains.organizations.networks.devices.appliance.radio_settings.two_four_ghz_settings.channel, null)
+            two_four_ghz_settings_target_power = try(device.appliance.radio_settings.two_four_ghz_settings.target_power, local.defaults.meraki.domains.organizations.networks.devices.appliance.radio_settings.two_four_ghz_settings.target_power, null)
+            five_ghz_settings_channel          = try(device.appliance.radio_settings.five_ghz_settings.channel, local.defaults.meraki.domains.organizations.networks.devices.appliance.radio_settings.five_ghz_settings.channel, null)
+            five_ghz_settings_channel_width    = try(device.appliance.radio_settings.five_ghz_settings.channel_width, local.defaults.meraki.domains.organizations.networks.devices.appliance.radio_settings.five_ghz_settings.channel_width, null)
+            five_ghz_settings_target_power     = try(device.appliance.radio_settings.five_ghz_settings.target_power, local.defaults.meraki.domains.organizations.networks.devices.appliance.radio_settings.five_ghz_settings.target_power, null)
           } if try(device.appliance.radio_settings, null) != null
-        ] if try(organization.networks, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+        ]
+      ]
+    ]
   ])
 }
 
-resource "meraki_appliance_radio_settings" "net_devices_appliance_radio_settings" {
-  for_each = { for i, v in local.networks_devices_appliance_radio_settings : i => v }
-  serial   = each.value.serial
-
+resource "meraki_appliance_radio_settings" "devices_appliance_radio_settings" {
+  for_each                           = { for v in local.devices_appliance_radio_settings : v.key => v }
+  serial                             = each.value.serial
   rf_profile_id                      = each.value.rf_profile_id
-  two_four_ghz_settings_channel      = try(each.value.data.two_four_ghz_settings.channel, local.defaults.meraki.networks.devices_appliance_radio_settings.two_four_ghz_settings.channel, null)
-  two_four_ghz_settings_target_power = try(each.value.data.two_four_ghz_settings.target_power, local.defaults.meraki.networks.devices_appliance_radio_settings.two_four_ghz_settings.target_power, null)
-  five_ghz_settings_channel          = try(each.value.data.five_ghz_settings.channel, local.defaults.meraki.networks.devices_appliance_radio_settings.five_ghz_settings.channel, null)
-  five_ghz_settings_channel_width    = try(each.value.data.five_ghz_settings.channel_width, local.defaults.meraki.networks.devices_appliance_radio_settings.five_ghz_settings.channel_width, null)
-  five_ghz_settings_target_power     = try(each.value.data.five_ghz_settings.target_power, local.defaults.meraki.networks.devices_appliance_radio_settings.five_ghz_settings.target_power, null)
-
+  two_four_ghz_settings_channel      = each.value.two_four_ghz_settings_channel
+  two_four_ghz_settings_target_power = each.value.two_four_ghz_settings_target_power
+  five_ghz_settings_channel          = each.value.five_ghz_settings_channel
+  five_ghz_settings_channel_width    = each.value.five_ghz_settings_channel_width
+  five_ghz_settings_target_power     = each.value.five_ghz_settings_target_power
 }

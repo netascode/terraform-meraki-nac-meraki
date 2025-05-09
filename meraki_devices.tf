@@ -418,80 +418,112 @@ resource "meraki_wireless_device_bluetooth_settings" "devices_wireless_bluetooth
 }
 
 locals {
-  networks_devices_cellular_gateway_lan = flatten([
-
+  devices_cellular_gateway_lan = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : {
-            serial = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
-
-            data = try(device.cellular_gateway.lan, null)
+            key    = format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)
+            serial = meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)].serial
+            reserved_ip_ranges = [
+              for reserved_ip_range in try(device.cellular_gateway.lan.reserved_ip_ranges, []) : {
+                start   = try(reserved_ip_range.start, local.defaults.meraki.domains.organizations.networks.devices.cellular_gateway.lan.reserved_ip_ranges.start, null)
+                end     = try(reserved_ip_range.end, local.defaults.meraki.domains.organizations.networks.devices.cellular_gateway.lan.reserved_ip_ranges.end, null)
+                comment = try(reserved_ip_range.comment, local.defaults.meraki.domains.organizations.networks.devices.cellular_gateway.lan.reserved_ip_ranges.comment, null)
+              }
+            ]
+            fixed_ip_assignments = [
+              for fixed_ip_assignment in try(device.cellular_gateway.lan.fixed_ip_assignments, []) : {
+                name = try(fixed_ip_assignment.name, local.defaults.meraki.domains.organizations.networks.devices.cellular_gateway.lan.fixed_ip_assignments.name, null)
+                ip   = try(fixed_ip_assignment.ip, local.defaults.meraki.domains.organizations.networks.devices.cellular_gateway.lan.fixed_ip_assignments.ip, null)
+                mac  = try(fixed_ip_assignment.mac, local.defaults.meraki.domains.organizations.networks.devices.cellular_gateway.lan.fixed_ip_assignments.mac, null)
+              }
+            ]
           } if try(device.cellular_gateway.lan, null) != null
-        ] if try(organization.networks, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+        ]
+      ]
+    ]
   ])
 }
 
-resource "meraki_cellular_gateway_lan" "net_devices_cellular_gateway_lan" {
-  for_each = { for i, v in local.networks_devices_cellular_gateway_lan : i => v }
-  serial   = each.value.serial
-
-  reserved_ip_ranges   = try(each.value.data.reserved_ip_ranges, local.defaults.meraki.networks.devices_cellular_gateway_lan.reserved_ip_ranges, null)
-  fixed_ip_assignments = try(each.value.data.fixed_ip_assignments, local.defaults.meraki.networks.devices_cellular_gateway_lan.fixed_ip_assignments, null)
-
+resource "meraki_cellular_gateway_lan" "devices_cellular_gateway_lan" {
+  for_each             = { for v in local.devices_cellular_gateway_lan : v.key => v }
+  serial               = each.value.serial
+  reserved_ip_ranges   = each.value.reserved_ip_ranges
+  fixed_ip_assignments = each.value.fixed_ip_assignments
 }
 
 locals {
-  networks_devices_cellular_gateway_port_forwarding_rules = flatten([
-
+  devices_cellular_gateway_port_forwarding_rules = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : {
-            serial = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
-
-            data = try(device.cellular_gateway.port_forwarding_rules, null)
+            key    = format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)
+            serial = meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)].serial
+            rules = [
+              for cellular_gateway_port_forwarding_rule in try(device.cellular_gateway.port_forwarding_rules, []) : {
+                name        = try(cellular_gateway_port_forwarding_rule.name, local.defaults.meraki.domains.organizations.networks.devices.cellular_gateway.port_forwarding_rules.name, null)
+                lan_ip      = try(cellular_gateway_port_forwarding_rule.lan_ip, local.defaults.meraki.domains.organizations.networks.devices.cellular_gateway.port_forwarding_rules.lan_ip, null)
+                public_port = try(cellular_gateway_port_forwarding_rule.public_port, local.defaults.meraki.domains.organizations.networks.devices.cellular_gateway.port_forwarding_rules.public_port, null)
+                local_port  = try(cellular_gateway_port_forwarding_rule.local_port, local.defaults.meraki.domains.organizations.networks.devices.cellular_gateway.port_forwarding_rules.local_port, null)
+                allowed_ips = try(cellular_gateway_port_forwarding_rule.allowed_ips, local.defaults.meraki.domains.organizations.networks.devices.cellular_gateway.port_forwarding_rules.allowed_ips, null)
+                protocol    = try(cellular_gateway_port_forwarding_rule.protocol, local.defaults.meraki.domains.organizations.networks.devices.cellular_gateway.port_forwarding_rules.protocol, null)
+                access      = try(cellular_gateway_port_forwarding_rule.access, local.defaults.meraki.domains.organizations.networks.devices.cellular_gateway.port_forwarding_rules.access, null)
+              }
+            ]
           } if try(device.cellular_gateway.port_forwarding_rules, null) != null
-        ] if try(organization.networks, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+        ]
+      ]
+    ]
   ])
 }
 
-resource "meraki_cellular_gateway_port_forwarding_rules" "net_devices_cellular_gateway_port_forwarding_rules" {
-  for_each = { for i, v in local.networks_devices_cellular_gateway_port_forwarding_rules : i => v }
+resource "meraki_cellular_gateway_port_forwarding_rules" "devices_cellular_gateway_port_forwarding_rules" {
+  for_each = { for v in local.devices_cellular_gateway_port_forwarding_rules : v.key => v }
   serial   = each.value.serial
-
-  rules = try(each.value.data, local.defaults.meraki.networks.devices_cellular_gateway_port_forwarding_rules, null)
-
+  rules    = each.value.rules
 }
 
 locals {
-  networks_devices_cellular_sims = flatten([
-
+  devices_cellular_sims = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for device in try(network.devices, []) : {
-            serial = meraki_device.device["${organization.name}/${network.name}/devices/${device.name}"].serial
-
-            data = try(device.cellular_sims, null)
+            key    = format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)
+            serial = meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)].serial
+            sims = try(length(device.cellular_sims.sims) == 0, true) ? null : [
+              for sim in try(device.cellular_sims.sims, []) : {
+                slot       = try(sim.slot, local.defaults.meraki.domains.organizations.networks.devices.cellular_sims.sims.slot, null)
+                is_primary = try(sim.is_primary, local.defaults.meraki.domains.organizations.networks.devices.cellular_sims.sims.is_primary, null)
+                apns = try(length(sim.apns) == 0, true) ? null : [
+                  for apn in try(sim.apns, []) : {
+                    name                    = try(apn.name, local.defaults.meraki.domains.organizations.networks.devices.cellular_sims.sims.apns.name, null)
+                    allowed_ip_types        = try(apn.allowed_ip_types, local.defaults.meraki.domains.organizations.networks.devices.cellular_sims.sims.apns.allowed_ip_types, null)
+                    authentication_type     = try(apn.authentication.type, local.defaults.meraki.domains.organizations.networks.devices.cellular_sims.sims.apns.authentication.type, null)
+                    authentication_username = try(apn.authentication.username, local.defaults.meraki.domains.organizations.networks.devices.cellular_sims.sims.apns.authentication.username, null)
+                    authentication_password = try(apn.authentication.password, local.defaults.meraki.domains.organizations.networks.devices.cellular_sims.sims.apns.authentication.password, null)
+                  }
+                ]
+                sim_order = try(sim.sim_order, local.defaults.meraki.domains.organizations.networks.devices.cellular_sims.sims.sim_order, null)
+              }
+            ]
+            sim_ordering         = try(device.cellular_sims.sim_ordering, local.defaults.meraki.domains.organizations.networks.devices.cellular_sims.sim_ordering, null)
+            sim_failover_enabled = try(device.cellular_sims.sim_failover.enabled, local.defaults.meraki.domains.organizations.networks.devices.cellular_sims.sim_failover.enabled, null)
+            sim_failover_timeout = try(device.cellular_sims.sim_failover.timeout, local.defaults.meraki.domains.organizations.networks.devices.cellular_sims.sim_failover.timeout, null)
           } if try(device.cellular_sims, null) != null
-        ] if try(organization.networks, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+        ]
+      ]
+    ]
   ])
 }
 
-resource "meraki_device_cellular_sims" "net_devices_cellular_sims" {
-  for_each = { for i, v in local.networks_devices_cellular_sims : i => v }
-  serial   = each.value.serial
-
-  sims                 = try(each.value.data.sims, local.defaults.meraki.networks.devices_cellular_sims.sims, null)
-  sim_ordering         = try(each.value.data.sim_ordering, local.defaults.meraki.networks.devices_cellular_sims.sim_ordering, null)
-  sim_failover_enabled = try(each.value.data.sim_failover.enabled, local.defaults.meraki.networks.devices_cellular_sims.sim_failover.enabled, null)
-  sim_failover_timeout = try(each.value.data.sim_failover.timeout, local.defaults.meraki.networks.devices_cellular_sims.sim_failover.timeout, null)
-
+resource "meraki_device_cellular_sims" "devices_cellular_sims" {
+  for_each             = { for v in local.devices_cellular_sims : v.key => v }
+  serial               = each.value.serial
+  sims                 = each.value.sims
+  sim_ordering         = each.value.sim_ordering
+  sim_failover_enabled = each.value.sim_failover_enabled
+  sim_failover_timeout = each.value.sim_failover_timeout
 }

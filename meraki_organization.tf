@@ -475,23 +475,22 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for early_access_features_opt_in in try(organization.early_access_features_opt_ins, []) : {
-          key    = "${organization.name}/${early_access_features_opt_in.short_name}"
-          org_id = meraki_organization.organization[organization.name].id
-
-          data = try(early_access_features_opt_in, null)
-          limit_scope_to_networks = [
+          key             = format("%s/%s/%s", domain.name, organization.name, early_access_features_opt_in.short_name)
+          organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
+          short_name      = try(early_access_features_opt_in.short_name, local.defaults.meraki.domains.organizations.early_access_features_opt_ins.short_name, null)
+          limit_scope_to_networks = try(length(early_access_features_opt_in.limit_scope_to_networks) == 0, true) ? null : [
             for network_name in try(early_access_features_opt_in.limit_scope_to_networks, []) :
-            meraki_network.network["${organization.name}/${network_name}"].id
+            meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network_name)].id
           ]
-        } if try(organization.early_access_features_opt_ins, null) != null
-      ] if try(domain.organizations, null) != null
-    ] if try(local.meraki.domains, null) != null
+        }
+      ]
+    ]
   ])
 }
 
-resource "meraki_organization_early_access_features_opt_in" "organizations_early_access_features_opt_in" {
-  for_each                = { for opt_in in local.organizations_early_access_features_opt_ins : opt_in.key => opt_in }
-  organization_id         = each.value.org_id
-  short_name              = each.value.data.short_name
-  limit_scope_to_networks = length(each.value.limit_scope_to_networks) > 0 ? each.value.limit_scope_to_networks : null
+resource "meraki_organization_early_access_features_opt_in" "organizations_early_access_features_opt_ins" {
+  for_each                = { for v in local.organizations_early_access_features_opt_ins : v.key => v }
+  organization_id         = each.value.organization_id
+  short_name              = each.value.short_name
+  limit_scope_to_networks = each.value.limit_scope_to_networks
 }
