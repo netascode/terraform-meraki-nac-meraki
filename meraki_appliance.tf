@@ -519,7 +519,7 @@ locals {
           key           = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id    = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
           vlans_enabled = try(length(network.appliance.vlans) > 0, false)
-        } if try(length(network.appliance.vlans) > 0, false)
+        } if try(network.appliance, null) != null
       ]
     ]
   ])
