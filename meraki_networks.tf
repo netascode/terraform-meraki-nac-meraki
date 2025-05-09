@@ -335,9 +335,9 @@ locals {
         for network in try(organization.networks, []) : {
           key                    = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id             = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-          dhcp_lease_time        = try(network.cellular_gateway.dhcp.dhcp_lease_time, local.defaults.meraki.networks.cellular_gateway.dhcp.dhcp_lease_time, null)
-          dns_nameservers        = try(network.cellular_gateway.dhcp.dns_nameservers, local.defaults.meraki.networks.cellular_gateway.dhcp.dns_nameservers, null)
-          dns_custom_nameservers = try(network.cellular_gateway.dhcp.dns_custom_nameservers, local.defaults.meraki.networks.cellular_gateway.dhcp.dns_custom_nameservers, null)
+          dhcp_lease_time        = try(network.cellular_gateway.dhcp.dhcp_lease_time, local.defaults.meraki.domains.organizations.networks.cellular_gateway.dhcp.dhcp_lease_time, null)
+          dns_nameservers        = try(network.cellular_gateway.dhcp.dns_nameservers, local.defaults.meraki.domains.organizations.networks.cellular_gateway.dhcp.dns_nameservers, null)
+          dns_custom_nameservers = try(network.cellular_gateway.dhcp.dns_custom_nameservers, local.defaults.meraki.domains.organizations.networks.cellular_gateway.dhcp.dns_custom_nameservers, null)
         } if try(network.cellular_gateway.dhcp, null) != null
       ]
     ]
@@ -359,8 +359,8 @@ locals {
         for network in try(organization.networks, []) : {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-          mask       = try(network.cellular_gateway.subnet_pool.mask, local.defaults.meraki.networks.cellular_gateway.subnet_pool.mask, null)
-          cidr       = try(network.cellular_gateway.subnet_pool.cidr, local.defaults.meraki.networks.cellular_gateway.subnet_pool.cidr, null)
+          mask       = try(network.cellular_gateway.subnet_pool.mask, local.defaults.meraki.domains.organizations.networks.cellular_gateway.subnet_pool.mask, null)
+          cidr       = try(network.cellular_gateway.subnet_pool.cidr, local.defaults.meraki.domains.organizations.networks.cellular_gateway.subnet_pool.cidr, null)
         } if try(network.cellular_gateway.subnet_pool, null) != null
       ]
     ]
@@ -381,8 +381,8 @@ locals {
         for network in try(organization.networks, []) : {
           key                         = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id                  = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-          bandwidth_limits_limit_up   = try(network.cellular_gateway.uplink_bandwidth_limits.limit_up, local.defaults.meraki.networks.cellular_gateway.uplink_bandwidth_limits.limit_up, null)
-          bandwidth_limits_limit_down = try(network.cellular_gateway.uplink_bandwidth_limits.limit_down, local.defaults.meraki.networks.cellular_gateway.uplink_bandwidth_limits.limit_down, null)
+          bandwidth_limits_limit_up   = try(network.cellular_gateway.uplink_bandwidth_limits.limit_up, local.defaults.meraki.domains.organizations.networks.cellular_gateway.uplink_bandwidth_limits.limit_up, null)
+          bandwidth_limits_limit_down = try(network.cellular_gateway.uplink_bandwidth_limits.limit_down, local.defaults.meraki.domains.organizations.networks.cellular_gateway.uplink_bandwidth_limits.limit_down, null)
         } if try(network.cellular_gateway.uplink_bandwidth_limits, null) != null
       ]
     ]
@@ -405,9 +405,9 @@ locals {
           network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
           destinations = [
             for cellular_gateway_connectivity_monitoring_destination in try(network.cellular_gateway.connectivity_monitoring_destinations, []) : {
-              ip          = try(cellular_gateway_connectivity_monitoring_destination.ip, local.defaults.meraki.networks.cellular_gateway.connectivity_monitoring_destinations.ip, null)
-              description = try(cellular_gateway_connectivity_monitoring_destination.description, local.defaults.meraki.networks.cellular_gateway.connectivity_monitoring_destinations.description, null)
-              default     = try(cellular_gateway_connectivity_monitoring_destination.default, local.defaults.meraki.networks.cellular_gateway.connectivity_monitoring_destinations.default, null)
+              ip          = try(cellular_gateway_connectivity_monitoring_destination.ip, local.defaults.meraki.domains.organizations.networks.cellular_gateway.connectivity_monitoring_destinations.ip, null)
+              description = try(cellular_gateway_connectivity_monitoring_destination.description, local.defaults.meraki.domains.organizations.networks.cellular_gateway.connectivity_monitoring_destinations.description, null)
+              default     = try(cellular_gateway_connectivity_monitoring_destination.default, local.defaults.meraki.domains.organizations.networks.cellular_gateway.connectivity_monitoring_destinations.default, null)
             }
           ]
         } if try(network.cellular_gateway.connectivity_monitoring_destinations, null) != null
