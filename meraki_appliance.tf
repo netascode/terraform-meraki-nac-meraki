@@ -519,7 +519,7 @@ locals {
           key           = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id    = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
           vlans_enabled = try(length(network.appliance.vlans) > 0, false)
-        } if try(length(network.appliance.vlans) > 0, false)
+        } if try(network.appliance, null) != null
       ]
     ]
   ])
@@ -581,20 +581,21 @@ locals {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
           mode       = try(network.appliance.vpn_site_to_site_vpn.mode, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.mode, null)
+          hubs = try(length(network.appliance.vpn_site_to_site_vpn.hubs) == 0, true) ? null : [
+            for hub in try(network.appliance.vpn_site_to_site_vpn.hubs, []) : {
+              hub_id            = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, hub.hub_network_name)].id
+              use_default_route = try(hub.use_default_route, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.hubs.use_default_route, null)
+            }
+          ]
           subnets = try(length(network.appliance.vpn_site_to_site_vpn.subnets) == 0, true) ? null : [
             for subnet in try(network.appliance.vpn_site_to_site_vpn.subnets, []) : {
               local_subnet      = try(subnet.local_subnet, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.subnets.local_subnet, null)
+              use_vpn           = try(subnet.use_vpn, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.subnets.use_vpn, null)
               nat_enabled       = try(subnet.nat.enabled, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.subnets.nat.enabled, null)
               nat_remote_subnet = try(subnet.nat.remote_subnet, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.subnets.nat.remote_subnet, null)
-              use_vpn           = try(subnet.use_vpn, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.subnets.use_vpn, null)
             }
           ]
-          hubs = try(length(network.appliance.vpn_site_to_site_vpn.hubs) == 0, true) ? null : [
-            for hub in try(network.appliance.vpn_site_to_site_vpn.hubs, []) : {
-              use_default_route = try(hub.use_default_route, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.hubs.use_default_route, null)
-              hub_id            = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, hub.hub_network_name)].id
-            }
-          ]
+          subnet_nat_is_allowed = try(network.appliance.vpn_site_to_site_vpn.subnet_nat, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.subnet_nat, null)
         } if try(network.appliance.vpn_site_to_site_vpn, null) != null
       ]
     ]
@@ -602,12 +603,13 @@ locals {
 }
 
 resource "meraki_appliance_site_to_site_vpn" "networks_appliance_vpn_site_to_site_vpn" {
-  for_each   = { for v in local.networks_appliance_vpn_site_to_site_vpn : v.key => v }
-  network_id = each.value.network_id
-  mode       = each.value.mode
-  hubs       = each.value.hubs
-  subnets    = each.value.subnets
-  depends_on = [meraki_network_device_claim.networks_devices_claim, meraki_appliance_single_lan.networks_appliance_single_lan, meraki_appliance_vlan.networks_appliance_vlans]
+  for_each              = { for v in local.networks_appliance_vpn_site_to_site_vpn : v.key => v }
+  network_id            = each.value.network_id
+  mode                  = each.value.mode
+  hubs                  = each.value.hubs
+  subnets               = each.value.subnets
+  subnet_nat_is_allowed = each.value.subnet_nat_is_allowed
+  depends_on            = [meraki_network_device_claim.networks_devices_claim, meraki_appliance_single_lan.networks_appliance_single_lan, meraki_appliance_vlan.networks_appliance_vlans]
 }
 
 locals {
