@@ -322,7 +322,7 @@ locals {
             port_schedule_sunday_active    = try(switch_port_schedule.port_schedule.sunday.active, local.defaults.meraki.domains.organizations.networks.switch.port_schedules.port_schedule.sunday.active, null)
             port_schedule_sunday_from      = try(switch_port_schedule.port_schedule.sunday.from, local.defaults.meraki.domains.organizations.networks.switch.port_schedules.port_schedule.sunday.from, null)
             port_schedule_sunday_to        = try(switch_port_schedule.port_schedule.sunday.to, local.defaults.meraki.domains.organizations.networks.switch.port_schedules.port_schedule.sunday.to, null)
-          } if try(network.switch.port_schedules, null) != null
+          }
         ]
       ]
     ]
