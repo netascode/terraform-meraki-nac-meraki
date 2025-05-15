@@ -129,9 +129,10 @@ locals {
           network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
           rules = try(length(network.appliance.firewall.l7_firewall_rules) == 0, true) ? null : [
             for rule in try(network.appliance.firewall.l7_firewall_rules, []) : {
-              policy = try(rule.policy, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.policy, null)
-              type   = try(rule.type, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.type, null)
-              value  = try(rule.value, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.value, null)
+              policy          = try(rule.policy, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.policy, null)
+              type            = try(rule.type, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.type, null)
+              value           = try(rule.value, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.value, null)
+              value_countries = try(rule.value_countries, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.value_countries, null)
             }
           ]
         } if length(try(network.appliance.firewall.l7_firewall_rules, [])) > 0
