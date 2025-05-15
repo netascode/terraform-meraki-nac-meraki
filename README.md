@@ -73,6 +73,7 @@ module "meraki" {
 | [meraki_appliance_network_security_intrusion.networks_appliance_security_intrusion](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_network_security_intrusion) | resource |
 | [meraki_appliance_one_to_many_nat_rules.networks_appliance_firewall_one_to_many_nat_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_one_to_many_nat_rules) | resource |
 | [meraki_appliance_one_to_one_nat_rules.networks_appliance_firewall_one_to_one_nat_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_one_to_one_nat_rules) | resource |
+| [meraki_appliance_organization_security_intrusion.organizations_appliance_security_intrusion_allowed_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_organization_security_intrusion) | resource |
 | [meraki_appliance_port.networks_appliance_ports](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_port) | resource |
 | [meraki_appliance_port_forwarding_rules.networks_appliance_firewall_port_forwarding_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_port_forwarding_rules) | resource |
 | [meraki_appliance_radio_settings.devices_appliance_radio_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_radio_settings) | resource |

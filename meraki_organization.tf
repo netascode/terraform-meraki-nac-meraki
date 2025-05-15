@@ -402,6 +402,29 @@ resource "meraki_organization_policy_object_group" "organizations_policy_objects
 }
 
 locals {
+  organizations_appliance_security_intrusion_allowed_rules = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : {
+        key             = format("%s/%s", domain.name, organization.name)
+        organization_id = meraki_organization.organizations[format("%s/%s", domain.name, organization.name)].id
+        allowed_rules = [
+          for appliance_security_intrusion_allowed_rule in try(organization.appliance.security_intrusion_allowed_rules, []) : {
+            rule_id = try(appliance_security_intrusion_allowed_rule.rule_id, local.defaults.meraki.domains.organizations.appliance.security_intrusion_allowed_rules.rule_id, null)
+            message = try(appliance_security_intrusion_allowed_rule.message, local.defaults.meraki.domains.organizations.appliance.security_intrusion_allowed_rules.message, null)
+          }
+        ]
+      } if try(organization.appliance.security_intrusion_allowed_rules, null) != null
+    ]
+  ])
+}
+
+resource "meraki_appliance_organization_security_intrusion" "organizations_appliance_security_intrusion_allowed_rules" {
+  for_each        = { for v in local.organizations_appliance_security_intrusion_allowed_rules : v.key => v }
+  organization_id = each.value.organization_id
+  allowed_rules   = each.value.allowed_rules
+}
+
+locals {
   organizations_appliance_third_party_vpn_peers = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : {
