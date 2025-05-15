@@ -406,7 +406,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : {
         key             = format("%s/%s", domain.name, organization.name)
-        organization_id = meraki_organization.organizations[format("%s/%s", domain.name, organization.name)].id
+        organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
         allowed_rules = [
           for appliance_security_intrusion_allowed_rule in try(organization.appliance.security_intrusion_allowed_rules, []) : {
             rule_id = try(appliance_security_intrusion_allowed_rule.rule_id, local.defaults.meraki.domains.organizations.appliance.security_intrusion_allowed_rules.rule_id, null)
