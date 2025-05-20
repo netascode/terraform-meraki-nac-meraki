@@ -1,5 +1,5 @@
 locals {
-  template_yaml_strings = [for template in try(local.model.meraki.template.networks, []) : yamlencode(template)]
+  template_yaml_strings = [for template in try(local.model.meraki.template.networks, []) : replace(yamlencode(template), "/\"([$%]{.*})\"/", "$1")]
   meraki = {
     meraki = {
       domains = [
