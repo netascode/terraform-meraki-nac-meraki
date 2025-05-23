@@ -715,6 +715,10 @@ resource "meraki_appliance_sdwan_internet_policies" "networks_appliance_sdwan_in
   for_each                       = { for v in local.networks_appliance_sdwan_internet_policies : v.key => v }
   network_id                     = each.value.network_id
   wan_traffic_uplink_preferences = each.value.wan_traffic_uplink_preferences
+  depends_on = [
+    meraki_appliance_vlan.networks_appliance_vlans,
+    meraki_appliance_single_lan.networks_appliance_single_lan,
+  ]
 }
 
 locals {
