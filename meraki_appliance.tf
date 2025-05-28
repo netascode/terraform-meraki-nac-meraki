@@ -741,6 +741,10 @@ resource "meraki_appliance_traffic_shaping" "networks_appliance_traffic_shaping"
   network_id                  = each.value.network_id
   global_bandwidth_limit_up   = each.value.global_bandwidth_limit_up
   global_bandwidth_limit_down = each.value.global_bandwidth_limit_down
+  depends_on = [
+    meraki_appliance_vlan.networks_appliance_vlans,
+    meraki_appliance_single_lan.networks_appliance_single_lan,
+  ]
 }
 
 locals {
@@ -769,6 +773,10 @@ resource "meraki_appliance_traffic_shaping_custom_performance_class" "networks_a
   max_latency         = each.value.max_latency
   max_jitter          = each.value.max_jitter
   max_loss_percentage = each.value.max_loss_percentage
+  depends_on = [
+    meraki_appliance_vlan.networks_appliance_vlans,
+    meraki_appliance_single_lan.networks_appliance_single_lan,
+  ]
 }
 
 locals {
@@ -805,6 +813,10 @@ resource "meraki_appliance_traffic_shaping_rules" "networks_appliance_traffic_sh
   network_id            = each.value.network_id
   default_rules_enabled = each.value.default_rules_enabled
   rules                 = each.value.rules
+  depends_on = [
+    meraki_appliance_vlan.networks_appliance_vlans,
+    meraki_appliance_single_lan.networks_appliance_single_lan,
+  ]
 }
 
 locals {
@@ -835,6 +847,10 @@ resource "meraki_appliance_traffic_shaping_uplink_bandwidth" "networks_appliance
   wan2_limit_down     = each.value.wan2_limit_down
   cellular_limit_up   = each.value.cellular_limit_up
   cellular_limit_down = each.value.cellular_limit_down
+  depends_on = [
+    meraki_appliance_vlan.networks_appliance_vlans,
+    meraki_appliance_single_lan.networks_appliance_single_lan,
+  ]
 }
 
 locals {
@@ -907,6 +923,11 @@ resource "meraki_appliance_traffic_shaping_uplink_selection" "networks_appliance
   failover_and_failback_immediate_enabled = each.value.failover_and_failback_immediate_enabled
   wan_traffic_uplink_preferences          = each.value.wan_traffic_uplink_preferences
   vpn_traffic_uplink_preferences          = each.value.vpn_traffic_uplink_preferences
+  depends_on = [
+    meraki_appliance_vlan.networks_appliance_vlans,
+    meraki_appliance_single_lan.networks_appliance_single_lan,
+    meraki_appliance_traffic_shaping_custom_performance_class.networks_appliance_traffic_shaping_custom_performance_classes,
+  ]
 }
 
 locals {
@@ -939,6 +960,10 @@ resource "meraki_appliance_traffic_shaping_vpn_exclusions" "networks_appliance_t
   network_id         = each.value.network_id
   custom             = each.value.custom
   major_applications = each.value.major_applications
+  depends_on = [
+    meraki_appliance_vlan.networks_appliance_vlans,
+    meraki_appliance_single_lan.networks_appliance_single_lan,
+  ]
 }
 
 locals {
