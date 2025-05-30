@@ -854,6 +854,11 @@ resource "meraki_appliance_traffic_shaping_uplink_bandwidth" "networks_appliance
 }
 
 locals {
+  custom_performance_class_ids_by_name = {
+    for k, v in meraki_appliance_traffic_shaping_custom_performance_class.networks_appliance_traffic_shaping_custom_performance_classes :
+    v.name => v.id
+  }
+
   networks_appliance_traffic_shaping_uplink_selection = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
@@ -864,6 +869,7 @@ locals {
           default_uplink                          = try(network.appliance.traffic_shaping.uplink_selection.default_uplink, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.default_uplink, null)
           load_balancing_enabled                  = try(network.appliance.traffic_shaping.uplink_selection.load_balancing, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.load_balancing, null)
           failover_and_failback_immediate_enabled = try(network.appliance.traffic_shaping.uplink_selection.failover_and_failback_immediate, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.failover_and_failback_immediate, null)
+
           wan_traffic_uplink_preferences = try(length(network.appliance.traffic_shaping.uplink_selection.wan_traffic_uplink_preferences) == 0, true) ? null : [
             for wan_traffic_uplink_preference in try(network.appliance.traffic_shaping.uplink_selection.wan_traffic_uplink_preferences, []) : {
               traffic_filters = [
@@ -881,6 +887,7 @@ locals {
               preferred_uplink = try(wan_traffic_uplink_preference.preferred_uplink, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.wan_traffic_uplink_preferences.preferred_uplink, null)
             }
           ]
+
           vpn_traffic_uplink_preferences = try(length(network.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences) == 0, true) ? null : [
             for vpn_traffic_uplink_preference in try(network.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences, []) : {
               traffic_filters = [
@@ -905,7 +912,15 @@ locals {
               fail_over_criterion            = try(vpn_traffic_uplink_preference.fail_over_criterion, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.fail_over_criterion, null)
               performance_class_type         = try(vpn_traffic_uplink_preference.performance_class.type, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.performance_class.type, null)
               builtin_performance_class_name = try(vpn_traffic_uplink_preference.performance_class.builtin_performance_class_name, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.performance_class.builtin_performance_class_name, null)
-              custom_performance_class_id    = try(vpn_traffic_uplink_preference.performance_class.custom_performance_class_id, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.performance_class.custom_performance_class_id, null)
+              custom_performance_class_id = try(
+                local.custom_performance_class_ids_by_name[
+                  try(
+                    vpn_traffic_uplink_preference.performance_class.custom_performance_class_name,
+                    local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.performance_class.custom_performance_class_name
+                  )
+                ],
+                null
+              )
             }
           ]
         } if try(network.appliance.traffic_shaping.uplink_selection, null) != null
@@ -926,7 +941,6 @@ resource "meraki_appliance_traffic_shaping_uplink_selection" "networks_appliance
   depends_on = [
     meraki_appliance_vlan.networks_appliance_vlans,
     meraki_appliance_single_lan.networks_appliance_single_lan,
-    meraki_appliance_traffic_shaping_custom_performance_class.networks_appliance_traffic_shaping_custom_performance_classes,
   ]
 }
 
