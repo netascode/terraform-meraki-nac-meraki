@@ -683,7 +683,7 @@ locals {
               fail_over_criterion            = try(appliance_sdwan_internet_policy.fail_over_criterion, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.fail_over_criterion, null)
               performance_class_type         = try(appliance_sdwan_internet_policy.performance_class.type, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.performance_class.type, null)
               builtin_performance_class_name = try(appliance_sdwan_internet_policy.performance_class.builtin_performance_class_name, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.performance_class.builtin_performance_class_name, null)
-              custom_performance_class_id    = try(appliance_sdwan_internet_policy.performance_class.custom_performance_class_id, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.performance_class.custom_performance_class_id, null)
+              custom_performance_class_id    = try(meraki_appliance_traffic_shaping_custom_performance_class.networks_appliance_traffic_shaping_custom_performance_classes[format("%s/%s/%s/%s", domain.name, organization.name, network.name, appliance_sdwan_internet_policy.performance_class.custom_performance_class_name)].id, null)
               traffic_filters = [
                 for traffic_filter in try(appliance_sdwan_internet_policy.traffic_filters, []) : {
                   type             = try(traffic_filter.type, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.traffic_filters.type, null)
