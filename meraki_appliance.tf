@@ -1092,3 +1092,29 @@ resource "meraki_appliance_radio_settings" "devices_appliance_radio_settings" {
   five_ghz_settings_channel_width    = each.value.five_ghz_settings_channel_width
   five_ghz_settings_target_power     = each.value.five_ghz_settings_target_power
 }
+
+locals {
+  networks_appliance_connectivity_monitoring_destinations = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : {
+          key        = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          destinations = [
+            for appliance_connectivity_monitoring_destination in try(network.appliance.connectivity_monitoring_destinations, []) : {
+              ip          = try(appliance_connectivity_monitoring_destination.ip, local.defaults.meraki.domains.organizations.networks.appliance.connectivity_monitoring_destinations.ip, null)
+              description = try(appliance_connectivity_monitoring_destination.description, local.defaults.meraki.domains.organizations.networks.appliance.connectivity_monitoring_destinations.description, null)
+              default     = try(appliance_connectivity_monitoring_destination.default, local.defaults.meraki.domains.organizations.networks.appliance.connectivity_monitoring_destinations.default, null)
+            }
+          ]
+        } if try(network.appliance.connectivity_monitoring_destinations, null) != null
+      ]
+    ]
+  ])
+}
+
+resource "meraki_appliance_connectivity_monitoring_destinations" "networks_appliance_connectivity_monitoring_destinations" {
+  for_each     = { for v in local.networks_appliance_connectivity_monitoring_destinations : v.key => v }
+  network_id   = each.value.network_id
+  destinations = each.value.destinations
+}
