@@ -687,7 +687,7 @@ locals {
               fail_over_criterion            = try(appliance_sdwan_internet_policy.fail_over_criterion, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.fail_over_criterion, null)
               performance_class_type         = try(appliance_sdwan_internet_policy.performance_class.type, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.performance_class.type, null)
               builtin_performance_class_name = try(appliance_sdwan_internet_policy.performance_class.builtin_performance_class_name, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.performance_class.builtin_performance_class_name, null)
-              custom_performance_class_id    = try(appliance_sdwan_internet_policy.performance_class.custom_performance_class_id, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.performance_class.custom_performance_class_id, null)
+              custom_performance_class_id    = try(meraki_appliance_traffic_shaping_custom_performance_class.networks_appliance_traffic_shaping_custom_performance_classes[format("%s/%s/%s/%s", domain.name, organization.name, network.name, appliance_sdwan_internet_policy.performance_class.custom_performance_class_name)].id, null)
               traffic_filters = [
                 for traffic_filter in try(appliance_sdwan_internet_policy.traffic_filters, []) : {
                   type             = try(traffic_filter.type, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.traffic_filters.type, null)
@@ -745,6 +745,10 @@ resource "meraki_appliance_traffic_shaping" "networks_appliance_traffic_shaping"
   network_id                  = each.value.network_id
   global_bandwidth_limit_up   = each.value.global_bandwidth_limit_up
   global_bandwidth_limit_down = each.value.global_bandwidth_limit_down
+  depends_on = [
+    meraki_appliance_vlan.networks_appliance_vlans,
+    meraki_appliance_single_lan.networks_appliance_single_lan,
+  ]
 }
 
 locals {
@@ -773,6 +777,10 @@ resource "meraki_appliance_traffic_shaping_custom_performance_class" "networks_a
   max_latency         = each.value.max_latency
   max_jitter          = each.value.max_jitter
   max_loss_percentage = each.value.max_loss_percentage
+  depends_on = [
+    meraki_appliance_vlan.networks_appliance_vlans,
+    meraki_appliance_single_lan.networks_appliance_single_lan,
+  ]
 }
 
 locals {
@@ -809,6 +817,10 @@ resource "meraki_appliance_traffic_shaping_rules" "networks_appliance_traffic_sh
   network_id            = each.value.network_id
   default_rules_enabled = each.value.default_rules_enabled
   rules                 = each.value.rules
+  depends_on = [
+    meraki_appliance_vlan.networks_appliance_vlans,
+    meraki_appliance_single_lan.networks_appliance_single_lan,
+  ]
 }
 
 locals {
@@ -839,6 +851,10 @@ resource "meraki_appliance_traffic_shaping_uplink_bandwidth" "networks_appliance
   wan2_limit_down     = each.value.wan2_limit_down
   cellular_limit_up   = each.value.cellular_limit_up
   cellular_limit_down = each.value.cellular_limit_down
+  depends_on = [
+    meraki_appliance_vlan.networks_appliance_vlans,
+    meraki_appliance_single_lan.networks_appliance_single_lan,
+  ]
 }
 
 locals {
@@ -852,6 +868,7 @@ locals {
           default_uplink                          = try(network.appliance.traffic_shaping.uplink_selection.default_uplink, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.default_uplink, null)
           load_balancing_enabled                  = try(network.appliance.traffic_shaping.uplink_selection.load_balancing, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.load_balancing, null)
           failover_and_failback_immediate_enabled = try(network.appliance.traffic_shaping.uplink_selection.failover_and_failback_immediate, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.failover_and_failback_immediate, null)
+
           wan_traffic_uplink_preferences = try(length(network.appliance.traffic_shaping.uplink_selection.wan_traffic_uplink_preferences) == 0, true) ? null : [
             for wan_traffic_uplink_preference in try(network.appliance.traffic_shaping.uplink_selection.wan_traffic_uplink_preferences, []) : {
               traffic_filters = [
@@ -869,6 +886,7 @@ locals {
               preferred_uplink = try(wan_traffic_uplink_preference.preferred_uplink, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.wan_traffic_uplink_preferences.preferred_uplink, null)
             }
           ]
+
           vpn_traffic_uplink_preferences = try(length(network.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences) == 0, true) ? null : [
             for vpn_traffic_uplink_preference in try(network.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences, []) : {
               traffic_filters = [
@@ -893,7 +911,7 @@ locals {
               fail_over_criterion            = try(vpn_traffic_uplink_preference.fail_over_criterion, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.fail_over_criterion, null)
               performance_class_type         = try(vpn_traffic_uplink_preference.performance_class.type, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.performance_class.type, null)
               builtin_performance_class_name = try(vpn_traffic_uplink_preference.performance_class.builtin_performance_class_name, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.performance_class.builtin_performance_class_name, null)
-              custom_performance_class_id    = try(vpn_traffic_uplink_preference.performance_class.custom_performance_class_id, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.performance_class.custom_performance_class_id, null)
+              custom_performance_class_id    = try(meraki_appliance_traffic_shaping_custom_performance_class.networks_appliance_traffic_shaping_custom_performance_classes[format("%s/%s/%s/%s", domain.name, organization.name, network.name, vpn_traffic_uplink_preference.performance_class.custom_performance_class_name)].id, null)
             }
           ]
         } if try(network.appliance.traffic_shaping.uplink_selection, null) != null
@@ -911,6 +929,10 @@ resource "meraki_appliance_traffic_shaping_uplink_selection" "networks_appliance
   failover_and_failback_immediate_enabled = each.value.failover_and_failback_immediate_enabled
   wan_traffic_uplink_preferences          = each.value.wan_traffic_uplink_preferences
   vpn_traffic_uplink_preferences          = each.value.vpn_traffic_uplink_preferences
+  depends_on = [
+    meraki_appliance_vlan.networks_appliance_vlans,
+    meraki_appliance_single_lan.networks_appliance_single_lan,
+  ]
 }
 
 locals {
@@ -943,6 +965,10 @@ resource "meraki_appliance_traffic_shaping_vpn_exclusions" "networks_appliance_t
   network_id         = each.value.network_id
   custom             = each.value.custom
   major_applications = each.value.major_applications
+  depends_on = [
+    meraki_appliance_vlan.networks_appliance_vlans,
+    meraki_appliance_single_lan.networks_appliance_single_lan,
+  ]
 }
 
 locals {
