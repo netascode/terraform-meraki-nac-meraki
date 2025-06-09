@@ -177,6 +177,7 @@ locals {
                 device_serial            = meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)].serial
                 port_id                  = port_id
                 data                     = switch_port
+                access_policy_number     = try(meraki_switch_access_policy.networks_switch_access_policies[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.access_policy_name)].id, null)
                 port_schedule_id         = try(meraki_switch_port_schedule.networks_switch_port_schedules[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.port_schedule_name)].id, null)
                 adaptive_policy_group_id = try(meraki_organization_adaptive_policy_group.organizations_adaptive_policy_groups[format("%s/%s/%s", domain.name, organization.name, switch_port.adaptive_policy_group_name)].id, null)
               } if replace(port_id, "-", "") == port_id
@@ -198,6 +199,7 @@ locals {
                     device_serial            = meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)].serial
                     port_id                  = p
                     data                     = switch_port
+                    access_policy_number     = try(meraki_switch_access_policy.networks_switch_access_policies[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.access_policy_name)].id, null)
                     port_schedule_id         = try(meraki_switch_port_schedule.networks_switch_port_schedules[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.port_schedule_name)].id, null)
                     adaptive_policy_group_id = try(meraki_organization_adaptive_policy_group.organizations_adaptive_policy_groups[format("%s/%s/%s", domain.name, organization.name, switch_port.adaptive_policy_group_name)].id, null)
                   }
@@ -230,7 +232,7 @@ resource "meraki_switch_port" "devices_switch_ports" {
   port_schedule_id            = each.value.port_schedule_id
   udld                        = try(each.value.data.udld, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.udld, null)
   access_policy_type          = try(each.value.data.access_policy_type, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.access_policy_type, null)
-  access_policy_number        = try(each.value.data.access_policy_number, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.access_policy_number, null)
+  access_policy_number        = each.value.access_policy_number
   mac_allow_list              = try(each.value.data.mac_allow_list, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.mac_allow_list, null)
   sticky_mac_allow_list       = try(each.value.data.sticky_mac_allow_list, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.sticky_mac_allow_list, null)
   sticky_mac_allow_list_limit = try(each.value.data.sticky_mac_allow_list_limit, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.sticky_mac_allow_list_limit, null)
@@ -243,6 +245,7 @@ resource "meraki_switch_port" "devices_switch_ports" {
   # profile_id                  = try(each.value.data.profile.id, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.profile.id, null)
   profile_iname  = try(each.value.data.profile.iname, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.profile.iname, null)
   dot3az_enabled = try(each.value.data.dot3az, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.dot3az, null)
+  depends_on     = [meraki_switch_access_policy.networks_switch_access_policies]
 }
 
 locals {
@@ -527,3 +530,21 @@ resource "meraki_device_cellular_sims" "devices_cellular_sims" {
   sim_failover_enabled = each.value.sim_failover_enabled
   sim_failover_timeout = each.value.sim_failover_timeout
 }
+
+# data "meraki_switch_access_policy" "lookup" {
+#   for_each= { for v in local.networks_switch_access_policies : v.key => v }
+#   network_id = each.value.network_id
+#   name = each.value.name
+# }
+
+# output "switch_access_policy_ids" {
+#   value = {
+#     for k, v in data.meraki_switch_access_policy.lookup : k => v.id
+#   }
+# }
+
+
+# │ Error: Client Error
+# │ 
+# │ Failed to delete object (DELETE), got error: HTTP Request failed: StatusCode 400, {"errors":["This
+# │ access policy is in use by 5 ports. An access policy can only be removed if it is not in use."]}
