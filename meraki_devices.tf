@@ -177,6 +177,7 @@ locals {
                 device_serial            = meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)].serial
                 port_id                  = port_id
                 data                     = switch_port
+                access_policy_number     = try(meraki_switch_access_policy.networks_switch_access_policies[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.access_policy_name)].id, null)
                 port_schedule_id         = try(meraki_switch_port_schedule.networks_switch_port_schedules[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.port_schedule_name)].id, null)
                 adaptive_policy_group_id = try(meraki_organization_adaptive_policy_group.organizations_adaptive_policy_groups[format("%s/%s/%s", domain.name, organization.name, switch_port.adaptive_policy_group_name)].id, null)
               } if replace(port_id, "-", "") == port_id
@@ -198,6 +199,7 @@ locals {
                     device_serial            = meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)].serial
                     port_id                  = p
                     data                     = switch_port
+                    access_policy_number     = try(meraki_switch_access_policy.networks_switch_access_policies[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.access_policy_name)].id, null)
                     port_schedule_id         = try(meraki_switch_port_schedule.networks_switch_port_schedules[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.port_schedule_name)].id, null)
                     adaptive_policy_group_id = try(meraki_organization_adaptive_policy_group.organizations_adaptive_policy_groups[format("%s/%s/%s", domain.name, organization.name, switch_port.adaptive_policy_group_name)].id, null)
                   }
@@ -230,7 +232,7 @@ resource "meraki_switch_port" "devices_switch_ports" {
   port_schedule_id            = each.value.port_schedule_id
   udld                        = try(each.value.data.udld, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.udld, null)
   access_policy_type          = try(each.value.data.access_policy_type, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.access_policy_type, null)
-  access_policy_number        = try(each.value.data.access_policy_number, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.access_policy_number, null)
+  access_policy_number        = each.value.access_policy_number
   mac_allow_list              = try(each.value.data.mac_allow_list, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.mac_allow_list, null)
   sticky_mac_allow_list       = try(each.value.data.sticky_mac_allow_list, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.sticky_mac_allow_list, null)
   sticky_mac_allow_list_limit = try(each.value.data.sticky_mac_allow_list_limit, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.sticky_mac_allow_list_limit, null)
