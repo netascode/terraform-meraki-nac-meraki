@@ -544,7 +544,7 @@ locals {
           ibgp_hold_timer = try(network.appliance.vpn_bgp.ibgp_hold_timer, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.ibgp_hold_timer, null)
           neighbors = try(length(network.appliance.vpn_bgp.neighbors) == 0, true) ? null : [
             for neighbor in try(network.appliance.vpn_bgp.neighbors, []) : {
-              ebgp_hold_time          = try(neighbor.ebgp_hold_time, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.ebgp_hold_time, null)
+              ebgp_hold_timer         = try(neighbor.ebgp_hold_timer, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.ebgp_hold_timer, null)
               ebgp_multihop           = try(neighbor.ebgp_multihop, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.ebgp_multihop, null)
               ip                      = try(neighbor.ip, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.ip, null)
               remote_as_number        = try(neighbor.remote_as_number, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.remote_as_number, null)
