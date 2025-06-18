@@ -52,8 +52,7 @@ Enhancements:
 
 Breaking Changes:
 
-- `organizations_inventory` Use "serials" instead of `devices` (https://github.com/netascode/terraform-meraki-nac-meraki/commit b3eca5bf802d9310ee9aa81955a0b1aec4433f8f)
-
+- `organizations_inventory` Use "serials" instead of `devices` (https://github.com/netascode/terraform-meraki-nac-meraki/commit/b3eca5bf802d9310ee9aa81955a0b1aec4433f8f)
 
 - Update for schema 1.56
 
