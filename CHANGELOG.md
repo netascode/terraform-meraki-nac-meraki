@@ -9,9 +9,7 @@ Feature:
 - Support Unmanaged Organizations (https://github.com/netascode/terraform-meraki-nac-meraki/pull/48)
 - Add Support for Templates (https://github.com/netascode/terraform-meraki-nac-meraki/pull/46, https://github.com/netascode/terraform-meraki-nac-meraki/pull/62)
 
-
-
-Added Resources:
+Add Resources:
 
 - `networks_appliance_connectivity_monitoring_destinations`
 - `organizations_appliance_security_intrusion_allowed_rules`
