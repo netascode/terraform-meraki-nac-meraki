@@ -4,7 +4,7 @@
 
 ## 0.3.0
 
-Feature:
+Features:
 
 - Support Unmanaged Organizations (https://github.com/netascode/terraform-meraki-nac-meraki/pull/48)
 - Add Support for Templates (https://github.com/netascode/terraform-meraki-nac-meraki/pull/46, https://github.com/netascode/terraform-meraki-nac-meraki/pull/62)
