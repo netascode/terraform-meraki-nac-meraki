@@ -47,7 +47,6 @@ Enhancements:
     - Add missing public_hostname and ipsec_policies_preset (https://github.com/netascode/terraform-meraki-nac-meraki/pull/56/commits/4ec3fb61963f34038949dfec439acd2a1b486b03)
 - `networks_appliance_vpn_site_to_site_vpn` 
     - Add missing subnet_nat_is_allowed field (https://github.com/netascode/terraform-meraki-nac-meraki/pull/56/commits/43d3e6a00e917a3d0b3084e4fcb6b87e73a5ebe2)
-
 - `networks_appliance_vlans_settings`
    - Create the resource if anything under appliance is configured (https://github.com/netascode/terraform-meraki-nac-meraki/pull/56/commits/d1a6b220dca2e092c2bdef88d981ac654c7b4a67)
 
