@@ -35,8 +35,6 @@ Added Resources:
 - `devices_cellular_sims`
 - `organizations_early_access_features_opt_ins`
 
-
-
 Enhancements:
 
 - `networks_appliance_firewall_l7_firewall_rules`
