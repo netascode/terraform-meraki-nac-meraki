@@ -4,7 +4,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for wireless_rf_profile in try(network.wireless.rf_profiles, []) : [
-            for settings in wireless_rf_profile.per_ssid_settings : {
+            for settings in try(wireless_rf_profile.per_ssid_settings, []) : {
               key = format(
                 "%s/%s/%s/%s/%s",
                 domain.name,

@@ -402,6 +402,29 @@ resource "meraki_organization_policy_object_group" "organizations_policy_objects
 }
 
 locals {
+  organizations_appliance_security_intrusion_allowed_rules = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : {
+        key             = format("%s/%s", domain.name, organization.name)
+        organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
+        allowed_rules = [
+          for appliance_security_intrusion_allowed_rule in try(organization.appliance.security_intrusion_allowed_rules, []) : {
+            rule_id = try(appliance_security_intrusion_allowed_rule.rule_id, local.defaults.meraki.domains.organizations.appliance.security_intrusion_allowed_rules.rule_id, null)
+            message = try(appliance_security_intrusion_allowed_rule.message, local.defaults.meraki.domains.organizations.appliance.security_intrusion_allowed_rules.message, null)
+          }
+        ]
+      } if try(organization.appliance.security_intrusion_allowed_rules, null) != null
+    ]
+  ])
+}
+
+resource "meraki_appliance_organization_security_intrusion" "organizations_appliance_security_intrusion_allowed_rules" {
+  for_each        = { for v in local.organizations_appliance_security_intrusion_allowed_rules : v.key => v }
+  organization_id = each.value.organization_id
+  allowed_rules   = each.value.allowed_rules
+}
+
+locals {
   organizations_appliance_third_party_vpn_peers = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : {
@@ -472,4 +495,29 @@ resource "meraki_appliance_vpn_firewall_rules" "organizations_appliance_vpn_fire
   rules               = each.value.rules
   syslog_default_rule = each.value.syslog_default_rule
   depends_on          = [meraki_network.organizations_networks]
+}
+
+locals {
+  organizations_early_access_features_opt_ins = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for early_access_features_opt_in in try(organization.early_access_features_opt_ins, []) : {
+          key             = format("%s/%s/%s", domain.name, organization.name, early_access_features_opt_in.short_name)
+          organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
+          short_name      = try(early_access_features_opt_in.short_name, local.defaults.meraki.domains.organizations.early_access_features_opt_ins.short_name, null)
+          limit_scope_to_networks = try(length(early_access_features_opt_in.limit_scope_to_networks) == 0, true) ? null : [
+            for network_name in try(early_access_features_opt_in.limit_scope_to_networks, []) :
+            meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network_name)].id
+          ]
+        }
+      ]
+    ]
+  ])
+}
+
+resource "meraki_organization_early_access_features_opt_in" "organizations_early_access_features_opt_ins" {
+  for_each                = { for v in local.organizations_early_access_features_opt_ins : v.key => v }
+  organization_id         = each.value.organization_id
+  short_name              = each.value.short_name
+  limit_scope_to_networks = each.value.limit_scope_to_networks
 }

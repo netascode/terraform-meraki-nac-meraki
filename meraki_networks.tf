@@ -328,3 +328,96 @@ resource "meraki_network_floor_plan" "networks_floor_plans" {
   depends_on              = [meraki_network.organizations_networks]
 }
 
+locals {
+  networks_cellular_gateway_dhcp = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : {
+          key                    = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id             = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          dhcp_lease_time        = try(network.cellular_gateway.dhcp.dhcp_lease_time, local.defaults.meraki.domains.organizations.networks.cellular_gateway.dhcp.dhcp_lease_time, null)
+          dns_nameservers        = try(network.cellular_gateway.dhcp.dns_nameservers, local.defaults.meraki.domains.organizations.networks.cellular_gateway.dhcp.dns_nameservers, null)
+          dns_custom_nameservers = try(network.cellular_gateway.dhcp.dns_custom_nameservers, local.defaults.meraki.domains.organizations.networks.cellular_gateway.dhcp.dns_custom_nameservers, null)
+        } if try(network.cellular_gateway.dhcp, null) != null
+      ]
+    ]
+  ])
+}
+
+resource "meraki_cellular_gateway_dhcp" "networks_cellular_gateway_dhcp" {
+  for_each               = { for v in local.networks_cellular_gateway_dhcp : v.key => v }
+  network_id             = each.value.network_id
+  dhcp_lease_time        = each.value.dhcp_lease_time
+  dns_nameservers        = each.value.dns_nameservers
+  dns_custom_nameservers = each.value.dns_custom_nameservers
+}
+
+locals {
+  networks_cellular_gateway_subnet_pool = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : {
+          key        = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          mask       = try(network.cellular_gateway.subnet_pool.mask, local.defaults.meraki.domains.organizations.networks.cellular_gateway.subnet_pool.mask, null)
+          cidr       = try(network.cellular_gateway.subnet_pool.cidr, local.defaults.meraki.domains.organizations.networks.cellular_gateway.subnet_pool.cidr, null)
+        } if try(network.cellular_gateway.subnet_pool, null) != null
+      ]
+    ]
+  ])
+}
+
+resource "meraki_cellular_gateway_subnet_pool" "networks_cellular_gateway_subnet_pool" {
+  for_each   = { for v in local.networks_cellular_gateway_subnet_pool : v.key => v }
+  network_id = each.value.network_id
+  mask       = each.value.mask
+  cidr       = each.value.cidr
+}
+
+locals {
+  networks_cellular_gateway_uplink_bandwidth_limits = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : {
+          key                         = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id                  = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          bandwidth_limits_limit_up   = try(network.cellular_gateway.uplink_bandwidth_limits.limit_up, local.defaults.meraki.domains.organizations.networks.cellular_gateway.uplink_bandwidth_limits.limit_up, null)
+          bandwidth_limits_limit_down = try(network.cellular_gateway.uplink_bandwidth_limits.limit_down, local.defaults.meraki.domains.organizations.networks.cellular_gateway.uplink_bandwidth_limits.limit_down, null)
+        } if try(network.cellular_gateway.uplink_bandwidth_limits, null) != null
+      ]
+    ]
+  ])
+}
+
+resource "meraki_cellular_gateway_uplink" "networks_cellular_gateway_uplink_bandwidth_limits" {
+  for_each                    = { for v in local.networks_cellular_gateway_uplink_bandwidth_limits : v.key => v }
+  network_id                  = each.value.network_id
+  bandwidth_limits_limit_up   = each.value.bandwidth_limits_limit_up
+  bandwidth_limits_limit_down = each.value.bandwidth_limits_limit_down
+}
+
+locals {
+  networks_cellular_gateway_connectivity_monitoring_destinations = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : {
+          key        = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          destinations = [
+            for cellular_gateway_connectivity_monitoring_destination in try(network.cellular_gateway.connectivity_monitoring_destinations, []) : {
+              ip          = try(cellular_gateway_connectivity_monitoring_destination.ip, local.defaults.meraki.domains.organizations.networks.cellular_gateway.connectivity_monitoring_destinations.ip, null)
+              description = try(cellular_gateway_connectivity_monitoring_destination.description, local.defaults.meraki.domains.organizations.networks.cellular_gateway.connectivity_monitoring_destinations.description, null)
+              default     = try(cellular_gateway_connectivity_monitoring_destination.default, local.defaults.meraki.domains.organizations.networks.cellular_gateway.connectivity_monitoring_destinations.default, null)
+            }
+          ]
+        } if try(network.cellular_gateway.connectivity_monitoring_destinations, null) != null
+      ]
+    ]
+  ])
+}
+
+resource "meraki_cellular_gateway_connectivity_monitoring_destinations" "networks_cellular_gateway_connectivity_monitoring_destinations" {
+  for_each     = { for v in local.networks_cellular_gateway_connectivity_monitoring_destinations : v.key => v }
+  network_id   = each.value.network_id
+  destinations = each.value.destinations
+}

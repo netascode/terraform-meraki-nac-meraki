@@ -64,6 +64,7 @@ module "meraki" {
 
 | Name | Type |
 |------|------|
+| [meraki_appliance_connectivity_monitoring_destinations.networks_appliance_connectivity_monitoring_destinations](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_connectivity_monitoring_destinations) | resource |
 | [meraki_appliance_content_filtering.networks_appliance_content_filtering](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_content_filtering) | resource |
 | [meraki_appliance_firewall_settings.networks_appliance_firewall_settings_spoofing_protection_ip_source_guard_mode](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_firewall_settings) | resource |
 | [meraki_appliance_firewalled_service.networks_appliance_firewall_firewalled_services](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_firewalled_service) | resource |
@@ -73,13 +74,25 @@ module "meraki" {
 | [meraki_appliance_network_security_intrusion.networks_appliance_security_intrusion](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_network_security_intrusion) | resource |
 | [meraki_appliance_one_to_many_nat_rules.networks_appliance_firewall_one_to_many_nat_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_one_to_many_nat_rules) | resource |
 | [meraki_appliance_one_to_one_nat_rules.networks_appliance_firewall_one_to_one_nat_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_one_to_one_nat_rules) | resource |
+| [meraki_appliance_organization_security_intrusion.organizations_appliance_security_intrusion_allowed_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_organization_security_intrusion) | resource |
 | [meraki_appliance_port.networks_appliance_ports](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_port) | resource |
 | [meraki_appliance_port_forwarding_rules.networks_appliance_firewall_port_forwarding_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_port_forwarding_rules) | resource |
+| [meraki_appliance_radio_settings.devices_appliance_radio_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_radio_settings) | resource |
+| [meraki_appliance_rf_profile.networks_appliance_rf_profiles](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_rf_profile) | resource |
+| [meraki_appliance_sdwan_internet_policies.networks_appliance_sdwan_internet_policies](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_sdwan_internet_policies) | resource |
 | [meraki_appliance_security_malware.networks_appliance_security_malware](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_security_malware) | resource |
 | [meraki_appliance_settings.networks_appliance_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_settings) | resource |
 | [meraki_appliance_single_lan.networks_appliance_single_lan](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_single_lan) | resource |
 | [meraki_appliance_site_to_site_vpn.networks_appliance_vpn_site_to_site_vpn](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_site_to_site_vpn) | resource |
+| [meraki_appliance_ssid.networks_appliance_ssids](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_ssid) | resource |
+| [meraki_appliance_static_route.networks_appliance_static_routes](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_static_route) | resource |
 | [meraki_appliance_third_party_vpn_peers.organizations_appliance_third_party_vpn_peers](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_third_party_vpn_peers) | resource |
+| [meraki_appliance_traffic_shaping.networks_appliance_traffic_shaping](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_traffic_shaping) | resource |
+| [meraki_appliance_traffic_shaping_custom_performance_class.networks_appliance_traffic_shaping_custom_performance_classes](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_traffic_shaping_custom_performance_class) | resource |
+| [meraki_appliance_traffic_shaping_rules.networks_appliance_traffic_shaping_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_traffic_shaping_rules) | resource |
+| [meraki_appliance_traffic_shaping_uplink_bandwidth.networks_appliance_traffic_shaping_uplink_bandwidth_limits](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_traffic_shaping_uplink_bandwidth) | resource |
+| [meraki_appliance_traffic_shaping_uplink_selection.networks_appliance_traffic_shaping_uplink_selection](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_traffic_shaping_uplink_selection) | resource |
+| [meraki_appliance_traffic_shaping_vpn_exclusions.networks_appliance_traffic_shaping_vpn_exclusions](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_traffic_shaping_vpn_exclusions) | resource |
 | [meraki_appliance_uplinks_settings.devices_appliance_uplinks_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_uplinks_settings) | resource |
 | [meraki_appliance_vlan.networks_appliance_vlans](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vlan) | resource |
 | [meraki_appliance_vlan_dhcp.networks_appliance_vlans_dhcp](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vlan_dhcp) | resource |
@@ -87,7 +100,14 @@ module "meraki" {
 | [meraki_appliance_vpn_bgp.networks_appliance_vpn_bgp](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vpn_bgp) | resource |
 | [meraki_appliance_vpn_firewall_rules.organizations_appliance_vpn_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vpn_firewall_rules) | resource |
 | [meraki_appliance_warm_spare.networks_appliance_warm_spare](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_warm_spare) | resource |
+| [meraki_cellular_gateway_connectivity_monitoring_destinations.networks_cellular_gateway_connectivity_monitoring_destinations](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/cellular_gateway_connectivity_monitoring_destinations) | resource |
+| [meraki_cellular_gateway_dhcp.networks_cellular_gateway_dhcp](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/cellular_gateway_dhcp) | resource |
+| [meraki_cellular_gateway_lan.devices_cellular_gateway_lan](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/cellular_gateway_lan) | resource |
+| [meraki_cellular_gateway_port_forwarding_rules.devices_cellular_gateway_port_forwarding_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/cellular_gateway_port_forwarding_rules) | resource |
+| [meraki_cellular_gateway_subnet_pool.networks_cellular_gateway_subnet_pool](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/cellular_gateway_subnet_pool) | resource |
+| [meraki_cellular_gateway_uplink.networks_cellular_gateway_uplink_bandwidth_limits](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/cellular_gateway_uplink) | resource |
 | [meraki_device.devices](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/device) | resource |
+| [meraki_device_cellular_sims.devices_cellular_sims](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/device_cellular_sims) | resource |
 | [meraki_device_management_interface.devices_management_interface](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/device_management_interface) | resource |
 | [meraki_network.organizations_networks](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network) | resource |
 | [meraki_network_device_claim.networks_devices_claim](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_device_claim) | resource |
@@ -103,6 +123,7 @@ module "meraki" {
 | [meraki_organization_adaptive_policy_group.organizations_adaptive_policy_groups](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_adaptive_policy_group) | resource |
 | [meraki_organization_adaptive_policy_settings.organizations_adaptive_policy_settings_enabled_networks](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_adaptive_policy_settings) | resource |
 | [meraki_organization_admin.organizations_admins](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_admin) | resource |
+| [meraki_organization_early_access_features_opt_in.organizations_early_access_features_opt_ins](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_early_access_features_opt_in) | resource |
 | [meraki_organization_inventory_claim.organizations_inventory](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_inventory_claim) | resource |
 | [meraki_organization_login_security.organizations_login_security](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_login_security) | resource |
 | [meraki_organization_policy_object.organizations_policy_objects](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_policy_object) | resource |
