@@ -245,6 +245,7 @@ resource "meraki_switch_port" "devices_switch_ports" {
   # profile_id                  = try(each.value.data.profile.id, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.profile.id, null)
   profile_iname  = try(each.value.data.profile.iname, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.profile.iname, null)
   dot3az_enabled = try(each.value.data.dot3az, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.dot3az, null)
+  depends_on     = [meraki_organization_adaptive_policy_settings.organizations_adaptive_policy_settings_enabled_networks]
 }
 
 locals {
