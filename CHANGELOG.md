@@ -67,9 +67,9 @@ Breaking Changes:
 Enhancements:
 
 - `devices_switch_ports`
-    - Added dependancy on Adaptive Policy Org Networks to fix issue with ports assigning adaptive policy prior to creation of the policy. ([#79](https://github.com/netascode/terraform-meraki-nac-meraki/pull/79))
+    - Added dependancy on Adaptive Policy Org Networks to fix issue with ports assigning adaptive policy prior to creation of the policy. (https://github.com/netascode/terraform-meraki-nac-meraki/pull/79)
 
 - `organizations_adaptive_policy_settings_enabled_networks`
-    - Added dependancy on device claim, to ensure at least one appliance is claimed and in place prior to adding adaptive policy settings to enabled networks. ([#79](https://github.com/netascode/terraform-meraki-nac-meraki/pull/79))
+    - Added dependancy on device claim, to ensure at least one appliance is claimed and in place prior to adding adaptive policy settings to enabled networks. (https://github.com/netascode/terraform-meraki-nac-meraki/pull/79)
 
 
