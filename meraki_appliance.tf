@@ -275,27 +275,20 @@ locals {
   networks_appliance_ports = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
-        for network in try(organization.networks, []) : [
-          for appliance_port in try(network.appliance.ports, []) : {
-            organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
-            key = format("%s/%s/%s/%s", domain.name, organization.name, network.name,
-              join(",", concat(
-                flatten([for port_id_range in try(appliance_port.port_id_ranges, []) : [
-                  for port_id in range(port_id_range.from, try(port_id_range.to + 1, port_id_range.from + 1)) : tostring(port_id)
-                ]]),
-                try([tostring(appliance_port.port_id)], [])
-              ))
-            )
-            network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+        for network in try(organization.networks, []) : {
+          organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
+          key             = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id      = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          ports = [for appliance_port in try(network.appliance.ports, []) : {
             port_id = concat(
               flatten([for port_id_range in try(appliance_port.port_id_ranges, []) : [
                 for port_id in range(port_id_range.from, try(port_id_range.to + 1, port_id_range.from + 1)) : port_id
               ]]),
               try([appliance_port.port_id], [])
-            )
+            ),
             data = appliance_port
-          }
-        ]
+            }
+        ] } if try(network.appliance.ports, null) != null
       ]
     ]
   ])
@@ -305,17 +298,19 @@ resource "meraki_appliance_ports" "networks_appliance_ports" {
   for_each        = { for v in local.networks_appliance_ports : v.key => v }
   organization_id = each.value.organization_id
   network_id      = each.value.network_id
-  items = [
-    for port_id in each.value.port_id : {
-      port_id               = port_id
-      enabled               = try(each.value.data.enabled, local.defaults.meraki.domains.organizations.networks.appliance_ports.enabled, null)
-      drop_untagged_traffic = try(each.value.data.drop_untagged_traffic, local.defaults.meraki.domains.organizations.networks.appliance_ports.drop_untagged_traffic, null)
-      type                  = try(each.value.data.type, local.defaults.meraki.domains.organizations.networks.appliance_ports.type, null)
-      vlan                  = try(each.value.data.vlan, local.defaults.meraki.domains.organizations.networks.appliance_ports.vlan, null)
-      allowed_vlans         = try(each.value.data.allowed_vlans, local.defaults.meraki.domains.organizations.networks.appliance_ports.allowed_vlans, null)
-      access_policy         = try(each.value.data.access_policy, local.defaults.meraki.domains.organizations.networks.appliance_ports.access_policy, null)
-    }
-  ]
+  items = flatten([
+    for ports in each.value.ports : [
+      for port_id in ports.port_id : {
+        port_id               = port_id
+        enabled               = try(ports.data.enabled, local.defaults.meraki.domains.organizations.networks.appliance_ports.enabled, null)
+        drop_untagged_traffic = try(ports.data.drop_untagged_traffic, local.defaults.meraki.domains.organizations.networks.appliance_ports.drop_untagged_traffic, null)
+        type                  = try(ports.data.type, local.defaults.meraki.domains.organizations.networks.appliance_ports.type, null)
+        vlan                  = try(ports.data.vlan, local.defaults.meraki.domains.organizations.networks.appliance_ports.vlan, null)
+        allowed_vlans         = try(ports.data.allowed_vlans, local.defaults.meraki.domains.organizations.networks.appliance_ports.allowed_vlans, null)
+        access_policy         = try(ports.data.access_policy, local.defaults.meraki.domains.organizations.networks.appliance_ports.access_policy, null)
+      }
+    ]]
+  )
 }
 
 locals {
