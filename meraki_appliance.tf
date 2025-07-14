@@ -279,16 +279,15 @@ locals {
           organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
           key             = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id      = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-          ports = [for appliance_port in try(network.appliance.ports, []) : {
-            port_id = concat(
-              flatten([for port_id_range in try(appliance_port.port_id_ranges, []) : [
-                for port_id in range(port_id_range.from, try(port_id_range.to + 1, port_id_range.from + 1)) : port_id
-              ]]),
-              try([appliance_port.port_id], [])
-            ),
+          ports = [
+            for appliance_port in try(network.appliance.ports, []) : {
+            port_id = flatten([for port_id_range in try(appliance_port.port_id_ranges, []) : [
+                for port_id in range(port_id_range.from, port_id_range.to + 1) : port_id
+            ]])
             data = appliance_port
             }
-        ] } if try(network.appliance.ports, null) != null
+          ]
+        } if try(network.appliance.ports, null) != null
       ]
     ]
   ])
