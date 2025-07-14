@@ -176,13 +176,13 @@ locals {
             device_serial   = meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)].serial
             ports = [
               for switch_port in try(device.switch.ports, []) : {
-              port_id = flatten([for port_id_range in try(switch_port.port_id_ranges, []) : [
+                port_id = flatten([for port_id_range in try(switch_port.port_id_ranges, []) : [
                   for port_id in range(port_id_range.from, port_id_range.to + 1) : port_id
-              ]])
-              data                     = switch_port
-              access_policy_number     = try(meraki_switch_access_policy.networks_switch_access_policies[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.access_policy_name)].id, null)
-              port_schedule_id         = try(meraki_switch_port_schedule.networks_switch_port_schedules[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.port_schedule_name)].id, null)
-              adaptive_policy_group_id = try(meraki_organization_adaptive_policy_group.organizations_adaptive_policy_groups[format("%s/%s/%s", domain.name, organization.name, switch_port.adaptive_policy_group_name)].id, null)
+                ]])
+                data                     = switch_port
+                access_policy_number     = try(meraki_switch_access_policy.networks_switch_access_policies[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.access_policy_name)].id, null)
+                port_schedule_id         = try(meraki_switch_port_schedule.networks_switch_port_schedules[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.port_schedule_name)].id, null)
+                adaptive_policy_group_id = try(meraki_organization_adaptive_policy_group.organizations_adaptive_policy_groups[format("%s/%s/%s", domain.name, organization.name, switch_port.adaptive_policy_group_name)].id, null)
               }
             ]
           } if try(device.switch.ports, null) != null
