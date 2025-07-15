@@ -188,7 +188,8 @@ locals {
           } if try(device.switch.ports, null) != null
         ]
       ]
-  ]])
+    ]
+  ])
 }
 
 resource "meraki_switch_ports" "devices_switch_ports" {
