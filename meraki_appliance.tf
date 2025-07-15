@@ -308,8 +308,8 @@ resource "meraki_appliance_ports" "networks_appliance_ports" {
         allowed_vlans         = try(ports.data.allowed_vlans, local.defaults.meraki.domains.organizations.networks.appliance_ports.allowed_vlans, null)
         access_policy         = try(ports.data.access_policy, local.defaults.meraki.domains.organizations.networks.appliance_ports.access_policy, null)
       }
-    ]]
-  )
+    ]
+  ])
 }
 
 locals {
