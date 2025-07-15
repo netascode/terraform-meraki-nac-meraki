@@ -176,7 +176,7 @@ locals {
             device_serial   = meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)].serial
             ports = [
               for switch_port in try(device.switch.ports, []) : {
-                port_id = flatten([for port_id_range in try(switch_port.port_id_ranges, []) : [
+                port_ids = flatten([for port_id_range in switch_port.port_id_ranges : [
                   for port_id in range(port_id_range.from, port_id_range.to + 1) : port_id
                 ]])
                 data                     = switch_port
@@ -198,7 +198,7 @@ resource "meraki_switch_ports" "devices_switch_ports" {
   serial          = each.value.device_serial
   items = flatten([
     for ports in each.value.ports : [
-      for port_id in ports.port_id : {
+      for port_id in ports.port_ids : {
         port_id                     = port_id
         name                        = try(ports.data.name, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.name, null)
         tags                        = try(ports.data.tags, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.tags, null)

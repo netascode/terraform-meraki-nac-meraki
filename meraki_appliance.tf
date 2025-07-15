@@ -281,7 +281,7 @@ locals {
           network_id      = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
           ports = [
             for appliance_port in try(network.appliance.ports, []) : {
-              port_id = flatten([for port_id_range in try(appliance_port.port_id_ranges, []) : [
+              port_ids = flatten([for port_id_range in appliance_port.port_id_ranges : [
                 for port_id in range(port_id_range.from, port_id_range.to + 1) : port_id
               ]])
               data = appliance_port
@@ -299,7 +299,7 @@ resource "meraki_appliance_ports" "networks_appliance_ports" {
   network_id      = each.value.network_id
   items = flatten([
     for ports in each.value.ports : [
-      for port_id in ports.port_id : {
+      for port_id in ports.port_ids : {
         port_id               = port_id
         enabled               = try(ports.data.enabled, local.defaults.meraki.domains.organizations.networks.appliance_ports.enabled, null)
         drop_untagged_traffic = try(ports.data.drop_untagged_traffic, local.defaults.meraki.domains.organizations.networks.appliance_ports.drop_untagged_traffic, null)
