@@ -477,6 +477,7 @@ locals {
                 comment = try(reserved_ip_range.comment, local.defaults.meraki.domains.organizations.networks.appliance.vlans.reserved_ip_ranges.comment, null)
               }
             ]
+            dhcp_relay_server_ips = try(appliance_vlan.dhcp_relay_server_ips, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_relay_server_ips, null)
           }
         ]
       ]
@@ -509,6 +510,9 @@ resource "meraki_appliance_vlan_dhcp" "networks_appliance_vlans_dhcp" {
   dns_nameservers           = each.value.dns_nameservers
   mandatory_dhcp_enabled    = each.value.mandatory_dhcp_enabled
   reserved_ip_ranges        = each.value.reserved_ip_ranges
+  dhcp_relay_server_ips     = each.value.dhcp_relay_server_ips
+  dhcp_boot_filename        = each.value.dhcp_boot_filename
+  dhcp_boot_next_server     = each.value.dhcp_boot_next_server
   depends_on                = [meraki_appliance_vlan.networks_appliance_vlans]
 }
 
