@@ -448,11 +448,11 @@ locals {
             ipv6_enabled    = try(appliance_vlan.ipv6.enabled, local.defaults.meraki.domains.organizations.networks.appliance.vlans.ipv6.enabled, null)
             ipv6_prefix_assignments = try(length(appliance_vlan.ipv6.prefix_assignments) == 0, true) ? null : [
               for ipv6_prefix_assignment in try(appliance_vlan.ipv6.prefix_assignments, []) : {
-                autonomous           = try(ipv6_prefix_assignment.autonomous, local.defaults.meraki.domains.organizations.networks.appliance.single_lan.ipv6.prefix_assignments.autonomous, null)
-                static_prefix        = try(ipv6_prefix_assignment.static_prefix, local.defaults.meraki.domains.organizations.networks.appliance.single_lan.ipv6.prefix_assignments.static_prefix, null)
-                static_appliance_ip6 = try(ipv6_prefix_assignment.static_appliance_ip6, local.defaults.meraki.domains.organizations.networks.appliance.single_lan.ipv6.prefix_assignments.static_appliance_ip6, null)
-                origin_type          = try(ipv6_prefix_assignment.origin.type, local.defaults.meraki.domains.organizations.networks.appliance.single_lan.ipv6.prefix_assignments.origin.type, null)
-                origin_interfaces    = try(ipv6_prefix_assignment.origin.interfaces, local.defaults.meraki.domains.organizations.networks.appliance.single_lan.ipv6.prefix_assignments.origin.interfaces, null)
+                autonomous           = try(ipv6_prefix_assignment.autonomous, local.defaults.meraki.domains.organizations.networks.appliance.vlans.ipv6.prefix_assignments.autonomous, null)
+                static_prefix        = try(ipv6_prefix_assignment.static_prefix, local.defaults.meraki.domains.organizations.networks.appliance.vlans.ipv6.prefix_assignments.static_prefix, null)
+                static_appliance_ip6 = try(ipv6_prefix_assignment.static_appliance_ip6, local.defaults.meraki.domains.organizations.networks.appliance.vlans.ipv6.prefix_assignments.static_appliance_ip6, null)
+                origin_type          = try(ipv6_prefix_assignment.origin.type, local.defaults.meraki.domains.organizations.networks.appliance.vlans.ipv6.prefix_assignments.origin.type, null)
+                origin_interfaces    = try(ipv6_prefix_assignment.origin.interfaces, local.defaults.meraki.domains.organizations.networks.appliance.vlans.ipv6.prefix_assignments.origin.interfaces, null)
               }
             ]
             name                      = try(appliance_vlan.name, local.defaults.meraki.domains.organizations.networks.appliance.vlans.name, null)
