@@ -478,6 +478,8 @@ locals {
               }
             ]
             dhcp_relay_server_ips = try(appliance_vlan.dhcp_relay_server_ips, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_relay_server_ips, null)
+            dhcp_boot_next_server = try(appliance_vlan.dhcp_boot_next_server, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_boot_next_server, null)
+            dhcp_boot_filename    = try(appliance_vlan.dhcp_boot_filename, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_boot_filename, null)
           }
         ]
       ]
