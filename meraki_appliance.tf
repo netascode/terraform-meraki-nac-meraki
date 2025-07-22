@@ -5,9 +5,9 @@ locals {
         for network in try(organization.networks, []) : {
           key                    = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id             = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-          allowed_url_patterns   = try(network.appliance.content_filtering.allowed_url_patterns, local.defaults.meraki.domains.organizations.networks.appliance.content_filtering.allowed_url_patterns, null)
-          blocked_url_patterns   = try(network.appliance.content_filtering.blocked_url_patterns, local.defaults.meraki.domains.organizations.networks.appliance.content_filtering.blocked_url_patterns, null)
-          blocked_url_categories = try(network.appliance.content_filtering.blocked_url_categories, local.defaults.meraki.domains.organizations.networks.appliance.content_filtering.blocked_url_categories, null)
+          allowed_url_patterns   = try(network.appliance.content_filtering.allowed_url_patterns, local.defaults.meraki.domains.organizations.networks.appliance.content_filtering.allowed_url_patterns, [])
+          blocked_url_patterns   = try(network.appliance.content_filtering.blocked_url_patterns, local.defaults.meraki.domains.organizations.networks.appliance.content_filtering.blocked_url_patterns, [])
+          blocked_url_categories = try(network.appliance.content_filtering.blocked_url_categories, local.defaults.meraki.domains.organizations.networks.appliance.content_filtering.blocked_url_categories, [])
           url_category_list_size = try(network.appliance.content_filtering.url_category_list_size, local.defaults.meraki.domains.organizations.networks.appliance.content_filtering.url_category_list_size, null)
         } if try(network.appliance.content_filtering, null) != null
       ]
