@@ -915,3 +915,33 @@ resource "meraki_wireless_network_bluetooth_settings" "networks_wireless_bluetoo
     meraki_wireless_ssid.networks_wireless_ssids
   ]
 }
+
+locals {
+  networks_wireless_ssids_firewall_l7_firewall_rules = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for wireless_ssid in try(network.wireless.ssids, []) : {
+            key        = format("%s/%s/%s/%s", domain.name, organization.name, network.name, wireless_ssid.name)
+            network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+            number     = meraki_wireless_ssid.networks_wireless_ssids[format("%s/%s/%s/%s", domain.name, organization.name, network.name, wireless_ssid.name)].number
+            rules = try(length(wireless_ssid.firewall_l7_firewall_rules) == 0, true) ? null : [
+              for firewall_l7_firewall_rule in try(wireless_ssid.firewall_l7_firewall_rules, []) : {
+                policy = try(firewall_l7_firewall_rule.policy, local.defaults.meraki.domains.organizations.networks.wireless.ssids.firewall_l7_firewall_rules.policy, null)
+                type   = try(firewall_l7_firewall_rule.type, local.defaults.meraki.domains.organizations.networks.wireless.ssids.firewall_l7_firewall_rules.type, null)
+                value  = try(firewall_l7_firewall_rule.value, local.defaults.meraki.domains.organizations.networks.wireless.ssids.firewall_l7_firewall_rules.value, null)
+              }
+            ]
+          } if try(wireless_ssid.firewall_l7_firewall_rules, null) != null
+        ]
+      ]
+    ]
+  ])
+}
+
+resource "meraki_wireless_ssid_l7_firewall_rules" "networks_wireless_ssids_firewall_l7_firewall_rules" {
+  for_each   = { for v in local.networks_wireless_ssids_firewall_l7_firewall_rules : v.key => v }
+  network_id = each.value.network_id
+  number     = each.value.number
+  rules      = each.value.rules
+}

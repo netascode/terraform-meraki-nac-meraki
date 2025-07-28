@@ -75,8 +75,8 @@ module "meraki" {
 | [meraki_appliance_one_to_many_nat_rules.networks_appliance_firewall_one_to_many_nat_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_one_to_many_nat_rules) | resource |
 | [meraki_appliance_one_to_one_nat_rules.networks_appliance_firewall_one_to_one_nat_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_one_to_one_nat_rules) | resource |
 | [meraki_appliance_organization_security_intrusion.organizations_appliance_security_intrusion_allowed_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_organization_security_intrusion) | resource |
-| [meraki_appliance_port.networks_appliance_ports](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_port) | resource |
 | [meraki_appliance_port_forwarding_rules.networks_appliance_firewall_port_forwarding_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_port_forwarding_rules) | resource |
+| [meraki_appliance_ports.networks_appliance_ports](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_ports) | resource |
 | [meraki_appliance_radio_settings.devices_appliance_radio_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_radio_settings) | resource |
 | [meraki_appliance_rf_profile.networks_appliance_rf_profiles](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_rf_profile) | resource |
 | [meraki_appliance_sdwan_internet_policies.networks_appliance_sdwan_internet_policies](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_sdwan_internet_policies) | resource |
@@ -137,8 +137,8 @@ module "meraki" {
 | [meraki_switch_dscp_to_cos_mappings.networks_switch_dscp_to_cos_mappings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_dscp_to_cos_mappings) | resource |
 | [meraki_switch_link_aggregation.networks_switch_link_aggregations](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_link_aggregation) | resource |
 | [meraki_switch_mtu.networks_switch_mtu](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_mtu) | resource |
-| [meraki_switch_port.devices_switch_ports](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_port) | resource |
 | [meraki_switch_port_schedule.networks_switch_port_schedules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_port_schedule) | resource |
+| [meraki_switch_ports.devices_switch_ports](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_ports) | resource |
 | [meraki_switch_qos_rule.networks_switch_qos_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_qos_rule) | resource |
 | [meraki_switch_qos_rule_order.networks_switch_qos_rules_order](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_qos_rule_order) | resource |
 | [meraki_switch_routing_interface.devices_switch_routing_interfaces](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_routing_interface) | resource |
@@ -167,6 +167,7 @@ module "meraki" {
 | [meraki_wireless_ssid_hotspot_20.networks_wireless_ssids_hotspot20](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_ssid_hotspot_20) | resource |
 | [meraki_wireless_ssid_identity_psk.networks_wireless_ssids_identity_psks](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_ssid_identity_psk) | resource |
 | [meraki_wireless_ssid_l3_firewall_rules.networks_wireless_ssids_firewall_l3_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_ssid_l3_firewall_rules) | resource |
+| [meraki_wireless_ssid_l7_firewall_rules.networks_wireless_ssids_firewall_l7_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_ssid_l7_firewall_rules) | resource |
 | [meraki_wireless_ssid_schedules.networks_wireless_ssids_schedules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_ssid_schedules) | resource |
 | [meraki_wireless_ssid_splash_settings.networks_wireless_ssids_splash_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_ssid_splash_settings) | resource |
 | [meraki_wireless_ssid_traffic_shaping_rules.networks_wireless_ssids_traffic_shaping_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_ssid_traffic_shaping_rules) | resource |
