@@ -59,14 +59,25 @@ locals {
           product_types   = try(network.product_types, local.defaults.meraki.domains.organizations.networks.product_types, ["appliance", "switch", "wireless"])
           tags            = try(network.tags, local.defaults.meraki.domains.organizations.networks.tags, null)
           time_zone       = try(network.time_zone, local.defaults.meraki.domains.organizations.networks.time_zone, "America/Los_Angeles")
+          managed         = try(network.managed, local.defaults.meraki.domains.organizations.networks.managed, true)
         }
       ]
     ]
   ])
+
+  managed_networks = [
+    for network in local.organizations_networks :
+    network if network.managed
+  ]
+
+  unmanaged_networks = [
+    for network in local.organizations_networks :
+    network if !network.managed
+  ]
 }
 
 resource "meraki_network" "organizations_networks" {
-  for_each        = { for v in local.organizations_networks : v.key => v }
+  for_each        = { for v in local.managed_networks : v.key => v }
   name            = each.value.name
   notes           = each.value.notes
   organization_id = each.value.organization_id
@@ -77,6 +88,22 @@ resource "meraki_network" "organizations_networks" {
     meraki_organization_inventory_claim.organizations_inventory,
     meraki_organization.organizations,
   ]
+}
+
+data "meraki_network" "organizations_networks" {
+  for_each        = { for v in local.unmanaged_networks : v.key => v }
+  name            = each.value.name
+  organization_id = each.value.organization_id
+}
+
+locals {
+  network_ids = {
+    for network in local.organizations_networks :
+    network.key =>
+    network.managed ?
+    meraki_network.organizations_networks[network.key].id :
+    data.meraki_network.organizations_networks[network.key].id
+  }
 }
 
 locals {
