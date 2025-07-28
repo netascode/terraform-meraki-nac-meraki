@@ -231,6 +231,7 @@ resource "meraki_switch_ports" "devices_switch_ports" {
       }
     ]
   ])
+  depends_on = [meraki_organization_adaptive_policy_settings.organizations_adaptive_policy_settings_enabled_networks]
 }
 
 locals {
