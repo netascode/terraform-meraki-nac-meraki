@@ -261,25 +261,25 @@ resource "meraki_network_vlan_profile" "networks_vlan_profiles" {
   iname       = each.value.iname
 }
 
-locals {
-  networks_devices_claim = flatten([
-    for domain in try(local.meraki.domains, []) : [
-      for organization in try(domain.organizations, []) : [
-        for network in try(organization.networks, []) : {
-          key        = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-          serials    = [for d in network.devices : d.serial]
-        } if try(network.devices, null) != null
-      ]
-    ]
-  ])
-}
+# locals {
+#   networks_devices_claim = flatten([
+#     for domain in try(local.meraki.domains, []) : [
+#       for organization in try(domain.organizations, []) : [
+#         for network in try(organization.networks, []) : {
+#           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
+#           network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+#           serials    = [for d in network.devices : d.serial]
+#         } if try(network.devices, null) != null
+#       ]
+#     ]
+#   ])
+# }
 
-resource "meraki_network_device_claim" "networks_devices_claim" {
-  for_each   = { for v in local.networks_devices_claim : v.key => v }
-  network_id = each.value.network_id
-  serials    = each.value.serials
-}
+# resource "meraki_network_device_claim" "networks_devices_claim" {
+#   for_each   = { for v in local.networks_devices_claim : v.key => v }
+#   network_id = each.value.network_id
+#   serials    = each.value.serials
+# }
 
 locals {
   networks_floor_plans = flatten([
