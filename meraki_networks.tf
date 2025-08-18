@@ -280,35 +280,35 @@ locals {
 
 # Time delays for rate limiting (5 minutes between batches)
 resource "time_sleep" "device_claim_delay" {
-  for_each = { 
-    for v in local.networks_devices_claim : v.key => v 
+  for_each = {
+    for v in local.networks_devices_claim : v.key => v
     if v.batch_number > 0
   }
-  
-  create_duration = "300s"  # 5 minutes
+
+  create_duration = "300s" # 5 minutes
 }
 
 # First batch executes immediately
 resource "meraki_network_device_claim" "networks_devices_claim_batch_0" {
-  for_each = { 
-    for v in local.networks_devices_claim : v.key => v 
+  for_each = {
+    for v in local.networks_devices_claim : v.key => v
     if v.batch_number == 0
   }
-  
+
   network_id = each.value.network_id
   serials    = each.value.serials
 }
 
 # Subsequent batches wait for delays
 resource "meraki_network_device_claim" "networks_devices_claim_batch_delayed" {
-  for_each = { 
-    for v in local.networks_devices_claim : v.key => v 
+  for_each = {
+    for v in local.networks_devices_claim : v.key => v
     if v.batch_number > 0
   }
-  
+
   network_id = each.value.network_id
   serials    = each.value.serials
-  
+
   depends_on = [
     time_sleep.device_claim_delay,
     meraki_network_device_claim.networks_devices_claim_batch_0
