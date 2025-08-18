@@ -236,7 +236,7 @@ resource "meraki_organization_adaptive_policy_settings" "organizations_adaptive_
   for_each         = { for v in local.organizations_adaptive_policy_settings_enabled_networks : v.key => v }
   organization_id  = each.value.organization_id
   enabled_networks = each.value.enabled_networks
-  depends_on       = [meraki_network_device_claim.networks_devices_claim]
+  depends_on       = [meraki_network_device_claim.networks_devices_claim_batch_0,meraki_network_device_claim.networks_devices_claim_batch_delayed]
 }
 
 locals {
