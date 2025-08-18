@@ -266,11 +266,11 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
-          for batch_index in range(0, length([for d in network.devices : d.serial]), 1) : {
-            key          = format("%s/%s/%s/batch_%d", domain.name, organization.name, network.name, batch_index / 1)
+          for batch_index in range(0, length([for d in network.devices : d.serial]), 10) : {
+            key          = format("%s/%s/%s/batch_%d", domain.name, organization.name, network.name, batch_index / 10)
             network_id   = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-            serials      = slice([for d in network.devices : d.serial], batch_index, min(batch_index + 1, length([for d in network.devices : d.serial])))
-            batch_number = batch_index / 1
+            serials      = slice([for d in network.devices : d.serial], batch_index, min(batch_index + 10, length([for d in network.devices : d.serial])))
+            batch_number = batch_index / 10
           }
         ] if try(network.devices, null) != null
       ]
