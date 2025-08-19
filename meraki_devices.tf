@@ -35,7 +35,7 @@ resource "meraki_device" "devices" {
   #switch_profile_id = each.value.switch_profile_id
   floor_plan_id = each.value.floor_plan_id
   depends_on = [
-    meraki_network_device_claim.networks_devices_claim_batch_0,
+    meraki_network_device_claim.networks_devices_claim,
     meraki_network_device_claim.networks_devices_claim_batch_delayed
   ]
 }

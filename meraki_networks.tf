@@ -265,14 +265,24 @@ locals {
   networks_devices_claim = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
-        for network in try(organization.networks, []) : [
-          for batch_index in range(0, length([for d in network.devices : d.serial]), try(local.defaults.meraki.domains.organizations.networks.devices_claim_rate.count, 10)) : {
-            key          = format("%s/%s/%s/batch_%d", domain.name, organization.name, network.name, batch_index / try(local.defaults.meraki.domains.organizations.networks.devices_claim_rate.count, 10))
+        for network in try(organization.networks, []) :
+        try(local.defaults.meraki.domains.organizations.networks.devices_claim_rate_limiting.enabled, false) == true ? (
+          try(network.devices, null) != null ? [
+            for batch_index in range(0, length([for d in network.devices : d.serial]), try(local.defaults.meraki.domains.organizations.networks.devices_claim_rate_limiting.count, 10)) : {
+              key          = batch_index > 0 ? format("%s/%s/%s/batch_%d", domain.name, organization.name, network.name, batch_index / try(local.defaults.meraki.domains.organizations.networks.devices_claim_rate_limiting.count, 10)) : format("%s/%s/%s", domain.name, organization.name, network.name)
+              network_id   = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+              serials      = slice([for d in network.devices : d.serial], batch_index, min(batch_index + try(local.defaults.meraki.domains.organizations.networks.devices_claim_rate_limiting.count, 10), length([for d in network.devices : d.serial])))
+              batch_number = batch_index / try(local.defaults.meraki.domains.organizations.networks.devices_claim_rate_limiting.count, 10)
+            }
+          ] : []
+          ) : (
+          try(network.devices, null) != null ? [{
+            key          = format("%s/%s/%s", domain.name, organization.name, network.name)
             network_id   = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-            serials      = slice([for d in network.devices : d.serial], batch_index, min(batch_index + try(local.defaults.meraki.domains.organizations.networks.devices_claim_rate.count, 10), length([for d in network.devices : d.serial])))
-            batch_number = batch_index / try(local.defaults.meraki.domains.organizations.networks.devices_claim_rate.count, 10)
-          }
-        ] if try(network.devices, null) != null
+            serials      = [for d in network.devices : d.serial]
+            batch_number = 0
+          }] : []
+        )
       ]
     ]
   ])
@@ -284,11 +294,11 @@ resource "time_sleep" "device_claim_delay" {
     if v.batch_number > 0
   }
 
-  create_duration = try("${tostring(local.defaults.meraki.domains.organizations.networks.devices_claim_rate.interval)}s", "300s")
+  create_duration = try("${tostring(local.defaults.meraki.domains.organizations.networks.devices_claim_rate_limiting.interval)}s", "300s")
 }
 
 # First batch executes immediately
-resource "meraki_network_device_claim" "networks_devices_claim_batch_0" {
+resource "meraki_network_device_claim" "networks_devices_claim" {
   for_each = {
     for v in local.networks_devices_claim : v.key => v
     if v.batch_number == 0
@@ -310,7 +320,7 @@ resource "meraki_network_device_claim" "networks_devices_claim_batch_delayed" {
 
   depends_on = [
     time_sleep.device_claim_delay,
-    meraki_network_device_claim.networks_devices_claim_batch_0
+    meraki_network_device_claim.networks_devices_claim
   ]
 }
 
