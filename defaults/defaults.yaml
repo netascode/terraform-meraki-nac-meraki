@@ -4,6 +4,10 @@ defaults:
       organizations:
         managed: true
         networks:
+          devices_claim_rate_limiting:
+            enabled: false
+            count: 10
+            interval: 300
           wireless_ssids:
             eap_override:
               max_retries: 5
