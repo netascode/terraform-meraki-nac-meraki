@@ -598,8 +598,8 @@ locals {
           stp_bridge_priority = try(length(network.switch.stp.stp_bridge_priority) == 0, true) ? null : [
             for stp_bridge_priority in try(network.switch.stp.stp_bridge_priority, []) : {
               switch_profiles = try(stp_bridge_priority.switch_profiles, local.defaults.meraki.domains.organizations.networks.switch.stp.stp_bridge_priority.switch_profiles, null)
-              switches = try(length(try(stp_bridge_priority.switches, local.defaults.meraki.domains.organizations.networks.switch.stp.stp_bridge_priority.switches)) == 0, true) ? null : [
-                for switch in try(stp_bridge_priority.switches, local.defaults.meraki.domains.organizations.networks.switch.stp.stp_bridge_priority.switches, []) :
+              switches = try(length(stp_bridge_priority.switches) == 0, true) ? null : [
+                for switch in stp_bridge_priority.switches :
                 meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch)].serial
               ]
               stacks = try(length(stp_bridge_priority.stacks) == 0, true) ? null : [
