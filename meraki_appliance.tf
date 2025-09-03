@@ -117,7 +117,7 @@ resource "meraki_appliance_l3_firewall_rules" "networks_appliance_firewall_l3_fi
   network_id          = each.value.network_id
   syslog_default_rule = each.value.syslog_default_rule
   rules               = each.value.rules
-  depends_on          = [meraki_network_device_claim.networks_devices_claim, meraki_network_device_claim.networks_devices_claim_batch_delayed]
+  depends_on          = [meraki_network_device_claim.networks_devices_claim, meraki_network_device_claim.networks_devices_claim_batch_delayed, meraki_appliance_vlan.networks_appliance_vlans]
 }
 
 locals {
