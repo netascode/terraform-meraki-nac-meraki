@@ -45,7 +45,6 @@ module "meraki" {
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
 | <a name="requirement_meraki"></a> [meraki](#requirement\_meraki) | >= 1.5.0 |
-| <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9.0 |
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -112,7 +111,6 @@ module "meraki" {
 | [meraki_device_management_interface.devices_management_interface](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/device_management_interface) | resource |
 | [meraki_network.organizations_networks](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network) | resource |
 | [meraki_network_device_claim.networks_devices_claim](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_device_claim) | resource |
-| [meraki_network_device_claim.networks_devices_claim_batch_delayed](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_device_claim) | resource |
 | [meraki_network_floor_plan.networks_floor_plans](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_floor_plan) | resource |
 | [meraki_network_group_policy.networks_group_policies](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_group_policy) | resource |
 | [meraki_network_settings.networks_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_settings) | resource |
@@ -172,7 +170,6 @@ module "meraki" {
 | [meraki_wireless_ssid_schedules.networks_wireless_ssids_schedules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_ssid_schedules) | resource |
 | [meraki_wireless_ssid_splash_settings.networks_wireless_ssids_splash_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_ssid_splash_settings) | resource |
 | [meraki_wireless_ssid_traffic_shaping_rules.networks_wireless_ssids_traffic_shaping_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_ssid_traffic_shaping_rules) | resource |
-| [time_sleep.device_claim_delay](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [meraki_organization.organizations](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/data-sources/organization) | data source |
 ## Modules
 
