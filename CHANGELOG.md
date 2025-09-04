@@ -77,3 +77,9 @@ Enhancements:
 Enhancements:
 
 Add support for dhcp_relay_server_ips in networks_appliance_vlans_settings
+
+## 0.3.3
+
+Enhancements:
+
+- Defaults updates and configuration improvements
