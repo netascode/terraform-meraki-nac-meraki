@@ -170,7 +170,7 @@ module "meraki" {
 | [meraki_wireless_ssid_identity_psk.networks_wireless_ssids_identity_psks](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_ssid_identity_psk) | resource |
 | [meraki_wireless_ssid_l3_firewall_rules.networks_wireless_ssids_firewall_l3_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_ssid_l3_firewall_rules) | resource |
 | [meraki_wireless_ssid_l7_firewall_rules.networks_wireless_ssids_firewall_l7_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_ssid_l7_firewall_rules) | resource |
-| [meraki_wireless_ssid_schedules.networks_wireless_ssids_schedules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_ssid_schedules) | resource |
+| [meraki_wireless_ssid_schedules.networks_wireless_ssids_unavailability_schedules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_ssid_schedules) | resource |
 | [meraki_wireless_ssid_splash_settings.networks_wireless_ssids_splash_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_ssid_splash_settings) | resource |
 | [meraki_wireless_ssid_traffic_shaping_rules.networks_wireless_ssids_traffic_shaping_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_ssid_traffic_shaping_rules) | resource |
 | [time_sleep.device_claim_delay](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |

@@ -627,7 +627,7 @@ resource "meraki_wireless_ssid_identity_psk" "networks_wireless_ssids_identity_p
 }
 
 locals {
-  networks_wireless_ssids_schedules = flatten([
+  networks_wireless_ssids_unavailability_schedules = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
@@ -635,38 +635,35 @@ locals {
             key        = format("%s/%s/%s/%s", domain.name, organization.name, network.name, wireless_ssid.name)
             network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
             number     = meraki_wireless_ssid.networks_wireless_ssids[format("%s/%s/%s/%s", domain.name, organization.name, network.name, wireless_ssid.name)].number
-            enabled    = try(wireless_ssid.schedules.enabled, local.defaults.meraki.domains.organizations.networks.wireless.ssids.schedules.enabled, null)
-            ranges = try(length(wireless_ssid.schedules.ranges) == 0, true) ? null : [
-              for range in try(wireless_ssid.schedules.ranges, []) : {
-                start_day  = try(range.start_day, local.defaults.meraki.domains.organizations.networks.wireless.ssids.schedules.ranges.start_day, null)
-                start_time = try(range.start_time, local.defaults.meraki.domains.organizations.networks.wireless.ssids.schedules.ranges.start_time, null)
-                end_day    = try(range.end_day, local.defaults.meraki.domains.organizations.networks.wireless.ssids.schedules.ranges.end_day, null)
-                end_time   = try(range.end_time, local.defaults.meraki.domains.organizations.networks.wireless.ssids.schedules.ranges.end_time, null)
+            enabled    = try(wireless_ssid.unavailability_schedules.enabled, local.defaults.meraki.domains.organizations.networks.wireless.ssids.unavailability_schedules.enabled, null)
+            ranges = try(length(wireless_ssid.unavailability_schedules.ranges) == 0, true) ? null : [
+              for range in try(wireless_ssid.unavailability_schedules.ranges, []) : {
+                start_day  = try(range.start_day, local.defaults.meraki.domains.organizations.networks.wireless.ssids.unavailability_schedules.ranges.start_day, null)
+                start_time = try(range.start_time, local.defaults.meraki.domains.organizations.networks.wireless.ssids.unavailability_schedules.ranges.start_time, null)
+                end_day    = try(range.end_day, local.defaults.meraki.domains.organizations.networks.wireless.ssids.unavailability_schedules.ranges.end_day, null)
+                end_time   = try(range.end_time, local.defaults.meraki.domains.organizations.networks.wireless.ssids.unavailability_schedules.ranges.end_time, null)
               }
             ]
-            ranges_in_seconds = try(length(wireless_ssid.schedules.ranges_in_seconds) == 0, true) ? null : [
-              for ranges_in_second in try(wireless_ssid.schedules.ranges_in_seconds, []) : {
-                start = try(ranges_in_second.start, local.defaults.meraki.domains.organizations.networks.wireless.ssids.schedules.ranges_in_seconds.start, null)
-                end   = try(ranges_in_second.end, local.defaults.meraki.domains.organizations.networks.wireless.ssids.schedules.ranges_in_seconds.end, null)
+            ranges_in_seconds = try(length(wireless_ssid.unavailability_schedules.ranges_in_seconds) == 0, true) ? null : [
+              for ranges_in_second in try(wireless_ssid.unavailability_schedules.ranges_in_seconds, []) : {
+                start = try(ranges_in_second.start, local.defaults.meraki.domains.organizations.networks.wireless.ssids.unavailability_schedules.ranges_in_seconds.start, null)
+                end   = try(ranges_in_second.end, local.defaults.meraki.domains.organizations.networks.wireless.ssids.unavailability_schedules.ranges_in_seconds.end, null)
               }
             ]
-          } if try(wireless_ssid.schedules, null) != null
+          } if try(wireless_ssid.unavailability_schedules, null) != null
         ]
       ]
     ]
   ])
 }
 
-resource "meraki_wireless_ssid_schedules" "networks_wireless_ssids_schedules" {
-  for_each          = { for v in local.networks_wireless_ssids_schedules : v.key => v }
+resource "meraki_wireless_ssid_schedules" "networks_wireless_ssids_unavailability_schedules" {
+  for_each          = { for v in local.networks_wireless_ssids_unavailability_schedules : v.key => v }
   network_id        = each.value.network_id
   number            = each.value.number
   enabled           = each.value.enabled
   ranges            = each.value.ranges
   ranges_in_seconds = each.value.ranges_in_seconds
-  depends_on = [
-    meraki_wireless_ssid.networks_wireless_ssids
-  ]
 }
 
 locals {
