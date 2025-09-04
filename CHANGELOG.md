@@ -83,3 +83,15 @@ Add support for dhcp_relay_server_ips in networks_appliance_vlans_settings
 Enhancements:
 
 - Defaults updates and configuration improvements
+
+## 0.3.4
+
+Enhancements:
+
+- `meraki_appliance_inbound_firewall_rules` and `meraki_appliance_l3_firewall_rules`
+  - Added VLAN dependencies to ensure proper resource ordering (https://github.com/netascode/terraform-meraki-nac-meraki/pull/94)
+
+Breaking Changes:
+
+- Reverted device-claim batching functionality (https://github.com/netascode/terraform-meraki-nac-meraki/pull/95)
+- Reverted defaults updates from previous release
