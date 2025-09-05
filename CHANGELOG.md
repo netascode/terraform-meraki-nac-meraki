@@ -94,4 +94,4 @@ Enhancements:
 Breaking Changes:
 
 - Reverted device-claim batching functionality (https://github.com/netascode/terraform-meraki-nac-meraki/pull/95)
-- Reverted defaults updates from previous release
+  - Removed the added defaults
