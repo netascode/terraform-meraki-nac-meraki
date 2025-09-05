@@ -4,6 +4,9 @@ defaults:
       organizations:
         managed: true
         networks:
+          product_types: ["appliance", "switch", "wireless"]
+          time_zone: "America/Los Angeles"
+          notes: ""
           wireless_ssids:
             eap_override:
               max_retries: 5
