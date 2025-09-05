@@ -90,6 +90,9 @@ Enhancements:
 
 - `networks_appliance_firewall_inbound_firewall_rules` and `networks_appliance_firewall_l3_firewall_rules`
   - Added VLAN dependencies to ensure proper resource ordering (https://github.com/netascode/terraform-meraki-nac-meraki/pull/94)
+- `organizations_networks`
+    - Some hardcoded defaults were missed when refactoring defaults handling in #47. https://github.com/netascode/terraform-meraki-nac-meraki/pull/101
+    - Added `networks` `product_types` values to defaults file
 
 Breaking Changes:
 
