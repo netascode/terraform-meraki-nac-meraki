@@ -4,6 +4,7 @@ defaults:
       organizations:
         managed: true
         networks:
+          product_types: ["appliance", "switch", "wireless"]
           wireless_ssids:
             eap_override:
               max_retries: 5

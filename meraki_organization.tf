@@ -54,11 +54,11 @@ locals {
         for network in try(organization.networks, []) : {
           key             = format("%s/%s/%s", domain.name, organization.name, network.name)
           organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
-          name            = try(network.name, local.defaults.meraki.domains.organizations.networks.name)
-          notes           = try(network.notes, local.defaults.meraki.domains.organizations.networks.notes, "")
-          product_types   = try(network.product_types, local.defaults.meraki.domains.organizations.networks.product_types, ["appliance", "switch", "wireless"])
+          name            = try(network.name, local.defaults.meraki.domains.organizations.networks.name, null)
+          product_types   = try(network.product_types, local.defaults.meraki.domains.organizations.networks.product_types, null)
           tags            = try(network.tags, local.defaults.meraki.domains.organizations.networks.tags, null)
-          time_zone       = try(network.time_zone, local.defaults.meraki.domains.organizations.networks.time_zone, "America/Los_Angeles")
+          time_zone       = try(network.time_zone, local.defaults.meraki.domains.organizations.networks.time_zone, null)
+          notes           = try(network.notes, local.defaults.meraki.domains.organizations.networks.notes, null)
         }
       ]
     ]
