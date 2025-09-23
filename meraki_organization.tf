@@ -54,11 +54,11 @@ locals {
         for network in try(organization.networks, []) : {
           key             = format("%s/%s/%s", domain.name, organization.name, network.name)
           organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
-          name            = try(network.name, local.defaults.meraki.domains.organizations.networks.name)
-          notes           = try(network.notes, local.defaults.meraki.domains.organizations.networks.notes, "")
-          product_types   = try(network.product_types, local.defaults.meraki.domains.organizations.networks.product_types, ["appliance", "switch", "wireless"])
+          name            = try(network.name, local.defaults.meraki.domains.organizations.networks.name, null)
+          product_types   = try(network.product_types, local.defaults.meraki.domains.organizations.networks.product_types, null)
           tags            = try(network.tags, local.defaults.meraki.domains.organizations.networks.tags, null)
-          time_zone       = try(network.time_zone, local.defaults.meraki.domains.organizations.networks.time_zone, "America/Los_Angeles")
+          time_zone       = try(network.time_zone, local.defaults.meraki.domains.organizations.networks.time_zone, null)
+          notes           = try(network.notes, local.defaults.meraki.domains.organizations.networks.notes, null)
         }
       ]
     ]
@@ -236,7 +236,7 @@ resource "meraki_organization_adaptive_policy_settings" "organizations_adaptive_
   for_each         = { for v in local.organizations_adaptive_policy_settings_enabled_networks : v.key => v }
   organization_id  = each.value.organization_id
   enabled_networks = each.value.enabled_networks
-  depends_on       = [meraki_network_device_claim.networks_devices_claim, meraki_network_device_claim.networks_devices_claim_batch_delayed]
+  depends_on       = [meraki_network_device_claim.networks_devices_claim]
 }
 
 locals {
