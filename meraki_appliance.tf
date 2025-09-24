@@ -312,7 +312,6 @@ resource "meraki_appliance_ports" "networks_appliance_ports" {
   ])
   depends_on = [
     meraki_network_device_claim.networks_devices_claim,
-    meraki_network_device_claim.networks_devices_claim_batch_delayed,
     meraki_appliance_vlan.networks_appliance_vlans,
     meraki_appliance_single_lan.networks_appliance_single_lan,
   ]
