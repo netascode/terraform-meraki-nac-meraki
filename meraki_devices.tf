@@ -184,9 +184,9 @@ locals {
                     ]
                   ],
                   [
-                    for module_port_range in try(switch_port.module_port_ranges, []) : [
-                      for module_index in range(module_port_range.from, module_port_range.to + 1) :
-                      "${module_port_range.prefix}${module_index}"
+                    for module_id_range in try(switch_port.module_id_ranges, []) : [
+                      for port in range(module_id_range.from, module_id_range.to + 1) :
+                      "${module_id_range.slot}_${module_id_range.module}_${port}"
                     ]
                   ]
                 ))
