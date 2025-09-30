@@ -465,10 +465,9 @@ locals {
             enabled    = try(wireless_ssid.device_type_group_policies.enabled, local.defaults.meraki.domains.organizations.networks.wireless.ssids.device_type_group_policies.enabled, null)
             device_type_policies = try(length(wireless_ssid.device_type_group_policies.device_type_policies) == 0, true) ? null : [
               for device_type_policy in try(wireless_ssid.device_type_group_policies.device_type_policies, []) : {
-                device_type   = try(device_type_policy.device_type, local.defaults.meraki.domains.organizations.networks.wireless.ssids.device_type_group_policies.device_type_policies.device_type, null)
-                device_policy = try(device_type_policy.device_policy, local.defaults.meraki.domains.organizations.networks.wireless.ssids.device_type_group_policies.device_type_policies.device_policy, null)
-                # TODO Map from group_policy_name.
-                group_policy_id = try(device_type_policy.group_policy_id, local.defaults.meraki.domains.organizations.networks.wireless.ssids.device_type_group_policies.device_type_policies.group_policy_id, null)
+                device_type     = try(device_type_policy.device_type, local.defaults.meraki.domains.organizations.networks.wireless.ssids.device_type_group_policies.device_type_policies.device_type, null)
+                device_policy   = try(device_type_policy.device_policy, local.defaults.meraki.domains.organizations.networks.wireless.ssids.device_type_group_policies.device_type_policies.device_policy, null)
+                group_policy_id = try(meraki_network_group_policy.networks_group_policies[format("%s/%s/%s/%s", domain.name, organization.name, network.name, try(device_type_policy.group_policy_name, local.defaults.meraki.domains.organizations.networks.wireless.ssids.device_type_group_policies.device_type_policies.group_policy_name))].id, null)
               }
             ]
           } if try(wireless_ssid.device_type_group_policies, null) != null
@@ -597,13 +596,12 @@ locals {
         for network in try(organization.networks, []) : [
           for wireless_ssid in try(network.wireless.ssids, []) : [
             for identity_psk in try(wireless_ssid.identity_psks, []) : {
-              key        = format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, wireless_ssid.name, identity_psk.name)
-              network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
-              number     = meraki_wireless_ssid.networks_wireless_ssids[format("%s/%s/%s/%s", domain.name, organization.name, network.name, wireless_ssid.name)].number
-              name       = try(identity_psk.name, local.defaults.meraki.domains.organizations.networks.wireless.ssids.identity_psks.name, null)
-              passphrase = try(identity_psk.passphrase, local.defaults.meraki.domains.organizations.networks.wireless.ssids.identity_psks.passphrase, null)
-              # TODO Map from group_policy_name.
-              group_policy_id = try(identity_psk.group_policy_id, local.defaults.meraki.domains.organizations.networks.wireless.ssids.identity_psks.group_policy_id, null)
+              key             = format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, wireless_ssid.name, identity_psk.name)
+              network_id      = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+              number          = meraki_wireless_ssid.networks_wireless_ssids[format("%s/%s/%s/%s", domain.name, organization.name, network.name, wireless_ssid.name)].number
+              name            = try(identity_psk.name, local.defaults.meraki.domains.organizations.networks.wireless.ssids.identity_psks.name, null)
+              passphrase      = try(identity_psk.passphrase, local.defaults.meraki.domains.organizations.networks.wireless.ssids.identity_psks.passphrase, null)
+              group_policy_id = try(meraki_network_group_policy.networks_group_policies[format("%s/%s/%s/%s", domain.name, organization.name, network.name, try(identity_psk.group_policy_name, local.defaults.meraki.domains.organizations.networks.wireless.ssids.identity_psks.group_policy_name))].id, null)
               expires_at      = try(identity_psk.expires_at, local.defaults.meraki.domains.organizations.networks.wireless.ssids.identity_psks.expires_at, null)
             }
           ]
