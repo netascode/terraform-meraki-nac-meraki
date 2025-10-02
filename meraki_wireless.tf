@@ -467,7 +467,7 @@ locals {
               for device_type_policy in try(wireless_ssid.device_type_group_policies.device_type_policies, []) : {
                 device_type     = try(device_type_policy.device_type, local.defaults.meraki.domains.organizations.networks.wireless.ssids.device_type_group_policies.device_type_policies.device_type, null)
                 device_policy   = try(device_type_policy.device_policy, local.defaults.meraki.domains.organizations.networks.wireless.ssids.device_type_group_policies.device_type_policies.device_policy, null)
-                group_policy_id = try(meraki_network_group_policy.networks_group_policies[format("%s/%s/%s/%s", domain.name, organization.name, network.name, try(device_type_policy.group_policy_name, local.defaults.meraki.domains.organizations.networks.wireless.ssids.device_type_group_policies.device_type_policies.group_policy_name))].id, null)
+                group_policy_id = try(meraki_network_group_policy.networks_group_policies[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device_type_policy.group_policy_name)].id, null)
               }
             ]
           } if try(wireless_ssid.device_type_group_policies, null) != null
