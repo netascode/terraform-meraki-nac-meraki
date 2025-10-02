@@ -601,7 +601,7 @@ locals {
               number          = meraki_wireless_ssid.networks_wireless_ssids[format("%s/%s/%s/%s", domain.name, organization.name, network.name, wireless_ssid.name)].number
               name            = try(identity_psk.name, local.defaults.meraki.domains.organizations.networks.wireless.ssids.identity_psks.name, null)
               passphrase      = try(identity_psk.passphrase, local.defaults.meraki.domains.organizations.networks.wireless.ssids.identity_psks.passphrase, null)
-              group_policy_id = try(meraki_network_group_policy.networks_group_policies[format("%s/%s/%s/%s", domain.name, organization.name, network.name, try(identity_psk.group_policy_name, local.defaults.meraki.domains.organizations.networks.wireless.ssids.identity_psks.group_policy_name))].id, null)
+              group_policy_id = try(meraki_network_group_policy.networks_group_policies[format("%s/%s/%s/%s", domain.name, organization.name, network.name, identity_psk.group_policy_name)].id, null)
               expires_at      = try(identity_psk.expires_at, local.defaults.meraki.domains.organizations.networks.wireless.ssids.identity_psks.expires_at, null)
             }
           ]
