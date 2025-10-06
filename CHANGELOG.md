@@ -20,6 +20,7 @@ Enhancements:
 - Add support for port ranges in switch and appliance port configurations (https://github.com/netascode/terraform-meraki-nac-meraki/pull/78)
   - Optimized logic to build single list for all ports per switch/appliance
   - Supports batch operations for improved performance
+- Map `group_policy_id` from `group_policy_name` for wireless and appliance configurations (https://github.com/netascode/terraform-meraki-nac-meraki/pull/111)
 
 ## 0.3.4
 
