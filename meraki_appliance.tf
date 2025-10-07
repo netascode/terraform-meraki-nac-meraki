@@ -58,7 +58,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           rules = try(length(network.appliance.firewall.inbound_firewall_rules.rules) == 0, true) ? null : [
             for rule in try(network.appliance.firewall.inbound_firewall_rules.rules, []) : {
               comment        = try(rule.comment, local.defaults.meraki.domains.organizations.networks.appliance.firewall.inbound_firewall_rules.rules.comment, null)
@@ -126,7 +126,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           rules = try(length(network.appliance.firewall.l7_firewall_rules) == 0, true) ? null : [
             for rule in try(network.appliance.firewall.l7_firewall_rules, []) : {
               policy          = try(rule.policy, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.policy, null)
@@ -154,7 +154,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           rules = try(length(network.appliance.firewall.one_to_many_nat_rules) == 0, true) ? null : [
             for rule in try(network.appliance.firewall.one_to_many_nat_rules, []) : {
               public_ip = try(rule.public_ip, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.public_ip, null)
@@ -190,7 +190,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           rules = try(length(network.appliance.firewall.one_to_one_nat_rules) == 0, true) ? null : [
             for rule in try(network.appliance.firewall.one_to_one_nat_rules, []) : {
               lan_ip    = try(rule.lan_ip, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.lan_ip, null)
@@ -225,7 +225,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           rules = try(length(network.appliance.firewall.port_forwarding_rules) == 0, true) ? null : [
             for rule in try(network.appliance.firewall.port_forwarding_rules, []) : {
               allowed_ips = try(rule.allowed_ips, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.allowed_ips, null)
@@ -341,7 +341,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           mode       = try(network.appliance.security_malware.mode, local.defaults.meraki.domains.organizations.networks.appliance.security_malware.mode, null)
           allowed_urls = try(length(network.appliance.security_malware.allowed_urls) == 0, true) ? null : [
             for allowed_url in try(network.appliance.security_malware.allowed_urls, []) : {
@@ -686,7 +686,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           wan_traffic_uplink_preferences = [
             for appliance_sdwan_internet_policy in try(network.appliance.sdwan_internet_policies, []) : {
               preferred_uplink               = try(appliance_sdwan_internet_policy.preferred_uplink, local.defaults.meraki.domains.organizations.networks.appliance.sdwan_internet_policies.preferred_uplink, null)
@@ -947,7 +947,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           custom = try(length(network.appliance.traffic_shaping.vpn_exclusions.custom) == 0, true) ? null : [
             for custom in try(network.appliance.traffic_shaping.vpn_exclusions.custom, []) : {
               protocol    = try(custom.protocol, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.vpn_exclusions.custom.protocol, null)
@@ -1131,7 +1131,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           destinations = [
             for appliance_connectivity_monitoring_destination in try(network.appliance.connectivity_monitoring_destinations, []) : {
               ip          = try(appliance_connectivity_monitoring_destination.ip, local.defaults.meraki.domains.organizations.networks.appliance.connectivity_monitoring_destinations.ip, null)
