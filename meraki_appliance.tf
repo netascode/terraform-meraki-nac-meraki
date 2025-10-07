@@ -586,11 +586,11 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           mode       = try(network.appliance.vpn_site_to_site_vpn.mode, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.mode, null)
           hubs = try(length(network.appliance.vpn_site_to_site_vpn.hubs) == 0, true) ? null : [
             for hub in try(network.appliance.vpn_site_to_site_vpn.hubs, []) : {
-              hub_id            = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, hub.hub_network_name)].id
+              hub_id            = local.network_ids[format("%s/%s/%s", domain.name, organization.name, hub.hub_network_name)]
               use_default_route = try(hub.use_default_route, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.hubs.use_default_route, null)
             }
           ]
