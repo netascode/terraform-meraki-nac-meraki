@@ -59,14 +59,23 @@ locals {
           tags            = try(network.tags, local.defaults.meraki.domains.organizations.networks.tags, null)
           time_zone       = try(network.time_zone, local.defaults.meraki.domains.organizations.networks.time_zone, null)
           notes           = try(network.notes, local.defaults.meraki.domains.organizations.networks.notes, null)
+          managed         = try(network.managed, local.defaults.meraki.domains.organizations.networks.managed, true)
         }
       ]
     ]
   ])
+
+  managed_networks = [
+    for network in local.organizations_networks : network if network.managed
+  ]
+
+  unmanaged_networks = [
+    for network in local.organizations_networks : network if !network.managed
+  ]
 }
 
 resource "meraki_network" "organizations_networks" {
-  for_each        = { for v in local.organizations_networks : v.key => v }
+  for_each        = { for v in local.managed_networks : v.key => v }
   name            = each.value.name
   notes           = each.value.notes
   organization_id = each.value.organization_id
@@ -77,6 +86,22 @@ resource "meraki_network" "organizations_networks" {
     meraki_organization_inventory_claim.organizations_inventory,
     meraki_organization.organizations,
   ]
+}
+
+data "meraki_network" "unmanaged_networks" {
+  for_each        = { for v in local.unmanaged_networks : v.key => v }
+  organization_id = each.value.organization_id
+  name            = each.value.name
+}
+
+locals {
+  network_ids = {
+    for network in local.organizations_networks :
+    network.key =>
+    network.managed ?
+    meraki_network.organizations_networks[network.key].id :
+    data.meraki_network.unmanaged_networks[network.key].id
+  }
 }
 
 locals {
@@ -165,7 +190,7 @@ locals {
           # authentication_method = try(admin.authentication_method, local.defaults.meraki.domains.organizations.admins.authentication_method, null)
           org_access = try(admin.organization_access, local.defaults.meraki.domains.organizations.admins.organization_access, null)
           networks = try(length(admin.networks) == 0, true) ? null : [for network in try(admin.networks, []) : {
-            id     = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+            id     = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
             access = try(network.access, local.defaults.meraki.domains.organizations.admins.networks.access, null)
           }]
           tags = try(length(admin.tags) == 0, true) ? null : [for tag in try(admin.tags, []) : {
@@ -225,7 +250,7 @@ locals {
         organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
         enabled_networks = try(length(organization.adaptive_policy.settings_enabled_networks) == 0, true) ? null : [
           for network in try(organization.adaptive_policy.settings_enabled_networks, []) :
-          meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network)].id
+          local.network_ids[format("%s/%s/%s", domain.name, organization.name, network)]
         ]
       } if try(organization.adaptive_policy.settings_enabled_networks, null) != null
     ]
@@ -507,7 +532,7 @@ locals {
           short_name      = try(early_access_features_opt_in.short_name, local.defaults.meraki.domains.organizations.early_access_features_opt_ins.short_name, null)
           limit_scope_to_networks = try(length(early_access_features_opt_in.limit_scope_to_networks) == 0, true) ? null : [
             for network_name in try(early_access_features_opt_in.limit_scope_to_networks, []) :
-            meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network_name)].id
+            local.network_ids[format("%s/%s/%s", domain.name, organization.name, network_name)]
           ]
         }
       ]

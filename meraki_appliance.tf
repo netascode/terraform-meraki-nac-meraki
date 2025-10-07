@@ -581,55 +581,6 @@ resource "meraki_appliance_vpn_bgp" "networks_appliance_vpn_bgp" {
 }
 
 locals {
-  # 1. Flatten all hub definitions from the input data
-  all_hubs = distinct(flatten([
-    for domain in try(local.meraki.domains, []) : [
-      for organization in try(domain.organizations, []) : [
-        for network in try(organization.networks, []) : [
-          for hub in try(network.appliance.vpn_site_to_site_vpn.hubs, []) : {
-            # Create a unique key for each hub definition
-            key               = format("%s/%s/%s", domain.name, organization.name, hub.hub_network_name)
-            organization_name = organization.name
-            domain_name       = domain.name
-            hub_network_name  = hub.hub_network_name
-            # A hub is managed by default unless explicitly set to false
-            managed = try(hub.managed, true)
-          } if try(hub.hub_network_name, null) != null # Only consider hubs defined by name
-        ]
-      ]
-    ]
-  ]))
-
-  # 2. Separate hubs into managed and unmanaged lists
-  managed_hubs = [
-    for hub in local.all_hubs : hub if hub.managed
-  ]
-  unmanaged_hubs = [
-    for hub in local.all_hubs : hub if !hub.managed
-  ]
-}
-
-# 3. Data source to fetch information about unmanaged hubs that already exist
-data "meraki_network" "unmanaged_hubs" {
-  for_each = { for hub in local.unmanaged_hubs : hub.key => hub }
-  name     = each.value.hub_network_name
-  # The organization ID is needed to scope the network lookup
-  organization_id = local.organization_ids[format("%s/%s", each.value.domain_name, each.value.organization_name)]
-}
-
-locals {
-  # 4. Create a unified map to get hub IDs from either managed resources or unmanaged data sources
-  hub_ids = {
-    for hub in local.all_hubs :
-    hub.key => hub.managed ?
-    # ID for a managed hub comes from the 'meraki_network' resource
-    meraki_network.organizations_networks[hub.key].id :
-    # ID for an unmanaged hub comes from the 'data.meraki_network' source
-    data.meraki_network.unmanaged_hubs[hub.key].id
-  }
-}
-
-locals {
   networks_appliance_vpn_site_to_site_vpn = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
@@ -639,8 +590,7 @@ locals {
           mode       = try(network.appliance.vpn_site_to_site_vpn.mode, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.mode, null)
           hubs = try(length(network.appliance.vpn_site_to_site_vpn.hubs) == 0, true) ? null : [
             for hub in try(network.appliance.vpn_site_to_site_vpn.hubs, []) : {
-              # 5. Use the unified hub_ids map to get the hub_id
-              hub_id            = try(hub.hub_id, local.hub_ids[format("%s/%s/%s", domain.name, organization.name, hub.hub_network_name)])
+              hub_id            = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, hub.hub_network_name)].id
               use_default_route = try(hub.use_default_route, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.hubs.use_default_route, null)
             }
           ]
