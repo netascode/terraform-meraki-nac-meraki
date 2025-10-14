@@ -1,6 +1,64 @@
-## 0.1.0
 
-- Initial release
+## 0.4.0
+
+Breaking Changes:
+
+- `networks_wireless_ssids_schedules` renamed to `networks_wireless_ssids_unavailability_schedules` (https://github.com/netascode/terraform-meraki-nac-meraki/pull/96)
+- Port configuration refactoring to support ranges instead of individual ports (https://github.com/netascode/terraform-meraki-nac-meraki/pull/78)
+  - Switch from `port_id` to `port_id_ranges` for appliance ports
+  - Switch from `port_id` to `port_id_ranges` for switch ports
+  - Enables action batches for port configurations
+
+New Features:
+
+- Add `networks_wireless_ssids_firewall_l7_firewall_rules` resource for Layer 7 wireless firewall rules (https://github.com/netascode/terraform-meraki-nac-meraki/pull/77)
+
+Enhancements:
+
+- Improved dependency management for switch ports and appliance ports (https://github.com/netascode/terraform-meraki-nac-meraki/pull/85, https://github.com/netascode/terraform-meraki-nac-meraki/pull/86)
+- Map device names to serials for `stp_bridge_priority` configuration (https://github.com/netascode/terraform-meraki-nac-meraki/pull/91)
+- Add support for port ranges in switch and appliance port configurations (https://github.com/netascode/terraform-meraki-nac-meraki/pull/78)
+  - Optimized logic to build single list for all ports per switch/appliance
+  - Supports batch operations for improved performance
+- Map `group_policy_id` from `group_policy_name` for wireless and appliance configurations (https://github.com/netascode/terraform-meraki-nac-meraki/pull/111)
+
+## 0.3.4
+
+Enhancements:
+
+- `networks_appliance_firewall_inbound_firewall_rules` and `networks_appliance_firewall_l3_firewall_rules`
+  - Added VLAN dependencies to ensure proper resource ordering (https://github.com/netascode/terraform-meraki-nac-meraki/pull/94)
+- `organizations_networks`
+    - Some hardcoded defaults were missed when refactoring defaults handling in #47. https://github.com/netascode/terraform-meraki-nac-meraki/pull/101
+    - Added `networks` `product_types` values to defaults file
+
+Breaking Changes:
+
+- Reverted device-claim batching functionality (https://github.com/netascode/terraform-meraki-nac-meraki/pull/95)
+  - Removed the added defaults
+
+## 0.3.3
+
+Enhancements:
+
+- Defaults updates and configuration improvements
+
+## 0.3.2
+
+Enhancements:
+
+Add support for dhcp_relay_server_ips in networks_appliance_vlans_settings
+
+## 0.3.1
+
+Enhancements:
+
+- `devices_switch_ports`
+    - Added dependancy on Adaptive Policy Org Networks to fix issue with ports assigning adaptive policy prior to creation of the policy. (https://github.com/netascode/terraform-meraki-nac-meraki/pull/79)
+
+- `organizations_adaptive_policy_settings_enabled_networks`
+    - Added dependancy on device claim, to ensure at least one appliance is claimed and in place prior to adding adaptive policy settings to enabled networks. (https://github.com/netascode/terraform-meraki-nac-meraki/pull/79)
+
 
 ## 0.3.0
 
@@ -61,19 +119,6 @@ Breaking Changes:
      (https://github.com/netascode/terraform-meraki-nac-meraki/pull/47, https://github.com/netascode/terraform-meraki-nac-meraki/pull/53, https://github.com/netascode/terraform-meraki-nac-meraki/pull/52)
 
 
+## 0.1.0
 
-## 0.3.1
-
-Enhancements:
-
-- `devices_switch_ports`
-    - Added dependancy on Adaptive Policy Org Networks to fix issue with ports assigning adaptive policy prior to creation of the policy. (https://github.com/netascode/terraform-meraki-nac-meraki/pull/79)
-
-- `organizations_adaptive_policy_settings_enabled_networks`
-    - Added dependancy on device claim, to ensure at least one appliance is claimed and in place prior to adding adaptive policy settings to enabled networks. (https://github.com/netascode/terraform-meraki-nac-meraki/pull/79)
-
-## 0.3.2
-
-Enhancements:
-
-Add support for dhcp_relay_server_ips in networks_appliance_vlans_settings
+- Initial release

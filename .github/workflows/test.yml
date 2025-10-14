@@ -14,10 +14,10 @@ jobs:
     concurrency: testing_environment
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Python Setup
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.10"
 
@@ -27,7 +27,7 @@ jobs:
           terraform_version: 1.11.4
 
       - name: Tflint Setup
-        uses: terraform-linters/setup-tflint@v4
+        uses: terraform-linters/setup-tflint@v6
 
       - name: Terraform Docs Setup
         run: |
