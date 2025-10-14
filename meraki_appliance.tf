@@ -4,7 +4,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key                    = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id             = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          network_id             = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           allowed_url_patterns   = try(network.appliance.content_filtering.allowed_url_patterns, local.defaults.meraki.domains.organizations.networks.appliance.content_filtering.allowed_url_patterns, null)
           blocked_url_patterns   = try(network.appliance.content_filtering.blocked_url_patterns, local.defaults.meraki.domains.organizations.networks.appliance.content_filtering.blocked_url_patterns, null)
           blocked_url_categories = try(network.appliance.content_filtering.blocked_url_categories, local.defaults.meraki.domains.organizations.networks.appliance.content_filtering.blocked_url_categories, null)
