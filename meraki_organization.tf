@@ -53,6 +53,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key             = format("%s/%s/%s", domain.name, organization.name, network.name)
+          managed         = try(network.managed, local.defaults.meraki.domains.organizations.networks.managed, true)
           organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
           name            = try(network.name, local.defaults.meraki.domains.organizations.networks.name, null)
           product_types   = try(network.product_types, local.defaults.meraki.domains.organizations.networks.product_types, null)
