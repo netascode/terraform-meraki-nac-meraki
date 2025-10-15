@@ -65,13 +65,11 @@ locals {
   ])
 
   managed_networks = [
-    for network in local.organizations_networks :
-    network if network.managed
+    for network in local.organizations_networks : network if network.managed
   ]
 
   unmanaged_networks = [
-    for network in local.organizations_networks :
-    network if !network.managed
+    for network in local.organizations_networks : network if !network.managed
   ]
 }
 
