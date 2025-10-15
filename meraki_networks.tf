@@ -5,7 +5,7 @@ locals {
         for network in try(organization.networks, []) : [
           for group_policy in try(network.group_policies, []) : {
             key                                   = format("%s/%s/%s/%s", domain.name, organization.name, network.name, group_policy.name)
-            network_id                            = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+            network_id                            = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
             name                                  = try(group_policy.name, local.defaults.meraki.domains.organizations.networks.group_policies.name, null)
             scheduling_enabled                    = try(group_policy.scheduling.enabled, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.enabled, null)
             scheduling_monday_active              = try(group_policy.scheduling.monday.active, local.defaults.meraki.domains.organizations.networks.group_policies.scheduling.monday.active, null)
@@ -141,7 +141,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key                                       = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id                                = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          network_id                                = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           local_status_page_enabled                 = try(network.settings.local_status_page_enabled, local.defaults.meraki.domains.organizations.networks.settings.local_status_page_enabled, null)
           remote_status_page_enabled                = try(network.settings.remote_status_page, local.defaults.meraki.domains.organizations.networks.settings.remote_status_page, null)
           local_status_page_authentication_enabled  = try(network.settings.local_status_page_authentication.enabled, local.defaults.meraki.domains.organizations.networks.settings.local_status_page_authentication.enabled, null)
@@ -173,7 +173,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key              = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id       = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          network_id       = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           access           = try(network.snmp.access, local.defaults.meraki.domains.organizations.networks.snmp.access, null)
           community_string = try(network.snmp.community_string, local.defaults.meraki.domains.organizations.networks.snmp.community_string, null)
           users = try(length(network.snmp.users) == 0, true) ? null : [
@@ -202,7 +202,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           servers = [
             for server in try(network.syslog_servers, []) : {
               host  = try(server.host, local.defaults.meraki.domains.organizations.networks.syslog_servers.host, null)
@@ -229,7 +229,7 @@ locals {
         for network in try(organization.networks, []) : [
           for vlan_profile in try(network.vlan_profiles, []) : {
             key        = format("%s/%s/%s/%s", domain.name, organization.name, network.name, vlan_profile.name)
-            network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+            network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
             name       = try(vlan_profile.name, local.defaults.meraki.domains.organizations.networks.vlan_profiles.name, null)
             vlan_names = [
               for vlan_name in try(vlan_profile.vlan_names, []) : {
@@ -267,7 +267,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           serials    = [for d in network.devices : d.serial]
         } if try(network.devices, null) != null
       ]
@@ -288,7 +288,7 @@ locals {
         for network in try(organization.networks, []) : [
           for floor_plan in try(network.floor_plans, []) : {
             key                     = format("%s/%s/%s/%s", domain.name, organization.name, network.name, floor_plan.name)
-            network_id              = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+            network_id              = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
             name                    = try(floor_plan.name, local.defaults.meraki.domains.organizations.networks.floor_plans.name, null)
             center_lat              = try(floor_plan.center.lat, local.defaults.meraki.domains.organizations.networks.floor_plans.center.lat, null)
             center_lng              = try(floor_plan.center.lng, local.defaults.meraki.domains.organizations.networks.floor_plans.center.lng, null)
@@ -334,7 +334,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key                    = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id             = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          network_id             = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           dhcp_lease_time        = try(network.cellular_gateway.dhcp.dhcp_lease_time, local.defaults.meraki.domains.organizations.networks.cellular_gateway.dhcp.dhcp_lease_time, null)
           dns_nameservers        = try(network.cellular_gateway.dhcp.dns_nameservers, local.defaults.meraki.domains.organizations.networks.cellular_gateway.dhcp.dns_nameservers, null)
           dns_custom_nameservers = try(network.cellular_gateway.dhcp.dns_custom_nameservers, local.defaults.meraki.domains.organizations.networks.cellular_gateway.dhcp.dns_custom_nameservers, null)
@@ -358,7 +358,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           mask       = try(network.cellular_gateway.subnet_pool.mask, local.defaults.meraki.domains.organizations.networks.cellular_gateway.subnet_pool.mask, null)
           cidr       = try(network.cellular_gateway.subnet_pool.cidr, local.defaults.meraki.domains.organizations.networks.cellular_gateway.subnet_pool.cidr, null)
         } if try(network.cellular_gateway.subnet_pool, null) != null
@@ -380,7 +380,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key                         = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id                  = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          network_id                  = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           bandwidth_limits_limit_up   = try(network.cellular_gateway.uplink_bandwidth_limits.limit_up, local.defaults.meraki.domains.organizations.networks.cellular_gateway.uplink_bandwidth_limits.limit_up, null)
           bandwidth_limits_limit_down = try(network.cellular_gateway.uplink_bandwidth_limits.limit_down, local.defaults.meraki.domains.organizations.networks.cellular_gateway.uplink_bandwidth_limits.limit_down, null)
         } if try(network.cellular_gateway.uplink_bandwidth_limits, null) != null
@@ -402,7 +402,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id = meraki_network.organizations_networks[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+          network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           destinations = [
             for cellular_gateway_connectivity_monitoring_destination in try(network.cellular_gateway.connectivity_monitoring_destinations, []) : {
               ip          = try(cellular_gateway_connectivity_monitoring_destination.ip, local.defaults.meraki.domains.organizations.networks.cellular_gateway.connectivity_monitoring_destinations.ip, null)
