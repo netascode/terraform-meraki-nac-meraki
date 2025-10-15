@@ -191,7 +191,7 @@ locals {
           # authentication_method = try(admin.authentication_method, local.defaults.meraki.domains.organizations.admins.authentication_method, null)
           org_access = try(admin.organization_access, local.defaults.meraki.domains.organizations.admins.organization_access, null)
           networks = try(length(admin.networks) == 0, true) ? null : [for network in try(admin.networks, []) : {
-            id     = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+            id     = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
             access = try(network.access, local.defaults.meraki.domains.organizations.admins.networks.access, null)
           }]
           tags = try(length(admin.tags) == 0, true) ? null : [for tag in try(admin.tags, []) : {

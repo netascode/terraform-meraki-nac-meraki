@@ -455,7 +455,7 @@ locals {
         for network in try(organization.networks, []) : [
           for switch_routing_multicast_rendezvous_point in try(network.switch.routing_multicast_rendezvous_points, []) : {
             key             = format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_routing_multicast_rendezvous_point.rendezvous_point_name)
-            network_id      = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)].id
+            network_id      = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
             interface_ip    = try(switch_routing_multicast_rendezvous_point.interface_ip, local.defaults.meraki.domains.organizations.networks.switch.routing_multicast_rendezvous_points.interface_ip, null)
             multicast_group = try(switch_routing_multicast_rendezvous_point.multicast_group, local.defaults.meraki.domains.organizations.networks.switch.routing_multicast_rendezvous_points.multicast_group, null)
           }
