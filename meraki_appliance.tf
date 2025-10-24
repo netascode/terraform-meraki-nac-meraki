@@ -488,6 +488,13 @@ locals {
                 comment = try(reserved_ip_range.comment, local.defaults.meraki.domains.organizations.networks.appliance.vlans.reserved_ip_ranges.comment, null)
               }
             ]
+            fixed_ip_assignments = try(length(appliance_vlan.fixed_ip_assignments) == 0, true) ? null : {
+              for fixed_ip_assignment in try(appliance_vlan.fixed_ip_assignments, []) :
+              fixed_ip_assignment.mac => {
+                ip   = try(fixed_ip_assignment.ip, local.defaults.meraki.domains.organizations.networks.appliance.vlans.fixed_ip_assignments.ip, null)
+                name = try(fixed_ip_assignment.name, local.defaults.meraki.domains.organizations.networks.appliance.vlans.fixed_ip_assignments.name, null)
+              }
+            }
             dhcp_relay_server_ips = try(appliance_vlan.dhcp_relay_server_ips, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_relay_server_ips, null)
             dhcp_boot_next_server = try(appliance_vlan.dhcp_boot_next_server, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_boot_next_server, null)
             dhcp_boot_filename    = try(appliance_vlan.dhcp_boot_filename, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_boot_filename, null)
@@ -509,6 +516,7 @@ resource "meraki_appliance_vlan" "networks_appliance_vlans" {
   name                    = each.value.name
   subnet                  = each.value.subnet
   vpn_nat_subnet          = each.value.vpn_nat_subnet
+  fixed_ip_assignments    = each.value.fixed_ip_assignments
   depends_on              = [meraki_appliance_vlans_settings.networks_appliance_vlans_settings]
 }
 
