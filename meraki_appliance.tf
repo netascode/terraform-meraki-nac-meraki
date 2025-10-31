@@ -467,42 +467,64 @@ locals {
                 origin_interfaces    = try(ipv6_prefix_assignment.origin.interfaces, local.defaults.meraki.domains.organizations.networks.appliance.vlans.ipv6.prefix_assignments.origin.interfaces, null)
               }
             ]
-            name                      = try(appliance_vlan.name, local.defaults.meraki.domains.organizations.networks.appliance.vlans.name, null)
-            subnet                    = try(appliance_vlan.subnet, local.defaults.meraki.domains.organizations.networks.appliance.vlans.subnet, null)
-            vpn_nat_subnet            = try(appliance_vlan.vpn_nat_subnet, local.defaults.meraki.domains.organizations.networks.appliance.vlans.vpn_nat_subnet, null)
-            dhcp_boot_options_enabled = try(appliance_vlan.dhcp_boot_options, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_boot_options, null)
-            dhcp_handling             = try(appliance_vlan.dhcp_handling, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_handling, null)
-            dhcp_lease_time           = try(appliance_vlan.dhcp_lease_time, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_lease_time, null)
-            dhcp_options = try(length(appliance_vlan.dhcp_options) == 0, true) ? null : [
-              for dhcp_option in try(appliance_vlan.dhcp_options, []) : {
-                code  = try(dhcp_option.code, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_options.code, null)
-                type  = try(dhcp_option.type, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_options.type, null)
-                value = try(dhcp_option.value, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_options.value, null)
+            name   = try(appliance_vlan.name, local.defaults.meraki.domains.organizations.networks.appliance.vlans.name, null)
+            subnet = try(appliance_vlan.subnet, local.defaults.meraki.domains.organizations.networks.appliance.vlans.subnet, null)
+            dhcp = {
+              vpn_nat_subnet            = try(appliance_vlan.vpn_nat_subnet, local.defaults.meraki.domains.organizations.networks.appliance.vlans.vpn_nat_subnet, null)
+              dhcp_boot_options_enabled = try(appliance_vlan.dhcp_boot_options, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_boot_options, null)
+              dhcp_handling             = try(appliance_vlan.dhcp_handling, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_handling, null)
+              dhcp_lease_time           = try(appliance_vlan.dhcp_lease_time, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_lease_time, null)
+              dhcp_options = try(length(appliance_vlan.dhcp_options) == 0, true) ? null : [
+                for dhcp_option in try(appliance_vlan.dhcp_options, []) : {
+                  code  = try(dhcp_option.code, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_options.code, null)
+                  type  = try(dhcp_option.type, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_options.type, null)
+                  value = try(dhcp_option.value, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_options.value, null)
+                }
+              ]
+              dns_nameservers        = try(appliance_vlan.dns_nameservers, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dns_nameservers, null)
+              mandatory_dhcp_enabled = try(appliance_vlan.mandatory_dhcp, local.defaults.meraki.domains.organizations.networks.appliance.vlans.mandatory_dhcp, null)
+              reserved_ip_ranges = try(length(appliance_vlan.reserved_ip_ranges) == 0, true) ? null : [
+                for reserved_ip_range in try(appliance_vlan.reserved_ip_ranges, []) : {
+                  start   = try(reserved_ip_range.start, local.defaults.meraki.domains.organizations.networks.appliance.vlans.reserved_ip_ranges.start, null)
+                  end     = try(reserved_ip_range.end, local.defaults.meraki.domains.organizations.networks.appliance.vlans.reserved_ip_ranges.end, null)
+                  comment = try(reserved_ip_range.comment, local.defaults.meraki.domains.organizations.networks.appliance.vlans.reserved_ip_ranges.comment, null)
+                }
+              ]
+              fixed_ip_assignments = try(length(appliance_vlan.fixed_ip_assignments) == 0, true) ? null : {
+                for fixed_ip_assignment in try(appliance_vlan.fixed_ip_assignments, []) :
+                fixed_ip_assignment.mac => {
+                  ip   = try(fixed_ip_assignment.ip, local.defaults.meraki.domains.organizations.networks.appliance.vlans.fixed_ip_assignments.ip, null)
+                  name = try(fixed_ip_assignment.name, local.defaults.meraki.domains.organizations.networks.appliance.vlans.fixed_ip_assignments.name, null)
+                }
               }
-            ]
-            dns_nameservers        = try(appliance_vlan.dns_nameservers, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dns_nameservers, null)
-            mandatory_dhcp_enabled = try(appliance_vlan.mandatory_dhcp, local.defaults.meraki.domains.organizations.networks.appliance.vlans.mandatory_dhcp, null)
-            reserved_ip_ranges = try(length(appliance_vlan.reserved_ip_ranges) == 0, true) ? null : [
-              for reserved_ip_range in try(appliance_vlan.reserved_ip_ranges, []) : {
-                start   = try(reserved_ip_range.start, local.defaults.meraki.domains.organizations.networks.appliance.vlans.reserved_ip_ranges.start, null)
-                end     = try(reserved_ip_range.end, local.defaults.meraki.domains.organizations.networks.appliance.vlans.reserved_ip_ranges.end, null)
-                comment = try(reserved_ip_range.comment, local.defaults.meraki.domains.organizations.networks.appliance.vlans.reserved_ip_ranges.comment, null)
-              }
-            ]
-            fixed_ip_assignments = try(length(appliance_vlan.fixed_ip_assignments) == 0, true) ? null : {
-              for fixed_ip_assignment in try(appliance_vlan.fixed_ip_assignments, []) :
-              fixed_ip_assignment.mac => {
-                ip   = try(fixed_ip_assignment.ip, local.defaults.meraki.domains.organizations.networks.appliance.vlans.fixed_ip_assignments.ip, null)
-                name = try(fixed_ip_assignment.name, local.defaults.meraki.domains.organizations.networks.appliance.vlans.fixed_ip_assignments.name, null)
-              }
+              dhcp_relay_server_ips = try(appliance_vlan.dhcp_relay_server_ips, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_relay_server_ips, null)
+              dhcp_boot_next_server = try(appliance_vlan.dhcp_boot_next_server, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_boot_next_server, null)
+              dhcp_boot_filename    = try(appliance_vlan.dhcp_boot_filename, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_boot_filename, null)
             }
-            dhcp_relay_server_ips = try(appliance_vlan.dhcp_relay_server_ips, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_relay_server_ips, null)
-            dhcp_boot_next_server = try(appliance_vlan.dhcp_boot_next_server, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_boot_next_server, null)
-            dhcp_boot_filename    = try(appliance_vlan.dhcp_boot_filename, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_boot_filename, null)
           }
         ]
       ]
     ]
+  ])
+
+  networks_appliance_vlans_dhcp_all = [
+    for appliance_vlan in local.networks_appliance_vlans : {
+      key        = appliance_vlan.key
+      network_id = appliance_vlan.network_id
+      vlan_id    = appliance_vlan.vlan_id
+      data       = appliance_vlan.dhcp
+      non_null_data = {
+        for field, value in appliance_vlan.dhcp :
+        field => value
+        if value != null
+      }
+    }
+  ]
+
+  networks_appliance_vlans_dhcp = flatten([
+    for appliance_vlan_dhcp in local.networks_appliance_vlans_dhcp_all :
+    appliance_vlan_dhcp
+    if length(appliance_vlan_dhcp.non_null_data) > 0
   ])
 }
 
@@ -520,21 +542,21 @@ resource "meraki_appliance_vlan" "networks_appliance_vlans" {
 }
 
 resource "meraki_appliance_vlan_dhcp" "networks_appliance_vlans_dhcp" {
-  for_each                  = { for v in local.networks_appliance_vlans : v.key => v }
+  for_each                  = { for v in local.networks_appliance_vlans_dhcp : v.key => v }
   network_id                = each.value.network_id
   vlan_id                   = each.value.vlan_id
-  dhcp_boot_options_enabled = each.value.dhcp_boot_options_enabled
-  dhcp_handling             = each.value.dhcp_handling
-  dhcp_lease_time           = each.value.dhcp_lease_time
-  dhcp_options              = each.value.dhcp_options
-  dns_nameservers           = each.value.dns_nameservers
-  mandatory_dhcp_enabled    = each.value.mandatory_dhcp_enabled
-  reserved_ip_ranges        = each.value.reserved_ip_ranges
-  dhcp_relay_server_ips     = each.value.dhcp_relay_server_ips
-  dhcp_boot_filename        = each.value.dhcp_boot_filename
-  dhcp_boot_next_server     = each.value.dhcp_boot_next_server
-  vpn_nat_subnet            = each.value.vpn_nat_subnet
-  fixed_ip_assignments      = each.value.fixed_ip_assignments
+  dhcp_boot_options_enabled = each.value.data.dhcp_boot_options_enabled
+  dhcp_handling             = each.value.data.dhcp_handling
+  dhcp_lease_time           = each.value.data.dhcp_lease_time
+  dhcp_options              = each.value.data.dhcp_options
+  dns_nameservers           = each.value.data.dns_nameservers
+  mandatory_dhcp_enabled    = each.value.data.mandatory_dhcp_enabled
+  reserved_ip_ranges        = each.value.data.reserved_ip_ranges
+  dhcp_relay_server_ips     = each.value.data.dhcp_relay_server_ips
+  dhcp_boot_filename        = each.value.data.dhcp_boot_filename
+  dhcp_boot_next_server     = each.value.data.dhcp_boot_next_server
+  vpn_nat_subnet            = each.value.data.vpn_nat_subnet
+  fixed_ip_assignments      = each.value.data.fixed_ip_assignments
   depends_on                = [meraki_appliance_vlan.networks_appliance_vlans]
 }
 
