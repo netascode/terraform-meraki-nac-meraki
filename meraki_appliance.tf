@@ -515,8 +515,6 @@ resource "meraki_appliance_vlan" "networks_appliance_vlans" {
   ipv6_prefix_assignments = each.value.ipv6_prefix_assignments
   name                    = each.value.name
   subnet                  = each.value.subnet
-  vpn_nat_subnet          = each.value.vpn_nat_subnet
-  fixed_ip_assignments    = each.value.fixed_ip_assignments
   depends_on              = [meraki_appliance_vlans_settings.networks_appliance_vlans_settings]
 }
 
@@ -534,6 +532,8 @@ resource "meraki_appliance_vlan_dhcp" "networks_appliance_vlans_dhcp" {
   dhcp_relay_server_ips     = each.value.dhcp_relay_server_ips
   dhcp_boot_filename        = each.value.dhcp_boot_filename
   dhcp_boot_next_server     = each.value.dhcp_boot_next_server
+  vpn_nat_subnet            = each.value.vpn_nat_subnet
+  fixed_ip_assignments      = each.value.fixed_ip_assignments
   depends_on                = [meraki_appliance_vlan.networks_appliance_vlans]
 }
 
