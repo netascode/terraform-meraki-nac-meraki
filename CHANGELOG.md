@@ -1,4 +1,9 @@
 
+## 0.5.0
+
+New features:
+-  Add support for unmanaged networks (https://github.com/netascode/terraform-meraki-nac-meraki/pull/87)
+
 ## 0.4.0
 
 Breaking Changes:
