@@ -66,11 +66,11 @@ locals {
               }
             ]
             content_filtering_allowed_url_patterns_settings   = try(group_policy.content_filtering.allowed_url_patterns.settings, local.defaults.meraki.domains.organizations.networks.group_policies.content_filtering.allowed_url_patterns.settings, null)
-            content_filtering_allowed_url_patterns            = try(group_policy.content_filtering.allowed_url_patterns.patterns, local.defaults.meraki.domains.organizations.networks.group_policies.content_filtering.allowed_url_patterns.patterns, null)
+            content_filtering_allowed_url_patterns            = try(group_policy.content_filtering.allowed_url_patterns.patterns, local.defaults.meraki.domains.organizations.networks.group_policies.content_filtering.allowed_url_patterns.patterns, [])
             content_filtering_blocked_url_patterns_settings   = try(group_policy.content_filtering.blocked_url_patterns.settings, local.defaults.meraki.domains.organizations.networks.group_policies.content_filtering.blocked_url_patterns.settings, null)
-            content_filtering_blocked_url_patterns            = try(group_policy.content_filtering.blocked_url_patterns.patterns, local.defaults.meraki.domains.organizations.networks.group_policies.content_filtering.blocked_url_patterns.patterns, null)
+            content_filtering_blocked_url_patterns            = try(group_policy.content_filtering.blocked_url_patterns.patterns, local.defaults.meraki.domains.organizations.networks.group_policies.content_filtering.blocked_url_patterns.patterns, [])
             content_filtering_blocked_url_categories_settings = try(group_policy.content_filtering.blocked_url_categories.settings, local.defaults.meraki.domains.organizations.networks.group_policies.content_filtering.blocked_url_categories.settings, null)
-            content_filtering_blocked_url_categories          = try(group_policy.content_filtering.blocked_url_categories.categories, local.defaults.meraki.domains.organizations.networks.group_policies.content_filtering.blocked_url_categories.categories, null)
+            content_filtering_blocked_url_categories          = try(group_policy.content_filtering.blocked_url_categories.categories, local.defaults.meraki.domains.organizations.networks.group_policies.content_filtering.blocked_url_categories.categories, [])
             splash_auth_settings                              = try(group_policy.splash_auth_settings, local.defaults.meraki.domains.organizations.networks.group_policies.splash_auth_settings, null)
             vlan_tagging_settings                             = try(group_policy.vlan_tagging.settings, local.defaults.meraki.domains.organizations.networks.group_policies.vlan_tagging.settings, null)
             vlan_tagging_vlan_id                              = try(group_policy.vlan_tagging.vlan_id, local.defaults.meraki.domains.organizations.networks.group_policies.vlan_tagging.vlan_id, null)
@@ -79,7 +79,7 @@ locals {
               for bonjour_forwarding_rule in try(group_policy.bonjour_forwarding.rules, []) : {
                 description = try(bonjour_forwarding_rule.description, local.defaults.meraki.domains.organizations.networks.group_policies.bonjour_forwarding.rules.description, null)
                 vlan_id     = try(bonjour_forwarding_rule.vlan_id, local.defaults.meraki.domains.organizations.networks.group_policies.bonjour_forwarding.rules.vlan_id, null)
-                services    = try(bonjour_forwarding_rule.services, local.defaults.meraki.domains.organizations.networks.group_policies.bonjour_forwarding.rules.services, null)
+                services    = try(bonjour_forwarding_rule.services, local.defaults.meraki.domains.organizations.networks.group_policies.bonjour_forwarding.rules.services, [])
               }
             ]
           }
@@ -207,7 +207,7 @@ locals {
             for syslog_server in try(network.syslog_servers, []) : {
               host  = try(syslog_server.host, local.defaults.meraki.domains.organizations.networks.syslog_servers.host, null)
               port  = try(syslog_server.port, local.defaults.meraki.domains.organizations.networks.syslog_servers.port, null)
-              roles = try(syslog_server.roles, local.defaults.meraki.domains.organizations.networks.syslog_servers.roles, null)
+              roles = try(syslog_server.roles, local.defaults.meraki.domains.organizations.networks.syslog_servers.roles, [])
             }
           ]
         } if try(network.syslog_servers, null) != null
@@ -336,7 +336,7 @@ locals {
           network_id             = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           dhcp_lease_time        = try(network.cellular_gateway.dhcp.dhcp_lease_time, local.defaults.meraki.domains.organizations.networks.cellular_gateway.dhcp.dhcp_lease_time, null)
           dns_nameservers        = try(network.cellular_gateway.dhcp.dns_nameservers, local.defaults.meraki.domains.organizations.networks.cellular_gateway.dhcp.dns_nameservers, null)
-          dns_custom_nameservers = try(network.cellular_gateway.dhcp.dns_custom_nameservers, local.defaults.meraki.domains.organizations.networks.cellular_gateway.dhcp.dns_custom_nameservers, null)
+          dns_custom_nameservers = try(network.cellular_gateway.dhcp.dns_custom_nameservers, local.defaults.meraki.domains.organizations.networks.cellular_gateway.dhcp.dns_custom_nameservers, [])
         } if try(network.cellular_gateway.dhcp, null) != null
       ]
     ]

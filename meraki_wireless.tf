@@ -15,7 +15,7 @@ locals {
               )
               min_bitrate           = try(settings.min_bitrate, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.per_ssid_settings.min_bitrate, null)
               band_operation_mode   = try(settings.band_operation_mode, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.per_ssid_settings.band_operation_mode, null)
-              bands_enabled         = try(settings.bands, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.per_ssid_settings.bands, null)
+              bands_enabled         = try(settings.bands, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.per_ssid_settings.bands, [])
               band_steering_enabled = try(settings.band_steering, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.per_ssid_settings.band_steering, null)
             }
           ]
@@ -37,31 +37,31 @@ locals {
             min_bitrate_type                          = try(wireless_rf_profile.min_bitrate_type, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.min_bitrate_type, null)
             band_selection_type                       = try(wireless_rf_profile.band_selection_type, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.band_selection_type, null)
             ap_band_settings_band_operation_mode      = try(wireless_rf_profile.ap_band_settings.band_operation_mode, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.ap_band_settings.band_operation_mode, null)
-            ap_band_settings_bands_enabled            = try(wireless_rf_profile.ap_band_settings.bands, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.ap_band_settings.bands, null)
+            ap_band_settings_bands_enabled            = try(wireless_rf_profile.ap_band_settings.bands, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.ap_band_settings.bands, [])
             ap_band_settings_band_steering_enabled    = try(wireless_rf_profile.ap_band_settings.band_steering, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.ap_band_settings.band_steering, null)
             two_four_ghz_settings_max_power           = try(wireless_rf_profile.two_four_ghz_settings.max_power, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.two_four_ghz_settings.max_power, null)
             two_four_ghz_settings_min_power           = try(wireless_rf_profile.two_four_ghz_settings.min_power, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.two_four_ghz_settings.min_power, null)
             two_four_ghz_settings_min_bitrate         = try(wireless_rf_profile.two_four_ghz_settings.min_bitrate, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.two_four_ghz_settings.min_bitrate, null)
-            two_four_ghz_settings_valid_auto_channels = try(wireless_rf_profile.two_four_ghz_settings.valid_auto_channels, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.two_four_ghz_settings.valid_auto_channels, null)
+            two_four_ghz_settings_valid_auto_channels = try(wireless_rf_profile.two_four_ghz_settings.valid_auto_channels, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.two_four_ghz_settings.valid_auto_channels, [])
             two_four_ghz_settings_ax_enabled          = try(wireless_rf_profile.two_four_ghz_settings.ax, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.two_four_ghz_settings.ax, null)
             two_four_ghz_settings_rxsop               = try(wireless_rf_profile.two_four_ghz_settings.rxsop, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.two_four_ghz_settings.rxsop, null)
             five_ghz_settings_max_power               = try(wireless_rf_profile.five_ghz_settings.max_power, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.five_ghz_settings.max_power, null)
             five_ghz_settings_min_power               = try(wireless_rf_profile.five_ghz_settings.min_power, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.five_ghz_settings.min_power, null)
             five_ghz_settings_min_bitrate             = try(wireless_rf_profile.five_ghz_settings.min_bitrate, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.five_ghz_settings.min_bitrate, null)
-            five_ghz_settings_valid_auto_channels     = try(wireless_rf_profile.five_ghz_settings.valid_auto_channels, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.five_ghz_settings.valid_auto_channels, null)
+            five_ghz_settings_valid_auto_channels     = try(wireless_rf_profile.five_ghz_settings.valid_auto_channels, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.five_ghz_settings.valid_auto_channels, [])
             five_ghz_settings_channel_width           = try(wireless_rf_profile.five_ghz_settings.channel_width, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.five_ghz_settings.channel_width, null)
             five_ghz_settings_rxsop                   = try(wireless_rf_profile.five_ghz_settings.rxsop, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.five_ghz_settings.rxsop, null)
             six_ghz_settings_max_power                = try(wireless_rf_profile.six_ghz_settings.max_power, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.six_ghz_settings.max_power, null)
             six_ghz_settings_min_power                = try(wireless_rf_profile.six_ghz_settings.min_power, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.six_ghz_settings.min_power, null)
             six_ghz_settings_min_bitrate              = try(wireless_rf_profile.six_ghz_settings.min_bitrate, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.six_ghz_settings.min_bitrate, null)
-            six_ghz_settings_valid_auto_channels      = try(wireless_rf_profile.six_ghz_settings.valid_auto_channels, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.six_ghz_settings.valid_auto_channels, null)
+            six_ghz_settings_valid_auto_channels      = try(wireless_rf_profile.six_ghz_settings.valid_auto_channels, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.six_ghz_settings.valid_auto_channels, [])
             six_ghz_settings_channel_width            = try(wireless_rf_profile.six_ghz_settings.channel_width, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.six_ghz_settings.channel_width, null)
             six_ghz_settings_rxsop                    = try(wireless_rf_profile.six_ghz_settings.rxsop, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.six_ghz_settings.rxsop, null)
             transmission_enabled                      = try(wireless_rf_profile.transmission, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.transmission, null)
             flex_radios_by_model = [
               for flex_radio in try(wireless_rf_profile.flex_radios, []) : {
                 model = try(flex_radio.model, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.flex_radios.model, null)
-                bands = try(flex_radio.bands, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.flex_radios.bands, null)
+                bands = try(flex_radio.bands, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.flex_radios.bands, [])
               }
             ]
           }
@@ -216,8 +216,8 @@ locals {
             dot11r_enabled                                                              = try(wireless_ssid.dot11r.enabled, local.defaults.meraki.domains.organizations.networks.wireless.ssids.dot11r.enabled, null)
             dot11r_adaptive                                                             = try(wireless_ssid.dot11r.adaptive, local.defaults.meraki.domains.organizations.networks.wireless.ssids.dot11r.adaptive, null)
             splash_page                                                                 = try(wireless_ssid.splash_page, local.defaults.meraki.domains.organizations.networks.wireless.ssids.splash_page, null)
-            splash_guest_sponsor_domains                                                = try(wireless_ssid.splash_guest_sponsor_domains, local.defaults.meraki.domains.organizations.networks.wireless.ssids.splash_guest_sponsor_domains, null)
-            oauth_allowed_domains                                                       = try(wireless_ssid.oauth_allowed_domains, local.defaults.meraki.domains.organizations.networks.wireless.ssids.oauth_allowed_domains, null)
+            splash_guest_sponsor_domains                                                = try(wireless_ssid.splash_guest_sponsor_domains, local.defaults.meraki.domains.organizations.networks.wireless.ssids.splash_guest_sponsor_domains, [])
+            oauth_allowed_domains                                                       = try(wireless_ssid.oauth_allowed_domains, local.defaults.meraki.domains.organizations.networks.wireless.ssids.oauth_allowed_domains, [])
             local_radius_cache_timeout                                                  = try(wireless_ssid.radius.local_radius.cache_timeout, local.defaults.meraki.domains.organizations.networks.wireless.ssids.radius.local_radius.cache_timeout, null)
             local_radius_password_authentication_enabled                                = try(wireless_ssid.radius.local_radius.password_authentication, local.defaults.meraki.domains.organizations.networks.wireless.ssids.radius.local_radius.password_authentication, null)
             local_radius_certificate_authentication_enabled                             = try(wireless_ssid.radius.local_radius.certificate_authentication.enabled, local.defaults.meraki.domains.organizations.networks.wireless.ssids.radius.local_radius.certificate_authentication.enabled, null)
@@ -287,12 +287,12 @@ locals {
             default_vlan_id                      = try(wireless_ssid.default_vlan_id, local.defaults.meraki.domains.organizations.networks.wireless.ssids.default_vlan_id, null)
             ap_tags_and_vlan_ids = [
               for ap_tags_and_vlan_id in try(wireless_ssid.ap_tags_and_vlan_ids, []) : {
-                tags    = try(ap_tags_and_vlan_id.tags, local.defaults.meraki.domains.organizations.networks.wireless.ssids.ap_tags_and_vlan_ids.tags, null)
+                tags    = try(ap_tags_and_vlan_id.tags, local.defaults.meraki.domains.organizations.networks.wireless.ssids.ap_tags_and_vlan_ids.tags, [])
                 vlan_id = try(ap_tags_and_vlan_id.vlan_id, local.defaults.meraki.domains.organizations.networks.wireless.ssids.ap_tags_and_vlan_ids.vlan_id, null)
               }
             ]
             walled_garden_enabled                 = try(wireless_ssid.walled_garden, local.defaults.meraki.domains.organizations.networks.wireless.ssids.walled_garden, null)
-            walled_garden_ranges                  = try(wireless_ssid.walled_garden_ranges, local.defaults.meraki.domains.organizations.networks.wireless.ssids.walled_garden_ranges, null)
+            walled_garden_ranges                  = try(wireless_ssid.walled_garden_ranges, local.defaults.meraki.domains.organizations.networks.wireless.ssids.walled_garden_ranges, [])
             gre_concentrator_host                 = try(wireless_ssid.gre.concentrator, local.defaults.meraki.domains.organizations.networks.wireless.ssids.gre.concentrator, null)
             gre_key                               = try(wireless_ssid.gre.key, local.defaults.meraki.domains.organizations.networks.wireless.ssids.gre.key, null)
             radius_override                       = try(wireless_ssid.radius.override, local.defaults.meraki.domains.organizations.networks.wireless.ssids.radius.override, null)
@@ -307,17 +307,17 @@ locals {
             lan_isolation_enabled                 = try(wireless_ssid.lan_isolation, local.defaults.meraki.domains.organizations.networks.wireless.ssids.lan_isolation, null)
             visible                               = try(wireless_ssid.visible, local.defaults.meraki.domains.organizations.networks.wireless.ssids.visible, null)
             available_on_all_aps                  = try(wireless_ssid.available_on_all_aps, local.defaults.meraki.domains.organizations.networks.wireless.ssids.available_on_all_aps, null)
-            availability_tags                     = try(wireless_ssid.availability_tags, local.defaults.meraki.domains.organizations.networks.wireless.ssids.availability_tags, null)
+            availability_tags                     = try(wireless_ssid.availability_tags, local.defaults.meraki.domains.organizations.networks.wireless.ssids.availability_tags, [])
             mandatory_dhcp_enabled                = try(wireless_ssid.mandatory_dhcp, local.defaults.meraki.domains.organizations.networks.wireless.ssids.mandatory_dhcp, null)
             adult_content_filtering_enabled       = try(wireless_ssid.adult_content_filtering, local.defaults.meraki.domains.organizations.networks.wireless.ssids.adult_content_filtering, null)
             dns_rewrite_enabled                   = try(wireless_ssid.dns_rewrite.enabled, local.defaults.meraki.domains.organizations.networks.wireless.ssids.dns_rewrite.enabled, null)
-            dns_rewrite_dns_custom_nameservers    = try(wireless_ssid.dns_rewrite.dns_custom_nameservers, local.defaults.meraki.domains.organizations.networks.wireless.ssids.dns_rewrite.dns_custom_nameservers, null)
+            dns_rewrite_dns_custom_nameservers    = try(wireless_ssid.dns_rewrite.dns_custom_nameservers, local.defaults.meraki.domains.organizations.networks.wireless.ssids.dns_rewrite.dns_custom_nameservers, [])
             speed_burst_enabled                   = try(wireless_ssid.speed_burst, local.defaults.meraki.domains.organizations.networks.wireless.ssids.speed_burst, null)
             named_vlans_tagging_enabled           = try(wireless_ssid.named_vlans.tagging.enabled, local.defaults.meraki.domains.organizations.networks.wireless.ssids.named_vlans.tagging.enabled, null)
             named_vlans_tagging_default_vlan_name = try(wireless_ssid.named_vlans.tagging.default_vlan_name, local.defaults.meraki.domains.organizations.networks.wireless.ssids.named_vlans.tagging.default_vlan_name, null)
             named_vlans_tagging_by_ap_tags = [
               for named_vlans_tagging_by_ap_tag in try(wireless_ssid.named_vlans.tagging.by_ap_tags, []) : {
-                tags      = try(named_vlans_tagging_by_ap_tag.tags, local.defaults.meraki.domains.organizations.networks.wireless.ssids.named_vlans.tagging.by_ap_tags.tags, null)
+                tags      = try(named_vlans_tagging_by_ap_tag.tags, local.defaults.meraki.domains.organizations.networks.wireless.ssids.named_vlans.tagging.by_ap_tags.tags, [])
                 vlan_name = try(named_vlans_tagging_by_ap_tag.vlan_name, local.defaults.meraki.domains.organizations.networks.wireless.ssids.named_vlans.tagging.by_ap_tags.vlan_name, null)
               }
             ]
@@ -532,8 +532,8 @@ locals {
             venue_name          = try(wireless_ssid.hotspot20.venue.name, local.defaults.meraki.domains.organizations.networks.wireless.ssids.hotspot20.venue.name, null)
             venue_type          = try(wireless_ssid.hotspot20.venue.type, local.defaults.meraki.domains.organizations.networks.wireless.ssids.hotspot20.venue.type, null)
             network_access_type = try(wireless_ssid.hotspot20.network_access_type, local.defaults.meraki.domains.organizations.networks.wireless.ssids.hotspot20.network_access_type, null)
-            domains             = try(wireless_ssid.hotspot20.domains, local.defaults.meraki.domains.organizations.networks.wireless.ssids.hotspot20.domains, null)
-            roam_consort_ois    = try(wireless_ssid.hotspot20.roam_consort_ois, local.defaults.meraki.domains.organizations.networks.wireless.ssids.hotspot20.roam_consort_ois, null)
+            domains             = try(wireless_ssid.hotspot20.domains, local.defaults.meraki.domains.organizations.networks.wireless.ssids.hotspot20.domains, [])
+            roam_consort_ois    = try(wireless_ssid.hotspot20.roam_consort_ois, local.defaults.meraki.domains.organizations.networks.wireless.ssids.hotspot20.roam_consort_ois, [])
             mcc_mncs = [
               for mcc_mnc in try(wireless_ssid.hotspot20.mcc_mncs, []) : {
                 mcc = try(mcc_mnc.mcc, local.defaults.meraki.domains.organizations.networks.wireless.ssids.hotspot20.mcc_mncs.mcc, null)
@@ -689,7 +689,7 @@ locals {
             billing_reply_to_email_address                = try(wireless_ssid.splash_settings.billing.reply_to_email_address, local.defaults.meraki.domains.organizations.networks.wireless.ssids.splash_settings.billing.reply_to_email_address, null)
             sentry_enrollment_systems_manager_network_id  = try(local.network_ids[format("%s/%s/%s", domain.name, organization.name, wireless_ssid.splash_settings.sentry_enrollment.systems_manager_network)], null)
             sentry_enrollment_strength                    = try(wireless_ssid.splash_settings.sentry_enrollment.strength, local.defaults.meraki.domains.organizations.networks.wireless.ssids.splash_settings.sentry_enrollment.strength, null)
-            sentry_enrollment_enforced_systems            = try(wireless_ssid.splash_settings.sentry_enrollment.enforced_systems, local.defaults.meraki.domains.organizations.networks.wireless.ssids.splash_settings.sentry_enrollment.enforced_systems, null)
+            sentry_enrollment_enforced_systems            = try(wireless_ssid.splash_settings.sentry_enrollment.enforced_systems, local.defaults.meraki.domains.organizations.networks.wireless.ssids.splash_settings.sentry_enrollment.enforced_systems, [])
             self_registration_enabled                     = try(wireless_ssid.splash_settings.self_registration.enabled, local.defaults.meraki.domains.organizations.networks.wireless.ssids.splash_settings.self_registration.enabled, null)
             self_registration_authorization_type          = try(wireless_ssid.splash_settings.self_registration.authorization_type, local.defaults.meraki.domains.organizations.networks.wireless.ssids.splash_settings.self_registration.authorization_type, null)
           } if try(wireless_ssid.splash_settings, null) != null
@@ -796,7 +796,7 @@ locals {
               for rule in try(wireless_ssid.bonjour_forwarding.rules, []) : {
                 description = try(rule.description, local.defaults.meraki.domains.organizations.networks.wireless.ssids.bonjour_forwarding.rules.description, null)
                 vlan_id     = try(rule.vlan_id, local.defaults.meraki.domains.organizations.networks.wireless.ssids.bonjour_forwarding.rules.vlan_id, null)
-                services    = try(rule.services, local.defaults.meraki.domains.organizations.networks.wireless.ssids.bonjour_forwarding.rules.services, null)
+                services    = try(rule.services, local.defaults.meraki.domains.organizations.networks.wireless.ssids.bonjour_forwarding.rules.services, [])
               }
             ]
             exception_enabled = try(wireless_ssid.bonjour_forwarding.exception, local.defaults.meraki.domains.organizations.networks.wireless.ssids.bonjour_forwarding.exception, null)
@@ -825,7 +825,7 @@ locals {
           network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           enabled    = try(network.wireless.alternate_management_interface.enabled, local.defaults.meraki.domains.organizations.networks.wireless.alternate_management_interface.enabled, null)
           vlan_id    = try(network.wireless.alternate_management_interface.vlan_id, local.defaults.meraki.domains.organizations.networks.wireless.alternate_management_interface.vlan_id, null)
-          protocols  = try(network.wireless.alternate_management_interface.protocols, local.defaults.meraki.domains.organizations.networks.wireless.alternate_management_interface.protocols, null)
+          protocols  = try(network.wireless.alternate_management_interface.protocols, local.defaults.meraki.domains.organizations.networks.wireless.alternate_management_interface.protocols, [])
           access_points = [
             for access_point in try(network.wireless.alternate_management_interface.access_points, []) : {
               serial                  = meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, access_point.device)].serial

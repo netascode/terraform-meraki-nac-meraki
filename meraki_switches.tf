@@ -76,7 +76,7 @@ locals {
             dot1x_control_direction            = try(switch_access_policy.dot1x_control_direction, local.defaults.meraki.domains.organizations.networks.switch.access_policies.dot1x_control_direction, null)
             voice_vlan_clients                 = try(switch_access_policy.voice_vlan_clients, local.defaults.meraki.domains.organizations.networks.switch.access_policies.voice_vlan_clients, null)
             url_redirect_walled_garden_enabled = try(switch_access_policy.url_redirect_walled_garden, local.defaults.meraki.domains.organizations.networks.switch.access_policies.url_redirect_walled_garden, null)
-            url_redirect_walled_garden_ranges  = try(switch_access_policy.url_redirect_walled_garden_ranges, local.defaults.meraki.domains.organizations.networks.switch.access_policies.url_redirect_walled_garden_ranges, null)
+            url_redirect_walled_garden_ranges  = try(switch_access_policy.url_redirect_walled_garden_ranges, local.defaults.meraki.domains.organizations.networks.switch.access_policies.url_redirect_walled_garden_ranges, [])
           }
         ]
       ]
@@ -121,7 +121,7 @@ locals {
           network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           enabled    = try(network.switch.alternate_management_interface.enabled, local.defaults.meraki.domains.organizations.networks.switch.alternate_management_interface.enabled, null)
           vlan_id    = try(network.switch.alternate_management_interface.vlan_id, local.defaults.meraki.domains.organizations.networks.switch.alternate_management_interface.vlan_id, null)
-          protocols  = try(network.switch.alternate_management_interface.protocols, local.defaults.meraki.domains.organizations.networks.switch.alternate_management_interface.protocols, null)
+          protocols  = try(network.switch.alternate_management_interface.protocols, local.defaults.meraki.domains.organizations.networks.switch.alternate_management_interface.protocols, [])
           switches = [
             for switch in try(network.switch.alternate_management_interface.switches, []) : {
               serial                  = meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch.device)].serial
@@ -154,8 +154,8 @@ locals {
           network_id             = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           alerts_email_enabled   = try(network.switch.dhcp_server_policy.alerts_email, local.defaults.meraki.domains.organizations.networks.switch.dhcp_server_policy.alerts_email, null)
           default_policy         = try(network.switch.dhcp_server_policy.default_policy, local.defaults.meraki.domains.organizations.networks.switch.dhcp_server_policy.default_policy, null)
-          allowed_servers        = try(network.switch.dhcp_server_policy.allowed_servers, local.defaults.meraki.domains.organizations.networks.switch.dhcp_server_policy.allowed_servers, null)
-          blocked_servers        = try(network.switch.dhcp_server_policy.blocked_servers, local.defaults.meraki.domains.organizations.networks.switch.dhcp_server_policy.blocked_servers, null)
+          allowed_servers        = try(network.switch.dhcp_server_policy.allowed_servers, local.defaults.meraki.domains.organizations.networks.switch.dhcp_server_policy.allowed_servers, [])
+          blocked_servers        = try(network.switch.dhcp_server_policy.blocked_servers, local.defaults.meraki.domains.organizations.networks.switch.dhcp_server_policy.blocked_servers, [])
           arp_inspection_enabled = try(network.switch.dhcp_server_policy.arp_inspection, local.defaults.meraki.domains.organizations.networks.switch.dhcp_server_policy.arp_inspection, null)
         } if try(network.switch.dhcp_server_policy, null) != null
       ]
@@ -277,8 +277,8 @@ locals {
           overrides = [
             for override in try(network.switch.mtu.overrides, []) : {
               # TODO Map from device names to serials?
-              switches        = try(override.switches, local.defaults.meraki.domains.organizations.networks.switch.mtu.overrides.switches, null)
-              switch_profiles = try(override.switch_profiles, local.defaults.meraki.domains.organizations.networks.switch.mtu.overrides.switch_profiles, null)
+              switches        = try(override.switches, local.defaults.meraki.domains.organizations.networks.switch.mtu.overrides.switches, [])
+              switch_profiles = try(override.switch_profiles, local.defaults.meraki.domains.organizations.networks.switch.mtu.overrides.switch_profiles, [])
               mtu_size        = try(override.mtu_size, local.defaults.meraki.domains.organizations.networks.switch.mtu.overrides.mtu_size, null)
             }
           ]
@@ -434,11 +434,11 @@ locals {
           default_settings_flood_unknown_multicast_traffic_enabled = try(network.switch.routing_multicast.default_settings.flood_unknown_multicast_traffic, local.defaults.meraki.domains.organizations.networks.switch.routing_multicast.default_settings.flood_unknown_multicast_traffic, null)
           overrides = [
             for override in try(network.switch.routing_multicast.overrides, []) : {
-              switch_profiles = try(override.switch_profiles, local.defaults.meraki.domains.organizations.networks.switch.routing_multicast.overrides.switch_profiles, null)
+              switch_profiles = try(override.switch_profiles, local.defaults.meraki.domains.organizations.networks.switch.routing_multicast.overrides.switch_profiles, [])
               # TODO Map from device names to serials?
-              switches = try(override.switches, local.defaults.meraki.domains.organizations.networks.switch.routing_multicast.overrides.switches, null)
+              switches = try(override.switches, local.defaults.meraki.domains.organizations.networks.switch.routing_multicast.overrides.switches, [])
               # TODO Map from stack names to IDs?
-              stacks                                  = try(override.stacks, local.defaults.meraki.domains.organizations.networks.switch.routing_multicast.overrides.stacks, null)
+              stacks                                  = try(override.stacks, local.defaults.meraki.domains.organizations.networks.switch.routing_multicast.overrides.stacks, [])
               igmp_snooping_enabled                   = try(override.igmp_snooping, local.defaults.meraki.domains.organizations.networks.switch.routing_multicast.overrides.igmp_snooping, null)
               flood_unknown_multicast_traffic_enabled = try(override.flood_unknown_multicast_traffic, local.defaults.meraki.domains.organizations.networks.switch.routing_multicast.overrides.flood_unknown_multicast_traffic, null)
             }
@@ -588,7 +588,7 @@ locals {
           broadcast_threshold                        = try(network.switch.storm_control.broadcast_threshold, local.defaults.meraki.domains.organizations.networks.switch.storm_control.broadcast_threshold, null)
           multicast_threshold                        = try(network.switch.storm_control.multicast_threshold, local.defaults.meraki.domains.organizations.networks.switch.storm_control.multicast_threshold, null)
           unknown_unicast_threshold                  = try(network.switch.storm_control.unknown_unicast_threshold, local.defaults.meraki.domains.organizations.networks.switch.storm_control.unknown_unicast_threshold, null)
-          treat_these_traffic_types_as_one_threshold = try(network.switch.storm_control.treat_these_traffic_types_as_one_threshold, local.defaults.meraki.domains.organizations.networks.switch.storm_control.treat_these_traffic_types_as_one_threshold, null)
+          treat_these_traffic_types_as_one_threshold = try(network.switch.storm_control.treat_these_traffic_types_as_one_threshold, local.defaults.meraki.domains.organizations.networks.switch.storm_control.treat_these_traffic_types_as_one_threshold, [])
         } if try(network.switch.storm_control, null) != null
       ]
     ]
@@ -617,7 +617,7 @@ locals {
           rstp_enabled = try(network.switch.stp.rstp, local.defaults.meraki.domains.organizations.networks.switch.stp.rstp, null)
           stp_bridge_priority = [
             for stp_bridge_priority in try(network.switch.stp.stp_bridge_priority, []) : {
-              switch_profiles = try(stp_bridge_priority.switch_profiles, local.defaults.meraki.domains.organizations.networks.switch.stp.stp_bridge_priority.switch_profiles, null)
+              switch_profiles = try(stp_bridge_priority.switch_profiles, local.defaults.meraki.domains.organizations.networks.switch.stp.stp_bridge_priority.switch_profiles, [])
               switches = [
                 for switch in stp_bridge_priority.switches :
                 meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch)].serial
@@ -778,10 +778,10 @@ locals {
               switch_stack_id        = meraki_switch_stack.networks_switch_stacks[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name)].id
               interface_id           = local.networks_switch_stacks_routing_interface_ids[format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, switch_stack.name, routing_interface.name)]
               dhcp_mode              = try(routing_interface.dhcp.dhcp_mode, local.defaults.meraki.domains.organizations.networks.switch_stacks.routing_interfaces.dhcp.dhcp_mode, null)
-              dhcp_relay_server_ips  = try(routing_interface.dhcp.dhcp_relay_server_ips, local.defaults.meraki.domains.organizations.networks.switch_stacks.routing_interfaces.dhcp.dhcp_relay_server_ips, null)
+              dhcp_relay_server_ips  = try(routing_interface.dhcp.dhcp_relay_server_ips, local.defaults.meraki.domains.organizations.networks.switch_stacks.routing_interfaces.dhcp.dhcp_relay_server_ips, [])
               dhcp_lease_time        = try(routing_interface.dhcp.dhcp_lease_time, local.defaults.meraki.domains.organizations.networks.switch_stacks.routing_interfaces.dhcp.dhcp_lease_time, null)
               dns_nameservers_option = try(routing_interface.dhcp.dns_nameservers_option, local.defaults.meraki.domains.organizations.networks.switch_stacks.routing_interfaces.dhcp.dns_nameservers_option, null)
-              dns_custom_nameservers = try(routing_interface.dhcp.dns_custom_nameservers, local.defaults.meraki.domains.organizations.networks.switch_stacks.routing_interfaces.dhcp.dns_custom_nameservers, null)
+              dns_custom_nameservers = try(routing_interface.dhcp.dns_custom_nameservers, local.defaults.meraki.domains.organizations.networks.switch_stacks.routing_interfaces.dhcp.dns_custom_nameservers, [])
               boot_options_enabled   = try(routing_interface.dhcp.boot_options, local.defaults.meraki.domains.organizations.networks.switch_stacks.routing_interfaces.dhcp.boot_options, null)
               boot_next_server       = try(routing_interface.dhcp.boot_next_server, local.defaults.meraki.domains.organizations.networks.switch_stacks.routing_interfaces.dhcp.boot_next_server, null)
               boot_file_name         = try(routing_interface.dhcp.boot_file_name, local.defaults.meraki.domains.organizations.networks.switch_stacks.routing_interfaces.dhcp.boot_file_name, null)
