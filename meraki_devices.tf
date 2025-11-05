@@ -516,3 +516,36 @@ resource "meraki_device_cellular_sims" "devices_cellular_sims" {
   sim_failover_enabled = each.value.sim_failover_enabled
   sim_failover_timeout = each.value.sim_failover_timeout
 }
+
+locals {
+  devices_wireless_radio_settings = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for device in try(network.devices, []) : {
+            key                                = format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)
+            serial                             = meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)].serial
+            rf_profile_id                      = try(meraki_wireless_rf_profile.networks_wireless_rf_profiles[format("%s/%s/%s/%s", domain.name, organization.name, network.name, try(device.wireless.radio_settings.rf_profile_name, local.defaults.meraki.domains.organizations.networks.devices.wireless.radio_settings.rf_profile_name))].id, null)
+            two_four_ghz_settings_channel      = try(device.wireless.radio_settings.two_four_ghz_settings.channel, local.defaults.meraki.domains.organizations.networks.devices.wireless.radio_settings.two_four_ghz_settings.channel, null)
+            two_four_ghz_settings_target_power = try(device.wireless.radio_settings.two_four_ghz_settings.target_power, local.defaults.meraki.domains.organizations.networks.devices.wireless.radio_settings.two_four_ghz_settings.target_power, null)
+            five_ghz_settings_channel          = try(device.wireless.radio_settings.five_ghz_settings.channel, local.defaults.meraki.domains.organizations.networks.devices.wireless.radio_settings.five_ghz_settings.channel, null)
+            five_ghz_settings_channel_width    = try(device.wireless.radio_settings.five_ghz_settings.channel_width, local.defaults.meraki.domains.organizations.networks.devices.wireless.radio_settings.five_ghz_settings.channel_width, null)
+            five_ghz_settings_target_power     = try(device.wireless.radio_settings.five_ghz_settings.target_power, local.defaults.meraki.domains.organizations.networks.devices.wireless.radio_settings.five_ghz_settings.target_power, null)
+          } if try(device.wireless.radio_settings, null) != null
+        ]
+      ]
+    ]
+  ])
+}
+
+resource "meraki_wireless_radio_settings" "devices_wireless_radio_settings" {
+  for_each                           = { for v in local.devices_wireless_radio_settings : v.key => v }
+  serial                             = each.value.serial
+  rf_profile_id                      = each.value.rf_profile_id
+  two_four_ghz_settings_channel      = each.value.two_four_ghz_settings_channel
+  two_four_ghz_settings_target_power = each.value.two_four_ghz_settings_target_power
+  five_ghz_settings_channel          = each.value.five_ghz_settings_channel
+  five_ghz_settings_channel_width    = each.value.five_ghz_settings_channel_width
+  five_ghz_settings_target_power     = each.value.five_ghz_settings_target_power
+  depends_on                         = [meraki_wireless_rf_profile.networks_wireless_rf_profiles]
+}
