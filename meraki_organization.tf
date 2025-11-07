@@ -509,7 +509,7 @@ locals {
           }
         ]
         syslog_default_rule = try(organization.appliance.vpn_firewall_rules.syslog_default_rule, local.defaults.meraki.domains.organizations.appliance.vpn_firewall_rules.syslog_default_rule, null)
-      } if length(try(organization.appliance.vpn_firewall_rules.rules, [])) > 0
+      } if try(organization.appliance.vpn_firewall_rules, null) != null
     ]
   ])
 }
