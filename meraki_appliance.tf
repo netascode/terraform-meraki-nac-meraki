@@ -460,6 +460,7 @@ locals {
             ipv6_prefix_assignments = try(length(appliance_vlan.ipv6.prefix_assignments) == 0, true) ? null : [
               for ipv6_prefix_assignment in try(appliance_vlan.ipv6.prefix_assignments, []) : {
                 autonomous           = try(ipv6_prefix_assignment.autonomous, local.defaults.meraki.domains.organizations.networks.appliance.vlans.ipv6.prefix_assignments.autonomous, null)
+                disabled             = try(ipv6_prefix_assignment.disabled, local.defaults.meraki.domains.organizations.networks.appliance.vlans.ipv6.prefix_assignments.disabled, null)
                 static_prefix        = try(ipv6_prefix_assignment.static_prefix, local.defaults.meraki.domains.organizations.networks.appliance.vlans.ipv6.prefix_assignments.static_prefix, null)
                 static_appliance_ip6 = try(ipv6_prefix_assignment.static_appliance_ip6, local.defaults.meraki.domains.organizations.networks.appliance.vlans.ipv6.prefix_assignments.static_appliance_ip6, null)
                 origin_type          = try(ipv6_prefix_assignment.origin.type, local.defaults.meraki.domains.organizations.networks.appliance.vlans.ipv6.prefix_assignments.origin.type, null)
@@ -515,8 +516,6 @@ resource "meraki_appliance_vlan" "networks_appliance_vlans" {
   ipv6_prefix_assignments = each.value.ipv6_prefix_assignments
   name                    = each.value.name
   subnet                  = each.value.subnet
-  vpn_nat_subnet          = each.value.vpn_nat_subnet
-  fixed_ip_assignments    = each.value.fixed_ip_assignments
   depends_on              = [meraki_appliance_vlans_settings.networks_appliance_vlans_settings]
 }
 
@@ -534,6 +533,8 @@ resource "meraki_appliance_vlan_dhcp" "networks_appliance_vlans_dhcp" {
   dhcp_relay_server_ips     = each.value.dhcp_relay_server_ips
   dhcp_boot_filename        = each.value.dhcp_boot_filename
   dhcp_boot_next_server     = each.value.dhcp_boot_next_server
+  vpn_nat_subnet            = each.value.vpn_nat_subnet
+  fixed_ip_assignments      = each.value.fixed_ip_assignments
   depends_on                = [meraki_appliance_vlan.networks_appliance_vlans]
 }
 
