@@ -72,7 +72,7 @@ locals {
             }
           ]
           syslog_default_rule = try(network.appliance.firewall.inbound_firewall_rules.syslog_default_rule, local.defaults.meraki.domains.organizations.networks.appliance.firewall.inbound_firewall_rules.syslog_default_rule, null)
-        } if length(try(network.appliance.firewall.inbound_firewall_rules.rules, [])) > 0
+        } if try(network.appliance.firewall.inbound_firewall_rules, null) != null
       ]
     ]
   ])
