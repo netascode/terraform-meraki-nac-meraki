@@ -135,7 +135,7 @@ locals {
               value_countries = try(rule.value_countries, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.value_countries, null)
             }
           ]
-        } if length(try(network.appliance.firewall.l7_firewall_rules, [])) > 0
+        } if try(network.appliance.firewall.l7_firewall_rules, null) != null
       ]
     ]
   ])
@@ -171,7 +171,7 @@ locals {
               ]
             }
           ]
-        } if length(try(network.appliance.firewall.one_to_many_nat_rules, [])) > 0
+        } if try(network.appliance.firewall.one_to_many_nat_rules, null) != null
       ]
     ]
   ])
@@ -206,7 +206,7 @@ locals {
               ]
             }
           ]
-        } if length(try(network.appliance.firewall.one_to_one_nat_rules, [])) > 0
+        } if try(network.appliance.firewall.one_to_one_nat_rules, null) != null
       ]
     ]
   ])
@@ -237,7 +237,7 @@ locals {
               uplink      = try(rule.uplink, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.uplink, null)
             }
           ]
-        } if length(try(network.appliance.firewall.port_forwarding_rules, [])) > 0
+        } if try(network.appliance.firewall.port_forwarding_rules, null) != null
       ]
     ]
   ])
