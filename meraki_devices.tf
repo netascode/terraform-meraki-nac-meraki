@@ -525,7 +525,7 @@ locals {
           for device in try(network.devices, []) : {
             key                                = format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)
             serial                             = meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)].serial
-            rf_profile_id                      = try(meraki_wireless_rf_profile.networks_wireless_rf_profiles[format("%s/%s/%s/%s", domain.name, organization.name, network.name, try(device.wireless.radio_settings.rf_profile_name, local.defaults.meraki.domains.organizations.networks.devices.wireless.radio_settings.rf_profile_name))].id, null)
+            rf_profile_id                      = try(meraki_wireless_rf_profile.networks_wireless_rf_profiles[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.wireless.radio_settings.rf_profile_name)].id, null)
             two_four_ghz_settings_channel      = try(device.wireless.radio_settings.two_four_ghz_settings.channel, local.defaults.meraki.domains.organizations.networks.devices.wireless.radio_settings.two_four_ghz_settings.channel, null)
             two_four_ghz_settings_target_power = try(device.wireless.radio_settings.two_four_ghz_settings.target_power, local.defaults.meraki.domains.organizations.networks.devices.wireless.radio_settings.two_four_ghz_settings.target_power, null)
             five_ghz_settings_channel          = try(device.wireless.radio_settings.five_ghz_settings.channel, local.defaults.meraki.domains.organizations.networks.devices.wireless.radio_settings.five_ghz_settings.channel, null)
@@ -547,5 +547,4 @@ resource "meraki_wireless_radio_settings" "devices_wireless_radio_settings" {
   five_ghz_settings_channel          = each.value.five_ghz_settings_channel
   five_ghz_settings_channel_width    = each.value.five_ghz_settings_channel_width
   five_ghz_settings_target_power     = each.value.five_ghz_settings_target_power
-  depends_on                         = [meraki_wireless_rf_profile.networks_wireless_rf_profiles]
 }
