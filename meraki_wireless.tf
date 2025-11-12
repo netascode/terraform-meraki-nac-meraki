@@ -850,7 +850,7 @@ resource "meraki_wireless_alternate_management_interface" "networks_wireless_alt
   protocols     = each.value.protocols
   access_points = each.value.access_points
   depends_on = [
-    meraki_wireless_ssid.networks_wireless_ssids
+    meraki_wireless_ssid.networks_wireless_ssids,
   ]
 }
 
@@ -883,7 +883,7 @@ resource "meraki_wireless_network_bluetooth_settings" "networks_wireless_bluetoo
   major                       = each.value.major
   minor                       = each.value.minor
   depends_on = [
-    meraki_wireless_ssid.networks_wireless_ssids
+    meraki_wireless_ssid.networks_wireless_ssids,
   ]
 }
 
