@@ -325,7 +325,6 @@ resource "meraki_network_floor_plan" "networks_floor_plans" {
   top_right_corner_lng    = each.value.top_right_corner_lng
   floor_number            = each.value.floor_number
   image_contents          = each.value.image_contents
-  depends_on              = [meraki_network.organizations_networks]
 }
 
 locals {
