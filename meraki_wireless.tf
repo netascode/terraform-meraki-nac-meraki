@@ -448,9 +448,6 @@ resource "meraki_wireless_ssid_eap_override" "networks_wireless_ssids_eap_overri
   max_retries             = each.value.max_retries
   eapol_key_retries       = each.value.eapol_key_retries
   eapol_key_timeout_in_ms = each.value.eapol_key_timeout_in_ms
-  depends_on = [
-    meraki_wireless_ssid.networks_wireless_ssids
-  ]
 }
 
 locals {
@@ -483,9 +480,6 @@ resource "meraki_wireless_ssid_device_type_group_policies" "networks_wireless_ss
   number               = each.value.number
   enabled              = each.value.enabled
   device_type_policies = each.value.device_type_policies
-  depends_on = [
-    meraki_wireless_ssid.networks_wireless_ssids
-  ]
 }
 
 locals {
@@ -521,9 +515,6 @@ resource "meraki_wireless_ssid_l3_firewall_rules" "networks_wireless_ssids_firew
   number           = each.value.number
   rules            = each.value.rules
   allow_lan_access = each.value.allow_lan_access
-  depends_on = [
-    meraki_wireless_ssid.networks_wireless_ssids
-  ]
 }
 
 
@@ -584,9 +575,6 @@ resource "meraki_wireless_ssid_hotspot_20" "networks_wireless_ssids_hotspot20" {
   roam_consort_ois    = each.value.roam_consort_ois
   mcc_mncs            = each.value.mcc_mncs
   nai_realms          = each.value.nai_realms
-  depends_on = [
-    meraki_wireless_ssid.networks_wireless_ssids
-  ]
 }
 
 locals {
@@ -619,9 +607,6 @@ resource "meraki_wireless_ssid_identity_psk" "networks_wireless_ssids_identity_p
   passphrase      = each.value.passphrase
   group_policy_id = each.value.group_policy_id
   expires_at      = each.value.expires_at
-  depends_on = [
-    meraki_wireless_ssid.networks_wireless_ssids
-  ]
 }
 
 locals {
@@ -751,9 +736,6 @@ resource "meraki_wireless_ssid_splash_settings" "networks_wireless_ssids_splash_
   sentry_enrollment_enforced_systems            = each.value.sentry_enrollment_enforced_systems
   self_registration_enabled                     = each.value.self_registration_enabled
   self_registration_authorization_type          = each.value.self_registration_authorization_type
-  depends_on = [
-    meraki_wireless_ssid.networks_wireless_ssids
-  ]
 }
 
 
@@ -797,9 +779,6 @@ resource "meraki_wireless_ssid_traffic_shaping_rules" "networks_wireless_ssids_t
   traffic_shaping_enabled = each.value.traffic_shaping_enabled
   default_rules_enabled   = each.value.default_rules_enabled
   rules                   = each.value.rules
-  depends_on = [
-    meraki_wireless_ssid.networks_wireless_ssids
-  ]
 }
 
 
@@ -835,9 +814,6 @@ resource "meraki_wireless_ssid_bonjour_forwarding" "networks_wireless_ssids_bonj
   enabled           = each.value.enabled
   rules             = each.value.rules
   exception_enabled = each.value.exception_enabled
-  depends_on = [
-    meraki_wireless_ssid.networks_wireless_ssids
-  ]
 }
 
 locals {
