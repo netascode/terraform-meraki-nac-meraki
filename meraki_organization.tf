@@ -361,10 +361,6 @@ resource "meraki_organization_adaptive_policy" "organizations_adaptive_policy_po
   destination_group_sgt  = each.value.destination_group_sgt
   acls                   = each.value.acls
   last_entry_rule        = each.value.last_entry_rule
-  depends_on = [
-    meraki_organization_adaptive_policy_group.organizations_adaptive_policy_groups,
-    meraki_organization_adaptive_policy_acl.organizations_adaptive_policy_acls
-  ]
 }
 
 locals {
