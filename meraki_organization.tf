@@ -260,7 +260,9 @@ resource "meraki_organization_adaptive_policy_settings" "organizations_adaptive_
   for_each         = { for v in local.organizations_adaptive_policy_settings_enabled_networks : v.key => v }
   organization_id  = each.value.organization_id
   enabled_networks = each.value.enabled_networks
-  depends_on       = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -320,7 +322,9 @@ resource "meraki_organization_adaptive_policy_acl" "organizations_adaptive_polic
   description     = each.value.description
   rules           = each.value.rules
   ip_version      = each.value.ip_version
-  depends_on      = [meraki_organization_adaptive_policy_group.organizations_adaptive_policy_groups]
+  depends_on = [
+    meraki_organization_adaptive_policy_group.organizations_adaptive_policy_groups,
+  ]
 }
 
 locals {
@@ -482,7 +486,9 @@ resource "meraki_appliance_third_party_vpn_peers" "organizations_appliance_third
   for_each        = { for v in local.organizations_appliance_third_party_vpn_peers : v.key => v }
   organization_id = each.value.organization_id
   peers           = each.value.peers
-  depends_on      = [meraki_network.organizations_networks]
+  depends_on = [
+    meraki_network.organizations_networks,
+  ]
 }
 
 locals {
@@ -514,7 +520,9 @@ resource "meraki_appliance_vpn_firewall_rules" "organizations_appliance_vpn_fire
   organization_id     = each.value.organization_id
   rules               = each.value.rules
   syslog_default_rule = each.value.syslog_default_rule
-  depends_on          = [meraki_network.organizations_networks]
+  depends_on = [
+    meraki_network.organizations_networks,
+  ]
 }
 
 locals {
