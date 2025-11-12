@@ -158,6 +158,7 @@ module "meraki" {
 | [meraki_wireless_alternate_management_interface.networks_wireless_alternate_management_interface](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_alternate_management_interface) | resource |
 | [meraki_wireless_device_bluetooth_settings.devices_wireless_bluetooth_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_device_bluetooth_settings) | resource |
 | [meraki_wireless_network_bluetooth_settings.networks_wireless_bluetooth_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_network_bluetooth_settings) | resource |
+| [meraki_wireless_radio_settings.devices_wireless_radio_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_radio_settings) | resource |
 | [meraki_wireless_rf_profile.networks_wireless_rf_profiles](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_rf_profile) | resource |
 | [meraki_wireless_settings.networks_wireless_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_settings) | resource |
 | [meraki_wireless_ssid.networks_wireless_ssids](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_ssid) | resource |
