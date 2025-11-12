@@ -344,7 +344,6 @@ resource "meraki_switch_routing_interface_dhcp" "devices_switch_routing_interfac
   dhcp_options           = each.value.dhcp_options
   reserved_ip_ranges     = each.value.reserved_ip_ranges
   fixed_ip_assignments   = each.value.fixed_ip_assignments
-  depends_on             = [meraki_switch_routing_interface.devices_switch_routing_interfaces]
 }
 
 locals {
