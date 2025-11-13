@@ -346,9 +346,9 @@ locals {
           network_id                       = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           mode                             = try(network.appliance.security_intrusion.mode, local.defaults.meraki.domains.organizations.networks.appliance.security_intrusion.mode, null)
           ids_rulesets                     = try(network.appliance.security_intrusion.ids_rulesets, local.defaults.meraki.domains.organizations.networks.appliance.security_intrusion.ids_rulesets, null)
-          protected_networks_use_default   = try(network.appliance.security_intrusion.protected_networks.use_default, local.defaults.meraki.domains.organizations.networks.appliance_security_intrusion.protected_networks.use_default, null)
-          protected_networks_included_cidr = try(network.appliance.security_intrusion.protected_networks.included_cidr, local.defaults.meraki.domains.organizations.networks.appliance_security_intrusion.protected_networks.included_cidr, null)
-          protected_networks_excluded_cidr = try(network.appliance.security_intrusion.protected_networks.excluded_cidr, local.defaults.meraki.domains.organizations.networks.appliance_security_intrusion.protected_networks.excluded_cidr, null)
+          protected_networks_use_default   = try(network.appliance.security_intrusion.protected_networks.use_default, local.defaults.meraki.domains.organizations.networks.appliance.security_intrusion.protected_networks.use_default, null)
+          protected_networks_included_cidr = try(network.appliance.security_intrusion.protected_networks.included_cidr, local.defaults.meraki.domains.organizations.networks.appliance.security_intrusion.protected_networks.included_cidr, null)
+          protected_networks_excluded_cidr = try(network.appliance.security_intrusion.protected_networks.excluded_cidr, local.defaults.meraki.domains.organizations.networks.appliance.security_intrusion.protected_networks.excluded_cidr, null)
         } if try(network.appliance.security_intrusion, null) != null
       ]
     ]
