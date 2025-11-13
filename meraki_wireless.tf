@@ -59,9 +59,9 @@ locals {
             six_ghz_settings_rxsop                    = try(wireless_rf_profile.six_ghz_settings.rxsop, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.six_ghz_settings.rxsop, null)
             transmission_enabled                      = try(wireless_rf_profile.transmission, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.transmission, null)
             flex_radios_by_model = try(length(wireless_rf_profile.flex_radios) == 0, true) ? null : [
-              for by_model in try(wireless_rf_profile.flex_radios, []) : {
-                model = try(by_model.model, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.flex_radios.model, null)
-                bands = try(by_model.bands, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.flex_radios.bands, null)
+              for flex_radio in try(wireless_rf_profile.flex_radios, []) : {
+                model = try(flex_radio.model, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.flex_radios.model, null)
+                bands = try(flex_radio.bands, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.flex_radios.bands, null)
               }
             ]
           }
@@ -226,9 +226,9 @@ locals {
             local_radius_certificate_authentication_ocsp_responder_url                  = try(wireless_ssid.radius.local_radius.certificate_authentication.ocsp_responder_url, local.defaults.meraki.domains.organizations.networks.wireless.ssids.radius.local_radius.certificate_authentication.ocsp_responder_url, null)
             local_radius_certificate_authentication_client_root_ca_certificate_contents = try(wireless_ssid.radius.local_radius.certificate_authentication.client_root_ca_certificate, local.defaults.meraki.domains.organizations.networks.wireless.ssids.radius.local_radius.certificate_authentication.client_root_ca_certificate, null)
             ldap_servers = try(length(wireless_ssid.ldap.servers) == 0, true) ? null : [
-              for server in try(wireless_ssid.ldap.servers, []) : {
-                host = try(server.host, local.defaults.meraki.domains.organizations.networks.wireless.ssids.ldap.servers.host, null)
-                port = try(server.port, local.defaults.meraki.domains.organizations.networks.wireless.ssids.ldap.servers.port, null)
+              for ldap_server in try(wireless_ssid.ldap.servers, []) : {
+                host = try(ldap_server.host, local.defaults.meraki.domains.organizations.networks.wireless.ssids.ldap.servers.host, null)
+                port = try(ldap_server.port, local.defaults.meraki.domains.organizations.networks.wireless.ssids.ldap.servers.port, null)
               }
             ]
             ldap_credentials_distinguished_name = try(wireless_ssid.ldap.credentials.distinguished_name, local.defaults.meraki.domains.organizations.networks.wireless.ssids.ldap.credentials.distinguished_name, null)
@@ -236,9 +236,9 @@ locals {
             ldap_base_distinguished_name        = try(wireless_ssid.ldap.base_distinguished_name, local.defaults.meraki.domains.organizations.networks.wireless.ssids.ldap.base_distinguished_name, null)
             ldap_server_ca_certificate_contents = try(wireless_ssid.ldap.server_ca_certificate, local.defaults.meraki.domains.organizations.networks.wireless.ssids.ldap.server_ca_certificate, null)
             active_directory_servers = try(length(wireless_ssid.active_directory.servers) == 0, true) ? null : [
-              for server in try(wireless_ssid.active_directory.servers, []) : {
-                host = try(server.host, local.defaults.meraki.domains.organizations.networks.wireless.ssids.active_directory.servers.host, null)
-                port = try(server.port, local.defaults.meraki.domains.organizations.networks.wireless.ssids.active_directory.servers.port, null)
+              for active_directory_server in try(wireless_ssid.active_directory.servers, []) : {
+                host = try(active_directory_server.host, local.defaults.meraki.domains.organizations.networks.wireless.ssids.active_directory.servers.host, null)
+                port = try(active_directory_server.port, local.defaults.meraki.domains.organizations.networks.wireless.ssids.active_directory.servers.port, null)
               }
             ]
             active_directory_credentials_logon_name = try(wireless_ssid.active_directory.credentials.logon_name, local.defaults.meraki.domains.organizations.networks.wireless.ssids.active_directory.credentials.logon_name, null)
@@ -316,9 +316,9 @@ locals {
             named_vlans_tagging_enabled           = try(wireless_ssid.named_vlans.tagging.enabled, local.defaults.meraki.domains.organizations.networks.wireless.ssids.named_vlans.tagging.enabled, null)
             named_vlans_tagging_default_vlan_name = try(wireless_ssid.named_vlans.tagging.default_vlan_name, local.defaults.meraki.domains.organizations.networks.wireless.ssids.named_vlans.tagging.default_vlan_name, null)
             named_vlans_tagging_by_ap_tags = try(length(wireless_ssid.named_vlans.tagging.by_ap_tags) == 0, true) ? null : [
-              for by_ap_tag in try(wireless_ssid.named_vlans.tagging.by_ap_tags, []) : {
-                tags      = try(by_ap_tag.tags, local.defaults.meraki.domains.organizations.networks.wireless.ssids.named_vlans.tagging.by_ap_tags.tags, null)
-                vlan_name = try(by_ap_tag.vlan_name, local.defaults.meraki.domains.organizations.networks.wireless.ssids.named_vlans.tagging.by_ap_tags.vlan_name, null)
+              for named_vlans_tagging_by_ap_tag in try(wireless_ssid.named_vlans.tagging.by_ap_tags, []) : {
+                tags      = try(named_vlans_tagging_by_ap_tag.tags, local.defaults.meraki.domains.organizations.networks.wireless.ssids.named_vlans.tagging.by_ap_tags.tags, null)
+                vlan_name = try(named_vlans_tagging_by_ap_tag.vlan_name, local.defaults.meraki.domains.organizations.networks.wireless.ssids.named_vlans.tagging.by_ap_tags.vlan_name, null)
               }
             ]
             named_vlans_radius_guest_vlan_enabled = try(wireless_ssid.named_vlans.radius_guest_vlan.enabled, local.defaults.meraki.domains.organizations.networks.wireless.ssids.named_vlans.radius_guest_vlan.enabled, null)
