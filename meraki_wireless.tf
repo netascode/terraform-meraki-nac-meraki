@@ -179,8 +179,8 @@ locals {
           location_analytics_enabled                = try(network.wireless.settings.location_analytics, local.defaults.meraki.domains.organizations.networks.wireless.settings.location_analytics, null)
           upgrade_strategy                          = try(network.wireless.settings.upgrade_strategy, local.defaults.meraki.domains.organizations.networks.wireless.settings.upgrade_strategy, null)
           led_lights_on                             = try(network.wireless.settings.led_lights_on, local.defaults.meraki.domains.organizations.networks.wireless.settings.led_lights_on, null)
-          named_vlans_pool_dhcp_monitoring_enabled  = try(network.wireless.settings.named_vlans.pool_dhcp_monitoring.enabled, local.defaults.meraki.domains.organizations.networks.wireless.settings.named_vlans.pool_dhcp_monitoring.enabled, null)
-          named_vlans_pool_dhcp_monitoring_duration = try(network.wireless.settings.named_vlans.pool_dhcp_monitoring.duration, local.defaults.meraki.domains.organizations.networks.wireless.settings.named_vlans.pool_dhcp_monitoring.duration, null)
+          named_vlans_pool_dhcp_monitoring_enabled  = try(network.wireless.settings.named_vlans_pool_dhcp_monitoring.enabled, local.defaults.meraki.domains.organizations.networks.wireless.settings.named_vlans_pool_dhcp_monitoring.enabled, null)
+          named_vlans_pool_dhcp_monitoring_duration = try(network.wireless.settings.named_vlans_pool_dhcp_monitoring.duration, local.defaults.meraki.domains.organizations.networks.wireless.settings.named_vlans_pool_dhcp_monitoring.duration, null)
         } if try(network.wireless.settings, null) != null
       ]
     ]
