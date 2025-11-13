@@ -184,18 +184,22 @@ locals {
         for admin in try(organization.admins, []) : {
           key             = format("%s/%s/%s", domain.name, organization.name, try(admin.name, local.defaults.meraki.domains.organizations.admins.name, null))
           organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
-          name            = try(admin.name, local.defaults.meraki.domains.organizations.admins.name, null)
           email           = try(admin.email, local.defaults.meraki.domains.organizations.admins.email, null)
+          name            = try(admin.name, local.defaults.meraki.domains.organizations.admins.name, null)
+          org_access      = try(admin.organization_access, local.defaults.meraki.domains.organizations.admins.organization_access, null)
+          tags = try(length(admin.tags) == 0, true) ? null : [
+            for tag in try(admin.tags, []) : {
+              tag    = tag.tag
+              access = try(tag.access, local.defaults.meraki.domains.organizations.admins.tags.access, null)
+            }
+          ]
+          networks = try(length(admin.networks) == 0, true) ? null : [
+            for network in try(admin.networks, []) : {
+              id     = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
+              access = try(network.access, local.defaults.meraki.domains.organizations.admins.networks.access, null)
+            }
+          ]
           # authentication_method = try(admin.authentication_method, local.defaults.meraki.domains.organizations.admins.authentication_method, null)
-          org_access = try(admin.organization_access, local.defaults.meraki.domains.organizations.admins.organization_access, null)
-          networks = try(length(admin.networks) == 0, true) ? null : [for network in try(admin.networks, []) : {
-            id     = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
-            access = try(network.access, local.defaults.meraki.domains.organizations.admins.networks.access, null)
-          }]
-          tags = try(length(admin.tags) == 0, true) ? null : [for tag in try(admin.tags, []) : {
-            tag    = tag.tag
-            access = try(tag.access, local.defaults.meraki.domains.organizations.admins.tags.access, null)
-          }]
         }
       ]
     ]
