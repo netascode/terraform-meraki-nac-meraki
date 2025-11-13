@@ -16,7 +16,7 @@ locals {
               min_bitrate           = try(settings.min_bitrate, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.per_ssid_settings.min_bitrate, null)
               band_operation_mode   = try(settings.band_operation_mode, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.per_ssid_settings.band_operation_mode, null)
               bands_enabled         = try(settings.bands, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.per_ssid_settings.bands, null)
-              band_steering_enabled = try(settings.band_steering_enabled, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.per_ssid_settings.band_steering_enabled, null)
+              band_steering_enabled = try(settings.band_steering, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.per_ssid_settings.band_steering, null)
             }
           ]
         ]
@@ -38,7 +38,7 @@ locals {
             band_selection_type                       = try(wireless_rf_profile.band_selection_type, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.band_selection_type, null)
             ap_band_settings_band_operation_mode      = try(wireless_rf_profile.ap_band_settings.band_operation_mode, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.ap_band_settings.band_operation_mode, null)
             ap_band_settings_bands_enabled            = try(wireless_rf_profile.ap_band_settings.bands, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.ap_band_settings.bands, null)
-            ap_band_settings_band_steering_enabled    = try(wireless_rf_profile.ap_band_settings.band_steering_enabled, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.ap_band_settings.band_steering_enabled, null)
+            ap_band_settings_band_steering_enabled    = try(wireless_rf_profile.ap_band_settings.band_steering, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.ap_band_settings.band_steering, null)
             two_four_ghz_settings_max_power           = try(wireless_rf_profile.two_four_ghz_settings.max_power, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.two_four_ghz_settings.max_power, null)
             two_four_ghz_settings_min_power           = try(wireless_rf_profile.two_four_ghz_settings.min_power, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.two_four_ghz_settings.min_power, null)
             two_four_ghz_settings_min_bitrate         = try(wireless_rf_profile.two_four_ghz_settings.min_bitrate, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.two_four_ghz_settings.min_bitrate, null)
