@@ -632,12 +632,12 @@ locals {
               ip                      = try(neighbor.ip, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.ip, null)
               remote_as_number        = try(neighbor.remote_as_number, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.remote_as_number, null)
               allow_transit           = try(neighbor.allow_transit, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.allow_transit, null)
-              authentication_password = try(neighbor.authentication_password, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.authentication_password, null)
-              ipv6_address            = try(neighbor.ipv6_address, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.ipv6_address, null)
+              authentication_password = try(neighbor.password, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.password, null)
+              ipv6_address            = try(neighbor.ipv6, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.ipv6, null)
               next_hop_ip             = try(neighbor.next_hop_ip, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.next_hop_ip, null)
               receive_limit           = try(neighbor.receive_limit, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.receive_limit, null)
               source_interface        = try(neighbor.source_interface, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.source_interface, null)
-              ttl_security_enabled    = try(neighbor.ttl_security_enabled, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.ttl_security_enabled, null)
+              ttl_security_enabled    = try(neighbor.ttl_security, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.ttl_security, null)
             }
           ]
         } if try(network.appliance.vpn_bgp, null) != null
