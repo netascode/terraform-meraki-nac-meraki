@@ -343,7 +343,7 @@ locals {
           destination_group_id   = meraki_organization_adaptive_policy_group.organizations_adaptive_policy_groups[format("%s/%s/%s", domain.name, organization.name, adaptive_policy_policy.destination_group.name)].id
           last_entry_rule        = try(adaptive_policy_policy.last_entry_rule, local.defaults.meraki.domains.organizations.adaptive_policy.policies.last_entry_rule, null)
           acls = try(length(adaptive_policy_policy.acls) == 0, true) ? null : [
-            for acl in adaptive_policy_policy.acls : {
+            for acl in try(adaptive_policy_policy.acls, []) : {
               id   = meraki_organization_adaptive_policy_acl.organizations_adaptive_policy_acls[format("%s/%s/%s", domain.name, organization.name, acl)].id
               name = acl
             }
