@@ -374,13 +374,13 @@ locals {
         for policy_object in try(organization.policy_objects, []) : {
           key             = format("%s/%s/%s", domain.name, organization.name, policy_object.name)
           organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
-          name            = try(policy_object.name, local.defaults.meraki.domains.organizations.adaptive_policy_object.name, null)
-          category        = try(policy_object.category, local.defaults.meraki.domains.organizations.adaptive_policy_object.category, null)
-          type            = try(policy_object.type, local.defaults.meraki.domains.organizations.adaptive_policy_object.type, null)
-          cidr            = try(policy_object.cidr, local.defaults.meraki.domains.organizations.adaptive_policy_object.cidr, null)
-          fqdn            = try(policy_object.fqdn, local.defaults.meraki.domains.organizations.adaptive_policy_object.fqdn, null)
-          mask            = try(policy_object.mask, local.defaults.meraki.domains.organizations.adaptive_policy_object.mask, null)
-          ip              = try(policy_object.ip, local.defaults.meraki.domains.organizations.adaptive_policy_object.ip, null)
+          name            = try(policy_object.name, local.defaults.meraki.domains.organizations.policy_objects.name, null)
+          category        = try(policy_object.category, local.defaults.meraki.domains.organizations.policy_objects.category, null)
+          type            = try(policy_object.type, local.defaults.meraki.domains.organizations.policy_objects.type, null)
+          cidr            = try(policy_object.cidr, local.defaults.meraki.domains.organizations.policy_objects.cidr, null)
+          fqdn            = try(policy_object.fqdn, local.defaults.meraki.domains.organizations.policy_objects.fqdn, null)
+          mask            = try(policy_object.mask, local.defaults.meraki.domains.organizations.policy_objects.mask, null)
+          ip              = try(policy_object.ip, local.defaults.meraki.domains.organizations.policy_objects.ip, null)
         }
       ]
     ]
