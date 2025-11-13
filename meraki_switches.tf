@@ -336,7 +336,7 @@ locals {
 }
 
 resource "meraki_switch_port_schedule" "networks_switch_port_schedules" {
-  for_each                       = { for i in local.networks_switch_port_schedules : i.key => i }
+  for_each                       = { for v in local.networks_switch_port_schedules : v.key => v }
   network_id                     = each.value.network_id
   name                           = each.value.name
   port_schedule_monday_active    = each.value.port_schedule_monday_active
@@ -714,7 +714,7 @@ locals {
 }
 
 resource "meraki_switch_stack_routing_interface" "networks_switch_stacks_routing_interfaces_first" {
-  for_each                         = { for i in local.networks_switch_stacks_routing_interfaces_first : i.key => i }
+  for_each                         = { for v in local.networks_switch_stacks_routing_interfaces_first : v.key => v }
   network_id                       = each.value.network_id
   switch_stack_id                  = each.value.switch_stack_id
   name                             = each.value.name
