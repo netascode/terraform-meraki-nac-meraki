@@ -23,7 +23,7 @@ locals {
 }
 
 resource "meraki_device" "devices" {
-  for_each        = { for dev in local.devices : dev.key => dev }
+  for_each        = { for v in local.devices : v.key => v }
   serial          = each.value.serial
   name            = each.value.name
   tags            = each.value.tags
@@ -269,7 +269,7 @@ locals {
 }
 
 resource "meraki_switch_routing_interface" "devices_switch_routing_interfaces" {
-  for_each                         = { for i in local.devices_switch_routing_interfaces : i.key => i }
+  for_each                         = { for v in local.devices_switch_routing_interfaces : v.key => v }
   serial                           = each.value.serial
   name                             = each.value.name
   subnet                           = each.value.subnet
