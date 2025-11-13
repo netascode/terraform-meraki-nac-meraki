@@ -138,11 +138,11 @@ locals {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           rules = try(length(network.appliance.firewall.l7_firewall_rules) == 0, true) ? null : [
-            for rule in try(network.appliance.firewall.l7_firewall_rules, []) : {
-              policy          = try(rule.policy, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.policy, null)
-              type            = try(rule.type, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.type, null)
-              value           = try(rule.value, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.value, null)
-              value_countries = try(rule.value_countries, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.value_countries, null)
+            for appliance_firewall_l7_firewall_rule in try(network.appliance.firewall.l7_firewall_rules, []) : {
+              policy          = try(appliance_firewall_l7_firewall_rule.policy, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.policy, null)
+              type            = try(appliance_firewall_l7_firewall_rule.type, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.type, null)
+              value           = try(appliance_firewall_l7_firewall_rule.value, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.value, null)
+              value_countries = try(appliance_firewall_l7_firewall_rule.value_countries, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.value_countries, null)
             }
           ]
         } if try(network.appliance.firewall.l7_firewall_rules, null) != null
@@ -168,17 +168,17 @@ locals {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           rules = try(length(network.appliance.firewall.one_to_many_nat_rules) == 0, true) ? null : [
-            for rule in try(network.appliance.firewall.one_to_many_nat_rules, []) : {
-              public_ip = try(rule.public_ip, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.public_ip, null)
-              uplink    = try(rule.uplink, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.uplink, null)
-              port_rules = try(length(rule.port_rules) == 0, true) ? null : [
-                for pr in try(rule.port_rules, []) : {
-                  name        = try(pr.name, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.port_rules.name, null)
-                  allowed_ips = try(pr.allowed_ips, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.port_rules.allowed_ips, null)
-                  local_ip    = try(pr.local_ip, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.port_rules.local_ip, null)
-                  local_port  = try(pr.local_port, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.port_rules.local_port, null)
-                  protocol    = try(pr.protocol, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.port_rules.protocol, null)
-                  public_port = try(pr.public_port, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.port_rules.public_port, null)
+            for appliance_firewall_one_to_many_nat_rule in try(network.appliance.firewall.one_to_many_nat_rules, []) : {
+              public_ip = try(appliance_firewall_one_to_many_nat_rule.public_ip, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.public_ip, null)
+              uplink    = try(appliance_firewall_one_to_many_nat_rule.uplink, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.uplink, null)
+              port_rules = try(length(appliance_firewall_one_to_many_nat_rule.port_rules) == 0, true) ? null : [
+                for port_rule in try(appliance_firewall_one_to_many_nat_rule.port_rules, []) : {
+                  name        = try(port_rule.name, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.port_rules.name, null)
+                  allowed_ips = try(port_rule.allowed_ips, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.port_rules.allowed_ips, null)
+                  local_ip    = try(port_rule.local_ip, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.port_rules.local_ip, null)
+                  local_port  = try(port_rule.local_port, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.port_rules.local_port, null)
+                  protocol    = try(port_rule.protocol, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.port_rules.protocol, null)
+                  public_port = try(port_rule.public_port, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.port_rules.public_port, null)
                 }
               ]
             }
@@ -206,16 +206,16 @@ locals {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           rules = try(length(network.appliance.firewall.one_to_one_nat_rules) == 0, true) ? null : [
-            for rule in try(network.appliance.firewall.one_to_one_nat_rules, []) : {
-              lan_ip    = try(rule.lan_ip, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.lan_ip, null)
-              public_ip = try(rule.public_ip, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.public_ip, null)
-              uplink    = try(rule.uplink, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.uplink, null)
-              name      = try(rule.name, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.name, null)
-              allowed_inbound = try(length(rule.allowed_inbound) == 0, true) ? null : [
-                for ai in try(rule.allowed_inbound, []) : {
-                  allowed_ips       = try(ai.allowed_ips, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.allowed_inbound.allowed_ips, null)
-                  destination_ports = try(ai.destination_ports, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.allowed_inbound.destination_ports, null)
-                  protocol          = try(ai.protocol, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.allowed_inbound.protocol, null)
+            for appliance_firewall_one_to_one_nat_rule in try(network.appliance.firewall.one_to_one_nat_rules, []) : {
+              lan_ip    = try(appliance_firewall_one_to_one_nat_rule.lan_ip, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.lan_ip, null)
+              public_ip = try(appliance_firewall_one_to_one_nat_rule.public_ip, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.public_ip, null)
+              uplink    = try(appliance_firewall_one_to_one_nat_rule.uplink, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.uplink, null)
+              name      = try(appliance_firewall_one_to_one_nat_rule.name, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.name, null)
+              allowed_inbound = try(length(appliance_firewall_one_to_one_nat_rule.allowed_inbound) == 0, true) ? null : [
+                for allowed_inbound in try(appliance_firewall_one_to_one_nat_rule.allowed_inbound, []) : {
+                  allowed_ips       = try(allowed_inbound.allowed_ips, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.allowed_inbound.allowed_ips, null)
+                  destination_ports = try(allowed_inbound.destination_ports, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.allowed_inbound.destination_ports, null)
+                  protocol          = try(allowed_inbound.protocol, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.allowed_inbound.protocol, null)
                 }
               ]
             }
@@ -243,14 +243,14 @@ locals {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           rules = try(length(network.appliance.firewall.port_forwarding_rules) == 0, true) ? null : [
-            for rule in try(network.appliance.firewall.port_forwarding_rules, []) : {
-              allowed_ips = try(rule.allowed_ips, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.allowed_ips, null)
-              lan_ip      = try(rule.lan_ip, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.lan_ip, null)
-              local_port  = try(rule.local_port, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.local_port, null)
-              protocol    = try(rule.protocol, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.protocol, null)
-              public_port = try(rule.public_port, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.public_port, null)
-              name        = try(rule.name, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.name, null)
-              uplink      = try(rule.uplink, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.uplink, null)
+            for appliance_firewall_port_forwarding_rule in try(network.appliance.firewall.port_forwarding_rules, []) : {
+              allowed_ips = try(appliance_firewall_port_forwarding_rule.allowed_ips, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.allowed_ips, null)
+              lan_ip      = try(appliance_firewall_port_forwarding_rule.lan_ip, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.lan_ip, null)
+              local_port  = try(appliance_firewall_port_forwarding_rule.local_port, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.local_port, null)
+              protocol    = try(appliance_firewall_port_forwarding_rule.protocol, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.protocol, null)
+              public_port = try(appliance_firewall_port_forwarding_rule.public_port, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.public_port, null)
+              name        = try(appliance_firewall_port_forwarding_rule.name, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.name, null)
+              uplink      = try(appliance_firewall_port_forwarding_rule.uplink, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.uplink, null)
             }
           ]
         } if try(network.appliance.firewall.port_forwarding_rules, null) != null
