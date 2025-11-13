@@ -627,17 +627,17 @@ locals {
           ibgp_hold_timer = try(network.appliance.vpn_bgp.ibgp_hold_timer, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.ibgp_hold_timer, null)
           neighbors = try(length(network.appliance.vpn_bgp.neighbors) == 0, true) ? null : [
             for neighbor in try(network.appliance.vpn_bgp.neighbors, []) : {
+              ip                      = try(neighbor.ip, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.ip, null)
+              ipv6_address            = try(neighbor.ipv6, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.ipv6, null)
+              remote_as_number        = try(neighbor.remote_as_number, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.remote_as_number, null)
+              receive_limit           = try(neighbor.receive_limit, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.receive_limit, null)
+              allow_transit           = try(neighbor.allow_transit, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.allow_transit, null)
               ebgp_hold_timer         = try(neighbor.ebgp_hold_timer, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.ebgp_hold_timer, null)
               ebgp_multihop           = try(neighbor.ebgp_multihop, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.ebgp_multihop, null)
-              ip                      = try(neighbor.ip, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.ip, null)
-              remote_as_number        = try(neighbor.remote_as_number, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.remote_as_number, null)
-              allow_transit           = try(neighbor.allow_transit, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.allow_transit, null)
-              authentication_password = try(neighbor.password, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.password, null)
-              ipv6_address            = try(neighbor.ipv6, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.ipv6, null)
-              next_hop_ip             = try(neighbor.next_hop_ip, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.next_hop_ip, null)
-              receive_limit           = try(neighbor.receive_limit, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.receive_limit, null)
               source_interface        = try(neighbor.source_interface, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.source_interface, null)
+              next_hop_ip             = try(neighbor.next_hop_ip, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.next_hop_ip, null)
               ttl_security_enabled    = try(neighbor.ttl_security, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.ttl_security, null)
+              authentication_password = try(neighbor.password, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.password, null)
             }
           ]
         } if try(network.appliance.vpn_bgp, null) != null
