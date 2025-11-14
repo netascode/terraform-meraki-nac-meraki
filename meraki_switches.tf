@@ -223,7 +223,9 @@ resource "meraki_switch_dscp_to_cos_mappings" "networks_switch_dscp_to_cos_mappi
   for_each   = { for v in local.networks_switch_dscp_to_cos_mappings : v.key => v }
   network_id = each.value.network_id
   mappings   = each.value.mappings
-  depends_on = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 
@@ -259,7 +261,9 @@ resource "meraki_switch_link_aggregation" "networks_switch_link_aggregations" {
   network_id           = each.value.network_id
   switch_ports         = each.value.switch_ports
   switch_profile_ports = each.value.switch_profile_ports
-  depends_on           = [meraki_switch_stack.networks_switch_stacks]
+  depends_on = [
+    meraki_switch_stack.networks_switch_stacks,
+  ]
 }
 
 locals {
@@ -289,7 +293,9 @@ resource "meraki_switch_mtu" "networks_switch_mtu" {
   network_id       = each.value.network_id
   default_mtu_size = each.value.default_mtu_size
   overrides        = each.value.overrides
-  depends_on       = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -330,7 +336,7 @@ locals {
 }
 
 resource "meraki_switch_port_schedule" "networks_switch_port_schedules" {
-  for_each                       = { for i in local.networks_switch_port_schedules : i.key => i }
+  for_each                       = { for v in local.networks_switch_port_schedules : v.key => v }
   network_id                     = each.value.network_id
   name                           = each.value.name
   port_schedule_monday_active    = each.value.port_schedule_monday_active
@@ -354,7 +360,9 @@ resource "meraki_switch_port_schedule" "networks_switch_port_schedules" {
   port_schedule_sunday_active    = each.value.port_schedule_sunday_active
   port_schedule_sunday_from      = each.value.port_schedule_sunday_from
   port_schedule_sunday_to        = each.value.port_schedule_sunday_to
-  depends_on                     = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 
@@ -390,7 +398,9 @@ resource "meraki_switch_qos_rule" "networks_switch_qos_rules" {
   dst_port       = each.value.dst_port
   dst_port_range = each.value.dst_port_range
   dscp           = each.value.dscp
-  depends_on     = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -445,7 +455,9 @@ resource "meraki_switch_routing_multicast" "networks_switch_routing_multicast" {
   default_settings_igmp_snooping_enabled                   = each.value.default_settings_igmp_snooping_enabled
   default_settings_flood_unknown_multicast_traffic_enabled = each.value.default_settings_flood_unknown_multicast_traffic_enabled
   overrides                                                = each.value.overrides
-  depends_on                                               = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -470,7 +482,9 @@ resource "meraki_switch_routing_multicast_rendezvous_point" "networks_switch_rou
   network_id      = each.value.network_id
   interface_ip    = each.value.interface_ip
   multicast_group = each.value.multicast_group
-  depends_on      = [meraki_switch_stack_routing_interface.networks_switch_stacks_routing_interfaces_not_first]
+  depends_on = [
+    meraki_switch_stack_routing_interface.networks_switch_stacks_routing_interfaces_not_first,
+  ]
 }
 
 locals {
@@ -523,7 +537,9 @@ resource "meraki_switch_routing_ospf" "networks_switch_routing_ospf" {
   md5_authentication_enabled        = each.value.md5_authentication_enabled
   md5_authentication_key_id         = each.value.md5_authentication_key_id
   md5_authentication_key_passphrase = each.value.md5_authentication_key_passphrase
-  depends_on                        = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -557,7 +573,9 @@ resource "meraki_switch_settings" "networks_switch_settings" {
   power_exceptions               = each.value.power_exceptions
   uplink_client_sampling_enabled = each.value.uplink_client_sampling_enabled
   mac_blocklist_enabled          = each.value.mac_blocklist_enabled
-  depends_on                     = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -584,7 +602,9 @@ resource "meraki_switch_storm_control" "networks_switch_storm_control" {
   multicast_threshold                        = each.value.multicast_threshold
   unknown_unicast_threshold                  = each.value.unknown_unicast_threshold
   treat_these_traffic_types_as_one_threshold = each.value.treat_these_traffic_types_as_one_threshold
-  depends_on                                 = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -599,11 +619,11 @@ locals {
             for stp_bridge_priority in try(network.switch.stp.stp_bridge_priority, []) : {
               switch_profiles = try(stp_bridge_priority.switch_profiles, local.defaults.meraki.domains.organizations.networks.switch.stp.stp_bridge_priority.switch_profiles, null)
               switches = try(length(stp_bridge_priority.switches) == 0, true) ? null : [
-                for switch in stp_bridge_priority.switches :
+                for switch in try(stp_bridge_priority.switches, []) :
                 meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch)].serial
               ]
               stacks = try(length(stp_bridge_priority.stacks) == 0, true) ? null : [
-                for stack in stp_bridge_priority.stacks :
+                for stack in try(stp_bridge_priority.stacks, []) :
                 meraki_switch_stack.networks_switch_stacks[format("%s/%s/%s/%s", domain.name, organization.name, network.name, stack)].id
               ]
               stp_priority = try(stp_bridge_priority.stp_priority, local.defaults.meraki.domains.organizations.networks.switch.stp.stp_bridge_priority.stp_priority, null)
@@ -620,7 +640,9 @@ resource "meraki_switch_stp" "networks_switch_stp" {
   network_id          = each.value.network_id
   rstp_enabled        = each.value.rstp_enabled
   stp_bridge_priority = each.value.stp_bridge_priority
-  depends_on          = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -645,7 +667,9 @@ resource "meraki_switch_stack" "networks_switch_stacks" {
   network_id = each.value.network_id
   name       = each.value.name
   serials    = each.value.serials
-  depends_on = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -690,7 +714,7 @@ locals {
 }
 
 resource "meraki_switch_stack_routing_interface" "networks_switch_stacks_routing_interfaces_first" {
-  for_each                         = { for i in local.networks_switch_stacks_routing_interfaces_first : i.key => i }
+  for_each                         = { for v in local.networks_switch_stacks_routing_interfaces_first : v.key => v }
   network_id                       = each.value.network_id
   switch_stack_id                  = each.value.switch_stack_id
   name                             = each.value.name
@@ -706,7 +730,9 @@ resource "meraki_switch_stack_routing_interface" "networks_switch_stacks_routing
   ipv6_prefix                      = each.value.ipv6_prefix
   ipv6_address                     = each.value.ipv6_address
   ipv6_gateway                     = each.value.ipv6_gateway
-  depends_on                       = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 resource "meraki_switch_stack_routing_interface" "networks_switch_stacks_routing_interfaces_not_first" {
   for_each                         = { for i in local.networks_switch_stacks_routing_interfaces_not_first : i.key => i }
@@ -725,7 +751,9 @@ resource "meraki_switch_stack_routing_interface" "networks_switch_stacks_routing
   ipv6_prefix                      = each.value.ipv6_prefix
   ipv6_address                     = each.value.ipv6_address
   ipv6_gateway                     = each.value.ipv6_gateway
-  depends_on                       = [meraki_switch_stack_routing_interface.networks_switch_stacks_routing_interfaces_first]
+  depends_on = [
+    meraki_switch_stack_routing_interface.networks_switch_stacks_routing_interfaces_first,
+  ]
 }
 
 locals {
@@ -836,5 +864,7 @@ resource "meraki_switch_stack_routing_static_route" "networks_switch_stacks_rout
   next_hop_ip                     = each.value.next_hop_ip
   advertise_via_ospf_enabled      = each.value.advertise_via_ospf_enabled
   prefer_over_ospf_routes_enabled = each.value.prefer_over_ospf_routes_enabled
-  depends_on                      = [meraki_switch_stack_routing_interface.networks_switch_stacks_routing_interfaces_not_first]
+  depends_on = [
+    meraki_switch_stack_routing_interface.networks_switch_stacks_routing_interfaces_not_first,
+  ]
 }

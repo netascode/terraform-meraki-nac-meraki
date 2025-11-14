@@ -23,7 +23,7 @@ locals {
 }
 
 resource "meraki_device" "devices" {
-  for_each        = { for dev in local.devices : dev.key => dev }
+  for_each        = { for v in local.devices : v.key => v }
   serial          = each.value.serial
   name            = each.value.name
   tags            = each.value.tags
@@ -34,7 +34,9 @@ resource "meraki_device" "devices" {
   move_map_marker = each.value.move_map_marker
   #switch_profile_id = each.value.switch_profile_id
   floor_plan_id = each.value.floor_plan_id
-  depends_on    = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -231,7 +233,9 @@ resource "meraki_switch_ports" "devices_switch_ports" {
       }
     ]
   ])
-  depends_on = [meraki_organization_adaptive_policy_settings.organizations_adaptive_policy_settings_enabled_networks]
+  depends_on = [
+    meraki_organization_adaptive_policy_settings.organizations_adaptive_policy_settings_enabled_networks,
+  ]
 }
 
 locals {
@@ -265,7 +269,7 @@ locals {
 }
 
 resource "meraki_switch_routing_interface" "devices_switch_routing_interfaces" {
-  for_each                         = { for i in local.devices_switch_routing_interfaces : i.key => i }
+  for_each                         = { for v in local.devices_switch_routing_interfaces : v.key => v }
   serial                           = each.value.serial
   name                             = each.value.name
   subnet                           = each.value.subnet
@@ -344,7 +348,6 @@ resource "meraki_switch_routing_interface_dhcp" "devices_switch_routing_interfac
   dhcp_options           = each.value.dhcp_options
   reserved_ip_ranges     = each.value.reserved_ip_ranges
   fixed_ip_assignments   = each.value.fixed_ip_assignments
-  depends_on             = [meraki_switch_routing_interface.devices_switch_routing_interfaces]
 }
 
 locals {
@@ -377,7 +380,9 @@ resource "meraki_switch_routing_static_route" "devices_switch_routing_static_rou
   next_hop_ip                     = each.value.next_hop_ip
   advertise_via_ospf_enabled      = each.value.advertise_via_ospf_enabled
   prefer_over_ospf_routes_enabled = each.value.prefer_over_ospf_routes_enabled
-  depends_on                      = [meraki_switch_routing_interface.devices_switch_routing_interfaces]
+  depends_on = [
+    meraki_switch_routing_interface.devices_switch_routing_interfaces,
+  ]
 }
 
 locals {
