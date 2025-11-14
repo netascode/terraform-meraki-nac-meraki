@@ -33,7 +33,7 @@ locals {
             bandwidth_limit_up                    = try(group_policy.bandwidth.bandwidth_limits.limit_up, local.defaults.meraki.domains.organizations.networks.group_policies.bandwidth.bandwidth_limits.limit_up, null)
             bandwidth_limit_down                  = try(group_policy.bandwidth.bandwidth_limits.limit_down, local.defaults.meraki.domains.organizations.networks.group_policies.bandwidth.bandwidth_limits.limit_down, null)
             firewall_and_traffic_shaping_settings = try(group_policy.firewall_and_traffic_shaping.settings, local.defaults.meraki.domains.organizations.networks.group_policies.firewall_and_traffic_shaping.settings, null)
-            traffic_shaping_rules = try(length(group_policy.firewall_and_traffic_shaping.traffic_shaping_rules) == 0, true) ? null : [
+            traffic_shaping_rules = try(group_policy.firewall_and_traffic_shaping.traffic_shaping_rules, null) == null ? null : [
               for firewall_and_traffic_shaping_traffic_shaping_rule in try(group_policy.firewall_and_traffic_shaping.traffic_shaping_rules, []) : {
                 definitions = [
                   for definition in try(firewall_and_traffic_shaping_traffic_shaping_rule.definitions, []) : {
@@ -49,7 +49,7 @@ locals {
                 priority                                                = try(firewall_and_traffic_shaping_traffic_shaping_rule.priority, local.defaults.meraki.domains.organizations.networks.group_policies.firewall_and_traffic_shaping.traffic_shaping_rules.priority, null)
               }
             ]
-            l3_firewall_rules = try(length(group_policy.firewall_and_traffic_shaping.l3_firewall_rules) == 0, true) ? null : [
+            l3_firewall_rules = try(group_policy.firewall_and_traffic_shaping.l3_firewall_rules, null) == null ? null : [
               for firewall_and_traffic_shaping_l3_firewall_rule in try(group_policy.firewall_and_traffic_shaping.l3_firewall_rules, []) : {
                 comment   = try(firewall_and_traffic_shaping_l3_firewall_rule.comment, local.defaults.meraki.domains.organizations.networks.group_policies.firewall_and_traffic_shaping.l3_firewall_rules.comment, null)
                 policy    = try(firewall_and_traffic_shaping_l3_firewall_rule.policy, local.defaults.meraki.domains.organizations.networks.group_policies.firewall_and_traffic_shaping.l3_firewall_rules.policy, null)
@@ -58,7 +58,7 @@ locals {
                 dest_cidr = try(firewall_and_traffic_shaping_l3_firewall_rule.destination_cidr, local.defaults.meraki.domains.organizations.networks.group_policies.firewall_and_traffic_shaping.l3_firewall_rules.destination_cidr, null)
               }
             ]
-            l7_firewall_rules = try(length(group_policy.firewall_and_traffic_shaping.l7_firewall_rules) == 0, true) ? null : [
+            l7_firewall_rules = try(group_policy.firewall_and_traffic_shaping.l7_firewall_rules, null) == null ? null : [
               for firewall_and_traffic_shaping_l7_firewall_rule in try(group_policy.firewall_and_traffic_shaping.l7_firewall_rules, []) : {
                 policy = try(firewall_and_traffic_shaping_l7_firewall_rule.policy, local.defaults.meraki.domains.organizations.networks.group_policies.firewall_and_traffic_shaping.l7_firewall_rules.policy, null)
                 type   = try(firewall_and_traffic_shaping_l7_firewall_rule.type, local.defaults.meraki.domains.organizations.networks.group_policies.firewall_and_traffic_shaping.l7_firewall_rules.type, null)
@@ -75,7 +75,7 @@ locals {
             vlan_tagging_settings                             = try(group_policy.vlan_tagging.settings, local.defaults.meraki.domains.organizations.networks.group_policies.vlan_tagging.settings, null)
             vlan_tagging_vlan_id                              = try(group_policy.vlan_tagging.vlan_id, local.defaults.meraki.domains.organizations.networks.group_policies.vlan_tagging.vlan_id, null)
             bonjour_forwarding_settings                       = try(group_policy.bonjour_forwarding.settings, local.defaults.meraki.domains.organizations.networks.group_policies.bonjour_forwarding.settings, null)
-            bonjour_forwarding_rules = try(length(group_policy.bonjour_forwarding.rules) == 0, true) ? null : [
+            bonjour_forwarding_rules = try(group_policy.bonjour_forwarding.rules, null) == null ? null : [
               for bonjour_forwarding_rule in try(group_policy.bonjour_forwarding.rules, []) : {
                 description = try(bonjour_forwarding_rule.description, local.defaults.meraki.domains.organizations.networks.group_policies.bonjour_forwarding.rules.description, null)
                 vlan_id     = try(bonjour_forwarding_rule.vlan_id, local.defaults.meraki.domains.organizations.networks.group_policies.bonjour_forwarding.rules.vlan_id, null)
@@ -176,7 +176,7 @@ locals {
           network_id       = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           access           = try(network.snmp.access, local.defaults.meraki.domains.organizations.networks.snmp.access, null)
           community_string = try(network.snmp.community_string, local.defaults.meraki.domains.organizations.networks.snmp.community_string, null)
-          users = try(length(network.snmp.users) == 0, true) ? null : [
+          users = try(network.snmp.users, null) == null ? null : [
             for user in try(network.snmp.users, []) : {
               username   = try(user.username, local.defaults.meraki.domains.organizations.networks.snmp.users.username, null)
               passphrase = try(user.passphrase, local.defaults.meraki.domains.organizations.networks.snmp.users.passphrase, null)
