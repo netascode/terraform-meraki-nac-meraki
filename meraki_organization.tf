@@ -5,7 +5,7 @@ locals {
         key     = format("%s/%s", domain.name, organization.name)
         name    = try(organization.name, local.defaults.meraki.domains.organizations.name, null)
         managed = try(organization.managed, local.defaults.meraki.domains.organizations.managed, true)
-        management_details = try(length(organization.management) == 0, true) ? null : [
+        management_details = try(organization.management, null) == null ? null : [
           for management in try(organization.management, []) : {
             name  = try(management.name, local.defaults.meraki.domains.organizations.management.name, null)
             value = try(management.value, local.defaults.meraki.domains.organizations.management.value, null)
@@ -187,13 +187,13 @@ locals {
           email           = try(admin.email, local.defaults.meraki.domains.organizations.admins.email, null)
           name            = try(admin.name, local.defaults.meraki.domains.organizations.admins.name, null)
           org_access      = try(admin.organization_access, local.defaults.meraki.domains.organizations.admins.organization_access, null)
-          tags = try(length(admin.tags) == 0, true) ? null : [
+          tags = try(admin.tags, null) == null ? null : [
             for tag in try(admin.tags, []) : {
               tag    = tag.tag
               access = try(tag.access, local.defaults.meraki.domains.organizations.admins.tags.access, null)
             }
           ]
-          networks = try(length(admin.networks) == 0, true) ? null : [
+          networks = try(admin.networks, null) == null ? null : [
             for network in try(admin.networks, []) : {
               id     = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
               access = try(network.access, local.defaults.meraki.domains.organizations.admins.networks.access, null)
@@ -223,7 +223,7 @@ locals {
       for organization in try(domain.organizations, []) : {
         key             = format("%s/%s", domain.name, organization.name)
         organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
-        licenses = try(length(organization.inventory.licenses) == 0, true) ? null : [
+        licenses = try(organization.inventory.licenses, null) == null ? null : [
           for license in try(organization.inventory.licenses, []) : {
             key  = license.key
             mode = license.mode
@@ -251,7 +251,7 @@ locals {
       for organization in try(domain.organizations, []) : {
         key             = format("%s/%s", domain.name, organization.name)
         organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
-        enabled_networks = try(length(organization.adaptive_policy.settings_enabled_networks) == 0, true) ? null : [
+        enabled_networks = try(organization.adaptive_policy.settings_enabled_networks, null) == null ? null : [
           for network in try(organization.adaptive_policy.settings_enabled_networks, []) :
           local.network_ids[format("%s/%s/%s", domain.name, organization.name, network)]
         ]
@@ -346,7 +346,7 @@ locals {
           destination_group_sgt  = try(adaptive_policy_policy.destination_group.sgt, local.defaults.meraki.domains.organizations.adaptive_policy.policies.destination_group.sgt, null)
           destination_group_id   = meraki_organization_adaptive_policy_group.organizations_adaptive_policy_groups[format("%s/%s/%s", domain.name, organization.name, adaptive_policy_policy.destination_group.name)].id
           last_entry_rule        = try(adaptive_policy_policy.last_entry_rule, local.defaults.meraki.domains.organizations.adaptive_policy.policies.last_entry_rule, null)
-          acls = try(length(adaptive_policy_policy.acls) == 0, true) ? null : [
+          acls = try(adaptive_policy_policy.acls, null) == null ? null : [
             for acl in try(adaptive_policy_policy.acls, []) : {
               id   = meraki_organization_adaptive_policy_acl.organizations_adaptive_policy_acls[format("%s/%s/%s", domain.name, organization.name, acl)].id
               name = acl
@@ -412,7 +412,7 @@ locals {
           organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
           name            = try(policy_objects_group.name, local.defaults.meraki.domains.organizations.policy_objects_groups.name, null)
           category        = try(policy_objects_group.category, local.defaults.meraki.domains.organizations.policy_objects_groups.category, null)
-          object_ids = try(length(policy_objects_group.object_names) == 0, true) ? null : [
+          object_ids = try(policy_objects_group.object_names, null) == null ? null : [
             for name in try(policy_objects_group.object_names, []) : meraki_organization_policy_object.organizations_policy_objects[format("%s/%s/%s", domain.name, organization.name, name)].id
           ]
         }
@@ -501,7 +501,7 @@ locals {
       for organization in try(domain.organizations, []) : {
         key             = format("%s/%s", domain.name, organization.name)
         organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
-        rules = try(length(organization.appliance.vpn_firewall_rules.rules) == 0, true) ? null : [
+        rules = try(organization.appliance.vpn_firewall_rules.rules, null) == null ? null : [
           for rule in try(organization.appliance.vpn_firewall_rules.rules, []) : {
             comment        = try(rule.comment, local.defaults.meraki.domains.organizations.appliance.vpn_firewall_rules.rules.comment, null)
             policy         = try(rule.policy, local.defaults.meraki.domains.organizations.appliance.vpn_firewall_rules.rules.policy, null)
@@ -537,7 +537,7 @@ locals {
           key             = format("%s/%s/%s", domain.name, organization.name, early_access_features_opt_in.short_name)
           organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
           short_name      = try(early_access_features_opt_in.short_name, local.defaults.meraki.domains.organizations.early_access_features_opt_ins.short_name, null)
-          limit_scope_to_networks = try(length(early_access_features_opt_in.limit_scope_to_networks) == 0, true) ? null : [
+          limit_scope_to_networks = try(early_access_features_opt_in.limit_scope_to_networks, null) == null ? null : [
             for network_name in try(early_access_features_opt_in.limit_scope_to_networks, []) :
             local.network_ids[format("%s/%s/%s", domain.name, organization.name, network_name)]
           ]
