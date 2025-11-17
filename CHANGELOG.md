@@ -1,4 +1,33 @@
 
+## 0.5.1
+
+Bug Fixes:
+
+- Fix neighbors[] paths in appliance VPN BGP configuration
+- Fix defaults path for organizations_policy_objects
+- Fix defaults path for networks_appliance_security_intrusion
+- Fix band_steering path for networks_wireless_rf_profiles (missed during schema 1.56 changes)
+- Fix named_vlans_pool_dhcp_monitoring path for networks_wireless_settings (missed during schema 1.56 changes)
+- Fix local_radius path for networks_wireless_ssids (missed during schema 1.56 changes)
+- Fixed checks for non-flattened firewall rule resources
+- Don't create networks_appliance_vlans_dhcp if no fields specified (https://github.com/netascode/terraform-meraki-nac-meraki/pull/117)
+
+Enhancements:
+
+- Reduce differences with generated modules for better maintainability (https://github.com/netascode/terraform-meraki-nac-meraki/pull/123)
+  - Unify try() usage in loops for networks_switch_stp
+  - Standardize loop variable names across resources
+  - Reorder fields in meraki_appliance and networks_appliance_vpn_bgp for consistency
+  - Unify loop formatting in organizations_admins
+  - Unify for_each variable naming conventions
+  - Unify depends_on formatting
+  - Remove redundant depends_on declarations
+  - Unify checks for flattened rules resources in meraki_appliance
+- Add ipv6_prefix_assignments[].disabled support for networks_appliance_vlans (https://github.com/netascode/terraform-meraki-nac-meraki/pull/116)
+- Move PUT-only attributes from networks_appliance_vlans to networks_appliance_vlans_dhcp (https://github.com/netascode/terraform-meraki-nac-meraki/pull/115)
+- Add 2 new parameters for RF profile default handling (https://github.com/netascode/terraform-meraki-nac-meraki/pull/120)
+- Update provider version to CiscoDevNet/meraki 1.8.0 (https://github.com/netascode/terraform-meraki-nac-meraki/pull/125)
+
 ## 0.5.0
 
 New features:
