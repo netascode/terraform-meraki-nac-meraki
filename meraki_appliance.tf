@@ -22,7 +22,9 @@ resource "meraki_appliance_content_filtering" "networks_appliance_content_filter
   blocked_url_patterns   = each.value.blocked_url_patterns
   blocked_url_categories = each.value.blocked_url_categories
   url_category_list_size = each.value.url_category_list_size
-  depends_on             = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -49,7 +51,9 @@ resource "meraki_appliance_firewalled_service" "networks_appliance_firewall_fire
   access      = each.value.access
   allowed_ips = each.value.allowed_ips
   service     = each.value.service
-  depends_on  = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -62,17 +66,17 @@ locals {
           rules = try(length(network.appliance.firewall.inbound_firewall_rules.rules) == 0, true) ? null : [
             for rule in try(network.appliance.firewall.inbound_firewall_rules.rules, []) : {
               comment        = try(rule.comment, local.defaults.meraki.domains.organizations.networks.appliance.firewall.inbound_firewall_rules.rules.comment, null)
-              dest_cidr      = try(rule.destination_cidr, local.defaults.meraki.domains.organizations.networks.appliance.firewall.inbound_firewall_rules.rules.destination_cidr, null)
-              dest_port      = try(rule.destination_port, local.defaults.meraki.domains.organizations.networks.appliance.firewall.inbound_firewall_rules.rules.destination_port, null)
               policy         = try(rule.policy, local.defaults.meraki.domains.organizations.networks.appliance.firewall.inbound_firewall_rules.rules.policy, null)
               protocol       = try(rule.protocol, local.defaults.meraki.domains.organizations.networks.appliance.firewall.inbound_firewall_rules.rules.protocol, null)
-              src_cidr       = try(rule.source_cidr, local.defaults.meraki.domains.organizations.networks.appliance.firewall.inbound_firewall_rules.rules.source_cidr, null)
               src_port       = try(rule.source_port, local.defaults.meraki.domains.organizations.networks.appliance.firewall.inbound_firewall_rules.rules.source_port, null)
+              src_cidr       = try(rule.source_cidr, local.defaults.meraki.domains.organizations.networks.appliance.firewall.inbound_firewall_rules.rules.source_cidr, null)
+              dest_port      = try(rule.destination_port, local.defaults.meraki.domains.organizations.networks.appliance.firewall.inbound_firewall_rules.rules.destination_port, null)
+              dest_cidr      = try(rule.destination_cidr, local.defaults.meraki.domains.organizations.networks.appliance.firewall.inbound_firewall_rules.rules.destination_cidr, null)
               syslog_enabled = try(rule.syslog, local.defaults.meraki.domains.organizations.networks.appliance.firewall.inbound_firewall_rules.rules.syslog, null)
             }
           ]
           syslog_default_rule = try(network.appliance.firewall.inbound_firewall_rules.syslog_default_rule, local.defaults.meraki.domains.organizations.networks.appliance.firewall.inbound_firewall_rules.syslog_default_rule, null)
-        } if length(try(network.appliance.firewall.inbound_firewall_rules.rules, [])) > 0
+        } if try(network.appliance.firewall.inbound_firewall_rules, null) != null
       ]
     ]
   ])
@@ -83,7 +87,10 @@ resource "meraki_appliance_inbound_firewall_rules" "networks_appliance_firewall_
   network_id          = each.value.network_id
   rules               = each.value.rules
   syslog_default_rule = each.value.syslog_default_rule
-  depends_on          = [meraki_network_device_claim.networks_devices_claim, meraki_appliance_vlan.networks_appliance_vlans]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+    meraki_appliance_vlan.networks_appliance_vlans,
+  ]
 }
 
 locals {
@@ -91,21 +98,21 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
-          key                 = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id          = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
-          syslog_default_rule = try(network.appliance.firewall.l3_firewall_rules.syslog_default_rule, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l3_firewall_rules.syslog_default_rule, null)
+          key        = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           rules = [
             for rule in try(network.appliance.firewall.l3_firewall_rules.rules, []) : {
               comment        = try(rule.comment, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l3_firewall_rules.rules.comment, null)
-              dest_cidr      = try(rule.destination_cidr, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l3_firewall_rules.rules.destination_cidr, null)
-              dest_port      = try(rule.destination_port, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l3_firewall_rules.rules.destination_port, null)
               policy         = try(rule.policy, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l3_firewall_rules.rules.policy, null)
               protocol       = try(rule.protocol, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l3_firewall_rules.rules.protocol, null)
-              src_cidr       = try(rule.source_cidr, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l3_firewall_rules.rules.source_cidr, null)
               src_port       = try(rule.source_port, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l3_firewall_rules.rules.source_port, null)
+              src_cidr       = try(rule.source_cidr, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l3_firewall_rules.rules.source_cidr, null)
+              dest_port      = try(rule.destination_port, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l3_firewall_rules.rules.destination_port, null)
+              dest_cidr      = try(rule.destination_cidr, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l3_firewall_rules.rules.destination_cidr, null)
               syslog_enabled = try(rule.syslog, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l3_firewall_rules.rules.syslog, null)
             }
           ]
+          syslog_default_rule = try(network.appliance.firewall.l3_firewall_rules.syslog_default_rule, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l3_firewall_rules.syslog_default_rule, null)
         } if try(network.appliance.firewall.l3_firewall_rules, null) != null
       ]
     ]
@@ -115,9 +122,12 @@ locals {
 resource "meraki_appliance_l3_firewall_rules" "networks_appliance_firewall_l3_firewall_rules" {
   for_each            = { for v in local.networks_appliance_firewall_l3_firewall_rules : v.key => v }
   network_id          = each.value.network_id
-  syslog_default_rule = each.value.syslog_default_rule
   rules               = each.value.rules
-  depends_on          = [meraki_network_device_claim.networks_devices_claim, meraki_appliance_vlan.networks_appliance_vlans]
+  syslog_default_rule = each.value.syslog_default_rule
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+    meraki_appliance_vlan.networks_appliance_vlans,
+  ]
 }
 
 locals {
@@ -128,14 +138,14 @@ locals {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           rules = try(length(network.appliance.firewall.l7_firewall_rules) == 0, true) ? null : [
-            for rule in try(network.appliance.firewall.l7_firewall_rules, []) : {
-              policy          = try(rule.policy, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.policy, null)
-              type            = try(rule.type, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.type, null)
-              value           = try(rule.value, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.value, null)
-              value_countries = try(rule.value_countries, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.value_countries, null)
+            for appliance_firewall_l7_firewall_rule in try(network.appliance.firewall.l7_firewall_rules, []) : {
+              policy          = try(appliance_firewall_l7_firewall_rule.policy, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.policy, null)
+              type            = try(appliance_firewall_l7_firewall_rule.type, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.type, null)
+              value           = try(appliance_firewall_l7_firewall_rule.value, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.value, null)
+              value_countries = try(appliance_firewall_l7_firewall_rule.value_countries, local.defaults.meraki.domains.organizations.networks.appliance.firewall.l7_firewall_rules.value_countries, null)
             }
           ]
-        } if length(try(network.appliance.firewall.l7_firewall_rules, [])) > 0
+        } if try(network.appliance.firewall.l7_firewall_rules, null) != null
       ]
     ]
   ])
@@ -145,7 +155,9 @@ resource "meraki_appliance_l7_firewall_rules" "networks_appliance_firewall_l7_fi
   for_each   = { for v in local.networks_appliance_firewall_l7_firewall_rules : v.key => v }
   network_id = each.value.network_id
   rules      = each.value.rules
-  depends_on = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -156,22 +168,22 @@ locals {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           rules = try(length(network.appliance.firewall.one_to_many_nat_rules) == 0, true) ? null : [
-            for rule in try(network.appliance.firewall.one_to_many_nat_rules, []) : {
-              public_ip = try(rule.public_ip, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.public_ip, null)
-              uplink    = try(rule.uplink, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.uplink, null)
-              port_rules = try(length(rule.port_rules) == 0, true) ? null : [
-                for pr in try(rule.port_rules, []) : {
-                  name        = try(pr.name, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.port_rules.name, null)
-                  allowed_ips = try(pr.allowed_ips, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.port_rules.allowed_ips, null)
-                  local_ip    = try(pr.local_ip, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.port_rules.local_ip, null)
-                  local_port  = try(pr.local_port, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.port_rules.local_port, null)
-                  protocol    = try(pr.protocol, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.port_rules.protocol, null)
-                  public_port = try(pr.public_port, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.port_rules.public_port, null)
+            for appliance_firewall_one_to_many_nat_rule in try(network.appliance.firewall.one_to_many_nat_rules, []) : {
+              public_ip = try(appliance_firewall_one_to_many_nat_rule.public_ip, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.public_ip, null)
+              uplink    = try(appliance_firewall_one_to_many_nat_rule.uplink, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.uplink, null)
+              port_rules = try(length(appliance_firewall_one_to_many_nat_rule.port_rules) == 0, true) ? null : [
+                for port_rule in try(appliance_firewall_one_to_many_nat_rule.port_rules, []) : {
+                  name        = try(port_rule.name, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.port_rules.name, null)
+                  protocol    = try(port_rule.protocol, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.port_rules.protocol, null)
+                  public_port = try(port_rule.public_port, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.port_rules.public_port, null)
+                  local_ip    = try(port_rule.local_ip, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.port_rules.local_ip, null)
+                  local_port  = try(port_rule.local_port, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.port_rules.local_port, null)
+                  allowed_ips = try(port_rule.allowed_ips, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_many_nat_rules.port_rules.allowed_ips, null)
                 }
               ]
             }
           ]
-        } if length(try(network.appliance.firewall.one_to_many_nat_rules, [])) > 0
+        } if try(network.appliance.firewall.one_to_many_nat_rules, null) != null
       ]
     ]
   ])
@@ -181,7 +193,9 @@ resource "meraki_appliance_one_to_many_nat_rules" "networks_appliance_firewall_o
   for_each   = { for v in local.networks_appliance_firewall_one_to_many_nat_rules : v.key => v }
   network_id = each.value.network_id
   rules      = each.value.rules
-  depends_on = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -192,21 +206,21 @@ locals {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           rules = try(length(network.appliance.firewall.one_to_one_nat_rules) == 0, true) ? null : [
-            for rule in try(network.appliance.firewall.one_to_one_nat_rules, []) : {
-              lan_ip    = try(rule.lan_ip, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.lan_ip, null)
-              public_ip = try(rule.public_ip, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.public_ip, null)
-              uplink    = try(rule.uplink, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.uplink, null)
-              name      = try(rule.name, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.name, null)
-              allowed_inbound = try(length(rule.allowed_inbound) == 0, true) ? null : [
-                for ai in try(rule.allowed_inbound, []) : {
-                  allowed_ips       = try(ai.allowed_ips, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.allowed_inbound.allowed_ips, null)
-                  destination_ports = try(ai.destination_ports, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.allowed_inbound.destination_ports, null)
-                  protocol          = try(ai.protocol, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.allowed_inbound.protocol, null)
+            for appliance_firewall_one_to_one_nat_rule in try(network.appliance.firewall.one_to_one_nat_rules, []) : {
+              name      = try(appliance_firewall_one_to_one_nat_rule.name, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.name, null)
+              public_ip = try(appliance_firewall_one_to_one_nat_rule.public_ip, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.public_ip, null)
+              lan_ip    = try(appliance_firewall_one_to_one_nat_rule.lan_ip, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.lan_ip, null)
+              uplink    = try(appliance_firewall_one_to_one_nat_rule.uplink, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.uplink, null)
+              allowed_inbound = try(length(appliance_firewall_one_to_one_nat_rule.allowed_inbound) == 0, true) ? null : [
+                for allowed_inbound in try(appliance_firewall_one_to_one_nat_rule.allowed_inbound, []) : {
+                  protocol          = try(allowed_inbound.protocol, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.allowed_inbound.protocol, null)
+                  destination_ports = try(allowed_inbound.destination_ports, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.allowed_inbound.destination_ports, null)
+                  allowed_ips       = try(allowed_inbound.allowed_ips, local.defaults.meraki.domains.organizations.networks.appliance.firewall.one_to_one_nat_rules.allowed_inbound.allowed_ips, null)
                 }
               ]
             }
           ]
-        } if length(try(network.appliance.firewall.one_to_one_nat_rules, [])) > 0
+        } if try(network.appliance.firewall.one_to_one_nat_rules, null) != null
       ]
     ]
   ])
@@ -216,7 +230,9 @@ resource "meraki_appliance_one_to_one_nat_rules" "networks_appliance_firewall_on
   for_each   = { for v in local.networks_appliance_firewall_one_to_one_nat_rules : v.key => v }
   network_id = each.value.network_id
   rules      = each.value.rules
-  depends_on = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -227,17 +243,17 @@ locals {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           rules = try(length(network.appliance.firewall.port_forwarding_rules) == 0, true) ? null : [
-            for rule in try(network.appliance.firewall.port_forwarding_rules, []) : {
-              allowed_ips = try(rule.allowed_ips, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.allowed_ips, null)
-              lan_ip      = try(rule.lan_ip, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.lan_ip, null)
-              local_port  = try(rule.local_port, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.local_port, null)
-              protocol    = try(rule.protocol, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.protocol, null)
-              public_port = try(rule.public_port, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.public_port, null)
-              name        = try(rule.name, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.name, null)
-              uplink      = try(rule.uplink, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.uplink, null)
+            for appliance_firewall_port_forwarding_rule in try(network.appliance.firewall.port_forwarding_rules, []) : {
+              name        = try(appliance_firewall_port_forwarding_rule.name, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.name, null)
+              lan_ip      = try(appliance_firewall_port_forwarding_rule.lan_ip, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.lan_ip, null)
+              uplink      = try(appliance_firewall_port_forwarding_rule.uplink, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.uplink, null)
+              public_port = try(appliance_firewall_port_forwarding_rule.public_port, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.public_port, null)
+              local_port  = try(appliance_firewall_port_forwarding_rule.local_port, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.local_port, null)
+              allowed_ips = try(appliance_firewall_port_forwarding_rule.allowed_ips, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.allowed_ips, null)
+              protocol    = try(appliance_firewall_port_forwarding_rule.protocol, local.defaults.meraki.domains.organizations.networks.appliance.firewall.port_forwarding_rules.protocol, null)
             }
           ]
-        } if length(try(network.appliance.firewall.port_forwarding_rules, [])) > 0
+        } if try(network.appliance.firewall.port_forwarding_rules, null) != null
       ]
     ]
   ])
@@ -247,7 +263,9 @@ resource "meraki_appliance_port_forwarding_rules" "networks_appliance_firewall_p
   for_each   = { for v in local.networks_appliance_firewall_port_forwarding_rules : v.key => v }
   network_id = each.value.network_id
   rules      = each.value.rules
-  depends_on = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -268,7 +286,9 @@ resource "meraki_appliance_firewall_settings" "networks_appliance_firewall_setti
   for_each                                 = { for v in local.networks_appliance_firewall_settings_spoofing_protection_ip_source_guard_mode : v.key => v }
   network_id                               = each.value.network_id
   spoofing_protection_ip_source_guard_mode = each.value.spoofing_protection_ip_source_guard_mode
-  depends_on                               = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -326,9 +346,9 @@ locals {
           network_id                       = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           mode                             = try(network.appliance.security_intrusion.mode, local.defaults.meraki.domains.organizations.networks.appliance.security_intrusion.mode, null)
           ids_rulesets                     = try(network.appliance.security_intrusion.ids_rulesets, local.defaults.meraki.domains.organizations.networks.appliance.security_intrusion.ids_rulesets, null)
-          protected_networks_use_default   = try(network.appliance.security_intrusion.protected_networks.use_default, local.defaults.meraki.domains.organizations.networks.appliance_security_intrusion.protected_networks.use_default, null)
-          protected_networks_included_cidr = try(network.appliance.security_intrusion.protected_networks.included_cidr, local.defaults.meraki.domains.organizations.networks.appliance_security_intrusion.protected_networks.included_cidr, null)
-          protected_networks_excluded_cidr = try(network.appliance.security_intrusion.protected_networks.excluded_cidr, local.defaults.meraki.domains.organizations.networks.appliance_security_intrusion.protected_networks.excluded_cidr, null)
+          protected_networks_use_default   = try(network.appliance.security_intrusion.protected_networks.use_default, local.defaults.meraki.domains.organizations.networks.appliance.security_intrusion.protected_networks.use_default, null)
+          protected_networks_included_cidr = try(network.appliance.security_intrusion.protected_networks.included_cidr, local.defaults.meraki.domains.organizations.networks.appliance.security_intrusion.protected_networks.included_cidr, null)
+          protected_networks_excluded_cidr = try(network.appliance.security_intrusion.protected_networks.excluded_cidr, local.defaults.meraki.domains.organizations.networks.appliance.security_intrusion.protected_networks.excluded_cidr, null)
         } if try(network.appliance.security_intrusion, null) != null
       ]
     ]
@@ -343,7 +363,9 @@ resource "meraki_appliance_network_security_intrusion" "networks_appliance_secur
   protected_networks_use_default   = each.value.protected_networks_use_default
   protected_networks_included_cidr = each.value.protected_networks_included_cidr
   protected_networks_excluded_cidr = each.value.protected_networks_excluded_cidr
-  depends_on                       = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -378,7 +400,9 @@ resource "meraki_appliance_security_malware" "networks_appliance_security_malwar
   mode          = each.value.mode
   allowed_urls  = each.value.allowed_urls
   allowed_files = each.value.allowed_files
-  depends_on    = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -405,7 +429,9 @@ resource "meraki_appliance_settings" "networks_appliance_settings" {
   deployment_mode        = each.value.deployment_mode
   dynamic_dns_prefix     = each.value.dynamic_dns_prefix
   dynamic_dns_enabled    = each.value.dynamic_dns_enabled
-  depends_on             = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -442,7 +468,9 @@ resource "meraki_appliance_single_lan" "networks_appliance_single_lan" {
   ipv6_enabled            = each.value.ipv6_enabled
   ipv6_prefix_assignments = each.value.ipv6_prefix_assignments
   mandatory_dhcp_enabled  = each.value.mandatory_dhcp_enabled
-  depends_on              = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -538,7 +566,9 @@ resource "meraki_appliance_vlan" "networks_appliance_vlans" {
   ipv6_prefix_assignments = each.value.ipv6_prefix_assignments
   name                    = each.value.name
   subnet                  = each.value.subnet
-  depends_on              = [meraki_appliance_vlans_settings.networks_appliance_vlans_settings]
+  depends_on = [
+    meraki_appliance_vlans_settings.networks_appliance_vlans_settings,
+  ]
 }
 
 resource "meraki_appliance_vlan_dhcp" "networks_appliance_vlans_dhcp" {
@@ -557,7 +587,9 @@ resource "meraki_appliance_vlan_dhcp" "networks_appliance_vlans_dhcp" {
   dhcp_boot_next_server     = each.value.data.dhcp_boot_next_server
   vpn_nat_subnet            = each.value.data.vpn_nat_subnet
   fixed_ip_assignments      = each.value.data.fixed_ip_assignments
-  depends_on                = [meraki_appliance_vlan.networks_appliance_vlans]
+  depends_on = [
+    meraki_appliance_vlan.networks_appliance_vlans,
+  ]
 }
 
 locals {
@@ -578,7 +610,9 @@ resource "meraki_appliance_vlans_settings" "networks_appliance_vlans_settings" {
   for_each      = { for v in local.networks_appliance_vlans_settings : v.key => v }
   network_id    = each.value.network_id
   vlans_enabled = each.value.vlans_enabled
-  depends_on    = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -593,17 +627,17 @@ locals {
           ibgp_hold_timer = try(network.appliance.vpn_bgp.ibgp_hold_timer, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.ibgp_hold_timer, null)
           neighbors = try(length(network.appliance.vpn_bgp.neighbors) == 0, true) ? null : [
             for neighbor in try(network.appliance.vpn_bgp.neighbors, []) : {
+              ip                      = try(neighbor.ip, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.ip, null)
+              ipv6_address            = try(neighbor.ipv6, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.ipv6, null)
+              remote_as_number        = try(neighbor.remote_as_number, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.remote_as_number, null)
+              receive_limit           = try(neighbor.receive_limit, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.receive_limit, null)
+              allow_transit           = try(neighbor.allow_transit, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.allow_transit, null)
               ebgp_hold_timer         = try(neighbor.ebgp_hold_timer, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.ebgp_hold_timer, null)
               ebgp_multihop           = try(neighbor.ebgp_multihop, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.ebgp_multihop, null)
-              ip                      = try(neighbor.ip, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.ip, null)
-              remote_as_number        = try(neighbor.remote_as_number, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.remote_as_number, null)
-              allow_transit           = try(neighbor.allow_transit, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.allow_transit, null)
-              authentication_password = try(neighbor.authentication_password, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.authentication_password, null)
-              ipv6_address            = try(neighbor.ipv6_address, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.ipv6_address, null)
-              next_hop_ip             = try(neighbor.next_hop_ip, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.next_hop_ip, null)
-              receive_limit           = try(neighbor.receive_limit, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.receive_limit, null)
               source_interface        = try(neighbor.source_interface, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.source_interface, null)
-              ttl_security_enabled    = try(neighbor.ttl_security_enabled, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.ttl_security_enabled, null)
+              next_hop_ip             = try(neighbor.next_hop_ip, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.next_hop_ip, null)
+              ttl_security_enabled    = try(neighbor.ttl_security, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.ttl_security, null)
+              authentication_password = try(neighbor.password, local.defaults.meraki.domains.organizations.networks.appliance.vpn_bgp.neighbors.password, null)
             }
           ]
         } if try(network.appliance.vpn_bgp, null) != null
@@ -619,7 +653,9 @@ resource "meraki_appliance_vpn_bgp" "networks_appliance_vpn_bgp" {
   as_number       = each.value.as_number
   ibgp_hold_timer = each.value.ibgp_hold_timer
   neighbors       = each.value.neighbors
-  depends_on      = [meraki_appliance_site_to_site_vpn.networks_appliance_vpn_site_to_site_vpn]
+  depends_on = [
+    meraki_appliance_site_to_site_vpn.networks_appliance_vpn_site_to_site_vpn,
+  ]
 }
 
 locals {
@@ -658,7 +694,11 @@ resource "meraki_appliance_site_to_site_vpn" "networks_appliance_vpn_site_to_sit
   hubs                  = each.value.hubs
   subnets               = each.value.subnets
   subnet_nat_is_allowed = each.value.subnet_nat_is_allowed
-  depends_on            = [meraki_network_device_claim.networks_devices_claim, meraki_appliance_single_lan.networks_appliance_single_lan, meraki_appliance_vlan.networks_appliance_vlans]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+    meraki_appliance_single_lan.networks_appliance_single_lan,
+    meraki_appliance_vlan.networks_appliance_vlans,
+  ]
 }
 
 locals {
@@ -687,7 +727,9 @@ resource "meraki_appliance_warm_spare" "networks_appliance_warm_spare" {
   uplink_mode  = each.value.uplink_mode
   virtual_ip1  = each.value.virtual_ip1
   virtual_ip2  = each.value.virtual_ip2
-  depends_on   = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -1069,7 +1111,9 @@ resource "meraki_appliance_ssid" "networks_appliance_ssids" {
   dhcp_enforced_deauthentication_enabled = each.value.dhcp_enforced_deauthentication_enabled
   dot11w_enabled                         = each.value.dot11w_enabled
   dot11w_required                        = each.value.dot11w_required
-  depends_on                             = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -1132,7 +1176,9 @@ resource "meraki_appliance_rf_profile" "networks_appliance_rf_profiles" {
   per_ssid_settings_3_band_steering_enabled = try(each.value.per_ssid_settings[2].band_steering_enabled, null)
   per_ssid_settings_4_band_operation_mode   = try(each.value.per_ssid_settings[3].band_operation_mode, null)
   per_ssid_settings_4_band_steering_enabled = try(each.value.per_ssid_settings[3].band_steering_enabled, null)
-  depends_on                                = [meraki_network_device_claim.networks_devices_claim]
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
