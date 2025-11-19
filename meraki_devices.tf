@@ -304,21 +304,21 @@ locals {
               boot_options_enabled   = try(switch_routing_interface.dhcp.boot_options, local.defaults.meraki.domains.organizations.networks.devices.switch_routing_interfaces.dhcp.boot_options, null)
               boot_next_server       = try(switch_routing_interface.dhcp.boot_next_server, local.defaults.meraki.domains.organizations.networks.devices.switch_routing_interfaces.dhcp.boot_next_server, null)
               boot_file_name         = try(switch_routing_interface.dhcp.boot_file_name, local.defaults.meraki.domains.organizations.networks.devices.switch_routing_interfaces.dhcp.boot_file_name, null)
-              dhcp_options = try(length(switch_routing_interface.dhcp.dhcp_options) == 0, true) ? null : [
+              dhcp_options = try(switch_routing_interface.dhcp.dhcp_options, null) == null ? null : [
                 for dhcp_option in try(switch_routing_interface.dhcp.dhcp_options, []) : {
                   code  = try(dhcp_option.code, local.defaults.meraki.domains.organizations.networks.devices.switch_routing_interfaces.dhcp.dhcp_options.code, null)
                   type  = try(dhcp_option.type, local.defaults.meraki.domains.organizations.networks.devices.switch_routing_interfaces.dhcp.dhcp_options.type, null)
                   value = try(dhcp_option.value, local.defaults.meraki.domains.organizations.networks.devices.switch_routing_interfaces.dhcp.dhcp_options.value, null)
                 }
               ]
-              reserved_ip_ranges = try(length(switch_routing_interface.dhcp.reserved_ip_ranges) == 0, true) ? null : [
+              reserved_ip_ranges = try(switch_routing_interface.dhcp.reserved_ip_ranges, null) == null ? null : [
                 for reserved_ip_range in try(switch_routing_interface.dhcp.reserved_ip_ranges, []) : {
                   start   = try(reserved_ip_range.start, local.defaults.meraki.domains.organizations.networks.devices.switch_routing_interfaces.dhcp.reserved_ip_ranges.start, null)
                   end     = try(reserved_ip_range.end, local.defaults.meraki.domains.organizations.networks.devices.switch_routing_interfaces.dhcp.reserved_ip_ranges.end, null)
                   comment = try(reserved_ip_range.comment, local.defaults.meraki.domains.organizations.networks.devices.switch_routing_interfaces.dhcp.reserved_ip_ranges.comment, null)
                 }
               ]
-              fixed_ip_assignments = try(length(switch_routing_interface.dhcp.fixed_ip_assignments) == 0, true) ? null : [
+              fixed_ip_assignments = try(switch_routing_interface.dhcp.fixed_ip_assignments, null) == null ? null : [
                 for fixed_ip_assignment in try(switch_routing_interface.dhcp.fixed_ip_assignments, []) : {
                   name = try(fixed_ip_assignment.name, local.defaults.meraki.domains.organizations.networks.devices.switch_routing_interfaces.dhcp.fixed_ip_assignments.name, null)
                   mac  = try(fixed_ip_assignment.mac, local.defaults.meraki.domains.organizations.networks.devices.switch_routing_interfaces.dhcp.fixed_ip_assignments.mac, null)
@@ -487,11 +487,11 @@ locals {
           for device in try(network.devices, []) : {
             key    = format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)
             serial = meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)].serial
-            sims = try(length(device.cellular_sims.sims) == 0, true) ? null : [
+            sims = try(device.cellular_sims.sims, null) == null ? null : [
               for sim in try(device.cellular_sims.sims, []) : {
                 slot       = try(sim.slot, local.defaults.meraki.domains.organizations.networks.devices.cellular_sims.sims.slot, null)
                 is_primary = try(sim.is_primary, local.defaults.meraki.domains.organizations.networks.devices.cellular_sims.sims.is_primary, null)
-                apns = try(length(sim.apns) == 0, true) ? null : [
+                apns = try(sim.apns, null) == null ? null : [
                   for apn in try(sim.apns, []) : {
                     name                    = try(apn.name, local.defaults.meraki.domains.organizations.networks.devices.cellular_sims.sims.apns.name, null)
                     allowed_ip_types        = try(apn.allowed_ip_types, local.defaults.meraki.domains.organizations.networks.devices.cellular_sims.sims.apns.allowed_ip_types, null)
