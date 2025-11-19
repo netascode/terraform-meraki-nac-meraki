@@ -64,8 +64,6 @@ locals {
                 bands = try(flex_radio.bands, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.flex_radios.bands, null)
               }
             ]
-            is_indoor_default  = try(wireless_rf_profile.is_indoor_default, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.is_indoor_default, null)
-            is_outdoor_default = try(wireless_rf_profile.is_outdoor_default, local.defaults.meraki.domains.organizations.networks.wireless.rf_profiles.is_outdoor_default, null)
           }
         ]
       ]
@@ -163,8 +161,6 @@ resource "meraki_wireless_rf_profile" "networks_wireless_rf_profiles" {
   per_ssid_settings_14_bands_enabled         = try(each.value.per_ssid_settings[14].bands, null)
   per_ssid_settings_14_band_steering_enabled = try(each.value.per_ssid_settings[14].band_steering_enabled, null)
   flex_radios_by_model                       = each.value.flex_radios_by_model
-  is_indoor_default                          = each.value.is_indoor_default
-  is_outdoor_default                         = each.value.is_outdoor_default
 }
 
 locals {
