@@ -11,8 +11,6 @@ Bug Fixes:
 - Fix local_radius path for networks_wireless_ssids (missed during schema 1.56 changes)
 - Fixed checks for non-flattened firewall rule resources
 - Don't create networks_appliance_vlans_dhcp if no fields specified (https://github.com/netascode/terraform-meraki-nac-meraki/pull/117)
-- Revert 2 new parameters for RF profile default handling default indoor and outdoor profiles
-  due to issues observed upon TF Destroy. The Dashboard logic currently doesnt align supporting this change.
 
 Enhancements:
 
