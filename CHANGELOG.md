@@ -23,9 +23,12 @@ Enhancements:
   - Unify `depends_on` formatting
   - Remove redundant `depends_on` declarations
   - Unify checks for flattened rules resources in `meraki_appliance`
-- Add `ipv6_prefix_assignments[].disabled` support for `networks_appliance_vlans` (https://github.com/netascode/terraform-meraki-nac-meraki/pull/116)
 - Move PUT-only attributes from `networks_appliance_vlans` to `networks_appliance_vlans_dhcp` (https://github.com/netascode/terraform-meraki-nac-meraki/pull/115)
 - Update provider version to `CiscoDevNet/meraki` 1.8.0 (https://github.com/netascode/terraform-meraki-nac-meraki/pull/125)
+
+Breaking Changes:
+
+- Remove ipv6_enabled and ipv6_prefix_assignments from meraki_appliance_single_lan and meraki_appliance_vlan (https://github.com/netascode/terraform-meraki-nac-meraki/issues/104)
 
 ## 0.5.0
 
