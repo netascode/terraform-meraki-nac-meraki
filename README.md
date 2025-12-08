@@ -113,6 +113,7 @@ module "meraki" {
 | [meraki_network_device_claim.networks_devices_claim](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_device_claim) | resource |
 | [meraki_network_floor_plan.networks_floor_plans](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_floor_plan) | resource |
 | [meraki_network_group_policy.networks_group_policies](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_group_policy) | resource |
+| [meraki_network_netflow.networks_netflow](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_netflow) | resource |
 | [meraki_network_settings.networks_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_settings) | resource |
 | [meraki_network_snmp.networks_snmp](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_snmp) | resource |
 | [meraki_network_syslog_servers.networks_syslog_servers](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_syslog_servers) | resource |
