@@ -420,3 +420,31 @@ resource "meraki_cellular_gateway_connectivity_monitoring_destinations" "network
   network_id   = each.value.network_id
   destinations = each.value.destinations
 }
+
+locals {
+  networks_netflow = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : {
+          key               = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id        = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
+          reporting_enabled = try(network.netflow.reporting, local.defaults.meraki.domains.organizations.networks.netflow.reporting, null)
+          collector_ip      = try(network.netflow.collector_ip, local.defaults.meraki.domains.organizations.networks.netflow.collector_ip, null)
+          collector_port    = try(network.netflow.collector_port, local.defaults.meraki.domains.organizations.networks.netflow.collector_port, null)
+          eta_enabled       = try(network.netflow.eta, local.defaults.meraki.domains.organizations.networks.netflow.eta, null)
+          eta_dst_port      = try(network.netflow.eta_destination_port, local.defaults.meraki.domains.organizations.networks.netflow.eta_destination_port, null)
+        } if try(network.netflow, null) != null
+      ]
+    ]
+  ])
+}
+
+resource "meraki_network_netflow" "networks_netflow" {
+  for_each          = { for v in local.networks_netflow : v.key => v }
+  network_id        = each.value.network_id
+  reporting_enabled = each.value.reporting_enabled
+  collector_ip      = each.value.collector_ip
+  collector_port    = each.value.collector_port
+  eta_enabled       = each.value.eta_enabled
+  eta_dst_port      = each.value.eta_dst_port
+}
