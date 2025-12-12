@@ -1,5 +1,11 @@
 locals {
-  template_yaml_strings = [for template in try(local.model.meraki.template.networks, []) : replace(yamlencode(template), "/\"([$%]{.*})\"/", "$1")]
+  templates_networks = [
+    for template in try(local.model.meraki.templates.networks, []) : {
+      name : template.name,
+      type : template.type,
+      configuration : template.type == "model" ? replace(yamlencode(template.configuration), "/\"([$%]{.*})\"/", "$1") : template.file
+    }
+  ]
   meraki = {
     meraki = {
       domains = [
@@ -13,7 +19,7 @@ locals {
                   networks = [
                     for network in try(organization.networks, []) :
                     yamldecode(provider::utils::yaml_merge(concat(
-                      [for t in try(network.templates, []) : [for template in local.template_yaml_strings : templatestring(template, try(network.variables, {})) if yamldecode(template).name == t][0]],
+                      [for t in try(network.templates, []) : [for template in local.templates_networks : (template.type == "model" ? templatestring(template.configuration, try(network.variables, {})) : templatefile(template.configuration, try(network.variables, {}))) if template.name == t][0]],
                       [yamlencode(network)]
                     )))
                   ]
