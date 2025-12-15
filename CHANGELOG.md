@@ -11,9 +11,6 @@ New Features:
 
 - Add `meraki_network_netflow` resource for network netflow configuration
 
-Enhancements:
-
-- Bump actions/checkout from 5 to 6
 
 ## 0.5.1
 
