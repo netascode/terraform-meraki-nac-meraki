@@ -1,4 +1,15 @@
 
+## 0.6.0
+
+New Features:
+
+- Add `meraki_network_netflow` resource for network netflow configuration (https://github.com/netascode/terraform-meraki-nac-meraki/pull/124)
+
+Enhancements:
+
+- Allow specifying empty lists of maps explicitly to clear configurations (https://github.com/netascode/terraform-meraki-nac-meraki/pull/124)
+- Bump actions/checkout from 5 to 6
+
 ## 0.5.1
 
 Bug Fixes:
