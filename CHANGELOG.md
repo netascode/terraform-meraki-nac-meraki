@@ -1,4 +1,20 @@
 
+## 0.6.0
+
+Breaking Changes:
+
+- Empty lists of maps now clear configurations instead of being converted to null (https://github.com/netascode/terraform-meraki-nac-meraki/pull/124)
+  - Allows users to explicitly clear lists that would otherwise keep old values
+  - Affects firewall rules, NAT rules, security malware settings, and other list-based configurations
+
+New Features:
+
+- Add `meraki_network_netflow` resource for network netflow configuration
+
+Enhancements:
+
+- Bump actions/checkout from 5 to 6
+
 ## 0.5.1
 
 Bug Fixes:
