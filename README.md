@@ -64,6 +64,7 @@ module "meraki" {
 
 | Name | Type |
 |------|------|
+| [meraki_appliance_cellular_firewall_rules.networks_appliance_firewall_cellular_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_cellular_firewall_rules) | resource |
 | [meraki_appliance_connectivity_monitoring_destinations.networks_appliance_connectivity_monitoring_destinations](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_connectivity_monitoring_destinations) | resource |
 | [meraki_appliance_content_filtering.networks_appliance_content_filtering](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_content_filtering) | resource |
 | [meraki_appliance_firewall_settings.networks_appliance_firewall_settings_spoofing_protection_ip_source_guard_mode](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_firewall_settings) | resource |
