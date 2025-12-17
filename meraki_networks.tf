@@ -448,3 +448,70 @@ resource "meraki_network_netflow" "networks_netflow" {
   eta_enabled       = each.value.eta_enabled
   eta_dst_port      = each.value.eta_dst_port
 }
+
+
+locals {
+  networks_webhooks_http_servers = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for webhooks_http_server in try(network.webhooks.http_servers, []) : {
+            key                                  = format("%s/%s/%s/%s", domain.name, organization.name, network.name, webhooks_http_server.name)
+            network_id                           = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
+            name                                 = try(webhooks_http_server.name, local.defaults.meraki.domains.organizations.networks.webhooks.http_servers.name, null)
+            url                                  = try(webhooks_http_server.url, local.defaults.meraki.domains.organizations.networks.webhooks.http_servers.url, null)
+            shared_secret                        = try(webhooks_http_server.shared_secret, local.defaults.meraki.domains.organizations.networks.webhooks.http_servers.shared_secret, null)
+            payload_template_payload_template_id = try(webhooks_http_server.payload_template.payload_template_id, local.defaults.meraki.domains.organizations.networks.webhooks.http_servers.payload_template.payload_template_id, null)
+            payload_template_name                = try(webhooks_http_server.payload_template.name, local.defaults.meraki.domains.organizations.networks.webhooks.http_servers.payload_template.name, null)
+          }
+        ]
+      ]
+    ]
+  ])
+}
+
+resource "meraki_network_webhook_http_server" "networks_webhooks_http_servers" {
+  for_each                             = { for v in local.networks_webhooks_http_servers : v.key => v }
+  network_id                           = each.value.network_id
+  name                                 = each.value.name
+  url                                  = each.value.url
+  shared_secret                        = each.value.shared_secret
+  payload_template_payload_template_id = each.value.payload_template_payload_template_id
+  payload_template_name                = each.value.payload_template_name
+}
+
+
+locals {
+  networks_webhooks_payload_templates = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for webhooks_payload_template in try(network.webhooks.payload_templates, []) : {
+            key        = format("%s/%s/%s/%s", domain.name, organization.name, network.name, webhooks_payload_template.name)
+            network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
+            name       = try(webhooks_payload_template.name, local.defaults.meraki.domains.organizations.networks.webhooks.payload_templates.name, null)
+            body       = try(webhooks_payload_template.body, local.defaults.meraki.domains.organizations.networks.webhooks.payload_templates.body, null)
+            headers = try(webhooks_payload_template.headers, null) == null ? null : [
+              for header in try(webhooks_payload_template.headers, []) : {
+                name     = try(header.name, local.defaults.meraki.domains.organizations.networks.webhooks.payload_templates.headers.name, null)
+                template = try(header.template, local.defaults.meraki.domains.organizations.networks.webhooks.payload_templates.headers.template, null)
+              }
+            ]
+            body_file    = try(webhooks_payload_template.body_file, local.defaults.meraki.domains.organizations.networks.webhooks.payload_templates.body_file, null)
+            headers_file = try(webhooks_payload_template.headers_file, local.defaults.meraki.domains.organizations.networks.webhooks.payload_templates.headers_file, null)
+          }
+        ]
+      ]
+    ]
+  ])
+}
+
+resource "meraki_network_webhook_payload_template" "networks_webhooks_payload_templates" {
+  for_each     = { for v in local.networks_webhooks_payload_templates : v.key => v }
+  network_id   = each.value.network_id
+  name         = each.value.name
+  body         = each.value.body
+  headers      = each.value.headers
+  body_file    = each.value.body_file
+  headers_file = each.value.headers_file
+}

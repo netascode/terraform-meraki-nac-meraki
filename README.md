@@ -118,6 +118,8 @@ module "meraki" {
 | [meraki_network_snmp.networks_snmp](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_snmp) | resource |
 | [meraki_network_syslog_servers.networks_syslog_servers](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_syslog_servers) | resource |
 | [meraki_network_vlan_profile.networks_vlan_profiles](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_vlan_profile) | resource |
+| [meraki_network_webhook_http_server.networks_webhooks_http_servers](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_webhook_http_server) | resource |
+| [meraki_network_webhook_payload_template.networks_webhooks_payload_templates](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_webhook_payload_template) | resource |
 | [meraki_organization.organizations](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization) | resource |
 | [meraki_organization_adaptive_policy.organizations_adaptive_policy_policies](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_adaptive_policy) | resource |
 | [meraki_organization_adaptive_policy_acl.organizations_adaptive_policy_acls](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_adaptive_policy_acl) | resource |
