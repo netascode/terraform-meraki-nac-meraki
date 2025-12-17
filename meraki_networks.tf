@@ -455,7 +455,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
-          for webhooks_http_server in try(network.webhooks.http_servers, []) : {
+          for webhooks_http_server in try(network.webhooks_http_servers, []) : {
             key                                  = format("%s/%s/%s/%s", domain.name, organization.name, network.name, webhooks_http_server.name)
             network_id                           = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
             name                                 = try(webhooks_http_server.name, local.defaults.meraki.domains.organizations.networks.webhooks.http_servers.name, null)
@@ -486,7 +486,7 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
-          for webhooks_payload_template in try(network.webhooks.payload_templates, []) : {
+          for webhooks_payload_template in try(network.webhooks_payload_templates, []) : {
             key        = format("%s/%s/%s/%s", domain.name, organization.name, network.name, webhooks_payload_template.name)
             network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
             name       = try(webhooks_payload_template.name, local.defaults.meraki.domains.organizations.networks.webhooks.payload_templates.name, null)
