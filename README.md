@@ -68,6 +68,7 @@ module "meraki" {
 | [meraki_appliance_content_filtering.networks_appliance_content_filtering](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_content_filtering) | resource |
 | [meraki_appliance_firewall_settings.networks_appliance_firewall_settings_spoofing_protection_ip_source_guard_mode](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_firewall_settings) | resource |
 | [meraki_appliance_firewalled_service.networks_appliance_firewall_firewalled_services](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_firewalled_service) | resource |
+| [meraki_appliance_inbound_cellular_firewall_rules.networks_appliance_firewall_inbound_cellular_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_inbound_cellular_firewall_rules) | resource |
 | [meraki_appliance_inbound_firewall_rules.networks_appliance_firewall_inbound_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_inbound_firewall_rules) | resource |
 | [meraki_appliance_l3_firewall_rules.networks_appliance_firewall_l3_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_l3_firewall_rules) | resource |
 | [meraki_appliance_l7_firewall_rules.networks_appliance_firewall_l7_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_l7_firewall_rules) | resource |

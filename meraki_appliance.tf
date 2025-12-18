@@ -57,6 +57,41 @@ resource "meraki_appliance_firewalled_service" "networks_appliance_firewall_fire
 }
 
 locals {
+  networks_appliance_firewall_inbound_cellular_firewall_rules = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : {
+          key        = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
+          rules = [
+            for appliance_firewall_inbound_cellular_firewall_rule in try(network.appliance.firewall.inbound_cellular_firewall_rules, []) : {
+              comment        = try(appliance_firewall_inbound_cellular_firewall_rule.comment, local.defaults.meraki.domains.organizations.networks.appliance.firewall.inbound_cellular_firewall_rules.comment, null)
+              policy         = try(appliance_firewall_inbound_cellular_firewall_rule.policy, local.defaults.meraki.domains.organizations.networks.appliance.firewall.inbound_cellular_firewall_rules.policy, null)
+              protocol       = try(appliance_firewall_inbound_cellular_firewall_rule.protocol, local.defaults.meraki.domains.organizations.networks.appliance.firewall.inbound_cellular_firewall_rules.protocol, null)
+              src_port       = try(appliance_firewall_inbound_cellular_firewall_rule.source_port, local.defaults.meraki.domains.organizations.networks.appliance.firewall.inbound_cellular_firewall_rules.source_port, null)
+              src_cidr       = try(appliance_firewall_inbound_cellular_firewall_rule.source_cidr, local.defaults.meraki.domains.organizations.networks.appliance.firewall.inbound_cellular_firewall_rules.source_cidr, null)
+              dest_port      = try(appliance_firewall_inbound_cellular_firewall_rule.destination_port, local.defaults.meraki.domains.organizations.networks.appliance.firewall.inbound_cellular_firewall_rules.destination_port, null)
+              dest_cidr      = try(appliance_firewall_inbound_cellular_firewall_rule.destination_cidr, local.defaults.meraki.domains.organizations.networks.appliance.firewall.inbound_cellular_firewall_rules.destination_cidr, null)
+              syslog_enabled = try(appliance_firewall_inbound_cellular_firewall_rule.syslog, local.defaults.meraki.domains.organizations.networks.appliance.firewall.inbound_cellular_firewall_rules.syslog, null)
+            }
+          ]
+        } if try(network.appliance.firewall.inbound_cellular_firewall_rules, null) != null
+      ]
+    ]
+  ])
+}
+
+resource "meraki_appliance_inbound_cellular_firewall_rules" "networks_appliance_firewall_inbound_cellular_firewall_rules" {
+  for_each   = { for v in local.networks_appliance_firewall_inbound_cellular_firewall_rules : v.key => v }
+  network_id = each.value.network_id
+  rules      = each.value.rules
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+    meraki_appliance_vlan.networks_appliance_vlans,
+  ]
+} 
+
+locals {
   networks_appliance_firewall_inbound_firewall_rules = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
