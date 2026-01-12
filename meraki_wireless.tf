@@ -883,7 +883,7 @@ resource "meraki_wireless_network_bluetooth_settings" "networks_wireless_bluetoo
   major                       = each.value.major
   minor                       = each.value.minor
   depends_on = [
-    meraki_wireless_ssid.networks_wireless_ssids,
+    meraki_network_device_claim.networks_devices_claim,
   ]
 }
 
