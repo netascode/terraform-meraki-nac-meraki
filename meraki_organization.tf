@@ -438,7 +438,7 @@ locals {
           organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
           name            = try(auth_radius_server.name, local.defaults.meraki.domains.organizations.auth_radius_servers.name, null)
           address         = try(auth_radius_server.address, local.defaults.meraki.domains.organizations.auth_radius_servers.address, null)
-          modes = [
+          modes = try(auth_radius_server.modes, null) == null ? null : [
             for mode in try(auth_radius_server.modes, []) : {
               mode = try(mode.mode, local.defaults.meraki.domains.organizations.auth_radius_servers.modes.mode, null)
               port = try(mode.port, local.defaults.meraki.domains.organizations.auth_radius_servers.modes.port, null)
