@@ -430,29 +430,29 @@ resource "meraki_organization_policy_object_group" "organizations_policy_objects
 }
 
 locals {
-  organizations_auth_radius_servers = flatten([
+  organizations_authentication_radius_servers = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
-        for auth_radius_server in try(organization.auth_radius_servers, []) : {
-          key             = format("%s/%s/%s", domain.name, organization.name, auth_radius_server.name)
+        for authentication_radius_server in try(organization.authentication_radius_servers, []) : {
+          key             = format("%s/%s/%s", domain.name, organization.name, authentication_radius_server.name)
           organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
-          name            = try(auth_radius_server.name, local.defaults.meraki.domains.organizations.auth_radius_servers.name, null)
-          address         = try(auth_radius_server.address, local.defaults.meraki.domains.organizations.auth_radius_servers.address, null)
-          modes = [
-            for mode in try(auth_radius_server.modes, []) : {
-              mode = try(mode.mode, local.defaults.meraki.domains.organizations.auth_radius_servers.modes.mode, null)
-              port = try(mode.port, local.defaults.meraki.domains.organizations.auth_radius_servers.modes.port, null)
+          name            = try(authentication_radius_server.name, local.defaults.meraki.domains.organizations.authentication_radius_servers.name, null)
+          address         = try(authentication_radius_server.address, local.defaults.meraki.domains.organizations.authentication_radius_servers.address, null)
+          modes = try(authentication_radius_server.modes, null) == null ? null : [
+            for mode in try(authentication_radius_server.modes, []) : {
+              mode = try(mode.mode, local.defaults.meraki.domains.organizations.authentication_radius_servers.modes.mode, null)
+              port = try(mode.port, local.defaults.meraki.domains.organizations.authentication_radius_servers.modes.port, null)
             }
           ]
-          secret = try(auth_radius_server.secret, local.defaults.meraki.domains.organizations.auth_radius_servers.secret, null)
+          secret = try(authentication_radius_server.secret, local.defaults.meraki.domains.organizations.authentication_radius_servers.secret, null)
         }
       ]
     ]
   ])
 }
 
-resource "meraki_organization_auth_radius_server" "organizations_auth_radius_servers" {
-  for_each        = { for v in local.organizations_auth_radius_servers : v.key => v }
+resource "meraki_organization_auth_radius_server" "organizations_authentication_radius_servers" {
+  for_each        = { for v in local.organizations_authentication_radius_servers : v.key => v }
   organization_id = each.value.organization_id
   name            = each.value.name
   address         = each.value.address
