@@ -430,6 +430,38 @@ resource "meraki_organization_policy_object_group" "organizations_policy_objects
 }
 
 locals {
+  organizations_authentication_radius_servers = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for authentication_radius_server in try(organization.authentication_radius_servers, []) : {
+          key             = format("%s/%s/%s", domain.name, organization.name, authentication_radius_server.name)
+          organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
+          name            = try(authentication_radius_server.name, local.defaults.meraki.domains.organizations.authentication_radius_servers.name, null)
+          address         = try(authentication_radius_server.address, local.defaults.meraki.domains.organizations.authentication_radius_servers.address, null)
+          modes = [
+            for mode in try(authentication_radius_server.modes, []) : {
+              mode = try(mode.mode, local.defaults.meraki.domains.organizations.authentication_radius_servers.modes.mode, null)
+              port = try(mode.port, local.defaults.meraki.domains.organizations.authentication_radius_servers.modes.port, null)
+            }
+          ]
+          secret = try(authentication_radius_server.secret, local.defaults.meraki.domains.organizations.authentication_radius_servers.secret, null)
+        }
+      ]
+    ]
+  ])
+}
+
+resource "meraki_organization_auth_radius_server" "organizations_authentication_radius_servers" {
+  for_each        = { for v in local.organizations_authentication_radius_servers : v.key => v }
+  organization_id = each.value.organization_id
+  name            = each.value.name
+  address         = each.value.address
+  modes           = each.value.modes
+  secret          = each.value.secret
+  depends_on      = [meraki_organization_early_access_features_opt_in.organizations_early_access_features_opt_ins]
+}
+
+locals {
   organizations_appliance_security_intrusion_allowed_rules = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : {
