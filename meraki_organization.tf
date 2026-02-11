@@ -458,6 +458,7 @@ resource "meraki_organization_auth_radius_server" "organizations_authentication_
   address         = each.value.address
   modes           = each.value.modes
   secret          = each.value.secret
+  depends_on      = [meraki_organization_early_access_features_opt_in.organizations_early_access_features_opt_ins]
 }
 
 locals {
