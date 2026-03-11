@@ -1,4 +1,21 @@
 
+## 0.7.0
+
+New Features:
+
+- Add support for network appliance cellular firewall rules (https://github.com/netascode/terraform-meraki-nac-meraki/pull/135)
+- Add support for organization authentication radius servers (https://github.com/netascode/terraform-meraki-nac-meraki/pull/138)
+
+Bug Fixes:
+
+- Fix `meraki_wireless_network_bluetooth_settings` dependency (https://github.com/netascode/terraform-meraki-nac-meraki/pull/137)
+
+Enhancements:
+
+- Re-enable IPv6 support on `meraki_appliance_single_lan` and `meraki_appliance_vlan` (https://github.com/netascode/terraform-meraki-nac-meraki/pull/139)
+- `wan1` to pick values from either `wan1` or `lan_ip` (https://github.com/netascode/terraform-meraki-nac-meraki/pull/134)
+- Enhance templating (https://github.com/netascode/terraform-meraki-nac-meraki/pull/132)
+
 ## 0.6.0
 
 Breaking Changes:
