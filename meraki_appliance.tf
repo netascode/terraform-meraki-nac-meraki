@@ -196,6 +196,35 @@ resource "meraki_appliance_l7_firewall_rules" "networks_appliance_firewall_l7_fi
 }
 
 locals {
+  networks_appliance_firewall_multicast_forwarding = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : {
+          key        = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
+          rules = [
+            for rule in try(network.appliance.firewall.multicast_forwarding.rules, []) : {
+              description = try(rule.description, local.defaults.meraki.domains.organizations.networks.appliance.firewall.multicast_forwarding.rules.description, null)
+              address     = try(rule.address, local.defaults.meraki.domains.organizations.networks.appliance.firewall.multicast_forwarding.rules.address, null)
+              vlan_ids    = try(rule.vlan_ids, local.defaults.meraki.domains.organizations.networks.appliance.firewall.multicast_forwarding.rules.vlan_ids, null)
+            }
+          ]
+        } if try(network.appliance.firewall.multicast_forwarding, null) != null
+      ]
+    ]
+  ])
+}
+
+resource "meraki_appliance_firewall_multicast_forwarding" "networks_appliance_firewall_multicast_forwarding" {
+  for_each   = { for v in local.networks_appliance_firewall_multicast_forwarding : v.key => v }
+  network_id = each.value.network_id
+  rules      = each.value.rules
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
+}
+
+locals {
   networks_appliance_firewall_one_to_many_nat_rules = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
