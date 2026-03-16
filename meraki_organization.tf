@@ -587,3 +587,47 @@ resource "meraki_organization_auth_radius_server" "organizations_authentication_
     meraki_organization_early_access_features_opt_in.organizations_early_access_features_opt_ins,
   ]
 }
+
+locals {
+  organizations_alerts_profiles = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for alerts_profile in try(organization.alerts_profiles, []) : {
+          key                          = format("%s/%s/%s", domain.name, organization.name, alerts_profile.alert_config_name)
+          organization_id              = local.organization_ids[format("%s/%s", domain.name, organization.name)]
+          type                         = try(alerts_profile.type, local.defaults.meraki.domains.organizations.alerts_profiles.type, null)
+          network_tags                 = try(alerts_profile.network_tags, local.defaults.meraki.domains.organizations.alerts_profiles.network_tags, null)
+          description                  = try(alerts_profile.description, local.defaults.meraki.domains.organizations.alerts_profiles.description, null)
+          alert_condition_bit_rate_bps = try(alerts_profile.alert_condition.bit_rate_bps, local.defaults.meraki.domains.organizations.alerts_profiles.alert_condition.bit_rate_bps, null)
+          alert_condition_duration     = try(alerts_profile.alert_condition.duration, local.defaults.meraki.domains.organizations.alerts_profiles.alert_condition.duration, null)
+          alert_condition_interface    = try(alerts_profile.alert_condition.interface, local.defaults.meraki.domains.organizations.alerts_profiles.alert_condition.interface, null)
+          alert_condition_jitter_ms    = try(alerts_profile.alert_condition.jitter_ms, local.defaults.meraki.domains.organizations.alerts_profiles.alert_condition.jitter_ms, null)
+          alert_condition_latency_ms   = try(alerts_profile.alert_condition.latency_ms, local.defaults.meraki.domains.organizations.alerts_profiles.alert_condition.latency_ms, null)
+          alert_condition_loss_ratio   = try(alerts_profile.alert_condition.loss_ratio, local.defaults.meraki.domains.organizations.alerts_profiles.alert_condition.loss_ratio, null)
+          alert_condition_mos          = try(alerts_profile.alert_condition.mos, local.defaults.meraki.domains.organizations.alerts_profiles.alert_condition.mos, null)
+          alert_condition_window       = try(alerts_profile.alert_condition.window, local.defaults.meraki.domains.organizations.alerts_profiles.alert_condition.window, null)
+          recipients_emails            = try(alerts_profile.recipients.emails, local.defaults.meraki.domains.organizations.alerts_profiles.recipients.emails, null)
+          recipients_http_server_ids   = try(alerts_profile.recipients.http_server_ids, local.defaults.meraki.domains.organizations.alerts_profiles.recipients.http_server_ids, null)
+        }
+      ]
+    ]
+  ])
+}
+
+resource "meraki_organization_alerts_profile" "organizations_alerts_profiles" {
+  for_each                     = { for v in local.organizations_alerts_profiles : v.key => v }
+  organization_id              = each.value.organization_id
+  type                         = each.value.type
+  network_tags                 = each.value.network_tags
+  description                  = each.value.description
+  alert_condition_bit_rate_bps = each.value.alert_condition_bit_rate_bps
+  alert_condition_duration     = each.value.alert_condition_duration
+  alert_condition_interface    = each.value.alert_condition_interface
+  alert_condition_jitter_ms    = each.value.alert_condition_jitter_ms
+  alert_condition_latency_ms   = each.value.alert_condition_latency_ms
+  alert_condition_loss_ratio   = each.value.alert_condition_loss_ratio
+  alert_condition_mos          = each.value.alert_condition_mos
+  alert_condition_window       = each.value.alert_condition_window
+  recipients_emails            = each.value.recipients_emails
+  recipients_http_server_ids   = each.value.recipients_http_server_ids
+}
