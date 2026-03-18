@@ -448,3 +448,70 @@ resource "meraki_network_netflow" "networks_netflow" {
   eta_enabled       = each.value.eta_enabled
   eta_dst_port      = each.value.eta_dst_port
 }
+
+locals {
+  networks_mqtt_brokers = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for mqtt_broker in try(network.mqtt_brokers, []) : {
+            key                           = format("%s/%s/%s/%s", domain.name, organization.name, network.name, mqtt_broker.name)
+            network_id                    = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
+            name                          = try(mqtt_broker.name, local.defaults.meraki.domains.organizations.networks.mqtt_brokers.name, null)
+            host                          = try(mqtt_broker.host, local.defaults.meraki.domains.organizations.networks.mqtt_brokers.host, null)
+            port                          = try(mqtt_broker.port, local.defaults.meraki.domains.organizations.networks.mqtt_brokers.port, null)
+            authentication_username       = try(mqtt_broker.authentication.username, local.defaults.meraki.domains.organizations.networks.mqtt_brokers.authentication.username, null)
+            authentication_password       = try(mqtt_broker.authentication.password, local.defaults.meraki.domains.organizations.networks.mqtt_brokers.authentication.password, null)
+            security_mode                 = try(mqtt_broker.security.mode, local.defaults.meraki.domains.organizations.networks.mqtt_brokers.security.mode, null)
+            security_tls_ca_certificate   = try(mqtt_broker.security.tls.ca_certificate, local.defaults.meraki.domains.organizations.networks.mqtt_brokers.security.tls.ca_certificate, null)
+            security_tls_verify_hostnames = try(mqtt_broker.security.tls.verify_hostnames, local.defaults.meraki.domains.organizations.networks.mqtt_brokers.security.tls.verify_hostnames, null)
+          }
+        ]
+      ]
+    ]
+  ])
+}
+
+resource "meraki_network_mqtt_broker" "networks_mqtt_brokers" {
+  for_each                      = { for v in local.networks_mqtt_brokers : v.key => v }
+  network_id                    = each.value.network_id
+  name                          = each.value.name
+  host                          = each.value.host
+  port                          = each.value.port
+  authentication_username       = each.value.authentication_username
+  authentication_password       = each.value.authentication_password
+  security_mode                 = each.value.security_mode
+  security_tls_ca_certificate   = each.value.security_tls_ca_certificate
+  security_tls_verify_hostnames = each.value.security_tls_verify_hostnames
+}
+
+locals {
+  mqtt_broker_ids = {
+    for k, v in meraki_network_mqtt_broker.networks_mqtt_brokers :
+    k => v.id
+  }
+}
+
+locals {
+  networks_sensor_mqtt_brokers = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for sensor_mqtt_broker in try(network.sensor_mqtt_brokers, []) : {
+            key            = format("%s/%s/%s/%s", domain.name, organization.name, network.name, sensor_mqtt_broker.mqtt_broker_name)
+            network_id     = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
+            mqtt_broker_id = local.mqtt_broker_ids[format("%s/%s/%s/%s", domain.name, organization.name, network.name, sensor_mqtt_broker.mqtt_broker_name)]
+            enabled        = try(sensor_mqtt_broker.enabled, local.defaults.meraki.domains.organizations.networks.sensor_mqtt_brokers.enabled, null)
+          }
+        ]
+      ]
+    ]
+  ])
+}
+
+resource "meraki_sensor_mqtt_broker" "networks_sensor_mqtt_brokers" {
+  for_each       = { for v in local.networks_sensor_mqtt_brokers : v.key => v }
+  network_id     = each.value.network_id
+  mqtt_broker_id = each.value.mqtt_broker_id
+  enabled        = each.value.enabled
+}

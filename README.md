@@ -114,6 +114,7 @@ module "meraki" {
 | [meraki_network_device_claim.networks_devices_claim](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_device_claim) | resource |
 | [meraki_network_floor_plan.networks_floor_plans](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_floor_plan) | resource |
 | [meraki_network_group_policy.networks_group_policies](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_group_policy) | resource |
+| [meraki_network_mqtt_broker.networks_mqtt_brokers](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_mqtt_broker) | resource |
 | [meraki_network_netflow.networks_netflow](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_netflow) | resource |
 | [meraki_network_settings.networks_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_settings) | resource |
 | [meraki_network_snmp.networks_snmp](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_snmp) | resource |
@@ -133,6 +134,7 @@ module "meraki" {
 | [meraki_organization_policy_object.organizations_policy_objects](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_policy_object) | resource |
 | [meraki_organization_policy_object_group.organizations_policy_objects_groups](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_policy_object_group) | resource |
 | [meraki_organization_snmp.organizations_snmp](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_snmp) | resource |
+| [meraki_sensor_mqtt_broker.networks_sensor_mqtt_brokers](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/sensor_mqtt_broker) | resource |
 | [meraki_switch_access_control_lists.networks_switch_access_control_lists_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_access_control_lists) | resource |
 | [meraki_switch_access_policy.networks_switch_access_policies](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_access_policy) | resource |
 | [meraki_switch_alternate_management_interface.networks_switch_alternate_management_interface](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_alternate_management_interface) | resource |
