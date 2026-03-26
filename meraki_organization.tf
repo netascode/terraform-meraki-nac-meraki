@@ -421,7 +421,6 @@ locals {
           fqdn            = try(policy_object.fqdn, local.defaults.meraki.domains.organizations.policy_objects.fqdn, null)
           mask            = try(policy_object.mask, local.defaults.meraki.domains.organizations.policy_objects.mask, null)
           ip              = try(policy_object.ip, local.defaults.meraki.domains.organizations.policy_objects.ip, null)
-          group_ids       = try(policy_object.group_ids, local.defaults.meraki.domains.organizations.policy_objects.group_ids, null)
         }
       ]
     ]
@@ -448,7 +447,6 @@ resource "meraki_organization_policy_object" "organizations_policy_objects" {
   fqdn            = each.value.fqdn
   mask            = each.value.mask
   ip              = each.value.ip
-  group_ids       = each.value.group_ids
 }
 
 data "meraki_organization_policy_object" "organizations_policy_objects" {
