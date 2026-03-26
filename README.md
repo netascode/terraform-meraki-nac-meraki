@@ -178,6 +178,7 @@ module "meraki" {
 | [meraki_network.organizations_networks](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/data-sources/network) | data source |
 | [meraki_organization.organizations](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/data-sources/organization) | data source |
 | [meraki_organization_adaptive_policy_group.organizations_adaptive_policy_groups](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/data-sources/organization_adaptive_policy_group) | data source |
+| [meraki_organization_policy_object.organizations_policy_objects](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/data-sources/organization_policy_object) | data source |
 ## Modules
 
 | Name | Source | Version |

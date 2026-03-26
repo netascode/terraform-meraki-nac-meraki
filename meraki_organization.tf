@@ -412,6 +412,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for policy_object in try(organization.policy_objects, []) : {
           key             = format("%s/%s/%s", domain.name, organization.name, policy_object.name)
+          managed         = try(policy_object.managed, local.defaults.meraki.domains.organizations.policy_objects.managed, true)
           organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
           name            = try(policy_object.name, local.defaults.meraki.domains.organizations.policy_objects.name, null)
           category        = try(policy_object.category, local.defaults.meraki.domains.organizations.policy_objects.category, null)
@@ -420,22 +421,50 @@ locals {
           fqdn            = try(policy_object.fqdn, local.defaults.meraki.domains.organizations.policy_objects.fqdn, null)
           mask            = try(policy_object.mask, local.defaults.meraki.domains.organizations.policy_objects.mask, null)
           ip              = try(policy_object.ip, local.defaults.meraki.domains.organizations.policy_objects.ip, null)
+          group_ids       = try(policy_object.group_ids, local.defaults.meraki.domains.organizations.policy_objects.group_ids, null)
         }
       ]
     ]
   ])
+
+  managed_organizations_policy_objects = [
+    for v in local.organizations_policy_objects :
+    v if v.managed
+  ]
+
+  unmanaged_organizations_policy_objects = [
+    for v in local.organizations_policy_objects :
+    v if !v.managed
+  ]
 }
 
 resource "meraki_organization_policy_object" "organizations_policy_objects" {
-  for_each        = { for v in local.organizations_policy_objects : v.key => v }
+  for_each        = { for v in local.managed_organizations_policy_objects : v.key => v }
   organization_id = each.value.organization_id
-  category        = each.value.category
   name            = each.value.name
+  category        = each.value.category
   type            = each.value.type
   cidr            = each.value.cidr
   fqdn            = each.value.fqdn
   mask            = each.value.mask
   ip              = each.value.ip
+  group_ids       = each.value.group_ids
+}
+
+data "meraki_organization_policy_object" "organizations_policy_objects" {
+  for_each        = { for v in local.unmanaged_organizations_policy_objects : v.key => v }
+  organization_id = each.value.organization_id
+  name            = each.value.name
+}
+
+locals {
+  organizations_policy_object_ids = {
+    for v in local.organizations_policy_objects :
+    v.key =>
+    v.managed ?
+    meraki_organization_policy_object.organizations_policy_objects[v.key].id :
+    data.meraki_organization_policy_object.organizations_policy_objects[v.key].id
+  }
 }
 
 locals {
