@@ -197,7 +197,7 @@ locals {
           ]
           networks = try(admin.networks, null) == null ? null : [
             for network in try(admin.networks, []) : {
-              id     = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
+              id     = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
               access = try(network.access, local.defaults.meraki.domains.organizations.admins.networks.access, null)
             }
           ]
@@ -255,7 +255,7 @@ locals {
         organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
         enabled_networks = try(organization.adaptive_policy.settings_enabled_networks, null) == null ? null : [
           for network in try(organization.adaptive_policy.settings_enabled_networks, []) :
-          local.network_ids[format("%s/%s/%s", domain.name, organization.name, network)]
+          local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network)]
         ]
       } if try(organization.adaptive_policy.settings_enabled_networks, null) != null
     ]
@@ -541,7 +541,7 @@ locals {
           short_name      = try(early_access_features_opt_in.short_name, local.defaults.meraki.domains.organizations.early_access_features_opt_ins.short_name, null)
           limit_scope_to_networks = try(early_access_features_opt_in.limit_scope_to_networks, null) == null ? null : [
             for network_name in try(early_access_features_opt_in.limit_scope_to_networks, []) :
-            local.network_ids[format("%s/%s/%s", domain.name, organization.name, network_name)]
+            local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network_name)]
           ]
         }
       ]
