@@ -65,41 +65,43 @@ locals {
     ]
   ])
 
-  managed_networks = [
-    for network in local.organizations_networks : network if network.managed
+  managed_organizations_networks = [
+    for v in local.organizations_networks :
+    v if v.managed
   ]
 
-  unmanaged_networks = [
-    for network in local.organizations_networks : network if !network.managed
+  unmanaged_organizations_networks = [
+    for v in local.organizations_networks :
+    v if !v.managed
   ]
 }
 
 resource "meraki_network" "organizations_networks" {
-  for_each        = { for v in local.managed_networks : v.key => v }
-  name            = each.value.name
-  notes           = each.value.notes
+  for_each        = { for v in local.managed_organizations_networks : v.key => v }
   organization_id = each.value.organization_id
+  name            = each.value.name
   product_types   = each.value.product_types
   tags            = each.value.tags
   time_zone       = each.value.time_zone
+  notes           = each.value.notes
   depends_on = [
     meraki_organization_inventory_claim.organizations_inventory,
   ]
 }
 
 data "meraki_network" "organizations_networks" {
-  for_each        = { for v in local.unmanaged_networks : v.key => v }
-  name            = each.value.name
+  for_each        = { for v in local.unmanaged_organizations_networks : v.key => v }
   organization_id = each.value.organization_id
+  name            = each.value.name
 }
 
 locals {
-  network_ids = {
-    for network in local.organizations_networks :
-    network.key =>
-    network.managed ?
-    meraki_network.organizations_networks[network.key].id :
-    data.meraki_network.organizations_networks[network.key].id
+  organizations_network_ids = {
+    for v in local.organizations_networks :
+    v.key =>
+    v.managed ?
+    meraki_network.organizations_networks[v.key].id :
+    data.meraki_network.organizations_networks[v.key].id
   }
 }
 
