@@ -277,22 +277,56 @@ locals {
       for organization in try(domain.organizations, []) : [
         for adaptive_policy_group in try(organization.adaptive_policy.groups, []) : {
           key             = format("%s/%s/%s", domain.name, organization.name, adaptive_policy_group.name)
+          managed         = try(adaptive_policy_group.managed, local.defaults.meraki.domains.organizations.adaptive_policy.groups.managed, true)
           organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
-          group_name      = try(adaptive_policy_group.name, local.defaults.meraki.domains.organizations.adaptive_policy.groups.name, null)
+          name            = try(adaptive_policy_group.name, local.defaults.meraki.domains.organizations.adaptive_policy.groups.name, null)
           sgt             = try(adaptive_policy_group.sgt, local.defaults.meraki.domains.organizations.adaptive_policy.groups.sgt, null)
           description     = try(adaptive_policy_group.description, local.defaults.meraki.domains.organizations.adaptive_policy.groups.description, null)
+          policy_objects = try(adaptive_policy_group.policy_objects, null) == null ? null : [
+            for policy_object in try(adaptive_policy_group.policy_objects, []) : {
+              id   = try(policy_object.id, local.defaults.meraki.domains.organizations.adaptive_policy.groups.policy_objects.id, null)
+              name = try(policy_object.name, local.defaults.meraki.domains.organizations.adaptive_policy.groups.policy_objects.name, null)
+            }
+          ]
         }
       ]
     ]
   ])
+
+  managed_organizations_adaptive_policy_groups = [
+    for v in local.organizations_adaptive_policy_groups :
+    v if v.managed
+  ]
+
+  unmanaged_organizations_adaptive_policy_groups = [
+    for v in local.organizations_adaptive_policy_groups :
+    v if !v.managed
+  ]
 }
 
 resource "meraki_organization_adaptive_policy_group" "organizations_adaptive_policy_groups" {
-  for_each        = { for v in local.organizations_adaptive_policy_groups : v.key => v }
+  for_each        = { for v in local.managed_organizations_adaptive_policy_groups : v.key => v }
   organization_id = each.value.organization_id
-  name            = each.value.group_name
+  name            = each.value.name
   sgt             = each.value.sgt
   description     = each.value.description
+  policy_objects  = each.value.policy_objects
+}
+
+data "meraki_organization_adaptive_policy_group" "organizations_adaptive_policy_groups" {
+  for_each        = { for v in local.unmanaged_organizations_adaptive_policy_groups : v.key => v }
+  organization_id = each.value.organization_id
+  name            = each.value.name
+}
+
+locals {
+  organizations_adaptive_policy_group_ids = {
+    for v in local.organizations_adaptive_policy_groups :
+    v.key =>
+    v.managed ?
+    meraki_organization_adaptive_policy_group.organizations_adaptive_policy_groups[v.key].id :
+    data.meraki_organization_adaptive_policy_group.organizations_adaptive_policy_groups[v.key].id
+  }
 }
 
 locals {
