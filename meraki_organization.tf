@@ -475,7 +475,9 @@ locals {
           organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
           name            = try(policy_objects_group.name, local.defaults.meraki.domains.organizations.policy_objects_groups.name, null)
           category        = try(policy_objects_group.category, local.defaults.meraki.domains.organizations.policy_objects_groups.category, null)
-          object_ids      = try(policy_objects_group.object_ids, local.defaults.meraki.domains.organizations.policy_objects_groups.object_ids, null)
+          object_ids = try(policy_objects_group.object_names, null) == null ? null : [
+            for name in try(policy_objects_group.object_names, []) : local.organizations_policy_object_ids[format("%s/%s/%s", domain.name, organization.name, name)]
+          ]
         }
       ]
     ]
