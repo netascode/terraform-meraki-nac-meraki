@@ -377,10 +377,10 @@ locals {
           policy_name            = try(adaptive_policy_policy.name, local.defaults.meraki.domains.organizations.adaptive_policy.policies.name, null)
           source_group_name      = try(adaptive_policy_policy.source_group.name, local.defaults.meraki.domains.organizations.adaptive_policy.policies.source_group.name, null)
           source_group_sgt       = try(adaptive_policy_policy.source_group.sgt, local.defaults.meraki.domains.organizations.adaptive_policy.policies.source_group.sgt, null)
-          source_group_id        = meraki_organization_adaptive_policy_group.organizations_adaptive_policy_groups[format("%s/%s/%s", domain.name, organization.name, adaptive_policy_policy.source_group.name)].id
+          source_group_id        = local.organizations_adaptive_policy_group_ids[format("%s/%s/%s", domain.name, organization.name, adaptive_policy_policy.source_group.name)]
           destination_group_name = try(adaptive_policy_policy.destination_group.name, local.defaults.meraki.domains.organizations.adaptive_policy.policies.destination_group.name, null)
           destination_group_sgt  = try(adaptive_policy_policy.destination_group.sgt, local.defaults.meraki.domains.organizations.adaptive_policy.policies.destination_group.sgt, null)
-          destination_group_id   = meraki_organization_adaptive_policy_group.organizations_adaptive_policy_groups[format("%s/%s/%s", domain.name, organization.name, adaptive_policy_policy.destination_group.name)].id
+          destination_group_id   = local.organizations_adaptive_policy_group_ids[format("%s/%s/%s", domain.name, organization.name, adaptive_policy_policy.destination_group.name)]
           last_entry_rule        = try(adaptive_policy_policy.last_entry_rule, local.defaults.meraki.domains.organizations.adaptive_policy.policies.last_entry_rule, null)
           acls = try(adaptive_policy_policy.acls, null) == null ? null : [
             for acl in try(adaptive_policy_policy.acls, []) : {
