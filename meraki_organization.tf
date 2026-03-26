@@ -3,8 +3,8 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : {
         key     = format("%s/%s", domain.name, organization.name)
-        name    = try(organization.name, local.defaults.meraki.domains.organizations.name, null)
         managed = try(organization.managed, local.defaults.meraki.domains.organizations.managed, true)
+        name    = try(organization.name, local.defaults.meraki.domains.organizations.name, null)
         management_details = try(organization.management, null) == null ? null : [
           for management in try(organization.management, []) : {
             name  = try(management.name, local.defaults.meraki.domains.organizations.management.name, null)
@@ -16,34 +16,34 @@ locals {
   ])
 
   managed_organizations = [
-    for organization in local.organizations :
-    organization if organization.managed
+    for v in local.organizations :
+    v if v.managed
   ]
 
   unmanaged_organizations = [
-    for organization in local.organizations :
-    organization if !organization.managed
+    for v in local.organizations :
+    v if !v.managed
   ]
 }
 
 resource "meraki_organization" "organizations" {
-  for_each           = { for organization in local.managed_organizations : organization.key => organization }
+  for_each           = { for v in local.managed_organizations : v.key => v }
   name               = each.value.name
   management_details = each.value.management_details
 }
 
 data "meraki_organization" "organizations" {
-  for_each = { for organization in local.unmanaged_organizations : organization.key => organization }
+  for_each = { for v in local.unmanaged_organizations : v.key => v }
   name     = each.value.name
 }
 
 locals {
   organization_ids = {
-    for organization in local.organizations :
-    organization.key =>
-    organization.managed ?
-    meraki_organization.organizations[organization.key].id :
-    data.meraki_organization.organizations[organization.key].id
+    for v in local.organizations :
+    v.key =>
+    v.managed ?
+    meraki_organization.organizations[v.key].id :
+    data.meraki_organization.organizations[v.key].id
   }
 }
 
