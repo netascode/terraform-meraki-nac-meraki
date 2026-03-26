@@ -471,24 +471,49 @@ locals {
       for organization in try(domain.organizations, []) : [
         for policy_objects_group in try(organization.policy_objects_groups, []) : {
           key             = format("%s/%s/%s", domain.name, organization.name, policy_objects_group.name)
+          managed         = try(policy_objects_group.managed, local.defaults.meraki.domains.organizations.policy_objects_groups.managed, true)
           organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
           name            = try(policy_objects_group.name, local.defaults.meraki.domains.organizations.policy_objects_groups.name, null)
           category        = try(policy_objects_group.category, local.defaults.meraki.domains.organizations.policy_objects_groups.category, null)
-          object_ids = try(policy_objects_group.object_names, null) == null ? null : [
-            for name in try(policy_objects_group.object_names, []) : local.organizations_policy_object_ids[format("%s/%s/%s", domain.name, organization.name, name)]
-          ]
+          object_ids      = try(policy_objects_group.object_ids, local.defaults.meraki.domains.organizations.policy_objects_groups.object_ids, null)
         }
       ]
     ]
   ])
+
+  managed_organizations_policy_objects_groups = [
+    for v in local.organizations_policy_objects_groups :
+    v if v.managed
+  ]
+
+  unmanaged_organizations_policy_objects_groups = [
+    for v in local.organizations_policy_objects_groups :
+    v if !v.managed
+  ]
 }
 
 resource "meraki_organization_policy_object_group" "organizations_policy_objects_groups" {
-  for_each        = { for v in local.organizations_policy_objects_groups : v.key => v }
+  for_each        = { for v in local.managed_organizations_policy_objects_groups : v.key => v }
   organization_id = each.value.organization_id
   name            = each.value.name
   category        = each.value.category
   object_ids      = each.value.object_ids
+}
+
+data "meraki_organization_policy_object_group" "organizations_policy_objects_groups" {
+  for_each        = { for v in local.unmanaged_organizations_policy_objects_groups : v.key => v }
+  organization_id = each.value.organization_id
+  name            = each.value.name
+}
+
+locals {
+  organizations_policy_objects_group_ids = {
+    for v in local.organizations_policy_objects_groups :
+    v.key =>
+    v.managed ?
+    meraki_organization_policy_object_group.organizations_policy_objects_groups[v.key].id :
+    data.meraki_organization_policy_object_group.organizations_policy_objects_groups[v.key].id
+  }
 }
 
 locals {
