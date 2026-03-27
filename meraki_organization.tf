@@ -502,6 +502,9 @@ resource "meraki_organization_policy_object_group" "organizations_policy_objects
   object_ids      = each.value.object_ids
 }
 
+# TODO Remove the lint exclusion when firewall rules referencing object groups is implemented
+# (nac-meraki#1902)
+# tflint-ignore: terraform_unused_declarations
 data "meraki_organization_policy_object_group" "organizations_policy_objects_groups" {
   for_each        = { for v in local.unmanaged_organizations_policy_objects_groups : v.key => v }
   organization_id = each.value.organization_id
@@ -509,6 +512,9 @@ data "meraki_organization_policy_object_group" "organizations_policy_objects_gro
 }
 
 locals {
+  # TODO Remove the lint exclusion when firewall rules referencing object groups is implemented
+  # (nac-meraki#1902)
+  # tflint-ignore: terraform_unused_declarations
   organizations_policy_objects_group_ids = {
     for v in local.organizations_policy_objects_groups :
     v.key =>
