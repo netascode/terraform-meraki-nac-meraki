@@ -184,7 +184,7 @@ locals {
                 data                     = switch_port
                 access_policy_number     = try(meraki_switch_access_policy.networks_switch_access_policies[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.access_policy_name)].id, null)
                 port_schedule_id         = try(meraki_switch_port_schedule.networks_switch_port_schedules[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.port_schedule_name)].id, null)
-                adaptive_policy_group_id = try(meraki_organization_adaptive_policy_group.organizations_adaptive_policy_groups[format("%s/%s/%s", domain.name, organization.name, switch_port.adaptive_policy_group_name)].id, null)
+                adaptive_policy_group_id = try(local.organizations_adaptive_policy_group_ids[format("%s/%s/%s", domain.name, organization.name, switch_port.adaptive_policy_group_name)], null)
               }
             ]
           } if try(device.switch.ports, null) != null
