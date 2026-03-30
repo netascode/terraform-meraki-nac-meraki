@@ -1183,7 +1183,7 @@ locals {
           for appliance_rf_profile in try(network.appliance.rf_profiles, []) : {
             key                               = format("%s/%s/%s/%s", domain.name, organization.name, network.name, appliance_rf_profile.name)
             network_id                        = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
-            per_ssid_settings                 = [for i in range(4) : try(local.networks_appliance_rf_profiles_per_ssid_settings[format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, appliance_rf_profile.name, i)], null)]
+            per_ssid_settings                 = [for i in range(1, 5) : try(local.networks_appliance_rf_profiles_per_ssid_settings[format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, appliance_rf_profile.name, i)], null)]
             name                              = try(appliance_rf_profile.name, local.defaults.meraki.domains.organizations.networks.appliance.rf_profiles.name, null)
             two_four_ghz_settings_min_bitrate = try(appliance_rf_profile.two_four_ghz_settings.min_bitrate, local.defaults.meraki.domains.organizations.networks.appliance.rf_profiles.two_four_ghz_settings.min_bitrate, null)
             two_four_ghz_settings_ax_enabled  = try(appliance_rf_profile.two_four_ghz_settings.ax, local.defaults.meraki.domains.organizations.networks.appliance.rf_profiles.two_four_ghz_settings.ax, null)
