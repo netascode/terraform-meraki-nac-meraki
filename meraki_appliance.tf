@@ -1281,7 +1281,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id = local.network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
+          network_id = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           rules = [
             for appliance_firewall_inbound_cellular_firewall_rule in try(network.appliance.firewall.inbound_cellular_firewall_rules, []) : {
               comment        = try(appliance_firewall_inbound_cellular_firewall_rule.comment, local.defaults.meraki.domains.organizations.networks.appliance.firewall.inbound_cellular_firewall_rules.comment, null)
