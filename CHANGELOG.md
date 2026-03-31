@@ -4,17 +4,22 @@
 New Features:
 
 - Add support for network appliance cellular firewall rules (https://github.com/netascode/terraform-meraki-nac-meraki/pull/135)
+- Add support for network appliance inbound cellular firewall rules (https://github.com/netascode/terraform-meraki-nac-meraki/pull/145)
 - Add support for organization authentication radius servers (https://github.com/netascode/terraform-meraki-nac-meraki/pull/138)
+- Add `lan_ip` to device management interface — `wan1` picks values from either `wan1` or `lan_ip` (https://github.com/netascode/terraform-meraki-nac-meraki/pull/134)
+- Add unmanaged organization policy objects (https://github.com/netascode/terraform-meraki-nac-meraki/pull/144)
+- Add template rendering support for standard templates (https://github.com/netascode/terraform-meraki-nac-meraki/pull/132)
 
 Bug Fixes:
 
+- Fix appliance RF profile `per_ssid_settings` SSID numbering — use 1-4 instead of 0-3 to match Meraki API (https://github.com/netascode/terraform-meraki-nac-meraki/pull/149)
+- Fix `network_ids` reference after concurrent merge (https://github.com/netascode/terraform-meraki-nac-meraki/pull/146)
 - Fix `meraki_wireless_network_bluetooth_settings` dependency (https://github.com/netascode/terraform-meraki-nac-meraki/pull/137)
 
 Enhancements:
 
 - Re-enable IPv6 support on `meraki_appliance_single_lan` and `meraki_appliance_vlan` (https://github.com/netascode/terraform-meraki-nac-meraki/pull/139)
-- `wan1` to pick values from either `wan1` or `lan_ip` (https://github.com/netascode/terraform-meraki-nac-meraki/pull/134)
-- Enhance templating (https://github.com/netascode/terraform-meraki-nac-meraki/pull/132)
+- Bump `hashicorp/setup-terraform` from 3 to 4 in CI (https://github.com/netascode/terraform-meraki-nac-meraki/pull/140)
 
 ## 0.6.0
 
