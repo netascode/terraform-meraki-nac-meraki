@@ -572,7 +572,7 @@ locals {
             ipsec_policies_child_pfs_group          = try(appliance_third_party_vpn_peer.ipsec_policies.child_pfs_group, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ipsec_policies.child_pfs_group, null)
             ipsec_policies_child_lifetime           = try(appliance_third_party_vpn_peer.ipsec_policies.child_lifetime, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ipsec_policies.child_lifetime, null)
             ipsec_policies_preset                   = try(appliance_third_party_vpn_peer.ipsec_policies_preset, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ipsec_policies_preset, null)
-            sla_policy_id                           = try(local.organizations_appliance_vpn_site_to_site_ipsec_peers_slas[format("%s/%s", domain.name, organization.name)][appliance_third_party_vpn_peer.sla_policy_name], null)
+            sla_policy_id                           = try(appliance_third_party_vpn_peer.sla_policy_name, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.sla_policy_name, null)
             secret                                  = try(appliance_third_party_vpn_peer.secret, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.secret, null)
             ike_version                             = try(appliance_third_party_vpn_peer.ike_version, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ike_version, null)
             network_tags                            = try(appliance_third_party_vpn_peer.network_tags, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.network_tags, null)
@@ -604,63 +604,7 @@ resource "meraki_appliance_third_party_vpn_peers" "organizations_appliance_third
   peers           = each.value.peers
   depends_on = [
     meraki_network.organizations_networks,
-    meraki_appliance_vpn_site_to_site_ipsec_peers_slas.organizations_appliance_vpn_site_to_site_ipsec_peers_slas,
   ]
-}
-
-locals {
-  organizations_appliance_vpn_site_to_site_ipsec_peers_slas = flatten([
-    for domain in try(local.meraki.domains, []) : [
-      for organization in try(domain.organizations, []) : {
-        key             = format("%s/%s", domain.name, organization.name)
-        organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
-        items = [
-          for sla in try(organization.appliance.vpn_site_to_site_ipsec_peers_slas, []) : {
-            name = try(sla.name, local.defaults.meraki.domains.organizations.appliance.vpn_site_to_site_ipsec_peers_slas.name, null)
-            uri  = try(sla.uri, local.defaults.meraki.domains.organizations.appliance.vpn_site_to_site_ipsec_peers_slas.uri, null)
-          }
-        ]
-      } if try(organization.appliance.vpn_site_to_site_ipsec_peers_slas, null) != null
-    ]
-  ])
-}
-
-resource "meraki_appliance_vpn_site_to_site_ipsec_peers_slas" "organizations_appliance_vpn_site_to_site_ipsec_peers_slas" {
-  for_each        = { for v in local.organizations_appliance_vpn_site_to_site_ipsec_peers_slas : v.key => v }
-  organization_id = each.value.organization_id
-  items           = each.value.items
-  depends_on = [
-    meraki_network.organizations_networks,
-  ]
-}
-
-# The provider does not expose per-item "id" on the SLA resource/data-source.
-# Work around by reading the API directly after creation to build a name→ID map.
-data "http" "organizations_appliance_vpn_sla_policies" {
-  for_each = var.meraki_api_key != "" ? {
-    for v in local.organizations_appliance_vpn_site_to_site_ipsec_peers_slas : v.key => v
-  } : {}
-
-  url = "https://api.meraki.com/api/v1/organizations/${each.value.organization_id}/appliance/vpn/siteToSite/ipsec/peers/slas"
-
-  request_headers = {
-    Authorization = "Bearer ${var.meraki_api_key}"
-    Content-Type  = "application/json"
-  }
-
-  depends_on = [
-    meraki_appliance_vpn_site_to_site_ipsec_peers_slas.organizations_appliance_vpn_site_to_site_ipsec_peers_slas,
-  ]
-}
-
-locals {
-  organizations_appliance_vpn_sla_ids = {
-    for k, v in data.http.organizations_appliance_vpn_sla_policies :
-    k => {
-      for item in try(jsondecode(v.response_body).items, []) :
-      item.name => item.id
-    }
-  }
 }
 
 locals {
