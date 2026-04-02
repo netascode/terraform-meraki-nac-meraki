@@ -597,6 +597,32 @@ resource "meraki_appliance_third_party_vpn_peers" "organizations_appliance_third
 }
 
 locals {
+  organizations_appliance_vpn_site_to_site_ipsec_peers_slas = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : {
+        key             = format("%s/%s", domain.name, organization.name)
+        organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
+        items = [
+          for sla in try(organization.appliance.vpn_site_to_site_ipsec_peers_slas, []) : {
+            name = try(sla.name, local.defaults.meraki.domains.organizations.appliance.vpn_site_to_site_ipsec_peers_slas.name, null)
+            uri  = try(sla.uri, local.defaults.meraki.domains.organizations.appliance.vpn_site_to_site_ipsec_peers_slas.uri, null)
+          }
+        ]
+      } if try(organization.appliance.vpn_site_to_site_ipsec_peers_slas, null) != null
+    ]
+  ])
+}
+
+resource "meraki_appliance_vpn_site_to_site_ipsec_peers_slas" "organizations_appliance_vpn_site_to_site_ipsec_peers_slas" {
+  for_each        = { for v in local.organizations_appliance_vpn_site_to_site_ipsec_peers_slas : v.key => v }
+  organization_id = each.value.organization_id
+  items           = each.value.items
+  depends_on = [
+    meraki_network.organizations_networks,
+  ]
+}
+
+locals {
   organizations_appliance_vpn_firewall_rules = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : {
