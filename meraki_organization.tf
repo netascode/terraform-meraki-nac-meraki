@@ -593,6 +593,7 @@ resource "meraki_appliance_third_party_vpn_peers" "organizations_appliance_third
   peers           = each.value.peers
   depends_on = [
     meraki_network.organizations_networks,
+    meraki_appliance_vpn_site_to_site_ipsec_peers_slas.organizations_appliance_vpn_site_to_site_ipsec_peers_slas,
   ]
 }
 
