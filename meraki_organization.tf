@@ -555,6 +555,7 @@ locals {
         organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
         peers = [
           for appliance_third_party_vpn_peer in try(organization.appliance.third_party_vpn_peers, []) : {
+            peer_id                                 = try(appliance_third_party_vpn_peer.peer_id, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.peer_id, null)
             name                                    = try(appliance_third_party_vpn_peer.name, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.name, null)
             public_ip                               = try(appliance_third_party_vpn_peer.public_ip, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.public_ip, null)
             public_hostname                         = try(appliance_third_party_vpn_peer.public_hostname, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.public_hostname, null)
@@ -571,14 +572,25 @@ locals {
             ipsec_policies_child_pfs_group          = try(appliance_third_party_vpn_peer.ipsec_policies.child_pfs_group, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ipsec_policies.child_pfs_group, null)
             ipsec_policies_child_lifetime           = try(appliance_third_party_vpn_peer.ipsec_policies.child_lifetime, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ipsec_policies.child_lifetime, null)
             ipsec_policies_preset                   = try(appliance_third_party_vpn_peer.ipsec_policies_preset, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ipsec_policies_preset, null)
+            sla_policy_id                           = try(local.organizations_appliance_vpn_site_to_site_ipsec_peers_slas[format("%s/%s", domain.name, organization.name)][appliance_third_party_vpn_peer.sla_policy_name], null)
             secret                                  = try(appliance_third_party_vpn_peer.secret, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.secret, null)
             ike_version                             = try(appliance_third_party_vpn_peer.ike_version, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ike_version, null)
             network_tags                            = try(appliance_third_party_vpn_peer.network_tags, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.network_tags, null)
+            network_ids                             = try(appliance_third_party_vpn_peer.network.ids, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.network.ids, null)
             is_route_based                          = try(appliance_third_party_vpn_peer.is_route_based, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.is_route_based, null)
+            ebgp_neighbor_neighbor_ip               = try(appliance_third_party_vpn_peer.ebgp_neighbor.neighbor_ip, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ebgp_neighbor.neighbor_ip, null)
+            ebgp_neighbor_ip_version                = try(appliance_third_party_vpn_peer.ebgp_neighbor.ip_version, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ebgp_neighbor.ip_version, null)
+            ebgp_neighbor_remote_as_number          = try(appliance_third_party_vpn_peer.ebgp_neighbor.remote_as_number, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ebgp_neighbor.remote_as_number, null)
+            ebgp_neighbor_ebgp_hold_timer           = try(appliance_third_party_vpn_peer.ebgp_neighbor.ebgp_hold_timer, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ebgp_neighbor.ebgp_hold_timer, null)
+            ebgp_neighbor_ebgp_multihop             = try(appliance_third_party_vpn_peer.ebgp_neighbor.ebgp_multihop, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ebgp_neighbor.ebgp_multihop, null)
+            ebgp_neighbor_source_ip                 = try(appliance_third_party_vpn_peer.ebgp_neighbor.source_ip, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ebgp_neighbor.source_ip, null)
+            ebgp_neighbor_path_prepend              = try(appliance_third_party_vpn_peer.ebgp_neighbor.path_prepend, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ebgp_neighbor.path_prepend, null)
+            ebgp_neighbor_multi_exit_discriminator  = try(appliance_third_party_vpn_peer.ebgp_neighbor.multi_exit_discriminator, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ebgp_neighbor.multi_exit_discriminator, null)
+            ebgp_neighbor_weight                    = try(appliance_third_party_vpn_peer.ebgp_neighbor.weight, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ebgp_neighbor.weight, null)
             priority_in_group                       = try(appliance_third_party_vpn_peer.priority_in_group, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.priority_in_group, null)
-            group_active_active_tunnel              = try(appliance_third_party_vpn_peer.group_active_active_tunnel, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.group_active_active_tunnel, null)
             group_number                            = try(appliance_third_party_vpn_peer.group_number, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.group_number, null)
             group_failover_direct_to_internet       = try(appliance_third_party_vpn_peer.group_failover_direct_to_internet, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.group_failover_direct_to_internet, null)
+            group_active_active_tunnel              = try(appliance_third_party_vpn_peer.group_active_active_tunnel, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.group_active_active_tunnel, null)
           }
         ]
       } if try(organization.appliance.third_party_vpn_peers, null) != null
@@ -592,7 +604,63 @@ resource "meraki_appliance_third_party_vpn_peers" "organizations_appliance_third
   peers           = each.value.peers
   depends_on = [
     meraki_network.organizations_networks,
+    meraki_appliance_vpn_site_to_site_ipsec_peers_slas.organizations_appliance_vpn_site_to_site_ipsec_peers_slas,
   ]
+}
+
+locals {
+  organizations_appliance_vpn_site_to_site_ipsec_peers_slas = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : {
+        key             = format("%s/%s", domain.name, organization.name)
+        organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
+        items = [
+          for sla in try(organization.appliance.vpn_site_to_site_ipsec_peers_slas, []) : {
+            name = try(sla.name, local.defaults.meraki.domains.organizations.appliance.vpn_site_to_site_ipsec_peers_slas.name, null)
+            uri  = try(sla.uri, local.defaults.meraki.domains.organizations.appliance.vpn_site_to_site_ipsec_peers_slas.uri, null)
+          }
+        ]
+      } if try(organization.appliance.vpn_site_to_site_ipsec_peers_slas, null) != null
+    ]
+  ])
+}
+
+resource "meraki_appliance_vpn_site_to_site_ipsec_peers_slas" "organizations_appliance_vpn_site_to_site_ipsec_peers_slas" {
+  for_each        = { for v in local.organizations_appliance_vpn_site_to_site_ipsec_peers_slas : v.key => v }
+  organization_id = each.value.organization_id
+  items           = each.value.items
+  depends_on = [
+    meraki_network.organizations_networks,
+  ]
+}
+
+# The provider does not expose per-item "id" on the SLA resource/data-source.
+# Work around by reading the API directly after creation to build a name→ID map.
+data "http" "organizations_appliance_vpn_sla_policies" {
+  for_each = var.meraki_api_key != "" ? {
+    for v in local.organizations_appliance_vpn_site_to_site_ipsec_peers_slas : v.key => v
+  } : {}
+
+  url = "https://api.meraki.com/api/v1/organizations/${each.value.organization_id}/appliance/vpn/siteToSite/ipsec/peers/slas"
+
+  request_headers = {
+    Authorization = "Bearer ${var.meraki_api_key}"
+    Content-Type  = "application/json"
+  }
+
+  depends_on = [
+    meraki_appliance_vpn_site_to_site_ipsec_peers_slas.organizations_appliance_vpn_site_to_site_ipsec_peers_slas,
+  ]
+}
+
+locals {
+  organizations_appliance_vpn_sla_ids = {
+    for k, v in data.http.organizations_appliance_vpn_sla_policies :
+    k => {
+      for item in try(jsondecode(v.response_body).items, []) :
+      item.name => item.id
+    }
+  }
 }
 
 locals {
