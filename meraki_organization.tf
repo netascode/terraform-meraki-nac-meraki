@@ -579,7 +579,7 @@ locals {
             group_active_active_tunnel              = try(appliance_third_party_vpn_peer.group_active_active_tunnel, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.group_active_active_tunnel, null)
             group_number                            = try(appliance_third_party_vpn_peer.group_number, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.group_number, null)
             group_failover_direct_to_internet       = try(appliance_third_party_vpn_peer.group_failover_direct_to_internet, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.group_failover_direct_to_internet, null)
-            sla_policy_id                           = try(appliance_third_party_vpn_peer.sla_policy_id, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.sla_policy_id, null)
+            sla_policy_id                           = try(local.organizations_appliance_vpn_sla_ids[format("%s/%s", domain.name, organization.name)][appliance_third_party_vpn_peer.sla_policy_name], null)
           }
         ]
       } if try(organization.appliance.third_party_vpn_peers, null) != null
@@ -621,6 +621,16 @@ resource "meraki_appliance_vpn_site_to_site_ipsec_peers_slas" "organizations_app
   depends_on = [
     meraki_network.organizations_networks,
   ]
+}
+
+locals {
+  organizations_appliance_vpn_sla_ids = {
+    for v in local.organizations_appliance_vpn_site_to_site_ipsec_peers_slas :
+    v.key => {
+      for item in meraki_appliance_vpn_site_to_site_ipsec_peers_slas.organizations_appliance_vpn_site_to_site_ipsec_peers_slas[v.key].items :
+      item.name => item.id
+    }
+  }
 }
 
 locals {
