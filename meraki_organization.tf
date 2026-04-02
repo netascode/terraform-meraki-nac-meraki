@@ -623,11 +623,30 @@ resource "meraki_appliance_vpn_site_to_site_ipsec_peers_slas" "organizations_app
   ]
 }
 
+# The provider does not expose per-item "id" on the SLA resource/data-source.
+# Work around by reading the API directly after creation to build a name→ID map.
+data "http" "organizations_appliance_vpn_sla_policies" {
+  for_each = var.meraki_api_key != "" ? {
+    for v in local.organizations_appliance_vpn_site_to_site_ipsec_peers_slas : v.key => v
+  } : {}
+
+  url = "https://api.meraki.com/api/v1/organizations/${each.value.organization_id}/appliance/vpn/siteToSite/ipsec/peers/slas"
+
+  request_headers = {
+    Authorization = "Bearer ${var.meraki_api_key}"
+    Content-Type  = "application/json"
+  }
+
+  depends_on = [
+    meraki_appliance_vpn_site_to_site_ipsec_peers_slas.organizations_appliance_vpn_site_to_site_ipsec_peers_slas,
+  ]
+}
+
 locals {
   organizations_appliance_vpn_sla_ids = {
-    for v in local.organizations_appliance_vpn_site_to_site_ipsec_peers_slas :
-    v.key => {
-      for item in meraki_appliance_vpn_site_to_site_ipsec_peers_slas.organizations_appliance_vpn_site_to_site_ipsec_peers_slas[v.key].items :
+    for k, v in data.http.organizations_appliance_vpn_sla_policies :
+    k => {
+      for item in try(jsondecode(v.response_body).items, []) :
       item.name => item.id
     }
   }
