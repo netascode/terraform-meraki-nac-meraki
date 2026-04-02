@@ -579,7 +579,6 @@ locals {
             group_active_active_tunnel              = try(appliance_third_party_vpn_peer.group_active_active_tunnel, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.group_active_active_tunnel, null)
             group_number                            = try(appliance_third_party_vpn_peer.group_number, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.group_number, null)
             group_failover_direct_to_internet       = try(appliance_third_party_vpn_peer.group_failover_direct_to_internet, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.group_failover_direct_to_internet, null)
-            sla_policy_id                           = try(local.organizations_appliance_vpn_sla_ids[format("%s/%s", domain.name, organization.name)][appliance_third_party_vpn_peer.sla_policy_name], null)
           }
         ]
       } if try(organization.appliance.third_party_vpn_peers, null) != null
@@ -593,63 +592,7 @@ resource "meraki_appliance_third_party_vpn_peers" "organizations_appliance_third
   peers           = each.value.peers
   depends_on = [
     meraki_network.organizations_networks,
-    meraki_appliance_vpn_site_to_site_ipsec_peers_slas.organizations_appliance_vpn_site_to_site_ipsec_peers_slas,
   ]
-}
-
-locals {
-  organizations_appliance_vpn_site_to_site_ipsec_peers_slas = flatten([
-    for domain in try(local.meraki.domains, []) : [
-      for organization in try(domain.organizations, []) : {
-        key             = format("%s/%s", domain.name, organization.name)
-        organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
-        items = [
-          for sla in try(organization.appliance.vpn_site_to_site_ipsec_peers_slas, []) : {
-            name = try(sla.name, local.defaults.meraki.domains.organizations.appliance.vpn_site_to_site_ipsec_peers_slas.name, null)
-            uri  = try(sla.uri, local.defaults.meraki.domains.organizations.appliance.vpn_site_to_site_ipsec_peers_slas.uri, null)
-          }
-        ]
-      } if try(organization.appliance.vpn_site_to_site_ipsec_peers_slas, null) != null
-    ]
-  ])
-}
-
-resource "meraki_appliance_vpn_site_to_site_ipsec_peers_slas" "organizations_appliance_vpn_site_to_site_ipsec_peers_slas" {
-  for_each        = { for v in local.organizations_appliance_vpn_site_to_site_ipsec_peers_slas : v.key => v }
-  organization_id = each.value.organization_id
-  items           = each.value.items
-  depends_on = [
-    meraki_network.organizations_networks,
-  ]
-}
-
-# The provider does not expose per-item "id" on the SLA resource/data-source.
-# Work around by reading the API directly after creation to build a name→ID map.
-data "http" "organizations_appliance_vpn_sla_policies" {
-  for_each = var.meraki_api_key != "" ? {
-    for v in local.organizations_appliance_vpn_site_to_site_ipsec_peers_slas : v.key => v
-  } : {}
-
-  url = "https://api.meraki.com/api/v1/organizations/${each.value.organization_id}/appliance/vpn/siteToSite/ipsec/peers/slas"
-
-  request_headers = {
-    Authorization = "Bearer ${var.meraki_api_key}"
-    Content-Type  = "application/json"
-  }
-
-  depends_on = [
-    meraki_appliance_vpn_site_to_site_ipsec_peers_slas.organizations_appliance_vpn_site_to_site_ipsec_peers_slas,
-  ]
-}
-
-locals {
-  organizations_appliance_vpn_sla_ids = {
-    for k, v in data.http.organizations_appliance_vpn_sla_policies :
-    k => {
-      for item in try(jsondecode(v.response_body).items, []) :
-      item.name => item.id
-    }
-  }
 }
 
 locals {
