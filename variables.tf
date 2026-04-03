@@ -27,4 +27,3 @@ variable "write_model_file" {
   description = "Write the full model including all resolved templates to a single YAML file. Value is a path pointing to the file to be created."
   default     = ""
 }
-
