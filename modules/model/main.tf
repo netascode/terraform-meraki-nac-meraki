@@ -3,7 +3,7 @@ locals {
     for template in try(local.model.meraki.templates.networks, []) : {
       name : template.name,
       type : template.type,
-      configuration : template.type == "model" ? replace(yamlencode(template.configuration), "/\"([$%]{.*})\"/", "$1") : template.file
+      configuration : template.type == "model" ? replace(yamlencode(template.configuration), "/\"([$%]{.*})\"/", "$1") : "${path.root}/${template.file}"
     }
   ]
   meraki = {
