@@ -28,9 +28,3 @@ variable "write_model_file" {
   default     = ""
 }
 
-variable "meraki_api_key" {
-  description = "Meraki Dashboard API key. Required for SLA policy name-to-ID resolution. Set via TF_VAR_meraki_api_key or pass directly."
-  type        = string
-  sensitive   = true
-  default     = ""
-}
