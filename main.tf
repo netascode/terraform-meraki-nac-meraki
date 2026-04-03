@@ -6,6 +6,7 @@ module "model" {
   model                     = var.model
   write_model_file          = var.write_model_file
   write_default_values_file = var.write_default_values_file
+  template_base_path        = var.template_base_path
 }
 
 locals {

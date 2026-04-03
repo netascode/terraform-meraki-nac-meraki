@@ -27,3 +27,9 @@ variable "write_model_file" {
   description = "Write the full model including all resolved templates to a single YAML file. Value is a path pointing to the file to be created."
   default     = ""
 }
+
+variable "template_base_path" {
+  description = "Base path for resolving file-type template paths. Defaults to path.root if empty."
+  type        = string
+  default     = ""
+}
