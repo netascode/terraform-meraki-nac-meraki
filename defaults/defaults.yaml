@@ -5,13 +5,94 @@ defaults:
         managed: true
         networks:
           product_types: ["appliance", "switch", "wireless"]
-          wireless_ssids:
-            eap_override:
-              max_retries: 5
-              timeout: 5
-              eapol_key:
-                retries: 3
-                timeout_in_ms: 10000
-              identity:
-                retries: 3
-                timeout: 10
+          time_zone: "UTC"
+          wireless:
+            settings:
+              meshing: false
+              ipv6_bridge: true
+              location_analytics: false
+              led_lights_on: true
+              upgrade_strategy: "minimizeUpgradeTime"
+              named_vlans_pool_dhcp_monitoring:
+                enabled: false
+                duration: 5
+            ssids:
+              enabled: false
+              available_on_all_aps: true
+              visible: true
+              splash_page: "None"
+              band_selection: "Dual band operation"
+              ip_assignment_mode: "NAT mode"
+              min_bitrate: 11
+              mandatory_dhcp: false
+              speed_burst: false
+              per_client_bandwidth_limit_down: 0
+              per_client_bandwidth_limit_up: 0
+              per_ssid_bandwidth_limit_down: 0
+              per_ssid_bandwidth_limit_up: 0
+              dot11r:
+                enabled: false
+                adaptive: false
+              dot11w:
+                enabled: false
+                required: false
+              eap_override:
+                max_retries: 5
+                timeout: 5
+                eapol_key:
+                  retries: 4
+                  timeout_in_ms: 5000
+                identity:
+                  retries: 5
+                  timeout: 5
+            bluetooth_settings:
+              scanning: false
+              advertising: false
+          appliance:
+            settings:
+              client_tracking_method: "MAC address"
+              deployment_mode: "routed"
+              dynamic_dns:
+                enabled: true
+            traffic_shaping:
+              rules:
+                default_rules: true
+            vlans:
+              dhcp_handling: "Run a DHCP server"
+              dhcp_lease_time: "1 day"
+              dns_nameservers: "upstream_dns"
+              dhcp_boot_options: false
+              mandatory_dhcp: false
+          switch:
+            settings:
+              vlan: 1
+              use_combined_power: false
+              uplink_client_sampling: false
+              mac_blocklist: false
+          settings:
+            local_status_page_enabled: true
+            remote_status_page: false
+            secure_port: false
+            named_vlans: true
+            local_status_page_authentication:
+              enabled: true
+          snmp:
+            access: "none"
+          cellular_gateway:
+            connectivity_monitoring_destinations:
+              ip: "8.8.8.8"
+              description: "Google DNS"
+        snmp:
+          v2c: false
+          v3: false
+        login_security:
+          enforce_password_expiration: false
+          enforce_different_passwords: true
+          num_different_passwords: 2
+          enforce_strong_passwords: true
+          enforce_account_lockout: false
+          enforce_idle_timeout: false
+          enforce_two_factor_auth: false
+          enforce_login_ip_ranges: false
+          api_authentication:
+            enabled: false
