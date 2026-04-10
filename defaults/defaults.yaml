@@ -59,9 +59,7 @@ defaults:
                 default_rules: true
             vlans:
               dhcp_handling: "Run a DHCP server"
-              dhcp_lease_time: "1 day"
               dns_nameservers: "upstream_dns"
-              dhcp_boot_options: false
               mandatory_dhcp: false
           switch:
             settings:
