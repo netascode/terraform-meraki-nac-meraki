@@ -585,7 +585,6 @@ locals {
         organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
         peers = [
           for appliance_third_party_vpn_peer in try(organization.appliance.third_party_vpn_peers, []) : {
-            peer_id                                 = try(appliance_third_party_vpn_peer.peer_id, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.peer_id, null)
             name                                    = try(appliance_third_party_vpn_peer.name, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.name, null)
             public_ip                               = try(appliance_third_party_vpn_peer.public_ip, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.public_ip, null)
             public_hostname                         = try(appliance_third_party_vpn_peer.public_hostname, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.public_hostname, null)
