@@ -1,4 +1,22 @@
 
+## 0.7.1
+
+Bug Fixes:
+
+- Fix `templatefile` paths to resolve relative to root module via `path.root` (https://github.com/netascode/terraform-meraki-nac-meraki/pull/148)
+
+New Features:
+
+- Add support for module-based `port_id` format (`slot_module_port`) for modular switch ports (https://github.com/netascode/terraform-meraki-nac-meraki/pull/151)
+- Add `slot` and `module` attributes to `port_id_ranges` in schema for modular switch expansion ports
+- Add mutually inclusive validation rule for `slot` and `module` attributes
+- Add robot test support for module-based port ID resolution
+
+Enhancements:
+
+- Comprehensive defaults updates — add API-validated default values for wireless settings, SSIDs, appliance settings, switch settings, network settings, SNMP, cellular gateway, and organization login security
+- Add `merge_group` trigger to CI test workflow (https://github.com/netascode/terraform-meraki-nac-meraki/pull/148)
+
 ## 0.7.0
 
 New Features:
