@@ -1,4 +1,14 @@
 
+## 0.7.1
+
+New Features:
+
+- Add support for module-based `port_id` format (`slot_module_port`) for modular switch ports (https://github.com/netascode/terraform-meraki-nac-meraki/pull/151)
+
+Enhancements:
+
+- Comprehensive defaults updates — add API-validated default values for wireless settings, SSIDs, appliance settings, switch settings, network settings, SNMP, cellular gateway, and organization login security
+
 ## 0.7.0
 
 New Features:
