@@ -555,8 +555,8 @@ locals {
         organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
         items = [
           for appliance_vpn_site_to_site_ipsec_peers_sla in try(organization.appliance.vpn_site_to_site_ipsec_peers_slas, []) : {
-            name = try(sla.name, local.defaults.meraki.domains.organizations.appliance.vpn_site_to_site_ipsec_peers_slas.name, null)
-            uri  = try(sla.uri, local.defaults.meraki.domains.organizations.appliance.vpn_site_to_site_ipsec_peers_slas.uri, null)
+            name = try(appliance_vpn_site_to_site_ipsec_peers_sla.name, local.defaults.meraki.domains.organizations.appliance.vpn_site_to_site_ipsec_peers_slas.name, null)
+            uri  = try(appliance_vpn_site_to_site_ipsec_peers_sla.uri, local.defaults.meraki.domains.organizations.appliance.vpn_site_to_site_ipsec_peers_slas.uri, null)
           }
         ]
       } if try(organization.appliance.vpn_site_to_site_ipsec_peers_slas, null) != null
