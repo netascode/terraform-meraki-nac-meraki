@@ -606,7 +606,6 @@ locals {
             secret                                  = try(appliance_third_party_vpn_peer.secret, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.secret, null)
             ike_version                             = try(appliance_third_party_vpn_peer.ike_version, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ike_version, null)
             network_tags                            = try(appliance_third_party_vpn_peer.network_tags, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.network_tags, null)
-            network_ids                             = try(appliance_third_party_vpn_peer.network.ids, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.network.ids, null)
             is_route_based                          = try(appliance_third_party_vpn_peer.is_route_based, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.is_route_based, null)
             priority_in_group                       = try(appliance_third_party_vpn_peer.priority_in_group, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.priority_in_group, null)
             group_number                            = try(appliance_third_party_vpn_peer.group_number, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.group_number, null)
