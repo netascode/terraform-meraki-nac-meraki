@@ -179,7 +179,10 @@ locals {
             ports = [
               for switch_port in try(device.switch.ports, []) : {
                 port_ids = flatten([for port_id_range in switch_port.port_id_ranges : [
-                  for port_id in range(port_id_range.from, port_id_range.to + 1) : port_id
+                  for port_id in range(port_id_range.from, port_id_range.to + 1) :
+                  try(port_id_range.slot, null) != null && try(port_id_range.module, null) != null
+                  ? format("%s_%s_%s", port_id_range.slot, port_id_range.module, port_id)
+                  : port_id
                 ]])
                 data                     = switch_port
                 access_policy_number     = try(meraki_switch_access_policy.networks_switch_access_policies[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.access_policy_name)].id, null)
