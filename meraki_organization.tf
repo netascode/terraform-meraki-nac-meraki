@@ -554,7 +554,7 @@ locals {
         key             = format("%s/%s", domain.name, organization.name)
         organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
         items = [
-          for sla in try(organization.appliance.vpn_site_to_site_ipsec_peers_slas, []) : {
+          for appliance_vpn_site_to_site_ipsec_peers_sla in try(organization.appliance.vpn_site_to_site_ipsec_peers_slas, []) : {
             name = try(sla.name, local.defaults.meraki.domains.organizations.appliance.vpn_site_to_site_ipsec_peers_slas.name, null)
             uri  = try(sla.uri, local.defaults.meraki.domains.organizations.appliance.vpn_site_to_site_ipsec_peers_slas.uri, null)
           }
