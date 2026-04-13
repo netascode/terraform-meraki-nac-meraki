@@ -42,13 +42,13 @@ module "meraki" {
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
 | <a name="requirement_meraki"></a> [meraki](#requirement\_meraki) | >= 1.8.0 |
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_model"></a> [model](#input\_model) | As an alternative to YAML files, a native Terraform data structure can be provided as well. | `map(any)` | `{}` | no |
 | <a name="input_write_default_values_file"></a> [write\_default\_values\_file](#input\_write\_default\_values\_file) | Write all default values to a YAML file. Value is a path pointing to the file to be created. | `string` | `""` | no |
 | <a name="input_write_model_file"></a> [write\_model\_file](#input\_write\_model\_file) | Write the full model including all resolved templates to a single YAML file. Value is a path pointing to the file to be created. | `string` | `""` | no |
@@ -57,13 +57,13 @@ module "meraki" {
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_default_values"></a> [default\_values](#output\_default\_values) | All default values. |
 | <a name="output_model"></a> [model](#output\_model) | Full model. |
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [meraki_appliance_cellular_firewall_rules.networks_appliance_firewall_cellular_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_cellular_firewall_rules) | resource |
 | [meraki_appliance_connectivity_monitoring_destinations.networks_appliance_connectivity_monitoring_destinations](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_connectivity_monitoring_destinations) | resource |
 | [meraki_appliance_content_filtering.networks_appliance_content_filtering](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_content_filtering) | resource |
@@ -186,6 +186,6 @@ module "meraki" {
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_model"></a> [model](#module\_model) | ./modules/model | n/a |
 <!-- END_TF_DOCS -->
