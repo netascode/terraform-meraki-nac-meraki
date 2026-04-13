@@ -568,6 +568,9 @@ resource "meraki_appliance_vpn_site_to_site_ipsec_peers_slas" "organizations_app
   for_each        = { for v in local.organizations_appliance_vpn_site_to_site_ipsec_peers_slas : v.key => v }
   organization_id = each.value.organization_id
   items           = each.value.items
+  depends_on = [
+    meraki_appliance_site_to_site_vpn.networks_appliance_vpn_site_to_site_vpn,
+  ]
 }
 
 locals {
@@ -601,7 +604,7 @@ locals {
             ipsec_policies_child_pfs_group          = try(appliance_third_party_vpn_peer.ipsec_policies.child_pfs_group, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ipsec_policies.child_pfs_group, null)
             ipsec_policies_child_lifetime           = try(appliance_third_party_vpn_peer.ipsec_policies.child_lifetime, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ipsec_policies.child_lifetime, null)
             ipsec_policies_preset                   = try(appliance_third_party_vpn_peer.ipsec_policies_preset, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ipsec_policies_preset, null)
-            sla_policy_id                           = try(local.organizations_sla_policy_ids[format("%s/%s", domain.name, organization.name)][appliance_third_party_vpn_peer.sla_policy_name], null)
+            sla_policy_id                           = try(appliance_third_party_vpn_peer.sla_policy.id, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.sla_policy.id, null)
             secret                                  = try(appliance_third_party_vpn_peer.secret, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.secret, null)
             ike_version                             = try(appliance_third_party_vpn_peer.ike_version, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.ike_version, null)
             network_tags                            = try(appliance_third_party_vpn_peer.network_tags, local.defaults.meraki.domains.organizations.appliance.third_party_vpn_peers.network_tags, null)
@@ -623,6 +626,7 @@ resource "meraki_appliance_third_party_vpn_peers" "organizations_appliance_third
   peers           = each.value.peers
   depends_on = [
     meraki_network.organizations_networks,
+    meraki_appliance_vpn_site_to_site_ipsec_peers_slas.organizations_appliance_vpn_site_to_site_ipsec_peers_slas,
   ]
 }
 
