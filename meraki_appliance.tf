@@ -123,8 +123,6 @@ resource "meraki_appliance_cellular_firewall_rules" "networks_appliance_firewall
   depends_on = [
     meraki_network_device_claim.networks_devices_claim,
     meraki_appliance_vlan.networks_appliance_vlans,
-    meraki_organization_policy_object.organizations_policy_objects,
-    meraki_organization_policy_object_group.organizations_policy_objects_groups,
   ]
 }
 
@@ -288,8 +286,6 @@ resource "meraki_appliance_l3_firewall_rules" "networks_appliance_firewall_l3_fi
   depends_on = [
     meraki_network_device_claim.networks_devices_claim,
     meraki_appliance_vlan.networks_appliance_vlans,
-    meraki_organization_policy_object.organizations_policy_objects,
-    meraki_organization_policy_object_group.organizations_policy_objects_groups,
   ]
 }
 
