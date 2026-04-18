@@ -101,6 +101,7 @@ module "meraki" {
 | [meraki_appliance_vlans_settings.networks_appliance_vlans_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vlans_settings) | resource |
 | [meraki_appliance_vpn_bgp.networks_appliance_vpn_bgp](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vpn_bgp) | resource |
 | [meraki_appliance_vpn_firewall_rules.organizations_appliance_vpn_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vpn_firewall_rules) | resource |
+| [meraki_appliance_vpn_site_to_site_ipsec_peers_slas.organizations_appliance_vpn_site_to_site_ipsec_peers_slas](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vpn_site_to_site_ipsec_peers_slas) | resource |
 | [meraki_appliance_warm_spare.networks_appliance_warm_spare](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_warm_spare) | resource |
 | [meraki_cellular_gateway_connectivity_monitoring_destinations.networks_cellular_gateway_connectivity_monitoring_destinations](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/cellular_gateway_connectivity_monitoring_destinations) | resource |
 | [meraki_cellular_gateway_dhcp.networks_cellular_gateway_dhcp](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/cellular_gateway_dhcp) | resource |
