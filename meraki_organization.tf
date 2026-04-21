@@ -284,7 +284,8 @@ locals {
           description     = try(adaptive_policy_group.description, local.defaults.meraki.domains.organizations.adaptive_policy.groups.description, null)
           policy_objects = try(adaptive_policy_group.policy_objects, null) == null ? null : [
             for policy_object in try(adaptive_policy_group.policy_objects, []) : {
-              id = try(local.organizations_policy_object_ids[format("%s/%s/%s", domain.name, organization.name, policy_object)], null)
+              id   = try(local.organizations_policy_object_ids[format("%s/%s/%s", domain.name, organization.name, policy_object)], null)
+              name = policy_object
             }
           ]
         }
