@@ -147,7 +147,8 @@ module "meraki" {
 | [meraki_switch_ports.devices_switch_ports](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_ports) | resource |
 | [meraki_switch_qos_rule.networks_switch_qos_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_qos_rule) | resource |
 | [meraki_switch_qos_rule_order.networks_switch_qos_rules_order](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_qos_rule_order) | resource |
-| [meraki_switch_routing_interface.devices_switch_routing_interfaces](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_routing_interface) | resource |
+| [meraki_switch_routing_interface.devices_switch_routing_interfaces_first](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_routing_interface) | resource |
+| [meraki_switch_routing_interface.devices_switch_routing_interfaces_not_first](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_routing_interface) | resource |
 | [meraki_switch_routing_interface_dhcp.devices_switch_routing_interfaces_dhcp](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_routing_interface_dhcp) | resource |
 | [meraki_switch_routing_multicast.networks_switch_routing_multicast](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_routing_multicast) | resource |
 | [meraki_switch_routing_multicast_rendezvous_point.networks_switch_routing_multicast_rendezvous_points](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_routing_multicast_rendezvous_point) | resource |

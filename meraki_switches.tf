@@ -695,6 +695,12 @@ locals {
               ipv6_prefix                      = try(routing_interface.ipv6.prefix, local.defaults.meraki.domains.organizations.networks.switch_stacks.routing_interfaces.ipv6.prefix, null)
               ipv6_address                     = try(routing_interface.ipv6.address, local.defaults.meraki.domains.organizations.networks.switch_stacks.routing_interfaces.ipv6.address, null)
               ipv6_gateway                     = try(routing_interface.ipv6.gateway, local.defaults.meraki.domains.organizations.networks.switch_stacks.routing_interfaces.ipv6.gateway, null)
+              ipv6_static_v6_dns1              = try(routing_interface.ipv6.static_v6_dns1, local.defaults.meraki.domains.organizations.networks.switch_stacks.routing_interfaces.ipv6.static_v6_dns1, null)
+              ipv6_static_v6_dns2              = try(routing_interface.ipv6.static_v6_dns2, local.defaults.meraki.domains.organizations.networks.switch_stacks.routing_interfaces.ipv6.static_v6_dns2, null)
+              static_v4_dns1                   = try(routing_interface.static_v4_dns1, local.defaults.meraki.domains.organizations.networks.switch_stacks.routing_interfaces.static_v4_dns1, null)
+              static_v4_dns2                   = try(routing_interface.static_v4_dns2, local.defaults.meraki.domains.organizations.networks.switch_stacks.routing_interfaces.static_v4_dns2, null)
+              uplink_v4                        = try(routing_interface.uplink_v4, local.defaults.meraki.domains.organizations.networks.switch_stacks.routing_interfaces.uplink_v4, null)
+              uplink_v6                        = try(routing_interface.uplink_v6, local.defaults.meraki.domains.organizations.networks.switch_stacks.routing_interfaces.uplink_v6, null)
             }
           ]
         ]
@@ -704,12 +710,12 @@ locals {
   networks_switch_stacks_routing_interfaces_first = [
     for routing_interface in local.networks_switch_stacks_routing_interfaces :
     routing_interface
-    if routing_interface.default_gateway != null
+    if routing_interface.default_gateway != null || routing_interface.uplink_v4 != null || routing_interface.uplink_v6 != null
   ]
   networks_switch_stacks_routing_interfaces_not_first = [
     for routing_interface in local.networks_switch_stacks_routing_interfaces :
     routing_interface
-    if routing_interface.default_gateway == null
+    if routing_interface.default_gateway == null && routing_interface.uplink_v4 == null && routing_interface.uplink_v6 == null
   ]
 }
 
@@ -730,6 +736,12 @@ resource "meraki_switch_stack_routing_interface" "networks_switch_stacks_routing
   ipv6_prefix                      = each.value.ipv6_prefix
   ipv6_address                     = each.value.ipv6_address
   ipv6_gateway                     = each.value.ipv6_gateway
+  ipv6_static_v6_dns1              = each.value.ipv6_static_v6_dns1
+  ipv6_static_v6_dns2              = each.value.ipv6_static_v6_dns2
+  static_v4_dns1                   = each.value.static_v4_dns1
+  static_v4_dns2                   = each.value.static_v4_dns2
+  uplink_v4                        = each.value.uplink_v4
+  uplink_v6                        = each.value.uplink_v6
   depends_on = [
     meraki_network_device_claim.networks_devices_claim,
   ]
@@ -751,6 +763,12 @@ resource "meraki_switch_stack_routing_interface" "networks_switch_stacks_routing
   ipv6_prefix                      = each.value.ipv6_prefix
   ipv6_address                     = each.value.ipv6_address
   ipv6_gateway                     = each.value.ipv6_gateway
+  ipv6_static_v6_dns1              = each.value.ipv6_static_v6_dns1
+  ipv6_static_v6_dns2              = each.value.ipv6_static_v6_dns2
+  static_v4_dns1                   = each.value.static_v4_dns1
+  static_v4_dns2                   = each.value.static_v4_dns2
+  uplink_v4                        = each.value.uplink_v4
+  uplink_v6                        = each.value.uplink_v6
   depends_on = [
     meraki_switch_stack_routing_interface.networks_switch_stacks_routing_interfaces_first,
   ]
@@ -760,7 +778,7 @@ locals {
   networks_switch_stacks_routing_interface_ids = {
     for routing_interface in local.networks_switch_stacks_routing_interfaces :
     routing_interface.key =>
-    routing_interface.default_gateway != null ?
+    (routing_interface.default_gateway != null || routing_interface.uplink_v4 != null || routing_interface.uplink_v6 != null) ?
     meraki_switch_stack_routing_interface.networks_switch_stacks_routing_interfaces_first[routing_interface.key].id :
     meraki_switch_stack_routing_interface.networks_switch_stacks_routing_interfaces_not_first[routing_interface.key].id
   }

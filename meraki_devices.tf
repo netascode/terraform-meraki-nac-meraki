@@ -263,16 +263,32 @@ locals {
               ipv6_prefix                      = try(switch_routing_interface.ipv6.prefix, local.defaults.meraki.domains.organizations.networks.devices.switch_routing_interfaces.ipv6.prefix, null)
               ipv6_address                     = try(switch_routing_interface.ipv6.address, local.defaults.meraki.domains.organizations.networks.devices.switch_routing_interfaces.ipv6.address, null)
               ipv6_gateway                     = try(switch_routing_interface.ipv6.gateway, local.defaults.meraki.domains.organizations.networks.devices.switch_routing_interfaces.ipv6.gateway, null)
+              ipv6_static_v6_dns1              = try(switch_routing_interface.ipv6.static_v6_dns1, local.defaults.meraki.domains.organizations.networks.devices.switch_routing_interfaces.ipv6.static_v6_dns1, null)
+              ipv6_static_v6_dns2              = try(switch_routing_interface.ipv6.static_v6_dns2, local.defaults.meraki.domains.organizations.networks.devices.switch_routing_interfaces.ipv6.static_v6_dns2, null)
+              static_v4_dns1                   = try(switch_routing_interface.static_v4_dns1, local.defaults.meraki.domains.organizations.networks.devices.switch_routing_interfaces.static_v4_dns1, null)
+              static_v4_dns2                   = try(switch_routing_interface.static_v4_dns2, local.defaults.meraki.domains.organizations.networks.devices.switch_routing_interfaces.static_v4_dns2, null)
+              uplink_v4                        = try(switch_routing_interface.uplink_v4, local.defaults.meraki.domains.organizations.networks.devices.switch_routing_interfaces.uplink_v4, null)
+              uplink_v6                        = try(switch_routing_interface.uplink_v6, local.defaults.meraki.domains.organizations.networks.devices.switch_routing_interfaces.uplink_v6, null)
             }
           ]
         ]
       ]
     ]
   ])
+  devices_switch_routing_interfaces_first = [
+    for routing_interface in local.devices_switch_routing_interfaces :
+    routing_interface
+    if routing_interface.default_gateway != null || routing_interface.uplink_v4 != null || routing_interface.uplink_v6 != null
+  ]
+  devices_switch_routing_interfaces_not_first = [
+    for routing_interface in local.devices_switch_routing_interfaces :
+    routing_interface
+    if routing_interface.default_gateway == null && routing_interface.uplink_v4 == null && routing_interface.uplink_v6 == null
+  ]
 }
 
-resource "meraki_switch_routing_interface" "devices_switch_routing_interfaces" {
-  for_each                         = { for v in local.devices_switch_routing_interfaces : v.key => v }
+resource "meraki_switch_routing_interface" "devices_switch_routing_interfaces_first" {
+  for_each                         = { for v in local.devices_switch_routing_interfaces_first : v.key => v }
   serial                           = each.value.serial
   name                             = each.value.name
   subnet                           = each.value.subnet
@@ -287,6 +303,48 @@ resource "meraki_switch_routing_interface" "devices_switch_routing_interfaces" {
   ipv6_prefix                      = each.value.ipv6_prefix
   ipv6_address                     = each.value.ipv6_address
   ipv6_gateway                     = each.value.ipv6_gateway
+  ipv6_static_v6_dns1              = each.value.ipv6_static_v6_dns1
+  ipv6_static_v6_dns2              = each.value.ipv6_static_v6_dns2
+  static_v4_dns1                   = each.value.static_v4_dns1
+  static_v4_dns2                   = each.value.static_v4_dns2
+  uplink_v4                        = each.value.uplink_v4
+  uplink_v6                        = each.value.uplink_v6
+}
+resource "meraki_switch_routing_interface" "devices_switch_routing_interfaces_not_first" {
+  for_each                         = { for v in local.devices_switch_routing_interfaces_not_first : v.key => v }
+  serial                           = each.value.serial
+  name                             = each.value.name
+  subnet                           = each.value.subnet
+  interface_ip                     = each.value.interface_ip
+  multicast_routing                = each.value.multicast_routing
+  vlan_id                          = each.value.vlan_id
+  default_gateway                  = each.value.default_gateway
+  ospf_settings_area               = each.value.ospf_settings_area
+  ospf_settings_cost               = each.value.ospf_settings_cost
+  ospf_settings_is_passive_enabled = each.value.ospf_settings_is_passive_enabled
+  ipv6_assignment_mode             = each.value.ipv6_assignment_mode
+  ipv6_prefix                      = each.value.ipv6_prefix
+  ipv6_address                     = each.value.ipv6_address
+  ipv6_gateway                     = each.value.ipv6_gateway
+  ipv6_static_v6_dns1              = each.value.ipv6_static_v6_dns1
+  ipv6_static_v6_dns2              = each.value.ipv6_static_v6_dns2
+  static_v4_dns1                   = each.value.static_v4_dns1
+  static_v4_dns2                   = each.value.static_v4_dns2
+  uplink_v4                        = each.value.uplink_v4
+  uplink_v6                        = each.value.uplink_v6
+  depends_on = [
+    meraki_switch_routing_interface.devices_switch_routing_interfaces_first,
+  ]
+}
+
+locals {
+  devices_switch_routing_interface_ids = {
+    for routing_interface in local.devices_switch_routing_interfaces :
+    routing_interface.key =>
+    (routing_interface.default_gateway != null || routing_interface.uplink_v4 != null || routing_interface.uplink_v6 != null) ?
+    meraki_switch_routing_interface.devices_switch_routing_interfaces_first[routing_interface.key].id :
+    meraki_switch_routing_interface.devices_switch_routing_interfaces_not_first[routing_interface.key].id
+  }
 }
 
 locals {
@@ -298,7 +356,7 @@ locals {
             for switch_routing_interface in try(device.switch_routing_interfaces, []) : {
               key                    = format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, device.name, switch_routing_interface.name)
               serial                 = meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)].serial
-              interface_id           = meraki_switch_routing_interface.devices_switch_routing_interfaces[format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, device.name, switch_routing_interface.name)].id
+              interface_id           = local.devices_switch_routing_interface_ids[format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, device.name, switch_routing_interface.name)]
               dhcp_mode              = try(switch_routing_interface.dhcp.dhcp_mode, local.defaults.meraki.domains.organizations.networks.devices.switch_routing_interfaces.dhcp.dhcp_mode, null)
               dhcp_relay_server_ips  = try(switch_routing_interface.dhcp.dhcp_relay_server_ips, local.defaults.meraki.domains.organizations.networks.devices.switch_routing_interfaces.dhcp.dhcp_relay_server_ips, null)
               dhcp_lease_time        = try(switch_routing_interface.dhcp.dhcp_lease_time, local.defaults.meraki.domains.organizations.networks.devices.switch_routing_interfaces.dhcp.dhcp_lease_time, null)
@@ -384,7 +442,8 @@ resource "meraki_switch_routing_static_route" "devices_switch_routing_static_rou
   advertise_via_ospf_enabled      = each.value.advertise_via_ospf_enabled
   prefer_over_ospf_routes_enabled = each.value.prefer_over_ospf_routes_enabled
   depends_on = [
-    meraki_switch_routing_interface.devices_switch_routing_interfaces,
+    meraki_switch_routing_interface.devices_switch_routing_interfaces_first,
+    meraki_switch_routing_interface.devices_switch_routing_interfaces_not_first,
   ]
 }
 
