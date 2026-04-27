@@ -250,15 +250,37 @@ locals {
       ]
     ]
   ])
+  networks_vlan_profiles_default = [
+    for vlan_profile in local.networks_vlan_profiles :
+    vlan_profile
+    if vlan_profile.iname == "Default"
+  ]
+  networks_vlan_profiles_not_default = [
+    for vlan_profile in local.networks_vlan_profiles :
+    vlan_profile
+    if vlan_profile.iname != "Default"
+  ]
 }
 
-resource "meraki_network_vlan_profile" "networks_vlan_profiles" {
-  for_each    = { for v in local.networks_vlan_profiles : v.key => v }
+resource "meraki_network_vlan_profile" "networks_vlan_profiles_default" {
+  for_each    = { for v in local.networks_vlan_profiles_default : v.key => v }
   network_id  = each.value.network_id
   name        = each.value.name
   vlan_names  = each.value.vlan_names
   vlan_groups = each.value.vlan_groups
   iname       = each.value.iname
+}
+
+resource "meraki_network_vlan_profile" "networks_vlan_profiles_not_default" {
+  for_each    = { for v in local.networks_vlan_profiles_not_default : v.key => v }
+  network_id  = each.value.network_id
+  name        = each.value.name
+  vlan_names  = each.value.vlan_names
+  vlan_groups = each.value.vlan_groups
+  iname       = each.value.iname
+  depends_on = [
+    meraki_network_vlan_profile.networks_vlan_profiles_default,
+  ]
 }
 
 locals {
