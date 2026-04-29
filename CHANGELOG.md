@@ -1,4 +1,18 @@
 
+## 0.8.0
+
+New Features:
+
+- Add support for webhooks — HTTP servers, payload templates, and network webhook configurations (https://github.com/netascode/terraform-meraki-nac-meraki/pull/154)
+- Add policy_object and VLAN support to appliance and cellular firewall inbound/outbound rules (https://github.com/netascode/terraform-meraki-nac-meraki/pull/156)
+- Add new switch routing interface parameters with first/not-first batch logic for Early Access API (https://github.com/netascode/terraform-meraki-nac-meraki/pull/160)
+
+Bug Fixes:
+
+- Fix: ensure Default VLAN profile is created before non-default profiles (https://github.com/netascode/terraform-meraki-nac-meraki/pull/161)
+- Fix: add required `name` attribute to adaptive policy group `policy_objects` (https://github.com/netascode/terraform-meraki-nac-meraki/pull/159)
+- Fix: add missing `depends_on` for `meraki_appliance_traffic_shaping_vpn_exclusions` (https://github.com/netascode/terraform-meraki-nac-meraki/pull/158)
+
 ## 0.7.1
 
 New Features:
