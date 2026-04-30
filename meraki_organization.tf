@@ -730,9 +730,19 @@ locals {
         key             = format("%s/%s", domain.name, organization.name)
         organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
         networks = [
-          for network in try(organization.integrations.xdr_networks, []) : {
-            network_id    = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.network_name)]
-            product_types = try(network.product_types, local.defaults.meraki.domains.organizations.integrations.xdr_networks.product_types, null)
+          for nid in sort([
+            for network in try(organization.integrations.xdr_networks, []) :
+            local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.network_name)]
+          ]) : {
+            network_id    = nid
+            product_types = try(
+              { for network in try(organization.integrations.xdr_networks, []) :
+                local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.network_name)] =>
+                try(network.product_types, local.defaults.meraki.domains.organizations.integrations.xdr_networks.product_types, null)
+              }[nid],
+              local.defaults.meraki.domains.organizations.integrations.xdr_networks.product_types,
+              null
+            )
           }
         ]
       } if try(organization.integrations.xdr_networks, null) != null
