@@ -722,3 +722,26 @@ resource "meraki_organization_auth_radius_server" "organizations_authentication_
     meraki_organization_early_access_features_opt_in.organizations_early_access_features_opt_ins,
   ]
 }
+
+locals {
+  organizations_integrations_xdr_networks = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : {
+        key             = format("%s/%s", domain.name, organization.name)
+        organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
+        networks = [
+          for network in try(organization.integrations_xdr_networks, []) : {
+            network_id    = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.network_name)]
+            product_types = try(network.product_types, local.defaults.meraki.domains.organizations.integrations_xdr_networks.product_types, null)
+          }
+        ]
+      } if try(organization.integrations_xdr_networks, null) != null
+    ]
+  ])
+}
+
+resource "meraki_organization_integrations_xdr_networks" "organizations_integrations_xdr_networks" {
+  for_each        = { for v in local.organizations_integrations_xdr_networks : v.key => v }
+  organization_id = each.value.organization_id
+  networks        = each.value.networks
+}
