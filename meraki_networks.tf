@@ -534,4 +534,5 @@ resource "meraki_network_webhook_http_server" "networks_webhooks_http_servers" {
   shared_secret                        = each.value.shared_secret
   payload_template_payload_template_id = each.value.payload_template_payload_template_id
   payload_template_name                = each.value.payload_template_name
+  depends_on                           = [meraki_network_webhook_payload_template.networks_webhooks_payload_templates]
 }
