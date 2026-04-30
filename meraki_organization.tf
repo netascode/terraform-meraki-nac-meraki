@@ -103,6 +103,10 @@ locals {
     meraki_network.organizations_networks[v.key].id :
     data.meraki_network.organizations_networks[v.key].id
   }
+  organizations_network_product_types = {
+    for v in local.organizations_networks :
+    v.key => v.product_types
+  }
 }
 
 locals {
@@ -732,7 +736,7 @@ locals {
         networks = [
           for network in try(organization.integrations.xdr_networks, []) : {
             network_id    = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.network_name)]
-            product_types = try(network.product_types, local.defaults.meraki.domains.organizations.integrations.xdr_networks.product_types, null)
+            product_types = local.organizations_network_product_types[format("%s/%s/%s", domain.name, organization.name, network.network_name)]
           }
         ]
       } if try(organization.integrations.xdr_networks, null) != null
