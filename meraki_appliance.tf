@@ -444,6 +444,7 @@ resource "meraki_appliance_ports" "networks_appliance_ports" {
         enabled               = try(ports.data.enabled, local.defaults.meraki.domains.organizations.networks.appliance_ports.enabled, null)
         drop_untagged_traffic = try(ports.data.drop_untagged_traffic, local.defaults.meraki.domains.organizations.networks.appliance_ports.drop_untagged_traffic, null)
         type                  = try(ports.data.type, local.defaults.meraki.domains.organizations.networks.appliance_ports.type, null)
+        peer_sgt_capable      = try(ports.data.peer_sgt_capable, local.defaults.meraki.domains.organizations.networks.appliance_ports.peer_sgt_capable, null)
         vlan                  = try(ports.data.vlan, local.defaults.meraki.domains.organizations.networks.appliance_ports.vlan, null)
         allowed_vlans         = try(ports.data.allowed_vlans, local.defaults.meraki.domains.organizations.networks.appliance_ports.allowed_vlans, null)
         access_policy         = try(ports.data.access_policy, local.defaults.meraki.domains.organizations.networks.appliance_ports.access_policy, null)
@@ -787,6 +788,7 @@ locals {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
           mode       = try(network.appliance.vpn_site_to_site_vpn.mode, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.mode, null)
+          peer_sgt_capable = try(network.appliance.vpn_site_to_site_vpn.peer_sgt_capable, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.peer_sgt_capable, null)
           hubs = try(network.appliance.vpn_site_to_site_vpn.hubs, null) == null ? null : [
             for hub in try(network.appliance.vpn_site_to_site_vpn.hubs, []) : {
               hub_id            = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, hub.hub_network_name)]
@@ -812,6 +814,7 @@ resource "meraki_appliance_site_to_site_vpn" "networks_appliance_vpn_site_to_sit
   for_each              = { for v in local.networks_appliance_vpn_site_to_site_vpn : v.key => v }
   network_id            = each.value.network_id
   mode                  = each.value.mode
+  peer_sgt_capable      = each.value.peer_sgt_capable
   hubs                  = each.value.hubs
   subnets               = each.value.subnets
   subnet_nat_is_allowed = each.value.subnet_nat_is_allowed
