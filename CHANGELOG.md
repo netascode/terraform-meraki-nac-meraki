@@ -7,7 +7,7 @@ Bug Fixes:
 
 Release Notes:
 
-- Re-release of `0.8.0` content under a new tag. The original `0.8.0` tag was created from a commit that pre-dated PR #150 (third-party VPN peer attributes + IPsec peers SLAs); although the tag was later force-updated, the Terraform Registry and CloudFront CDN cached the original (incorrect) resolution. `0.8.1` is published on the correct commit so that `terraform init` resolves cleanly without waiting for cache expiry. Users on `0.8.0` should bump to `~> 0.8.1`.
+- Include Re-release of `0.8.0` content under a new tag. The original `0.8.0` tag was created from a commit that pre-dated PR #150 (third-party VPN peer attributes + IPsec peers SLAs); although the tag was later force-updated, the Terraform Registry and CloudFront CDN cached the original (incorrect) resolution. `0.8.1` is published on the correct commit so that `terraform init` resolves cleanly without waiting for cache expiry. Users on `0.8.0` should bump to `0.8.1`.
 
 ## 0.8.0
 
