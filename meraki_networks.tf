@@ -284,6 +284,42 @@ resource "meraki_network_vlan_profile" "networks_vlan_profiles_not_default" {
 }
 
 locals {
+  networks_vlan_profiles_assignments = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for assignment in try(network.vlan_profiles_assignments, []) : {
+            key                = format("%s/%s/%s/%s", domain.name, organization.name, network.name, assignment.vlan_profile_iname)
+            network_id         = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
+            vlan_profile_iname = try(assignment.vlan_profile_iname, local.defaults.meraki.domains.organizations.networks.vlan_profiles_assignments.vlan_profile_iname, null)
+            serials = try(assignment.devices, null) == null ? null : [
+              for device in assignment.devices :
+              meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device)].serial
+            ]
+            stack_ids = try(assignment.stacks, null) == null ? null : [
+              for stack_name in assignment.stacks :
+              meraki_switch_stack.networks_switch_stacks[format("%s/%s/%s/%s", domain.name, organization.name, network.name, stack_name)].id
+            ]
+          }
+        ]
+      ]
+    ]
+  ])
+}
+
+resource "meraki_network_vlan_profile_assignment" "networks_vlan_profiles_assignments" {
+  for_each           = { for v in local.networks_vlan_profiles_assignments : v.key => v }
+  network_id         = each.value.network_id
+  vlan_profile_iname = each.value.vlan_profile_iname
+  serials            = each.value.serials
+  stack_ids          = each.value.stack_ids
+  depends_on = [
+    meraki_network_vlan_profile.networks_vlan_profiles_default,
+    meraki_network_vlan_profile.networks_vlan_profiles_not_default,
+  ]
+}
+
+locals {
   networks_devices_claim = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [

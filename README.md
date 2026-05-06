@@ -122,6 +122,7 @@ module "meraki" {
 | [meraki_network_syslog_servers.networks_syslog_servers](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_syslog_servers) | resource |
 | [meraki_network_vlan_profile.networks_vlan_profiles_default](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_vlan_profile) | resource |
 | [meraki_network_vlan_profile.networks_vlan_profiles_not_default](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_vlan_profile) | resource |
+| [meraki_network_vlan_profile_assignment.networks_vlan_profiles_assignments](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_vlan_profile_assignment) | resource |
 | [meraki_network_webhook_http_server.networks_webhooks_http_servers](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_webhook_http_server) | resource |
 | [meraki_network_webhook_payload_template.networks_webhooks_payload_templates](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_webhook_payload_template) | resource |
 | [meraki_organization.organizations](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization) | resource |
