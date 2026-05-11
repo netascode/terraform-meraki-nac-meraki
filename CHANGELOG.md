@@ -1,4 +1,14 @@
 
+## 0.8.1
+
+Bug Fixes:
+
+- Fix: add `depends_on` for webhook HTTP server to ensure correct creation order (https://github.com/netascode/terraform-meraki-nac-meraki/pull/164)
+
+Release Notes:
+
+- Include Re-release of `0.8.0` content under a new tag. The original `0.8.0` tag was created from a commit that pre-dated PR #150 (third-party VPN peer attributes + IPsec peers SLAs); although the tag was later force-updated, the Terraform Registry and CloudFront CDN cached the original (incorrect) resolution. `0.8.1` is published on the correct commit so that `terraform init` resolves cleanly without waiting for cache expiry. Users on `0.8.0` should bump to `0.8.1`.
+
 ## 0.8.0
 
 New Features:
@@ -6,6 +16,7 @@ New Features:
 - Add support for webhooks — HTTP servers, payload templates, and network webhook configurations (https://github.com/netascode/terraform-meraki-nac-meraki/pull/154)
 - Add policy_object and VLAN support to appliance and cellular firewall inbound/outbound rules (https://github.com/netascode/terraform-meraki-nac-meraki/pull/156)
 - Add new switch routing interface parameters with first/not-first batch logic for Early Access API (https://github.com/netascode/terraform-meraki-nac-meraki/pull/160)
+- Add missing third-party VPN peer attributes (`is_route_based`, `priority_in_group`, `group_active_active_tunnel`, `group_number`, `group_failover_direct_to_internet`, `sla_policy_name`) and IPsec peers SLA health-check resource with name-to-id lookup (https://github.com/netascode/terraform-meraki-nac-meraki/pull/150)
 
 Bug Fixes:
 
