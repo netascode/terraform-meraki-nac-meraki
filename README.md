@@ -132,6 +132,7 @@ module "meraki" {
 | [meraki_organization_admin.organizations_admins](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_admin) | resource |
 | [meraki_organization_auth_radius_server.organizations_authentication_radius_servers](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_auth_radius_server) | resource |
 | [meraki_organization_early_access_features_opt_in.organizations_early_access_features_opt_ins](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_early_access_features_opt_in) | resource |
+| [meraki_organization_integrations_xdr_networks.organizations_integrations_xdr_networks](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_integrations_xdr_networks) | resource |
 | [meraki_organization_inventory_claim.organizations_inventory](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_inventory_claim) | resource |
 | [meraki_organization_login_security.organizations_login_security](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_login_security) | resource |
 | [meraki_organization_policy_object.organizations_policy_objects](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_policy_object) | resource |
