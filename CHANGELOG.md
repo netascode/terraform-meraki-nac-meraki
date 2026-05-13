@@ -1,4 +1,10 @@
 
+## 0.8.2
+
+Minimum Required Meraki Provider:
+
+- Raise the minimum required meraki provider version to `1.11.0` in `versions.tf`. This is required for the switch routing interface attributes added in `0.8.0` (`ipv6_static_v6_dns{1,2}`, `static_v4_dns{1,2}`, `uplink_v{4,6}` on `devices_switch_routing_interfaces` and `networks_switch_stacks_routing_interfaces`). Consumers pinned to an older provider must upgrade. (https://github.com/netascode/terraform-meraki-nac-meraki/pull/168)
+
 ## 0.8.1
 
 Bug Fixes:
