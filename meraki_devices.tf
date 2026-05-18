@@ -188,6 +188,31 @@ locals {
                 access_policy_number     = try(meraki_switch_access_policy.networks_switch_access_policies[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.access_policy_name)].id, null)
                 port_schedule_id         = try(meraki_switch_port_schedule.networks_switch_port_schedules[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.port_schedule_name)].id, null)
                 adaptive_policy_group_id = try(local.organizations_adaptive_policy_group_ids[format("%s/%s/%s", domain.name, organization.name, switch_port.adaptive_policy_group_name)], null)
+                # Resolve vlan_name to a numeric VLAN ID via vlan_profiles_assignments -> vlan_profiles.
+                # Falls back to the "Default" profile if the device has no explicit assignment,
+                # and falls back to the literal vlan field if vlan_name is not set.
+                resolved_vlan = try(switch_port.vlan_name, null) != null ? flatten([
+                  for assignment in try(network.vlan_profiles_assignments, []) : [
+                    for profile in try(network.vlan_profiles, []) : [
+                      for vname in try(profile.vlan_names, []) :
+                      vname.vlan_id
+                      if vname.name == switch_port.vlan_name
+                    ]
+                    if profile.iname == assignment.vlan_profile_iname
+                  ]
+                  if contains(try(assignment.devices, []), device.name)
+                ])[0] : try(switch_port.vlan, null)
+                resolved_voice_vlan = try(switch_port.voice_vlan_name, null) != null ? flatten([
+                  for assignment in try(network.vlan_profiles_assignments, []) : [
+                    for profile in try(network.vlan_profiles, []) : [
+                      for vname in try(profile.vlan_names, []) :
+                      vname.vlan_id
+                      if vname.name == switch_port.voice_vlan_name
+                    ]
+                    if profile.iname == assignment.vlan_profile_iname
+                  ]
+                  if contains(try(assignment.devices, []), device.name)
+                ])[0] : try(switch_port.voice_vlan, null)
               }
             ]
           } if try(device.switch.ports, null) != null
@@ -210,8 +235,8 @@ resource "meraki_switch_ports" "devices_switch_ports" {
         enabled                     = try(ports.data.enabled, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.enabled, null)
         poe_enabled                 = try(ports.data.poe, local.defaults.meraki.domains.organizations.networks.switch.ports.poe, null)
         type                        = try(ports.data.type, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.type, null)
-        vlan                        = try(ports.data.vlan, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.vlan, null)
-        voice_vlan                  = try(ports.data.voice_vlan, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.voice_vlan, null)
+        vlan                        = try(ports.resolved_vlan, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.vlan, null)
+        voice_vlan                  = try(ports.resolved_voice_vlan, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.voice_vlan, null)
         allowed_vlans               = try(ports.data.allowed_vlans, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.allowed_vlans, null)
         isolation_enabled           = try(ports.data.isolation, local.defaults.meraki.domains.organizations.networks.switch.ports.isolation, null)
         rstp_enabled                = try(ports.data.rstp, local.defaults.meraki.domains.organizations.networks.switch.ports.rstp, null)
@@ -238,6 +263,7 @@ resource "meraki_switch_ports" "devices_switch_ports" {
   ])
   depends_on = [
     meraki_organization_adaptive_policy_settings.organizations_adaptive_policy_settings_enabled_networks,
+    meraki_network_vlan_profile_assignment.networks_vlan_profiles_assignments,
   ]
 }
 
