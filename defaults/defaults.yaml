@@ -3,6 +3,9 @@ defaults:
     domains:
       organizations:
         managed: true
+        integrations:
+          xdr_networks:
+            product_types: ["appliance"]
         networks:
           product_types: ["appliance", "switch", "wireless"]
           time_zone: "UTC"
