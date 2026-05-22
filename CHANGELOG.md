@@ -1,4 +1,18 @@
 
+## 0.9.0
+
+New Features:
+
+- Add support for `meraki_organization_integrations_xdr_networks` — enable/disable XDR (Extended Detection and Response) on a per-network basis with configurable `product_types` (defaults to `["appliance"]`) (https://github.com/netascode/terraform-meraki-nac-meraki/pull/169)
+
+Minimum Required Meraki Provider:
+
+- Raise the minimum required meraki provider version to `1.12.1` in `versions.tf` (required for the new XDR networks resource). Consumers pinned to an older provider must upgrade. (https://github.com/netascode/terraform-meraki-nac-meraki/pull/171)
+
+Enhancements:
+
+- Defaults updates — add `organizations.integrations.xdr_networks.product_types` default of `["appliance"]`
+
 ## 0.8.2
 
 Minimum Required Meraki Provider:
