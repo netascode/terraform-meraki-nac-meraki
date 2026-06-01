@@ -20,15 +20,15 @@ module "model" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
-| <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.5.2 |
-| <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 0.2.6 |
+| <a name="requirement_local"></a> [local](#requirement\_local) | ~> 2.9 |
+| <a name="requirement_utils"></a> [utils](#requirement\_utils) | ~> 2.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_terraform"></a> [terraform](#provider\_terraform) | n/a |
-| <a name="provider_local"></a> [local](#provider\_local) | >= 2.5.2 |
+| <a name="provider_local"></a> [local](#provider\_local) | ~> 2.9 |
 
 ## Inputs
 
