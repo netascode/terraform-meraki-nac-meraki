@@ -4,11 +4,11 @@ terraform {
   required_providers {
     utils = {
       source  = "netascode/utils"
-      version = ">= 0.2.6"
+      version = "~> 2.0"
     }
     local = {
       source  = "hashicorp/local"
-      version = ">= 2.5.2"
+      version = "~> 2.9"
     }
   }
 }
