@@ -635,6 +635,54 @@ locals {
       ]
     ]
   ])
+  networks_alerts_settings = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : {
+          key                                  = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id                           = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
+          default_destinations_emails          = try(network.alerts_settings.default_destinations.emails, local.defaults.meraki.domains.organizations.networks.alerts_settings.default_destinations.emails, null)
+          default_destinations_all_admins      = try(network.alerts_settings.default_destinations.all_admins, local.defaults.meraki.domains.organizations.networks.alerts_settings.default_destinations.all_admins, null)
+          default_destinations_snmp            = try(network.alerts_settings.default_destinations.snmp, local.defaults.meraki.domains.organizations.networks.alerts_settings.default_destinations.snmp, null)
+          default_destinations_http_server_ids = try(network.alerts_settings.default_destinations.http_server_ids, local.defaults.meraki.domains.organizations.networks.alerts_settings.default_destinations.http_server_ids, null)
+          alerts = try(network.alerts_settings.alerts, null) == null ? null : [
+            for alert in try(network.alerts_settings.alerts, []) : {
+              type                               = try(alert.type, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.type, null)
+              enabled                            = try(alert.enabled, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.enabled, null)
+              alert_destinations_emails          = try(alert.alert_destinations.emails, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.alert_destinations.emails, null)
+              alert_destinations_sms_numbers     = try(alert.alert_destinations.sms_numbers, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.alert_destinations.sms_numbers, null)
+              alert_destinations_all_admins      = try(alert.alert_destinations.all_admins, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.alert_destinations.all_admins, null)
+              alert_destinations_snmp            = try(alert.alert_destinations.snmp, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.alert_destinations.snmp, null)
+              alert_destinations_http_server_ids = try(alert.alert_destinations.http_server_ids, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.alert_destinations.http_server_ids, null)
+              filters_conditions = try(alert.filters.conditions, null) == null ? null : [
+                for filters_condition in try(alert.filters.conditions, []) : {
+                  type      = try(filters_condition.type, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.conditions.type, null)
+                  unit      = try(filters_condition.unit, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.conditions.unit, null)
+                  duration  = try(filters_condition.duration, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.conditions.duration, null)
+                  direction = try(filters_condition.direction, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.conditions.direction, null)
+                  threshold = try(filters_condition.threshold, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.conditions.threshold, null)
+                }
+              ]
+              filters_failure_type    = try(alert.filters.failure_type, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.failure_type, null)
+              filters_lookback_window = try(alert.filters.lookback_window, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.lookback_window, null)
+              filters_min_duration    = try(alert.filters.min_duration, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.min_duration, null)
+              filters_name            = try(alert.filters.name, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.name, null)
+              filters_period          = try(alert.filters.period, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.period, null)
+              filters_priority        = try(alert.filters.priority, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.priority, null)
+              filters_regex           = try(alert.filters.regex, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.regex, null)
+              filters_selector        = try(alert.filters.selector, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.selector, null)
+              filters_serials         = try(alert.filters.serials, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.serials, null)
+              filters_ssid_num        = try(alert.filters.ssid_num, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.ssid_num, null)
+              filters_tag             = try(alert.filters.tag, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.tag, null)
+              filters_threshold       = try(alert.filters.threshold, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.threshold, null)
+              filters_timeout         = try(alert.filters.timeout, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.timeout, null)
+            }
+          ]
+          muting_by_port_schedules_enabled = try(network.alerts_settings.muting.by_port_schedules.enabled, local.defaults.meraki.domains.organizations.networks.alerts_settings.muting.by_port_schedules.enabled, null)
+        } if try(network.alerts_settings, null) != null
+      ]
+    ]
+  ])
 }
 
 data "meraki_network_firmware_upgrades" "networks_firmware_available_versions" {
@@ -785,4 +833,15 @@ resource "meraki_network_firmware_upgrades_rollback" "networks_firmware_downgrad
   to_version_id       = each.value.to_version_id
   predownload_enabled = each.value.predownload_enabled
   reasons             = each.value.reasons
+}
+
+resource "meraki_network_alerts_settings" "networks_alerts_settings" {
+  for_each                             = { for v in local.networks_alerts_settings : v.key => v }
+  network_id                           = each.value.network_id
+  default_destinations_emails          = each.value.default_destinations_emails
+  default_destinations_all_admins      = each.value.default_destinations_all_admins
+  default_destinations_snmp            = each.value.default_destinations_snmp
+  default_destinations_http_server_ids = each.value.default_destinations_http_server_ids
+  alerts                               = each.value.alerts
+  muting_by_port_schedules_enabled     = each.value.muting_by_port_schedules_enabled
 }
