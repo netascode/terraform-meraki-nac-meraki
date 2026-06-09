@@ -671,14 +671,14 @@ locals {
               filters_priority        = try(alert.filters.priority, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.priority, null)
               filters_regex           = try(alert.filters.regex, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.regex, null)
               filters_selector        = try(alert.filters.selector, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.selector, null)
-              filters_serials         = try(alert.filters.serials, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.serials, null)
-              filters_ssid_num        = try(alert.filters.ssid_num, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.ssid_num, null)
+              filters_serials         = try(alert.filters.devices, null) == null ? null : [for d in alert.filters.devices : meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, d)].serial]
+              filters_ssid_num        = try(alert.filters.ssid_name, null) == null ? null : meraki_wireless_ssid.networks_wireless_ssids[format("%s/%s/%s/%s", domain.name, organization.name, network.name, alert.filters.ssid_name)].number
               filters_tag             = try(alert.filters.tag, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.tag, null)
               filters_threshold       = try(alert.filters.threshold, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.threshold, null)
               filters_timeout         = try(alert.filters.timeout, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.timeout, null)
             }
           ]
-          muting_by_port_schedules_enabled = try(network.alerts_settings.muting.by_port_schedules.enabled, local.defaults.meraki.domains.organizations.networks.alerts_settings.muting.by_port_schedules.enabled, null)
+          muting_by_port_schedules_enabled = try(network.alerts_settings.muting_by_port_schedules, local.defaults.meraki.domains.organizations.networks.alerts_settings.muting_by_port_schedules, null)
         } if try(network.alerts_settings, null) != null
       ]
     ]
