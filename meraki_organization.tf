@@ -636,7 +636,7 @@ locals {
       for organization in try(domain.organizations, []) : {
         key             = format("%s/%s", domain.name, organization.name)
         organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
-        rules = try(organization.appliance.vpn_firewall_rules.rules, null) == null ? null : [
+        rules = [
           for rule in try(organization.appliance.vpn_firewall_rules.rules, []) : {
             comment        = try(rule.comment, local.defaults.meraki.domains.organizations.appliance.vpn_firewall_rules.rules.comment, null)
             policy         = try(rule.policy, local.defaults.meraki.domains.organizations.appliance.vpn_firewall_rules.rules.policy, null)
