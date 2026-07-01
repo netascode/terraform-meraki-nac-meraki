@@ -199,6 +199,9 @@ locals {
                       switch_port.vlan_name,
                     )
                   ],
+                  local.networks_vlan_ids_by_default[
+                    format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.vlan_name)
+                  ],
                   switch_port.vlan,
                   null,
                 )
@@ -212,6 +215,9 @@ locals {
                       meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)].serial,
                       switch_port.voice_vlan_name,
                     )
+                  ],
+                  local.networks_vlan_ids_by_default[
+                    format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.voice_vlan_name)
                   ],
                   switch_port.voice_vlan,
                   null,

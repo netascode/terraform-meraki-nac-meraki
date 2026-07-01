@@ -351,6 +351,23 @@ locals {
 }
 
 locals {
+  networks_vlan_ids_by_default = {
+    for v in flatten([
+      for domain in try(local.meraki.domains, []) : [
+        for organization in try(domain.organizations, []) : [
+          for network in try(organization.networks, []) : [
+            for vlan_name_and_id in try(local.networks_vlan_profiles_by_iname[format("%s/%s/%s/Default", domain.name, organization.name, network.name)].vlan_names, []) : {
+              key     = format("%s/%s/%s/%s", domain.name, organization.name, network.name, vlan_name_and_id.name)
+              vlan_id = vlan_name_and_id.vlan_id
+            }
+          ]
+        ]
+      ]
+    ]) : v.key => v.vlan_id
+  }
+}
+
+locals {
   networks_devices_claim = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
