@@ -189,8 +189,7 @@ locals {
                 port_schedule_id         = try(meraki_switch_port_schedule.networks_switch_port_schedules[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.port_schedule_name)].id, null)
                 adaptive_policy_group_id = try(local.organizations_adaptive_policy_group_ids[format("%s/%s/%s", domain.name, organization.name, switch_port.adaptive_policy_group_name)], null)
                 # Resolve vlan_name to a numeric VLAN ID via vlan_profiles_assignments -> vlan_profiles.
-                # Falls back to the "Default" profile if the device has no explicit assignment,
-                # and falls back to the literal vlan field if vlan_name is not set.
+                # Falls back to the literal vlan field if vlan_name is not set.
                 resolved_vlan = try(switch_port.vlan_name, null) != null ? flatten([
                   for assignment in try(network.vlan_profiles_assignments, []) : [
                     for profile in try(network.vlan_profiles, []) : [
