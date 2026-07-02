@@ -327,26 +327,23 @@ resource "meraki_network_vlan_profile_assignment" "networks_vlan_profiles_assign
 }
 
 locals {
-  networks_vlan_ids_by_serial_list = flatten([
-    for domain in try(local.meraki.domains, []) : [
-      for organization in try(domain.organizations, []) : [
-        for network in try(organization.networks, []) : [
-          for assignment in try(network.vlan_profiles_assignments, []) : [
-            for serial in meraki_network_vlan_profile_assignment.networks_vlan_profiles_assignments[format("%s/%s/%s/%s", domain.name, organization.name, network.name, assignment.vlan_profile_iname)].serials : [
-              for vlan_name_and_id in local.networks_vlan_profiles_by_iname[format("%s/%s/%s/%s", domain.name, organization.name, network.name, assignment.vlan_profile_iname)].vlan_names : {
-                key     = format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, serial, vlan_name_and_id.name)
-                vlan_id = vlan_name_and_id.vlan_id
-              }
+  networks_vlan_ids_by_serial = {
+    for v in flatten([
+      for domain in try(local.meraki.domains, []) : [
+        for organization in try(domain.organizations, []) : [
+          for network in try(organization.networks, []) : [
+            for assignment in try(network.vlan_profiles_assignments, []) : [
+              for serial in meraki_network_vlan_profile_assignment.networks_vlan_profiles_assignments[format("%s/%s/%s/%s", domain.name, organization.name, network.name, assignment.vlan_profile_iname)].serials : [
+                for vlan_name_and_id in local.networks_vlan_profiles_by_iname[format("%s/%s/%s/%s", domain.name, organization.name, network.name, assignment.vlan_profile_iname)].vlan_names : {
+                  key     = format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, serial, vlan_name_and_id.name)
+                  vlan_id = vlan_name_and_id.vlan_id
+                }
+              ]
             ]
           ]
         ]
       ]
-    ]
-  ])
-
-  networks_vlan_ids_by_serial = {
-    for v in local.networks_vlan_ids_by_serial_list :
-    v.key => v.vlan_id
+    ]) : v.key => v.vlan_id
   }
 }
 
