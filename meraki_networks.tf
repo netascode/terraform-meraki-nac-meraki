@@ -308,8 +308,8 @@ locals {
               meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device)].serial
             ]
             stack_ids = try(assignment.stacks, null) == null ? null : [
-              for stack_name in assignment.stacks :
-              meraki_switch_stack.networks_switch_stacks[format("%s/%s/%s/%s", domain.name, organization.name, network.name, stack_name)].id
+              for stack in try(assignment.stacks, []) :
+              meraki_switch_stack.networks_switch_stacks[format("%s/%s/%s/%s", domain.name, organization.name, network.name, stack)].id
             ]
           }
         ]
