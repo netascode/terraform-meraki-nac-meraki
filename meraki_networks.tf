@@ -304,7 +304,7 @@ locals {
             network_id         = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
             vlan_profile_iname = try(local.networks_vlan_profiles_by_iname[format("%s/%s/%s/%s", domain.name, organization.name, network.name, assignment.vlan_profile_iname)].iname, null)
             serials = try(assignment.devices, null) == null ? null : [
-              for device in assignment.devices :
+              for device in try(assignment.devices, []) :
               meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device)].serial
             ]
             stack_ids = try(assignment.stacks, null) == null ? null : [
