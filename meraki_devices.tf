@@ -188,6 +188,40 @@ locals {
                 access_policy_number     = try(meraki_switch_access_policy.networks_switch_access_policies[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.access_policy_name)].id, null)
                 port_schedule_id         = try(meraki_switch_port_schedule.networks_switch_port_schedules[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.port_schedule_name)].id, null)
                 adaptive_policy_group_id = try(local.organizations_adaptive_policy_group_ids[format("%s/%s/%s", domain.name, organization.name, switch_port.adaptive_policy_group_name)], null)
+                vlan = try(
+                  local.networks_vlan_ids_by_serial[
+                    format(
+                      "%s/%s/%s/%s/%s",
+                      domain.name,
+                      organization.name,
+                      network.name,
+                      meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)].serial,
+                      switch_port.vlan_name,
+                    )
+                  ],
+                  local.networks_vlan_ids_by_default[
+                    format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.vlan_name)
+                  ],
+                  switch_port.vlan,
+                  null,
+                )
+                voice_vlan = try(
+                  local.networks_vlan_ids_by_serial[
+                    format(
+                      "%s/%s/%s/%s/%s",
+                      domain.name,
+                      organization.name,
+                      network.name,
+                      meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, device.name)].serial,
+                      switch_port.voice_vlan_name,
+                    )
+                  ],
+                  local.networks_vlan_ids_by_default[
+                    format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.voice_vlan_name)
+                  ],
+                  switch_port.voice_vlan,
+                  null,
+                )
               }
             ]
           } if try(device.switch.ports, null) != null
@@ -210,8 +244,8 @@ resource "meraki_switch_ports" "devices_switch_ports" {
         enabled                     = try(ports.data.enabled, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.enabled, null)
         poe_enabled                 = try(ports.data.poe, local.defaults.meraki.domains.organizations.networks.switch.ports.poe, null)
         type                        = try(ports.data.type, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.type, null)
-        vlan                        = try(ports.data.vlan, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.vlan, null)
-        voice_vlan                  = try(ports.data.voice_vlan, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.voice_vlan, null)
+        vlan                        = try(ports.vlan, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.vlan, null)
+        voice_vlan                  = try(ports.voice_vlan, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.voice_vlan, null)
         allowed_vlans               = try(ports.data.allowed_vlans, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.allowed_vlans, null)
         isolation_enabled           = try(ports.data.isolation, local.defaults.meraki.domains.organizations.networks.switch.ports.isolation, null)
         rstp_enabled                = try(ports.data.rstp, local.defaults.meraki.domains.organizations.networks.switch.ports.rstp, null)
