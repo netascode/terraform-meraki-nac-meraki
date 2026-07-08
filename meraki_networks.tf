@@ -672,7 +672,7 @@ locals {
               filters_regex           = try(alert.filters.regex, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.regex, null)
               filters_selector        = try(alert.filters.selector, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.selector, null)
               filters_serials         = try(alert.filters.devices, null) == null ? null : [for d in alert.filters.devices : meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, network.name, d)].serial]
-              filters_ssid_num        = try(alert.filters.ssid_name, null) == null ? null : meraki_wireless_ssid.networks_wireless_ssids[format("%s/%s/%s/%s", domain.name, organization.name, network.name, alert.filters.ssid_name)].number
+              filters_ssid_num        = try(meraki_wireless_ssid.networks_wireless_ssids[format("%s/%s/%s/%s", domain.name, organization.name, network.name, alert.filters.ssid_name)].number, null)
               filters_tag             = try(alert.filters.tag, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.tag, null)
               filters_threshold       = try(alert.filters.threshold, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.threshold, null)
               filters_timeout         = try(alert.filters.timeout, local.defaults.meraki.domains.organizations.networks.alerts_settings.alerts.filters.timeout, null)
