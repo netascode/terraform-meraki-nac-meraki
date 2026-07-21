@@ -371,7 +371,10 @@ locals {
         for network in try(organization.networks, []) : {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
-          serials    = [for d in network.devices : d.serial]
+          serials = [
+            for d in network.devices : d.serial
+            if d.name != try(network.appliance.warm_spare.spare_device, "")
+          ]
         } if try(network.devices, null) != null
       ]
     ]
@@ -382,6 +385,30 @@ resource "meraki_network_device_claim" "networks_devices_claim" {
   for_each   = { for v in local.networks_devices_claim : v.key => v }
   network_id = each.value.network_id
   serials    = each.value.serials
+}
+
+locals {
+  networks_devices_claim_spare = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : {
+          key        = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
+          serials = [
+            for d in network.devices : d.serial
+            if d.name == network.appliance.warm_spare.spare_device
+          ]
+        } if try(network.devices, null) != null && try(network.appliance.warm_spare.spare_device, null) != null
+      ]
+    ]
+  ])
+}
+
+resource "meraki_network_device_claim" "networks_devices_claim_spare" {
+  for_each   = { for v in local.networks_devices_claim_spare : v.key => v }
+  network_id = each.value.network_id
+  serials    = each.value.serials
+  depends_on = [meraki_network_device_claim.networks_devices_claim]
 }
 
 locals {
