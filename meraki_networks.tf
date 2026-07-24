@@ -617,3 +617,172 @@ resource "meraki_network_webhook_http_server" "networks_webhooks_http_servers" {
   payload_template_name                = each.value.payload_template_name
   depends_on                           = [meraki_network_webhook_payload_template.networks_webhooks_payload_templates]
 }
+
+locals {
+  networks_firmware_available_version_lookups = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : {
+          key        = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
+          } if(
+          anytrue([
+            for product in ["appliance", "cellular_gateway", "switch", "switch_catalyst", "wireless"] :
+            try(network.firmware.upgrade.products[product].next_upgrade.to_version, null) != null ||
+            try(network.firmware.downgrade.products[product].next_downgrade.to_version, null) != null
+          ])
+        )
+      ]
+    ]
+  ])
+}
+
+data "meraki_network_firmware_upgrades" "networks_firmware_available_versions" {
+  for_each   = { for v in local.networks_firmware_available_version_lookups : v.key => v }
+  network_id = each.value.network_id
+}
+
+# A map from YAML product names + version names to numeric version IDs from the network's datasource:
+# { "domain_name/organization_name/network_name/product/version_short_name" -> version_id }
+locals {
+  networks_firmware_version_ids = {
+    for v in flatten([
+      for network in local.networks_firmware_available_version_lookups : [
+        for product, available_versions in {
+          "appliance"        = try(data.meraki_network_firmware_upgrades.networks_firmware_available_versions[network.key].products_appliance_available_versions, [])
+          "cellular_gateway" = try(data.meraki_network_firmware_upgrades.networks_firmware_available_versions[network.key].products_cellular_gateway_available_versions, [])
+          "switch"           = try(data.meraki_network_firmware_upgrades.networks_firmware_available_versions[network.key].products_switch_available_versions, [])
+          "switch_catalyst"  = try(data.meraki_network_firmware_upgrades.networks_firmware_available_versions[network.key].products_switch_catalyst_available_versions, [])
+          "wireless"         = try(data.meraki_network_firmware_upgrades.networks_firmware_available_versions[network.key].products_wireless_available_versions, [])
+          } : [
+          for version in available_versions : {
+            key = format("%s/%s/%s", network.key, product, version.short_name)
+            id  = version.id
+          }
+        ]
+      ]
+    ]) : v.key => v.id
+  }
+}
+
+locals {
+  networks_firmware = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : {
+          key        = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
+
+          # The API requires short title-case day names (e.g. "Sun", "Mon"). YAML stores lowercase long form (e.g. "sunday", "monday"); the map converts here and fails explicitly on an unrecognised value.
+          upgrade_window_day_of_week = try(network.firmware.automatic_upgrade_window.day_of_week, local.defaults.meraki.domains.organizations.networks.firmware.automatic_upgrade_window.day_of_week, null) == null ? null : {
+            sunday    = "Sun"
+            monday    = "Mon"
+            tuesday   = "Tue"
+            wednesday = "Wed"
+            thursday  = "Thu"
+            friday    = "Fri"
+            saturday  = "Sat"
+          }[try(network.firmware.automatic_upgrade_window.day_of_week, local.defaults.meraki.domains.organizations.networks.firmware.automatic_upgrade_window.day_of_week)]
+          upgrade_window_hour_of_day = try(network.firmware.automatic_upgrade_window.hour_of_day, local.defaults.meraki.domains.organizations.networks.firmware.automatic_upgrade_window.hour_of_day, null)
+
+          products_appliance_participate_in_next_beta_release = try(network.firmware.upgrade.products.appliance.participate_in_next_beta_release, local.defaults.meraki.domains.organizations.networks.firmware.upgrade.products.appliance.participate_in_next_beta_release, null)
+          products_appliance_next_upgrade_time                = try("${network.firmware.upgrade.products.appliance.next_upgrade.local_time}Z", null)
+          products_appliance_next_upgrade_to_version_id       = try(network.firmware.upgrade.products.appliance.next_upgrade.to_version, null) == null ? null : local.networks_firmware_version_ids[format("%s/%s/%s/appliance/%s", domain.name, organization.name, network.name, network.firmware.upgrade.products.appliance.next_upgrade.to_version)]
+
+          products_cellular_gateway_participate_in_next_beta_release = try(network.firmware.upgrade.products.cellular_gateway.participate_in_next_beta_release, local.defaults.meraki.domains.organizations.networks.firmware.upgrade.products.cellular_gateway.participate_in_next_beta_release, null)
+          products_cellular_gateway_next_upgrade_time                = try("${network.firmware.upgrade.products.cellular_gateway.next_upgrade.local_time}Z", null)
+          products_cellular_gateway_next_upgrade_to_version_id       = try(network.firmware.upgrade.products.cellular_gateway.next_upgrade.to_version, null) == null ? null : local.networks_firmware_version_ids[format("%s/%s/%s/cellular_gateway/%s", domain.name, organization.name, network.name, network.firmware.upgrade.products.cellular_gateway.next_upgrade.to_version)]
+
+          products_switch_participate_in_next_beta_release = try(network.firmware.upgrade.products.switch.participate_in_next_beta_release, local.defaults.meraki.domains.organizations.networks.firmware.upgrade.products.switch.participate_in_next_beta_release, null)
+          # The API requires a trailing Z in the time field, but this is not true UTC — the time is interpreted in
+          # the network's configured timezone. YAML stores local_time without Z; the module appends it here.
+          products_switch_next_upgrade_time          = try("${network.firmware.upgrade.products.switch.next_upgrade.local_time}Z", null)
+          products_switch_next_upgrade_to_version_id = try(network.firmware.upgrade.products.switch.next_upgrade.to_version, null) == null ? null : local.networks_firmware_version_ids[format("%s/%s/%s/switch/%s", domain.name, organization.name, network.name, network.firmware.upgrade.products.switch.next_upgrade.to_version)]
+
+          products_switch_catalyst_participate_in_next_beta_release = try(network.firmware.upgrade.products.switch_catalyst.participate_in_next_beta_release, local.defaults.meraki.domains.organizations.networks.firmware.upgrade.products.switch_catalyst.participate_in_next_beta_release, null)
+          products_switch_catalyst_next_upgrade_time                = try("${network.firmware.upgrade.products.switch_catalyst.next_upgrade.local_time}Z", null)
+          products_switch_catalyst_next_upgrade_to_version_id       = try(network.firmware.upgrade.products.switch_catalyst.next_upgrade.to_version, null) == null ? null : local.networks_firmware_version_ids[format("%s/%s/%s/switch_catalyst/%s", domain.name, organization.name, network.name, network.firmware.upgrade.products.switch_catalyst.next_upgrade.to_version)]
+
+          products_wireless_participate_in_next_beta_release = try(network.firmware.upgrade.products.wireless.participate_in_next_beta_release, local.defaults.meraki.domains.organizations.networks.firmware.upgrade.products.wireless.participate_in_next_beta_release, null)
+          products_wireless_next_upgrade_time                = try("${network.firmware.upgrade.products.wireless.next_upgrade.local_time}Z", null)
+          products_wireless_next_upgrade_predownload_enabled = try(network.firmware.upgrade.products.wireless.next_upgrade.pre_download, local.defaults.meraki.domains.organizations.networks.firmware.upgrade.products.wireless.next_upgrade.pre_download, null)
+          products_wireless_next_upgrade_to_version_id       = try(network.firmware.upgrade.products.wireless.next_upgrade.to_version, null) == null ? null : local.networks_firmware_version_ids[format("%s/%s/%s/wireless/%s", domain.name, organization.name, network.name, network.firmware.upgrade.products.wireless.next_upgrade.to_version)]
+          } if(
+          try(network.firmware.automatic_upgrade_window, null) != null ||
+          try(network.firmware.upgrade, null) != null
+        )
+      ]
+    ]
+  ])
+}
+
+resource "meraki_network_firmware_upgrades" "networks_firmware" {
+  for_each   = { for v in local.networks_firmware : v.key => v }
+  network_id = each.value.network_id
+
+  upgrade_window_day_of_week = each.value.upgrade_window_day_of_week
+  upgrade_window_hour_of_day = each.value.upgrade_window_hour_of_day
+
+  products_appliance_participate_in_next_beta_release = each.value.products_appliance_participate_in_next_beta_release
+  products_appliance_next_upgrade_time                = each.value.products_appliance_next_upgrade_time
+  products_appliance_next_upgrade_to_version_id       = each.value.products_appliance_next_upgrade_to_version_id
+
+  products_cellular_gateway_participate_in_next_beta_release = each.value.products_cellular_gateway_participate_in_next_beta_release
+  products_cellular_gateway_next_upgrade_time                = each.value.products_cellular_gateway_next_upgrade_time
+  products_cellular_gateway_next_upgrade_to_version_id       = each.value.products_cellular_gateway_next_upgrade_to_version_id
+
+  products_switch_participate_in_next_beta_release = each.value.products_switch_participate_in_next_beta_release
+  products_switch_next_upgrade_time                = each.value.products_switch_next_upgrade_time
+  products_switch_next_upgrade_to_version_id       = each.value.products_switch_next_upgrade_to_version_id
+
+  products_switch_catalyst_participate_in_next_beta_release = each.value.products_switch_catalyst_participate_in_next_beta_release
+  products_switch_catalyst_next_upgrade_time                = each.value.products_switch_catalyst_next_upgrade_time
+  products_switch_catalyst_next_upgrade_to_version_id       = each.value.products_switch_catalyst_next_upgrade_to_version_id
+
+  products_wireless_participate_in_next_beta_release = each.value.products_wireless_participate_in_next_beta_release
+  products_wireless_next_upgrade_time                = each.value.products_wireless_next_upgrade_time
+  products_wireless_next_upgrade_predownload_enabled = each.value.products_wireless_next_upgrade_predownload_enabled
+  products_wireless_next_upgrade_to_version_id       = each.value.products_wireless_next_upgrade_to_version_id
+}
+
+locals {
+  networks_firmware_downgrade = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for product, product_cfg in try(network.firmware.downgrade.products, {}) : {
+            key        = format("%s/%s/%s/%s", domain.name, organization.name, network.name, product)
+            network_id = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
+            product = {
+              appliance        = "appliance"
+              cellular_gateway = "cellularGateway"
+              switch           = "switch"
+              switch_catalyst  = "switchCatalyst"
+              wireless         = "wireless"
+            }[product]
+            # See upgrade locals above — Z is required by the API but does not mean UTC.
+            time                = try("${product_cfg.next_downgrade.local_time}Z", null)
+            to_version_id       = try(product_cfg.next_downgrade.to_version, null) == null ? null : local.networks_firmware_version_ids[format("%s/%s/%s/%s/%s", domain.name, organization.name, network.name, product, product_cfg.next_downgrade.to_version)]
+            predownload_enabled = product == "wireless" ? try(product_cfg.next_downgrade.pre_download, local.defaults.meraki.domains.organizations.networks.firmware.downgrade.products.wireless.next_downgrade.pre_download, null) : null
+            reasons = [
+              for reason in try(product_cfg.next_downgrade.reasons, []) : {
+                category = try(reason.category, null)
+                comment  = try(reason.comment, null)
+              }
+            ]
+          }
+        ]
+      ]
+    ]
+  ])
+}
+
+resource "meraki_network_firmware_upgrades_rollback" "networks_firmware_downgrade" {
+  for_each            = { for v in local.networks_firmware_downgrade : v.key => v }
+  network_id          = each.value.network_id
+  product             = each.value.product
+  time                = each.value.time
+  to_version_id       = each.value.to_version_id
+  predownload_enabled = each.value.predownload_enabled
+  reasons             = each.value.reasons
+}
