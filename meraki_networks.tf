@@ -679,7 +679,15 @@ locals {
           network_id = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
 
           # The API requires capitalized day names (e.g. "Sun", "Monday"). YAML stores lowercase; title() converts here.
-          upgrade_window_day_of_week = try(title(network.firmware.automatic_upgrade_window.day_of_week), title(local.defaults.meraki.domains.organizations.networks.firmware.automatic_upgrade_window.day_of_week), null)
+          upgrade_window_day_of_week = try(network.firmware.automatic_upgrade_window.day_of_week, local.defaults.meraki.domains.organizations.networks.firmware.automatic_upgrade_window.day_of_week, null) == null ? null : {
+            sunday    = "Sun"
+            monday    = "Mon"
+            tuesday   = "Tue"
+            wednesday = "Wed"
+            thursday  = "Thu"
+            friday    = "Fri"
+            saturday  = "Sat"
+          }[try(network.firmware.automatic_upgrade_window.day_of_week, local.defaults.meraki.domains.organizations.networks.firmware.automatic_upgrade_window.day_of_week)]
           upgrade_window_hour_of_day = try(network.firmware.automatic_upgrade_window.hour_of_day, local.defaults.meraki.domains.organizations.networks.firmware.automatic_upgrade_window.hour_of_day, null)
 
           products_appliance_participate_in_next_beta_release = try(network.firmware.upgrade.products.appliance.participate_in_next_beta_release, local.defaults.meraki.domains.organizations.networks.firmware.upgrade.products.appliance.participate_in_next_beta_release, null)
