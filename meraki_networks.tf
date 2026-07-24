@@ -642,31 +642,16 @@ data "meraki_network_firmware_upgrades" "networks_firmware_available_versions" {
   network_id = each.value.network_id
 }
 
-# Per-network map: {product → {short_name → id}} — resolves YAML version names to numeric IDs
+# Per-network map: {"product/short_name" → id} — resolves YAML version names to numeric IDs
 locals {
   networks_firmware_version_maps = {
-    for fw_upgrade_cfg in local.networks_firmware_available_version_lookups : fw_upgrade_cfg.key => {
-      appliance = try({
-        for v in data.meraki_network_firmware_upgrades.networks_firmware_available_versions[fw_upgrade_cfg.key].products_appliance_available_versions :
-        v.short_name => v.id
-      }, {})
-      cellular_gateway = try({
-        for v in data.meraki_network_firmware_upgrades.networks_firmware_available_versions[fw_upgrade_cfg.key].products_cellular_gateway_available_versions :
-        v.short_name => v.id
-      }, {})
-      switch = try({
-        for v in data.meraki_network_firmware_upgrades.networks_firmware_available_versions[fw_upgrade_cfg.key].products_switch_available_versions :
-        v.short_name => v.id
-      }, {})
-      switch_catalyst = try({
-        for v in data.meraki_network_firmware_upgrades.networks_firmware_available_versions[fw_upgrade_cfg.key].products_switch_catalyst_available_versions :
-        v.short_name => v.id
-      }, {})
-      wireless = try({
-        for v in data.meraki_network_firmware_upgrades.networks_firmware_available_versions[fw_upgrade_cfg.key].products_wireless_available_versions :
-        v.short_name => v.id
-      }, {})
-    }
+    for fw_upgrade_cfg in local.networks_firmware_available_version_lookups : fw_upgrade_cfg.key => merge(
+      try({ for v in data.meraki_network_firmware_upgrades.networks_firmware_available_versions[fw_upgrade_cfg.key].products_appliance_available_versions : "appliance/${v.short_name}" => v.id }, {}),
+      try({ for v in data.meraki_network_firmware_upgrades.networks_firmware_available_versions[fw_upgrade_cfg.key].products_cellular_gateway_available_versions : "cellular_gateway/${v.short_name}" => v.id }, {}),
+      try({ for v in data.meraki_network_firmware_upgrades.networks_firmware_available_versions[fw_upgrade_cfg.key].products_switch_available_versions : "switch/${v.short_name}" => v.id }, {}),
+      try({ for v in data.meraki_network_firmware_upgrades.networks_firmware_available_versions[fw_upgrade_cfg.key].products_switch_catalyst_available_versions : "switch_catalyst/${v.short_name}" => v.id }, {}),
+      try({ for v in data.meraki_network_firmware_upgrades.networks_firmware_available_versions[fw_upgrade_cfg.key].products_wireless_available_versions : "wireless/${v.short_name}" => v.id }, {}),
+    )
   }
 }
 
@@ -692,26 +677,26 @@ locals {
 
           products_appliance_participate_in_next_beta_release = try(network.firmware.upgrade.products.appliance.participate_in_next_beta_release, local.defaults.meraki.domains.organizations.networks.firmware.upgrade.products.appliance.participate_in_next_beta_release, null)
           products_appliance_next_upgrade_time                = try("${network.firmware.upgrade.products.appliance.next_upgrade.local_time}Z", null)
-          products_appliance_next_upgrade_to_version_id       = try(network.firmware.upgrade.products.appliance.next_upgrade.to_version, null) == null ? null : local.networks_firmware_version_maps[format("%s/%s/%s", domain.name, organization.name, network.name)].appliance[network.firmware.upgrade.products.appliance.next_upgrade.to_version]
+          products_appliance_next_upgrade_to_version_id       = try(network.firmware.upgrade.products.appliance.next_upgrade.to_version, null) == null ? null : local.networks_firmware_version_maps[format("%s/%s/%s", domain.name, organization.name, network.name)]["appliance/${network.firmware.upgrade.products.appliance.next_upgrade.to_version}"]
 
           products_cellular_gateway_participate_in_next_beta_release = try(network.firmware.upgrade.products.cellular_gateway.participate_in_next_beta_release, local.defaults.meraki.domains.organizations.networks.firmware.upgrade.products.cellular_gateway.participate_in_next_beta_release, null)
           products_cellular_gateway_next_upgrade_time                = try("${network.firmware.upgrade.products.cellular_gateway.next_upgrade.local_time}Z", null)
-          products_cellular_gateway_next_upgrade_to_version_id       = try(network.firmware.upgrade.products.cellular_gateway.next_upgrade.to_version, null) == null ? null : local.networks_firmware_version_maps[format("%s/%s/%s", domain.name, organization.name, network.name)].cellular_gateway[network.firmware.upgrade.products.cellular_gateway.next_upgrade.to_version]
+          products_cellular_gateway_next_upgrade_to_version_id       = try(network.firmware.upgrade.products.cellular_gateway.next_upgrade.to_version, null) == null ? null : local.networks_firmware_version_maps[format("%s/%s/%s", domain.name, organization.name, network.name)]["cellular_gateway/${network.firmware.upgrade.products.cellular_gateway.next_upgrade.to_version}"]
 
           products_switch_participate_in_next_beta_release = try(network.firmware.upgrade.products.switch.participate_in_next_beta_release, local.defaults.meraki.domains.organizations.networks.firmware.upgrade.products.switch.participate_in_next_beta_release, null)
           # The API requires a trailing Z in the time field, but this is not true UTC — the time is interpreted in
           # the network's configured timezone. YAML stores local_time without Z; the module appends it here.
           products_switch_next_upgrade_time          = try("${network.firmware.upgrade.products.switch.next_upgrade.local_time}Z", null)
-          products_switch_next_upgrade_to_version_id = try(network.firmware.upgrade.products.switch.next_upgrade.to_version, null) == null ? null : local.networks_firmware_version_maps[format("%s/%s/%s", domain.name, organization.name, network.name)].switch[network.firmware.upgrade.products.switch.next_upgrade.to_version]
+          products_switch_next_upgrade_to_version_id = try(network.firmware.upgrade.products.switch.next_upgrade.to_version, null) == null ? null : local.networks_firmware_version_maps[format("%s/%s/%s", domain.name, organization.name, network.name)]["switch/${network.firmware.upgrade.products.switch.next_upgrade.to_version}"]
 
           products_switch_catalyst_participate_in_next_beta_release = try(network.firmware.upgrade.products.switch_catalyst.participate_in_next_beta_release, local.defaults.meraki.domains.organizations.networks.firmware.upgrade.products.switch_catalyst.participate_in_next_beta_release, null)
           products_switch_catalyst_next_upgrade_time                = try("${network.firmware.upgrade.products.switch_catalyst.next_upgrade.local_time}Z", null)
-          products_switch_catalyst_next_upgrade_to_version_id       = try(network.firmware.upgrade.products.switch_catalyst.next_upgrade.to_version, null) == null ? null : local.networks_firmware_version_maps[format("%s/%s/%s", domain.name, organization.name, network.name)].switch_catalyst[network.firmware.upgrade.products.switch_catalyst.next_upgrade.to_version]
+          products_switch_catalyst_next_upgrade_to_version_id       = try(network.firmware.upgrade.products.switch_catalyst.next_upgrade.to_version, null) == null ? null : local.networks_firmware_version_maps[format("%s/%s/%s", domain.name, organization.name, network.name)]["switch_catalyst/${network.firmware.upgrade.products.switch_catalyst.next_upgrade.to_version}"]
 
           products_wireless_participate_in_next_beta_release = try(network.firmware.upgrade.products.wireless.participate_in_next_beta_release, local.defaults.meraki.domains.organizations.networks.firmware.upgrade.products.wireless.participate_in_next_beta_release, null)
           products_wireless_next_upgrade_time                = try("${network.firmware.upgrade.products.wireless.next_upgrade.local_time}Z", null)
           products_wireless_next_upgrade_predownload_enabled = try(network.firmware.upgrade.products.wireless.next_upgrade.pre_download, local.defaults.meraki.domains.organizations.networks.firmware.upgrade.products.wireless.next_upgrade.pre_download, null)
-          products_wireless_next_upgrade_to_version_id       = try(network.firmware.upgrade.products.wireless.next_upgrade.to_version, null) == null ? null : local.networks_firmware_version_maps[format("%s/%s/%s", domain.name, organization.name, network.name)].wireless[network.firmware.upgrade.products.wireless.next_upgrade.to_version]
+          products_wireless_next_upgrade_to_version_id       = try(network.firmware.upgrade.products.wireless.next_upgrade.to_version, null) == null ? null : local.networks_firmware_version_maps[format("%s/%s/%s", domain.name, organization.name, network.name)]["wireless/${network.firmware.upgrade.products.wireless.next_upgrade.to_version}"]
           } if(
           try(network.firmware.automatic_upgrade_window, null) != null ||
           try(network.firmware.upgrade, null) != null
@@ -767,7 +752,7 @@ locals {
             }[product]
             # See upgrade locals above — Z is required by the API but does not mean UTC.
             time                = try("${product_cfg.next_downgrade.local_time}Z", null)
-            to_version_id       = try(product_cfg.next_downgrade.to_version, null) == null ? null : local.networks_firmware_version_maps[format("%s/%s/%s", domain.name, organization.name, network.name)][product][product_cfg.next_downgrade.to_version]
+            to_version_id       = try(product_cfg.next_downgrade.to_version, null) == null ? null : local.networks_firmware_version_maps[format("%s/%s/%s", domain.name, organization.name, network.name)]["${product}/${product_cfg.next_downgrade.to_version}"]
             predownload_enabled = product == "wireless" ? try(product_cfg.next_downgrade.pre_download, null) : null
             reasons = [
               for reason in try(product_cfg.next_downgrade.reasons, []) : {
