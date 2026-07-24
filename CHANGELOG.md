@@ -1,4 +1,20 @@
 
+## 0.10.0
+
+New Features:
+
+- Add support for `meraki_network_vlan_profile_assignment` — per-network VLAN profile assignments with a `vlan_profile_iname` and optional lists of `devices` (resolved to serials) and `stacks` (resolved to stack IDs) (https://github.com/netascode/terraform-meraki-nac-meraki/pull/166)
+- Add support for network firmware upgrades and downgrades — `meraki_network_firmware_upgrades` (schedule upgrades across `switch`, `switch_catalyst`, `wireless`, `appliance`, and `cellular_gateway`), `meraki_network_firmware_upgrades_rollback` (per-product downgrades with required `reasons`), and a `meraki_network_firmware_upgrades` data source that resolves human-readable version short names to provider IDs at plan time (https://github.com/netascode/terraform-meraki-nac-meraki/pull/176)
+
+Minimum Required Providers:
+
+- Raise the required `netascode/utils` provider constraint to `~> 2.0` and `hashicorp/local` to `~> 2.9` in `modules/model/versions.tf`. Consumers pinned to an older `utils` provider must upgrade. (https://github.com/netascode/terraform-meraki-nac-meraki/pull/174)
+
+Bug Fixes:
+
+- Fix passing required lists of dicts (https://github.com/netascode/terraform-meraki-nac-meraki/pull/173)
+- Fix `networks_wireless_rf_profiles` `per_ssid_settings.bands` handling (https://github.com/netascode/terraform-meraki-nac-meraki/pull/177)
+
 ## 0.9.0
 
 New Features:
