@@ -3,8 +3,8 @@
 
 New Features:
 
-- Add support for `meraki_network_vlan_profile_assignment` — per-network VLAN profile assignments with a `vlan_profile_iname` and optional lists of `devices` (resolved to serials) and `stacks` (resolved to stack IDs) (https://github.com/netascode/terraform-meraki-nac-meraki/pull/166)
-- Add support for network firmware upgrades and downgrades — `meraki_network_firmware_upgrades` (schedule upgrades across `switch`, `switch_catalyst`, `wireless`, `appliance`, and `cellular_gateway`), `meraki_network_firmware_upgrades_rollback` (per-product downgrades with required `reasons`), and a `meraki_network_firmware_upgrades` data source that resolves human-readable version short names to provider IDs at plan time (https://github.com/netascode/terraform-meraki-nac-meraki/pull/176)
+- Add support for `networks_vlan_profiles_assignments` (https://github.com/netascode/terraform-meraki-nac-meraki/pull/166)
+- Add support for network firmware upgrades and downgrades — `networks_firmware` (schedule upgrades across `switch`, `switch_catalyst`, `wireless`, `appliance`, and `cellular_gateway` and configure Dashboard's automatic upgrade window / per-product next beta release opt-in), `networks_firmware_downgrade` (per-product downgrades with required `reasons`) (https://github.com/netascode/terraform-meraki-nac-meraki/pull/176)
 
 Minimum Required Providers:
 
