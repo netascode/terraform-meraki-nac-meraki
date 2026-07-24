@@ -678,7 +678,7 @@ locals {
           key        = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
 
-          # The API requires capitalized day names (e.g. "Sun", "Monday"). YAML stores lowercase; title() converts here.
+          # The API requires short title-case day names (e.g. "Sun", "Mon"). YAML stores lowercase long form (e.g. "sunday", "monday"); the map converts here and fails explicitly on an unrecognised value.
           upgrade_window_day_of_week = try(network.firmware.automatic_upgrade_window.day_of_week, local.defaults.meraki.domains.organizations.networks.firmware.automatic_upgrade_window.day_of_week, null) == null ? null : {
             sunday    = "Sun"
             monday    = "Mon"
