@@ -768,7 +768,7 @@ locals {
             # See upgrade locals above — Z is required by the API but does not mean UTC.
             time                = try("${product_cfg.next_downgrade.local_time}Z", null)
             to_version_id       = try(product_cfg.next_downgrade.to_version, null) == null ? null : local.networks_firmware_version_maps[format("%s/%s/%s", domain.name, organization.name, network.name)][product][product_cfg.next_downgrade.to_version]
-            predownload_enabled = product == "wireless" ? try(product_cfg.next_downgrade.pre_download, null) : null
+            predownload_enabled = product == "wireless" ? try(product_cfg.next_downgrade.pre_download, local.defaults.meraki.domains.organizations.networks.firmware.downgrade.products.wireless.next_downgrade.pre_download, null) : null
             reasons = [
               for reason in try(product_cfg.next_downgrade.reasons, []) : {
                 category = try(reason.category, null)
