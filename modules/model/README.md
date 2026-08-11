@@ -28,7 +28,7 @@ module "model" {
 | Name | Version |
 |------|---------|
 | <a name="provider_terraform"></a> [terraform](#provider\_terraform) | n/a |
-| <a name="provider_local"></a> [local](#provider\_local) | 2.9.0 |
+| <a name="provider_local"></a> [local](#provider\_local) | ~> 2.9 |
 
 ## Inputs
 
