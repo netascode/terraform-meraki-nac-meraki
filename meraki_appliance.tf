@@ -859,7 +859,22 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for appliance_static_route in try(network.appliance.static_routes, []) : {
-            key             = format("%s/%s/%s/%s", domain.name, organization.name, network.name, appliance_static_route.name)
+            # When force_replace_on_change is true, a short hash of the next-hop-defining
+            # fields is appended to the key. Any change to gateway_ip/gateway_vlan_id/subnet
+            # then changes the key, forcing a destroy+create instead of an in-place update.
+            # This materializes a destroy node so the existing depends_on edge
+            # (meraki_appliance_vlan destroy -> meraki_appliance_static_route destroy) orders
+            # the route removal before the old VLAN is deleted during a transit-VLAN migration.
+            key = format("%s/%s/%s/%s%s",
+              domain.name, organization.name, network.name, appliance_static_route.name,
+              try(appliance_static_route.force_replace_on_change, false) ? format("#%s",
+                substr(md5(format("%s|%s|%s",
+                  try(appliance_static_route.gateway_ip, ""),
+                  try(appliance_static_route.gateway_vlan_id, ""),
+                  try(appliance_static_route.subnet, "")
+                )), 0, 8)
+              ) : ""
+            )
             network_id      = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
             name            = try(appliance_static_route.name, local.defaults.meraki.domains.organizations.networks.appliance.static_routes.name, null)
             subnet          = try(appliance_static_route.subnet, local.defaults.meraki.domains.organizations.networks.appliance.static_routes.subnet, null)
