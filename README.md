@@ -44,7 +44,7 @@ module "meraki" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
-| <a name="requirement_meraki"></a> [meraki](#requirement\_meraki) | >= 1.12.1 |
+| <a name="requirement_meraki"></a> [meraki](#requirement\_meraki) | >= 1.13.0 |
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -149,6 +149,8 @@ module "meraki" {
 | [meraki_switch_dscp_to_cos_mappings.networks_switch_dscp_to_cos_mappings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_dscp_to_cos_mappings) | resource |
 | [meraki_switch_link_aggregation.networks_switch_link_aggregations](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_link_aggregation) | resource |
 | [meraki_switch_mtu.networks_switch_mtu](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_mtu) | resource |
+| [meraki_switch_organization_ports_profile.organizations_smart_port_profiles](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_organization_ports_profile) | resource |
+| [meraki_switch_organization_ports_profiles_automation.organizations_smart_port_automations](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_organization_ports_profiles_automation) | resource |
 | [meraki_switch_port_schedule.networks_switch_port_schedules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_port_schedule) | resource |
 | [meraki_switch_ports.devices_switch_ports](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_ports) | resource |
 | [meraki_switch_qos_rule.networks_switch_qos_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_qos_rule) | resource |

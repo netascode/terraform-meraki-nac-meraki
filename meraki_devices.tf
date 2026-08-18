@@ -188,6 +188,7 @@ locals {
                 access_policy_number     = try(meraki_switch_access_policy.networks_switch_access_policies[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.access_policy_name)].id, null)
                 port_schedule_id         = try(meraki_switch_port_schedule.networks_switch_port_schedules[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.port_schedule_name)].id, null)
                 adaptive_policy_group_id = try(local.organizations_adaptive_policy_group_ids[format("%s/%s/%s", domain.name, organization.name, switch_port.adaptive_policy_group_name)], null)
+                profile_id               = try(local.organizations_smart_port_profile_ids[format("%s/%s/%s", domain.name, organization.name, switch_port.profile.name)], null)
                 vlan = try(
                   local.networks_vlan_ids_by_serial[
                     format(
@@ -264,14 +265,14 @@ resource "meraki_switch_ports" "devices_switch_ports" {
         flexible_stacking_enabled   = try(ports.data.flexible_stacking, local.defaults.meraki.domains.organizations.networks.switch.ports.flexible_stacking, null)
         dai_trusted                 = try(ports.data.dai_trusted, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.dai_trusted, null)
         profile_enabled             = try(ports.data.profile.enabled, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.profile.enabled, null)
-        # profile_id                  = try(ports.data.profile.id, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.profile.id, null)
-        profile_iname  = try(ports.data.profile.iname, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.profile.iname, null)
-        dot3az_enabled = try(ports.data.dot3az, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.dot3az, null)
+        profile_id                  = ports.profile_id
+        dot3az_enabled              = try(ports.data.dot3az, local.defaults.meraki.domains.organizations.networks.devices.switch.ports.dot3az, null)
       }
     ]
   ])
   depends_on = [
     meraki_organization_adaptive_policy_settings.organizations_adaptive_policy_settings_enabled_networks,
+    meraki_switch_organization_ports_profile.organizations_smart_port_profiles,
   ]
 }
 
