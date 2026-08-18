@@ -1,10 +1,4 @@
 
-## Unreleased
-
-New Features:
-
-- Add support for device-level configuration templates (meraki.templates.devices), applied per-device via devices.templates/devices.variables — mirrors existing network template support (issue #2022)
-
 ## 0.10.0
 
 New Features:
