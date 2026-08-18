@@ -113,6 +113,7 @@ module "meraki" {
 | [meraki_device_cellular_sims.devices_cellular_sims](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/device_cellular_sims) | resource |
 | [meraki_device_management_interface.devices_management_interface](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/device_management_interface) | resource |
 | [meraki_network.organizations_networks](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network) | resource |
+| [meraki_network_alerts_settings.networks_alerts_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_alerts_settings) | resource |
 | [meraki_network_device_claim.networks_devices_claim](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_device_claim) | resource |
 | [meraki_network_firmware_upgrades.networks_firmware](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_firmware_upgrades) | resource |
 | [meraki_network_firmware_upgrades_rollback.networks_firmware_downgrade](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/network_firmware_upgrades_rollback) | resource |
