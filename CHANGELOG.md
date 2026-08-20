@@ -5,6 +5,10 @@ New Features:
 
 - Add support for device-level configuration templates (meraki.templates.devices), applied per-device via devices.templates/devices.variables — mirrors existing network template support (issue #2022)
 
+Bug Fixes:
+
+- Fix `modules/model` unconditionally adding a `devices = []` key to every network when resolving device-level templates (#189), which turned `try(network.devices, null)` from `null` into `[]` for networks that never defined `devices`, causing spurious `meraki_network_device_claim` resources to be planned for those networks. The `devices` key is now only added when a network actually defines it.
+
 ## 0.10.0
 
 New Features:
