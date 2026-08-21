@@ -51,7 +51,7 @@ locals {
                   networks = [
                     for network in try(organization.networks, []) : merge(
                       { for k, v in network : k => v if k != "devices" },
-                      try(network.devices, null) != null ? {
+                      try(network.devices, null) == null ? {} : {
                         devices = [
                           for device in network.devices :
                           yamldecode(provider::utils::yaml_merge(concat(
@@ -59,7 +59,7 @@ locals {
                             [yamlencode(device)]
                           )))
                         ]
-                      } : {}
+                      }
                     )
                   ]
                 }
