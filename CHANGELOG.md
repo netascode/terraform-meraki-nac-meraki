@@ -1,9 +1,15 @@
 
-## Unreleased
+## 0.11.0
 
 New Features:
 
-- Add support for device-level configuration templates (meraki.templates.devices), applied per-device via devices.templates/devices.variables — mirrors existing network template support (issue #2022)
+- Add support for device-level configuration templates — `meraki_organization_devices_templates` resource and per-device template application via `devices.templates`/`devices.variables` (https://github.com/netascode/terraform-meraki-nac-meraki/pull/189)
+- Add support for `networks_alerts_settings` resource for per-type alert configuration and filtering (https://github.com/netascode/terraform-meraki-nac-meraki/pull/167)
+
+Bug Fixes:
+
+- Fix `networks_alerts_settings` variable ordering to match schema (https://github.com/netascode/terraform-meraki-nac-meraki/pull/192)
+- Fix `networks_firmware` to only add `devices` key when devices are actually configured (https://github.com/netascode/terraform-meraki-nac-meraki/pull/191)
 
 ## 0.10.0
 
