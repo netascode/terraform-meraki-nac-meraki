@@ -801,6 +801,7 @@ locals {
               nat_remote_subnet = try(subnet.nat.remote_subnet, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.subnets.nat.remote_subnet, null)
             }
           ]
+          sgt_enabled           = try(network.appliance.vpn_site_to_site_vpn.peer_sgt_enabled, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.peer_sgt_enabled, null)
           subnet_nat_is_allowed = try(network.appliance.vpn_site_to_site_vpn.subnet_nat, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.subnet_nat, null)
         } if try(network.appliance.vpn_site_to_site_vpn, null) != null
       ]
@@ -814,6 +815,7 @@ resource "meraki_appliance_site_to_site_vpn" "networks_appliance_vpn_site_to_sit
   mode                  = each.value.mode
   hubs                  = each.value.hubs
   subnets               = each.value.subnets
+  sgt_enabled           = each.value.sgt_enabled
   subnet_nat_is_allowed = each.value.subnet_nat_is_allowed
   depends_on = [
     meraki_network_device_claim.networks_devices_claim,
