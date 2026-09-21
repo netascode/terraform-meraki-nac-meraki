@@ -655,7 +655,7 @@ locals {
           "switch_catalyst"  = try(data.meraki_network_firmware_upgrades.networks_firmware_available_versions[network.key].products_switch_catalyst_available_versions, [])
           "wireless"         = try(data.meraki_network_firmware_upgrades.networks_firmware_available_versions[network.key].products_wireless_available_versions, [])
           } : [
-          for version in available_versions : {
+          for version in(available_versions == null ? [] : available_versions) : {
             key = format("%s/%s/%s", network.key, product, version.short_name)
             id  = version.id
           }
