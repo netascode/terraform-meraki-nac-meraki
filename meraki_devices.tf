@@ -188,9 +188,7 @@ locals {
                 access_policy_number     = try(meraki_switch_access_policy.networks_switch_access_policies[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.access_policy_name)].id, null)
                 port_schedule_id         = try(meraki_switch_port_schedule.networks_switch_port_schedules[format("%s/%s/%s/%s", domain.name, organization.name, network.name, switch_port.port_schedule_name)].id, null)
                 adaptive_policy_group_id = try(local.organizations_adaptive_policy_group_ids[format("%s/%s/%s", domain.name, organization.name, switch_port.adaptive_policy_group_name)], null)
-                profile_id = try(switch_port.profile.name, null) == null ? null : (
-                  meraki_switch_organization_ports_profile.organizations_smart_port_profiles[format("%s/%s/%s", domain.name, organization.name, switch_port.profile.name)].id
-                )
+                profile_id               = try(meraki_switch_organization_ports_profile.organizations_smart_port_profiles[format("%s/%s/%s", domain.name, organization.name, switch_port.profile.name)].id, null)
                 vlan = try(
                   local.networks_vlan_ids_by_serial[
                     format(

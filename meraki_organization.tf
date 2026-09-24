@@ -813,21 +813,19 @@ locals {
           fallback_profile_id = try(meraki_switch_organization_ports_profile.organizations_smart_port_profiles[format("%s/%s/%s", domain.name, organization.name, smart_port_automation.fallback_profile_name)].id, null)
           rules = [
             for rule in try(smart_port_automation.rules, []) : {
-              priority   = try(rule.priority, local.defaults.meraki.domains.organizations.smart_port_automations.rules.priority, null)
-              profile_id = try(meraki_switch_organization_ports_profile.organizations_smart_port_profiles[format("%s/%s/%s", domain.name, organization.name, rule.profile_name)].id, null)
+              priority = try(rule.priority, local.defaults.meraki.domains.organizations.smart_port_automations.rules.priority, null)
               conditions = [
                 for condition in try(rule.conditions, []) : {
                   attribute = try(condition.attribute, local.defaults.meraki.domains.organizations.smart_port_automations.rules.conditions.attribute, null)
                   values    = try(condition.values, local.defaults.meraki.domains.organizations.smart_port_automations.rules.conditions.values, null)
                 }
               ]
+              profile_id = try(meraki_switch_organization_ports_profile.organizations_smart_port_profiles[format("%s/%s/%s", domain.name, organization.name, rule.profile_name)].id, null)
             }
           ]
           assigned_switch_ports = try(smart_port_automation.assigned_switch_ports, null) == null ? null : [
             for assigned_switch_port in try(smart_port_automation.assigned_switch_ports, []) : {
-              switch_serial = meraki_device.devices[format(
-                "%s/%s/%s/%s", domain.name, organization.name, assigned_switch_port.network, assigned_switch_port.switch
-              )].serial
+              switch_serial = meraki_device.devices[format("%s/%s/%s/%s", domain.name, organization.name, assigned_switch_port.network, assigned_switch_port.switch)].serial
               port_ids = flatten([
                 for port_id_range in assigned_switch_port.port_id_ranges : [
                   for port_id in range(port_id_range.from, port_id_range.to + 1) :
