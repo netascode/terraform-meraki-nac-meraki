@@ -745,3 +745,129 @@ resource "meraki_organization_integrations_xdr_networks" "organizations_integrat
   organization_id = each.value.organization_id
   networks        = each.value.networks
 }
+
+locals {
+  organizations_smart_port_profiles = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for smart_port_profile in try(organization.smart_port_profiles, []) : {
+          key                  = format("%s/%s/%s", domain.name, organization.name, smart_port_profile.name)
+          organization_id      = local.organization_ids[format("%s/%s", domain.name, organization.name)]
+          name                 = try(smart_port_profile.name, local.defaults.meraki.domains.organizations.smart_port_profiles.name, null)
+          description          = try(smart_port_profile.description, local.defaults.meraki.domains.organizations.smart_port_profiles.description, null)
+          is_organization_wide = try(smart_port_profile.is_organization_wide, local.defaults.meraki.domains.organizations.smart_port_profiles.is_organization_wide, null)
+          networks_values = try(smart_port_profile.networks.values, null) == null ? null : [
+            for networks_value in try(smart_port_profile.networks.values, []) : {
+              id   = try(networks_value.id, local.defaults.meraki.domains.organizations.smart_port_profiles.networks.values.id, null)
+              name = try(networks_value.name, local.defaults.meraki.domains.organizations.smart_port_profiles.networks.values.name, null)
+            }
+          ]
+          networks_type                       = try(smart_port_profile.networks.type, local.defaults.meraki.domains.organizations.smart_port_profiles.networks.type, null)
+          network_id                          = try(smart_port_profile.network_id, local.defaults.meraki.domains.organizations.smart_port_profiles.network_id, null)
+          tags                                = try(smart_port_profile.tags, local.defaults.meraki.domains.organizations.smart_port_profiles.tags, null)
+          authentication_host_mode            = try(smart_port_profile.authentication.host.mode, local.defaults.meraki.domains.organizations.smart_port_profiles.authentication.host.mode, null)
+          port_type                           = try(smart_port_profile.port_type, local.defaults.meraki.domains.organizations.smart_port_profiles.port_type, null)
+          port_vlan                           = try(smart_port_profile.port_vlan, local.defaults.meraki.domains.organizations.smart_port_profiles.port_vlan, null)
+          port_voice_vlan                     = try(smart_port_profile.port_voice_vlan, local.defaults.meraki.domains.organizations.smart_port_profiles.port_voice_vlan, null)
+          port_allowed_vlans                  = try(smart_port_profile.port_allowed_vlans, local.defaults.meraki.domains.organizations.smart_port_profiles.port_allowed_vlans, null)
+          port_poe_enabled                    = try(smart_port_profile.port_poe, local.defaults.meraki.domains.organizations.smart_port_profiles.port_poe, null)
+          port_isolation_enabled              = try(smart_port_profile.port_isolation, local.defaults.meraki.domains.organizations.smart_port_profiles.port_isolation, null)
+          port_rstp_enabled                   = try(smart_port_profile.port_rstp, local.defaults.meraki.domains.organizations.smart_port_profiles.port_rstp, null)
+          port_stp_guard                      = try(smart_port_profile.port_stp_guard, local.defaults.meraki.domains.organizations.smart_port_profiles.port_stp_guard, null)
+          port_udld                           = try(smart_port_profile.port_udld, local.defaults.meraki.domains.organizations.smart_port_profiles.port_udld, null)
+          port_access_policy_type             = try(smart_port_profile.port_access_policy_type, local.defaults.meraki.domains.organizations.smart_port_profiles.port_access_policy_type, null)
+          port_access_policy_number           = try(smart_port_profile.port_access_policy_number, local.defaults.meraki.domains.organizations.smart_port_profiles.port_access_policy_number, null)
+          port_mac_allow_list                 = try(smart_port_profile.port_mac_allow_list, local.defaults.meraki.domains.organizations.smart_port_profiles.port_mac_allow_list, null)
+          port_sticky_mac_allow_list          = try(smart_port_profile.port_sticky_mac_allow_list, local.defaults.meraki.domains.organizations.smart_port_profiles.port_sticky_mac_allow_list, null)
+          port_sticky_mac_allow_list_limit    = try(smart_port_profile.port_sticky_mac_allow_list_limit, local.defaults.meraki.domains.organizations.smart_port_profiles.port_sticky_mac_allow_list_limit, null)
+          port_storm_control_enabled          = try(smart_port_profile.port_storm_control, local.defaults.meraki.domains.organizations.smart_port_profiles.port_storm_control, null)
+          port_adaptive_policy_group_id       = try(smart_port_profile.port_adaptive_policy_group_id, local.defaults.meraki.domains.organizations.smart_port_profiles.port_adaptive_policy_group_id, null)
+          port_adaptive_policy_voice_group_id = try(smart_port_profile.port_adaptive_policy_voice_group_id, local.defaults.meraki.domains.organizations.smart_port_profiles.port_adaptive_policy_voice_group_id, null)
+          port_peer_sgt_capable               = try(smart_port_profile.port_peer_sgt_capable, local.defaults.meraki.domains.organizations.smart_port_profiles.port_peer_sgt_capable, null)
+          port_dai_trusted                    = try(smart_port_profile.port_dai_trusted, local.defaults.meraki.domains.organizations.smart_port_profiles.port_dai_trusted, null)
+        }
+      ]
+    ]
+  ])
+}
+
+resource "meraki_switch_organization_ports_profile" "organizations_smart_port_profiles" {
+  for_each                            = { for v in local.organizations_smart_port_profiles : v.key => v }
+  organization_id                     = each.value.organization_id
+  name                                = each.value.name
+  description                         = each.value.description
+  is_organization_wide                = each.value.is_organization_wide
+  networks_values                     = each.value.networks_values
+  networks_type                       = each.value.networks_type
+  network_id                          = each.value.network_id
+  tags                                = each.value.tags
+  authentication_host_mode            = each.value.authentication_host_mode
+  port_type                           = each.value.port_type
+  port_vlan                           = each.value.port_vlan
+  port_voice_vlan                     = each.value.port_voice_vlan
+  port_allowed_vlans                  = each.value.port_allowed_vlans
+  port_poe_enabled                    = each.value.port_poe_enabled
+  port_isolation_enabled              = each.value.port_isolation_enabled
+  port_rstp_enabled                   = each.value.port_rstp_enabled
+  port_stp_guard                      = each.value.port_stp_guard
+  port_udld                           = each.value.port_udld
+  port_access_policy_type             = each.value.port_access_policy_type
+  port_access_policy_number           = each.value.port_access_policy_number
+  port_mac_allow_list                 = each.value.port_mac_allow_list
+  port_sticky_mac_allow_list          = each.value.port_sticky_mac_allow_list
+  port_sticky_mac_allow_list_limit    = each.value.port_sticky_mac_allow_list_limit
+  port_storm_control_enabled          = each.value.port_storm_control_enabled
+  port_adaptive_policy_group_id       = each.value.port_adaptive_policy_group_id
+  port_adaptive_policy_voice_group_id = each.value.port_adaptive_policy_voice_group_id
+  port_peer_sgt_capable               = each.value.port_peer_sgt_capable
+  port_dai_trusted                    = each.value.port_dai_trusted
+  depends_on = [
+    meraki_organization_early_access_features_opt_in.organizations_early_access_features_opt_ins,
+  ]
+}
+
+locals {
+  organizations_smart_port_automations = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for smart_port_automation in try(organization.smart_port_automations, []) : {
+          key                   = format("%s/%s/%s", domain.name, organization.name, smart_port_automation.name)
+          organization_id       = local.organization_ids[format("%s/%s", domain.name, organization.name)]
+          name                  = try(smart_port_automation.name, local.defaults.meraki.domains.organizations.smart_port_automations.name, null)
+          description           = try(smart_port_automation.description, local.defaults.meraki.domains.organizations.smart_port_automations.description, null)
+          fallback_profile_id   = try(smart_port_automation.fallback_profile.id, local.defaults.meraki.domains.organizations.smart_port_automations.fallback_profile.id, null)
+          fallback_profile_name = try(smart_port_automation.fallback_profile.name, local.defaults.meraki.domains.organizations.smart_port_automations.fallback_profile.name, null)
+          rules = [
+            for rule in try(smart_port_automation.rules, []) : {
+              priority = try(rule.priority, local.defaults.meraki.domains.organizations.smart_port_automations.rules.priority, null)
+              conditions = [
+                for condition in try(rule.conditions, []) : {
+                  attribute = try(condition.attribute, local.defaults.meraki.domains.organizations.smart_port_automations.rules.conditions.attribute, null)
+                  values    = try(condition.values, local.defaults.meraki.domains.organizations.smart_port_automations.rules.conditions.values, null)
+                }
+              ]
+              profile_id   = try(rule.profile.id, local.defaults.meraki.domains.organizations.smart_port_automations.rules.profile.id, null)
+              profile_name = try(rule.profile.name, local.defaults.meraki.domains.organizations.smart_port_automations.rules.profile.name, null)
+            }
+          ]
+          assigned_switch_ports = try(smart_port_automation.assigned_switch_ports, null) == null ? null : [
+            for assigned_switch_port in try(smart_port_automation.assigned_switch_ports, []) : {
+              switch_serial = try(assigned_switch_port.switch.serial, local.defaults.meraki.domains.organizations.smart_port_automations.assigned_switch_ports.switch.serial, null)
+            }
+          ]
+        }
+      ]
+    ]
+  ])
+}
+
+resource "meraki_switch_organization_ports_profiles_automation" "organizations_smart_port_automations" {
+  for_each              = { for v in local.organizations_smart_port_automations : v.key => v }
+  organization_id       = each.value.organization_id
+  name                  = each.value.name
+  description           = each.value.description
+  fallback_profile_id   = each.value.fallback_profile_id
+  fallback_profile_name = each.value.fallback_profile_name
+  rules                 = each.value.rules
+  assigned_switch_ports = each.value.assigned_switch_ports
+}
