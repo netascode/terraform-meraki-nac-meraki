@@ -171,6 +171,8 @@ module "meraki" {
 | [meraki_switch_stack_routing_static_route.networks_switch_stacks_routing_static_routes](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_stack_routing_static_route) | resource |
 | [meraki_switch_storm_control.networks_switch_storm_control](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_storm_control) | resource |
 | [meraki_switch_stp.networks_switch_stp](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_stp) | resource |
+| [meraki_wireless_air_marshal_rule.networks_wireless_air_marshal_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_air_marshal_rule) | resource |
+| [meraki_wireless_air_marshal_settings.networks_wireless_air_marshal_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_air_marshal_settings) | resource |
 | [meraki_wireless_alternate_management_interface.networks_wireless_alternate_management_interface](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_alternate_management_interface) | resource |
 | [meraki_wireless_device_bluetooth_settings.devices_wireless_bluetooth_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_device_bluetooth_settings) | resource |
 | [meraki_wireless_network_bluetooth_settings.networks_wireless_bluetooth_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/wireless_network_bluetooth_settings) | resource |
