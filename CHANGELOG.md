@@ -1,4 +1,10 @@
 
+## Unreleased
+
+New Features:
+
+- Add support for SmartPorts — `organizations_smart_port_profiles` and `organizations_smart_port_automations` resources (issue #2018)
+
 ## 0.11.0
 
 New Features:
