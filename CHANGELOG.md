@@ -3,7 +3,7 @@
 
 New Features:
 
-- Add support for SmartPorts — `organizations_smart_port_profiles` and `organizations_smart_port_automations` resources (issue #2018)
+- Add support for SmartPorts — `organizations_switch_smart_port_profiles` and `organizations_switch_smart_port_automations` resources (issue #2018)
 
 ## 0.11.0
 
