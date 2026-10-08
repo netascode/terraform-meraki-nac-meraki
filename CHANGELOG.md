@@ -5,6 +5,10 @@ New Features:
 
 - Add support for SmartPorts — `organizations_switch_smart_port_profiles` and `organizations_switch_smart_port_automations` resources (issue #2018)
 
+Minimum Required Meraki Provider:
+
+- Raise the minimum required `CiscoDevNet/meraki` provider version to `1.14.1` in `versions.tf` — picks up provider fixes affecting `meraki_wireless_ssid_splash_settings` image (`splash_logo`/`splash_image`/`splash_prepaid_front`) idempotency (https://github.com/netascode/terraform-meraki-nac-meraki/issues/203), `meraki_wireless_ssid` destroy failing with named VLAN tagging enabled (https://github.com/netascode/terraform-meraki-nac-meraki/issues/204), and `meraki_switch_qos_rule` rejecting a `null` `vlan` (https://github.com/CiscoDevNet/terraform-provider-meraki/issues/263) (PR_LINK_PLACEHOLDER)
+
 ## 0.11.0
 
 New Features:
