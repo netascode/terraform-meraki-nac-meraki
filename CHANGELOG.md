@@ -1,9 +1,18 @@
 
-## Unreleased
+## 0.12.0
 
 New Features:
 
-- Add support for SmartPorts — `organizations_switch_smart_port_profiles` and `organizations_switch_smart_port_automations` resources (issue #2018)
+- Add support for `enabled` on `networks_appliance_static_routes` (https://github.com/netascode/terraform-meraki-nac-meraki/pull/190)
+- Add support for SmartPorts — `organizations_switch_smart_port_profiles` and `organizations_switch_smart_port_automations` resources (https://github.com/netascode/terraform-meraki-nac-meraki/pull/188, https://github.com/netascode/terraform-meraki-nac-meraki/pull/212)
+
+Minimum Required Meraki Provider:
+
+- Raise the minimum required `CiscoDevNet/meraki` provider version to `1.14.0` in `versions.tf` (https://github.com/netascode/terraform-meraki-nac-meraki/pull/199)
+
+Bug Fixes:
+
+- Fix `networks_firmware` to handle networks where the `firmwareUpgrades` `products` map is missing entries for some product types (https://github.com/netascode/terraform-meraki-nac-meraki/pull/198)
 
 ## 0.11.0
 
