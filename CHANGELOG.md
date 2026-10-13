@@ -12,6 +12,7 @@ Minimum Required Meraki Provider:
   - `1.14.1`: fix `meraki_wireless_ssid_splash_settings` image (`splash_logo`/`splash_image`/`splash_prepaid_front`) idempotency (https://github.com/netascode/terraform-meraki-nac-meraki/issues/203)
   - `1.14.1`: fix `meraki_wireless_ssid` destroy failing with named VLAN tagging enabled (https://github.com/netascode/terraform-meraki-nac-meraki/issues/204)
   - `1.14.1`: fix `meraki_switch_qos_rule` rejecting a `null` `vlan` (https://github.com/CiscoDevNet/terraform-provider-meraki/issues/263)
+  - `1.14.0`: add `enabled` attribute to `meraki_appliance_static_route` (https://github.com/CiscoDevNet/terraform-provider-meraki/issues/233)
   - `1.14.0`: fix `spare_serial` handling in `meraki_appliance_warm_spare` (https://github.com/CiscoDevNet/terraform-provider-meraki/issues/256)
   - `1.14.0`: fix `port_ids` idempotency in `meraki_switch_organization_ports_profiles_automation` (https://github.com/CiscoDevNet/terraform-provider-meraki/pull/279)
   - `1.14.0`: fix `fallback_profile_id`/`fallback_profile_name` of `meraki_switch_organization_ports_profiles_automation` not being cleared via the API when removed from config (https://github.com/CiscoDevNet/terraform-provider-meraki/pull/279)
