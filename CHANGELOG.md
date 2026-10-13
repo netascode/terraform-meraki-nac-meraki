@@ -3,7 +3,7 @@
 
 New Features:
 
-- Add support for `enabled` on `networks_appliance_static_routes` (https://github.com/netascode/terraform-meraki-nac-meraki/pull/190)
+- Add support for `enabled` on `networks_appliance_static_routes` (https://github.com/netascode/terraform-meraki-nac-meraki/pull/190) (requires provider 1.14.0 (https://github.com/CiscoDevNet/terraform-provider-meraki/issues/233))
 - Add support for SmartPorts — `organizations_switch_smart_port_profiles` and `organizations_switch_smart_port_automations` resources (https://github.com/netascode/terraform-meraki-nac-meraki/pull/188, https://github.com/netascode/terraform-meraki-nac-meraki/pull/212)
 
 Minimum Required Meraki Provider:
