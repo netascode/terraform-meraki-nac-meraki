@@ -8,7 +8,13 @@ New Features:
 
 Minimum Required Meraki Provider:
 
-- Raise the minimum required `CiscoDevNet/meraki` provider version to `1.14.1` in `versions.tf` (https://github.com/netascode/terraform-meraki-nac-meraki/pull/199, https://github.com/netascode/terraform-meraki-nac-meraki/pull/214) — `1.14.1` fixes `meraki_wireless_ssid_splash_settings` image (`splash_logo`/`splash_image`/`splash_prepaid_front`) idempotency (https://github.com/netascode/terraform-meraki-nac-meraki/issues/203), `meraki_wireless_ssid` destroy failing with named VLAN tagging enabled (https://github.com/netascode/terraform-meraki-nac-meraki/issues/204), and `meraki_switch_qos_rule` rejecting a `null` `vlan` (https://github.com/CiscoDevNet/terraform-provider-meraki/issues/263)
+- Raise the minimum required `CiscoDevNet/meraki` provider version to `1.14.1` in `versions.tf` (https://github.com/netascode/terraform-meraki-nac-meraki/pull/199, https://github.com/netascode/terraform-meraki-nac-meraki/pull/214). Provider fixes pulled in by `1.14.0` and `1.14.1`:
+  - `1.14.1`: fix `meraki_wireless_ssid_splash_settings` image (`splash_logo`/`splash_image`/`splash_prepaid_front`) idempotency (https://github.com/netascode/terraform-meraki-nac-meraki/issues/203)
+  - `1.14.1`: fix `meraki_wireless_ssid` destroy failing with named VLAN tagging enabled (https://github.com/netascode/terraform-meraki-nac-meraki/issues/204)
+  - `1.14.1`: fix `meraki_switch_qos_rule` rejecting a `null` `vlan` (https://github.com/CiscoDevNet/terraform-provider-meraki/issues/263)
+  - `1.14.0`: fix `spare_serial` handling in `meraki_appliance_warm_spare` (https://github.com/CiscoDevNet/terraform-provider-meraki/issues/256)
+  - `1.14.0`: fix `port_ids` idempotency in `meraki_switch_organization_ports_profiles_automation` (https://github.com/CiscoDevNet/terraform-provider-meraki/pull/279)
+  - `1.14.0`: fix `fallback_profile_id`/`fallback_profile_name` of `meraki_switch_organization_ports_profiles_automation` not being cleared via the API when removed from config (https://github.com/CiscoDevNet/terraform-provider-meraki/pull/279)
 
 Bug Fixes:
 
@@ -18,7 +24,7 @@ Bug Fixes:
 
 New Features:
 
-- Add support for device-level configuration templates — `meraki_organization_devices_templates` resource and per-device template application via `devices.templates`/`devices.variables` (https://github.com/netascode/terraform-meraki-nac-meraki/pull/189)
+- Add support for device-level configuration templates — `meraki.templates.devices` definitions and per-device template application via `devices.templates`/`devices.variables` (https://github.com/netascode/terraform-meraki-nac-meraki/pull/189)
 - Add support for `networks_alerts_settings` resource for per-type alert configuration and filtering (https://github.com/netascode/terraform-meraki-nac-meraki/pull/167)
 
 Bug Fixes:
