@@ -916,3 +916,49 @@ resource "meraki_wireless_ssid_l7_firewall_rules" "networks_wireless_ssids_firew
   number     = each.value.number
   rules      = each.value.rules
 }
+
+locals {
+  networks_wireless_air_marshal_settings = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : {
+          key            = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id     = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
+          default_policy = try(network.wireless.air_marshal_settings.default_policy, local.defaults.meraki.domains.organizations.networks.wireless.air_marshal_settings.default_policy, null)
+        } if try(network.wireless.air_marshal_settings, null) != null
+      ]
+    ]
+  ])
+}
+
+resource "meraki_wireless_air_marshal_settings" "networks_wireless_air_marshal_settings" {
+  for_each       = { for v in local.networks_wireless_air_marshal_settings : v.key => v }
+  network_id     = each.value.network_id
+  default_policy = each.value.default_policy
+}
+
+locals {
+  networks_wireless_air_marshal_rules = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for wireless_air_marshal_rule in try(network.wireless.air_marshal_rules, []) : {
+            key          = format("%s/%s/%s/%s", domain.name, organization.name, network.name, wireless_air_marshal_rule.name)
+            network_id   = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
+            type         = try(wireless_air_marshal_rule.type, local.defaults.meraki.domains.organizations.networks.wireless.air_marshal_rules.type, null)
+            match_type   = try(wireless_air_marshal_rule.match.type, local.defaults.meraki.domains.organizations.networks.wireless.air_marshal_rules.match.type, null)
+            match_string = try(wireless_air_marshal_rule.match.string, local.defaults.meraki.domains.organizations.networks.wireless.air_marshal_rules.match.string, null)
+          }
+        ]
+      ]
+    ]
+  ])
+}
+
+resource "meraki_wireless_air_marshal_rule" "networks_wireless_air_marshal_rules" {
+  for_each     = { for v in local.networks_wireless_air_marshal_rules : v.key => v }
+  network_id   = each.value.network_id
+  type         = each.value.type
+  match_type   = each.value.match_type
+  match_string = each.value.match_string
+}
