@@ -935,6 +935,9 @@ resource "meraki_wireless_air_marshal_settings" "networks_wireless_air_marshal_s
   for_each       = { for v in local.networks_wireless_air_marshal_settings : v.key => v }
   network_id     = each.value.network_id
   default_policy = each.value.default_policy
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
@@ -961,4 +964,7 @@ resource "meraki_wireless_air_marshal_rule" "networks_wireless_air_marshal_rules
   type         = each.value.type
   match_type   = each.value.match_type
   match_string = each.value.match_string
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
