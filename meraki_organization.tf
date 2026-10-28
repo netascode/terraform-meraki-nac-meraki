@@ -683,6 +683,40 @@ resource "meraki_appliance_routing_vrfs_settings" "organizations_appliance_routi
 }
 
 locals {
+  organizations_routing_vrfs = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for routing_vrf in try(organization.routing_vrfs, []) : {
+          key                 = format("%s/%s/%s", domain.name, organization.name, routing_vrf.name)
+          organization_id     = local.organization_ids[format("%s/%s", domain.name, organization.name)]
+          name                = try(routing_vrf.name, local.defaults.meraki.domains.organizations.routing_vrfs.name, null)
+          description         = try(routing_vrf.description, local.defaults.meraki.domains.organizations.routing_vrfs.description, null)
+          route_distinguisher = try(routing_vrf.route_distinguisher, local.defaults.meraki.domains.organizations.routing_vrfs.route_distinguisher, null)
+          route_target        = try(routing_vrf.route_target, local.defaults.meraki.domains.organizations.routing_vrfs.route_target, null)
+          appliance_enabled   = try(routing_vrf.appliance.enabled, local.defaults.meraki.domains.organizations.routing_vrfs.appliance.enabled, null)
+          appliance_index     = try(routing_vrf.appliance.index, local.defaults.meraki.domains.organizations.routing_vrfs.appliance.index, null)
+        }
+      ]
+    ]
+  ])
+}
+
+resource "meraki_routing_vrf" "organizations_routing_vrfs" {
+  for_each            = { for v in local.organizations_routing_vrfs : v.key => v }
+  organization_id     = each.value.organization_id
+  name                = each.value.name
+  description         = each.value.description
+  route_distinguisher = each.value.route_distinguisher
+  route_target        = each.value.route_target
+  appliance_enabled   = each.value.appliance_enabled
+  appliance_index     = each.value.appliance_index
+  depends_on = [
+    meraki_organization_early_access_features_opt_in.organizations_early_access_features_opt_ins,
+    meraki_appliance_routing_vrfs_settings.organizations_appliance_routing_vrfs_settings,
+  ]
+}
+
+locals {
   organizations_early_access_features_opt_ins = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
