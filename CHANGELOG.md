@@ -28,6 +28,12 @@ Breaking Changes:
 
 - Remove the `modules/model` submodule. State is migrated automatically via `moved` blocks for `local_sensitive_file.model` and `local_sensitive_file.defaults`; consumers referencing `module.meraki.module.model` directly must update their references (https://github.com/netascode/terraform-meraki-nac-meraki/pull/221)
 
+## Unreleased
+
+New Features:
+
+- Add support for organization-level WAN VRF enablement — `organizations_appliance_routing_vrfs_settings` resource (`meraki_appliance_routing_vrfs_settings`) (issue #2038) (requires the provider release containing https://github.com/CiscoDevNet/terraform-provider-meraki/pull/292)
+
 ## 0.12.0
 
 New Features:
