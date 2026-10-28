@@ -618,7 +618,9 @@ locals {
             ]
             name   = try(appliance_vlan.name, local.defaults.meraki.domains.organizations.networks.appliance.vlans.name, null)
             subnet = try(appliance_vlan.subnet, local.defaults.meraki.domains.organizations.networks.appliance.vlans.subnet, null)
-            vrf_id = try(appliance_vlan.vrf.id, local.defaults.meraki.domains.organizations.networks.appliance.vlans.vrf.id, null)
+            # The VLAN API accepts only "0" for the built-in Default VRF (the VRF list reports it as "default").
+            # No try() on the lookup: an unknown vrf_name must fail the plan, not silently fall back to Default.
+            vrf_id = try(appliance_vlan.vrf_name, null) == null ? null : lower(appliance_vlan.vrf_name) == "default" ? "0" : meraki_routing_vrf.organizations_routing_vrfs[format("%s/%s/%s", domain.name, organization.name, appliance_vlan.vrf_name)].id
             dhcp = {
               vpn_nat_subnet            = try(appliance_vlan.vpn_nat_subnet, local.defaults.meraki.domains.organizations.networks.appliance.vlans.vpn_nat_subnet, null)
               dhcp_boot_options_enabled = try(appliance_vlan.dhcp_boot_options, local.defaults.meraki.domains.organizations.networks.appliance.vlans.dhcp_boot_options, null)
@@ -691,6 +693,7 @@ resource "meraki_appliance_vlan" "networks_appliance_vlans" {
   vrf_id                  = each.value.vrf_id
   depends_on = [
     meraki_appliance_vlans_settings.networks_appliance_vlans_settings,
+    meraki_routing_vrf.organizations_routing_vrfs,
   ]
 }
 
