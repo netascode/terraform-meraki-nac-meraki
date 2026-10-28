@@ -871,6 +871,7 @@ locals {
             gateway_ip      = try(appliance_static_route.gateway_ip, local.defaults.meraki.domains.organizations.networks.appliance.static_routes.gateway_ip, null)
             gateway_vlan_id = try(appliance_static_route.gateway_vlan_id, local.defaults.meraki.domains.organizations.networks.appliance.static_routes.gateway_vlan_id, null)
             enabled         = try(appliance_static_route.enabled, local.defaults.meraki.domains.organizations.networks.appliance.static_routes.enabled, null)
+            vrf_id          = try(appliance_static_route.vrf.id, local.defaults.meraki.domains.organizations.networks.appliance.static_routes.vrf.id, null)
           }
         ]
       ]
@@ -886,6 +887,7 @@ resource "meraki_appliance_static_route" "networks_appliance_static_routes" {
   gateway_ip      = each.value.gateway_ip
   gateway_vlan_id = each.value.gateway_vlan_id
   enabled         = each.value.enabled
+  vrf_id          = each.value.vrf_id
   depends_on = [
     meraki_appliance_vlan.networks_appliance_vlans,
     meraki_appliance_single_lan.networks_appliance_single_lan,
