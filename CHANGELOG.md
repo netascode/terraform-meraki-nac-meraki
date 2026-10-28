@@ -6,6 +6,7 @@ New Features:
 - Add support for organization-level WAN VRF enablement — `organizations_appliance_routing_vrfs_settings` resource (`meraki_appliance_routing_vrfs_settings`) (issue #2038) (requires the provider release containing https://github.com/CiscoDevNet/terraform-provider-meraki/pull/292)
 - Add support for organization VRFs — `organizations_routing_vrfs` resource (`meraki_routing_vrf`) (Beta API) (issue #2040) (requires the provider release containing https://github.com/CiscoDevNet/terraform-provider-meraki/pull/292)
 - Add support for `vrf_name` on `networks_appliance_vlans`, assigning a VLAN to a VRF from `organizations_routing_vrfs` or `Default` (issue #2039) (requires the provider release containing https://github.com/CiscoDevNet/terraform-provider-meraki/pull/292)
+- Add support for `vrf_name` on `networks_appliance_static_routes` (issue #2085) (requires MX 26.2+ and the provider release containing https://github.com/CiscoDevNet/terraform-provider-meraki/pull/292)
 
 ## 0.12.0
 
