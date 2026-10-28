@@ -575,6 +575,7 @@ locals {
             }
           ]
           mandatory_dhcp_enabled = try(network.appliance.single_lan.mandatory_dhcp, local.defaults.meraki.domains.organizations.networks.appliance.single_lan.mandatory_dhcp, null)
+          vrf_id                 = try(network.appliance.single_lan.vrf.id, local.defaults.meraki.domains.organizations.networks.appliance.single_lan.vrf.id, null)
         } if try(network.appliance.single_lan, null) != null
       ]
     ]
@@ -589,6 +590,7 @@ resource "meraki_appliance_single_lan" "networks_appliance_single_lan" {
   ipv6_enabled            = each.value.ipv6_enabled
   ipv6_prefix_assignments = each.value.ipv6_prefix_assignments
   mandatory_dhcp_enabled  = each.value.mandatory_dhcp_enabled
+  vrf_id                  = each.value.vrf_id
   depends_on = [
     meraki_network_device_claim.networks_devices_claim,
   ]
