@@ -1,4 +1,10 @@
 
+## Unreleased
+
+New Features:
+
+- Add support for organization-level WAN VRF enablement — `organizations_appliance_routing_vrfs_settings` resource (`meraki_appliance_routing_vrfs_settings`) (issue #2038) (requires the provider release containing https://github.com/CiscoDevNet/terraform-provider-meraki/pull/292)
+
 ## 0.12.0
 
 New Features:

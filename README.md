@@ -81,6 +81,7 @@ module "meraki" {
 | [meraki_appliance_ports.networks_appliance_ports](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_ports) | resource |
 | [meraki_appliance_radio_settings.devices_appliance_radio_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_radio_settings) | resource |
 | [meraki_appliance_rf_profile.networks_appliance_rf_profiles](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_rf_profile) | resource |
+| [meraki_appliance_routing_vrfs_settings.organizations_appliance_routing_vrfs_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_routing_vrfs_settings) | resource |
 | [meraki_appliance_sdwan_internet_policies.networks_appliance_sdwan_internet_policies](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_sdwan_internet_policies) | resource |
 | [meraki_appliance_security_malware.networks_appliance_security_malware](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_security_malware) | resource |
 | [meraki_appliance_settings.networks_appliance_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_settings) | resource |
