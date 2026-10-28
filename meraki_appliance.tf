@@ -575,7 +575,8 @@ locals {
             }
           ]
           mandatory_dhcp_enabled = try(network.appliance.single_lan.mandatory_dhcp, local.defaults.meraki.domains.organizations.networks.appliance.single_lan.mandatory_dhcp, null)
-          vrf_id                 = try(network.appliance.single_lan.vrf.id, local.defaults.meraki.domains.organizations.networks.appliance.single_lan.vrf.id, null)
+          # Same vrf_name mapping as networks_appliance_vlans ("Default" -> "0", unknown names fail the plan).
+          vrf_id = try(network.appliance.single_lan.vrf_name, null) == null ? null : lower(network.appliance.single_lan.vrf_name) == "default" ? "0" : meraki_routing_vrf.organizations_routing_vrfs[format("%s/%s/%s", domain.name, organization.name, network.appliance.single_lan.vrf_name)].id
         } if try(network.appliance.single_lan, null) != null
       ]
     ]
@@ -593,6 +594,7 @@ resource "meraki_appliance_single_lan" "networks_appliance_single_lan" {
   vrf_id                  = each.value.vrf_id
   depends_on = [
     meraki_network_device_claim.networks_devices_claim,
+    meraki_routing_vrf.organizations_routing_vrfs,
   ]
 }
 
