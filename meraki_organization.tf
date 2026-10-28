@@ -665,6 +665,24 @@ resource "meraki_appliance_vpn_firewall_rules" "organizations_appliance_vpn_fire
 }
 
 locals {
+  organizations_appliance_routing_vrfs_settings = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : {
+        key             = format("%s/%s", domain.name, organization.name)
+        organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
+        enabled         = try(organization.appliance.routing_vrfs_settings.enabled, local.defaults.meraki.domains.organizations.appliance.routing_vrfs_settings.enabled, null)
+      } if try(organization.appliance.routing_vrfs_settings, null) != null
+    ]
+  ])
+}
+
+resource "meraki_appliance_routing_vrfs_settings" "organizations_appliance_routing_vrfs_settings" {
+  for_each        = { for v in local.organizations_appliance_routing_vrfs_settings : v.key => v }
+  organization_id = each.value.organization_id
+  enabled         = each.value.enabled
+}
+
+locals {
   organizations_early_access_features_opt_ins = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
