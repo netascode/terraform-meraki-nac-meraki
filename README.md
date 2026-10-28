@@ -143,6 +143,7 @@ module "meraki" {
 | [meraki_organization_policy_object.organizations_policy_objects](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_policy_object) | resource |
 | [meraki_organization_policy_object_group.organizations_policy_objects_groups](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_policy_object_group) | resource |
 | [meraki_organization_snmp.organizations_snmp](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_snmp) | resource |
+| [meraki_routing_vrf.organizations_routing_vrfs](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/routing_vrf) | resource |
 | [meraki_switch_access_control_lists.networks_switch_access_control_lists_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_access_control_lists) | resource |
 | [meraki_switch_access_policy.networks_switch_access_policies](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_access_policy) | resource |
 | [meraki_switch_alternate_management_interface.networks_switch_alternate_management_interface](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_alternate_management_interface) | resource |
