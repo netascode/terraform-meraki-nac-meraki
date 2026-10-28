@@ -1080,6 +1080,7 @@ resource "meraki_appliance_traffic_shaping_uplink_bandwidth" "networks_appliance
 }
 
 locals {
+  # vrf_id: same vrf_name mapping as networks_appliance_vlans ("Default" -> "0", unknown names fail the plan).
   networks_appliance_traffic_shaping_uplink_selection = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
@@ -1106,7 +1107,7 @@ locals {
                 }
               ]
               preferred_uplink = try(wan_traffic_uplink_preference.preferred_uplink, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.wan_traffic_uplink_preferences.preferred_uplink, null)
-              vrf_id           = try(wan_traffic_uplink_preference.vrf.id, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.wan_traffic_uplink_preferences.vrf.id, null)
+              vrf_id           = try(wan_traffic_uplink_preference.vrf_name, null) == null ? null : lower(wan_traffic_uplink_preference.vrf_name) == "default" ? "0" : meraki_routing_vrf.organizations_routing_vrfs[format("%s/%s/%s", domain.name, organization.name, wan_traffic_uplink_preference.vrf_name)].id
             }
           ]
 
@@ -1131,7 +1132,7 @@ locals {
                 }
               ]
               preferred_uplink               = try(vpn_traffic_uplink_preference.preferred_uplink, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.preferred_uplink, null)
-              vrf_id                         = try(vpn_traffic_uplink_preference.vrf.id, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.vrf.id, null)
+              vrf_id                         = try(vpn_traffic_uplink_preference.vrf_name, null) == null ? null : lower(vpn_traffic_uplink_preference.vrf_name) == "default" ? "0" : meraki_routing_vrf.organizations_routing_vrfs[format("%s/%s/%s", domain.name, organization.name, vpn_traffic_uplink_preference.vrf_name)].id
               fail_over_criterion            = try(vpn_traffic_uplink_preference.fail_over_criterion, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.fail_over_criterion, null)
               performance_class_type         = try(vpn_traffic_uplink_preference.performance_class.type, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.performance_class.type, null)
               builtin_performance_class_name = try(vpn_traffic_uplink_preference.performance_class.builtin_performance_class_name, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.uplink_selection.vpn_traffic_uplink_preferences.performance_class.builtin_performance_class_name, null)
@@ -1156,6 +1157,7 @@ resource "meraki_appliance_traffic_shaping_uplink_selection" "networks_appliance
   depends_on = [
     meraki_appliance_vlan.networks_appliance_vlans,
     meraki_appliance_single_lan.networks_appliance_single_lan,
+    meraki_routing_vrf.organizations_routing_vrfs,
   ]
 }
 
