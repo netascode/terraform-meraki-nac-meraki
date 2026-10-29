@@ -680,6 +680,9 @@ resource "meraki_appliance_routing_vrfs_settings" "organizations_appliance_routi
   for_each        = { for v in local.organizations_appliance_routing_vrfs_settings : v.key => v }
   organization_id = each.value.organization_id
   enabled         = each.value.enabled
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
