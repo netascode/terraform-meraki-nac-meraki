@@ -831,6 +831,41 @@ resource "meraki_appliance_site_to_site_vpn" "networks_appliance_vpn_site_to_sit
   ]
 }
 
+# Not generated: the generator cannot resolve {hubNetworkId} (a reference to
+# another network) in the URL. See the TODO in nac-meraki-terraform-generator.
+locals {
+  networks_appliance_vpn_site_to_site_hub_vrfs = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for network in try(organization.networks, []) : [
+          for hub in try(network.appliance.vpn_site_to_site_vpn.hubs, []) : {
+            key            = format("%s/%s/%s/%s", domain.name, organization.name, network.name, hub.hub_network_name)
+            network_id     = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
+            hub_network_id = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, hub.hub_network_name)]
+            # Same vrf_name mapping as networks_appliance_vlans ("Default" -> "0", unknown names fail the plan).
+            vrfs = [
+              for vrf_name in hub.vrf_names : {
+                id = lower(vrf_name) == "default" ? "0" : meraki_routing_vrf.organizations_routing_vrfs[format("%s/%s/%s", domain.name, organization.name, vrf_name)].id
+              }
+            ]
+          } if try(hub.vrf_names, null) != null
+        ]
+      ]
+    ]
+  ])
+}
+
+resource "meraki_appliance_vpn_site_to_site_hub_vrfs" "networks_appliance_vpn_site_to_site_hub_vrfs" {
+  for_each       = { for v in local.networks_appliance_vpn_site_to_site_hub_vrfs : v.key => v }
+  network_id     = each.value.network_id
+  hub_network_id = each.value.hub_network_id
+  vrfs           = each.value.vrfs
+  depends_on = [
+    meraki_appliance_site_to_site_vpn.networks_appliance_vpn_site_to_site_vpn,
+    meraki_routing_vrf.organizations_routing_vrfs,
+  ]
+}
+
 locals {
   networks_appliance_warm_spare = flatten([
     for domain in try(local.meraki.domains, []) : [
