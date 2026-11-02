@@ -8,6 +8,7 @@ New Features:
 - Add support for `vrf_name` on `networks_appliance_vlans` and `networks_appliance_single_lan` (Single LAN requires MX 26.2.1+), assigning a VLAN or the Single LAN to a VRF from `organizations_routing_vrfs` or `Default` (issue #2039) (requires the provider release containing https://github.com/CiscoDevNet/terraform-provider-meraki/pull/292)
 - Add support for `vrf_name` on `networks_appliance_static_routes` (issue #2085) (requires MX 26.2+ and the provider release containing https://github.com/CiscoDevNet/terraform-provider-meraki/pull/292)
 - Add support for `vrf_name` on `networks_appliance_traffic_shaping_uplink_selection` WAN and VPN uplink preference rules (issue #2041) (requires MX 26.2+ and the provider release containing https://github.com/CiscoDevNet/terraform-provider-meraki/pull/292)
+- Add support for `vrf_names` on `networks_appliance_vpn_site_to_site_vpn` hubs — `networks_appliance_vpn_site_to_site_hub_vrfs` resource (`meraki_appliance_vpn_site_to_site_hub_vrfs`) (Beta API) (issue #2043) (requires the provider release containing https://github.com/CiscoDevNet/terraform-provider-meraki/pull/292)
 
 ## 0.12.0
 
