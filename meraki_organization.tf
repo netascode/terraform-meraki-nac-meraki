@@ -697,7 +697,6 @@ locals {
           route_distinguisher = try(routing_vrf.route_distinguisher, local.defaults.meraki.domains.organizations.routing_vrfs.route_distinguisher, null)
           route_target        = try(routing_vrf.route_target, local.defaults.meraki.domains.organizations.routing_vrfs.route_target, null)
           appliance_enabled   = try(routing_vrf.appliance_enabled, local.defaults.meraki.domains.organizations.routing_vrfs.appliance_enabled, null)
-          appliance_index     = try(routing_vrf.appliance.index, local.defaults.meraki.domains.organizations.routing_vrfs.appliance.index, null)
         }
       ]
     ]
@@ -712,7 +711,6 @@ resource "meraki_routing_vrf" "organizations_routing_vrfs" {
   route_distinguisher = each.value.route_distinguisher
   route_target        = each.value.route_target
   appliance_enabled   = each.value.appliance_enabled
-  appliance_index     = each.value.appliance_index
   depends_on = [
     meraki_organization_early_access_features_opt_in.organizations_early_access_features_opt_ins,
     meraki_appliance_routing_vrfs_settings.organizations_appliance_routing_vrfs_settings_enabled,
