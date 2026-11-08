@@ -44,14 +44,16 @@ module "meraki" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
-| <a name="requirement_meraki"></a> [meraki](#requirement\_meraki) | >= 1.14.1 |
+| <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.5.0, < 3.0.0 |
+| <a name="requirement_meraki"></a> [meraki](#requirement\_meraki) | >= 1.14.1, < 2.0.0 |
+| <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 2.2.0, < 3.0.0 |
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_model"></a> [model](#input\_model) | As an alternative to YAML files, a native Terraform data structure can be provided as well. | `map(any)` | `{}` | no |
 | <a name="input_write_default_values_file"></a> [write\_default\_values\_file](#input\_write\_default\_values\_file) | Write all default values to a YAML file. Value is a path pointing to the file to be created. | `string` | `""` | no |
-| <a name="input_write_model_file"></a> [write\_model\_file](#input\_write\_model\_file) | Write the full model including all resolved templates to a single YAML file. Value is a path pointing to the file to be created. | `string` | `""` | no |
+| <a name="input_write_model_file"></a> [write\_model\_file](#input\_write\_model\_file) | Write the merged data model with all network and device templates applied to a single YAML file, e.g. for validation, testing and troubleshooting. `!env` tags are written as is, without their environment variable values. Value is a path relative to the root module. Set to an empty string to disable. | `string` | `"model.yaml"` | no |
 | <a name="input_yaml_directories"></a> [yaml\_directories](#input\_yaml\_directories) | List of paths to YAML directories. | `list(string)` | `[]` | no |
 | <a name="input_yaml_files"></a> [yaml\_files](#input\_yaml\_files) | List of paths to YAML files. | `list(string)` | `[]` | no |
 ## Outputs
@@ -64,6 +66,8 @@ module "meraki" {
 
 | Name | Type |
 |------|------|
+| [local_sensitive_file.defaults](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
+| [local_sensitive_file.model](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
 | [meraki_appliance_cellular_firewall_rules.networks_appliance_firewall_cellular_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_cellular_firewall_rules) | resource |
 | [meraki_appliance_connectivity_monitoring_destinations.networks_appliance_connectivity_monitoring_destinations](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_connectivity_monitoring_destinations) | resource |
 | [meraki_appliance_content_filtering.networks_appliance_content_filtering](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_content_filtering) | resource |
@@ -196,7 +200,5 @@ module "meraki" {
 | [meraki_organization_policy_object_group.organizations_policy_objects_groups](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/data-sources/organization_policy_object_group) | data source |
 ## Modules
 
-| Name | Source | Version |
-|------|--------|---------|
-| <a name="module_model"></a> [model](#module\_model) | ./modules/model | n/a |
+No modules.
 <!-- END_TF_DOCS -->
