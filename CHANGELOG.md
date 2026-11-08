@@ -1,3 +1,19 @@
+## Unreleased
+
+New Features:
+
+- Add `GLOBAL` template variable, which contains the complete `meraki` section of the data model, to network and device templates
+- Device templates inherit the variables of their network; device variables take precedence
+- Write the model file to `model.yaml` by default; set `write_model_file` to `""` to disable it
+
+Bug Fixes:
+
+- Fix template variables with string values that look like numbers or booleans (e.g. `"007"`) being converted to numbers or booleans when used as a whole (e.g. `${vlan}`)
+- Fix the model file (`write_model_file`) containing the resolved values of `!env` tags, which may be secrets: it now contains the `!env` tags instead
+
+Breaking Changes:
+
+- Remove the `modules/model` submodule
 
 ## 0.12.0
 
