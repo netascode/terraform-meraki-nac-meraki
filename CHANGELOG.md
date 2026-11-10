@@ -12,6 +12,7 @@ Bug Fixes:
 - Fix the model file (`write_model_file`) containing the resolved values of `!env` tags, which may be secrets: it now contains the `!env` tags instead
 - Fix NetFlow configuration (`meraki_network_netflow`) failing on a fresh deployment with "This network does not support NetFlow traffic reporting" by waiting for devices to be claimed into the network
 - Fix destroy failing with "Cannot delete a profile with radios assigned to it" by removing devices from the network before deleting wireless RF profiles
+- Fix XDR networks integration (`meraki_organization_integrations_xdr_networks`) failing on a fresh deployment with "The following networks are not eligible for XDR" by waiting for devices to be claimed into the network
 
 Breaking Changes:
 
