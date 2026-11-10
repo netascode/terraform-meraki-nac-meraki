@@ -744,6 +744,9 @@ resource "meraki_organization_integrations_xdr_networks" "organizations_integrat
   for_each        = { for v in local.organizations_integrations_xdr_networks : v.key => v }
   organization_id = each.value.organization_id
   networks        = each.value.networks
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
