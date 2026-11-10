@@ -2,21 +2,31 @@
 
 New Features:
 
-- Add `GLOBAL` template variable, which contains the complete `meraki` section of the data model, to network and device templates
-- Device templates inherit the variables of their network; device variables take precedence
-- Write the model file to `model.yaml` by default; set `write_model_file` to `""` to disable it
+- Add `GLOBAL` template variable, which contains the complete `meraki` section of the data model, to network and device templates (https://github.com/netascode/terraform-meraki-nac-meraki/pull/221)
+- Device templates inherit the variables of their network; device variables take precedence (https://github.com/netascode/terraform-meraki-nac-meraki/pull/221)
+- Write the model file to `model.yaml` by default; set `write_model_file` to `""` to disable it (https://github.com/netascode/terraform-meraki-nac-meraki/pull/221)
+- Fail early with a clear error if none of `yaml_directories`, `yaml_files` or a non-empty `model` is provided (https://github.com/netascode/terraform-meraki-nac-meraki/pull/221)
+
+Enhancements:
+
+- Render the model (merge, defaults, network and device templates) with the `render_meraki_model` function of the `netascode/utils` provider instead of the `modules/model` submodule (https://github.com/netascode/terraform-meraki-nac-meraki/pull/221)
+- Add NaC artifacts under `nac/` (manifest, schema, validation rules and test templates) (https://github.com/netascode/terraform-meraki-nac-meraki/pull/222, https://github.com/netascode/terraform-meraki-nac-meraki/pull/227)
+
+Minimum Required Providers:
+
+- Require `netascode/utils` `>= 2.2.0, < 3.0.0` and `hashicorp/local` `>= 2.5.0, < 3.0.0`, and cap `CiscoDevNet/meraki` at `>= 1.14.1, < 2.0.0` in `versions.tf`. Consumers pinned to an older `utils` provider must upgrade. (https://github.com/netascode/terraform-meraki-nac-meraki/pull/221)
 
 Bug Fixes:
 
-- Fix template variables with string values that look like numbers or booleans (e.g. `"007"`) being converted to numbers or booleans when used as a whole (e.g. `${vlan}`)
-- Fix the model file (`write_model_file`) containing the resolved values of `!env` tags, which may be secrets: it now contains the `!env` tags instead
-- Fix NetFlow configuration (`meraki_network_netflow`) failing on a fresh deployment with "This network does not support NetFlow traffic reporting" by waiting for devices to be claimed into the network
-- Fix destroy failing with "Cannot delete a profile with radios assigned to it" by removing devices from the network before deleting wireless RF profiles
-- Fix XDR networks integration (`meraki_organization_integrations_xdr_networks`) failing on a fresh deployment with "The following networks are not eligible for XDR" by waiting for devices to be claimed into the network
+- Fix template variables with string values that look like numbers or booleans (e.g. `"007"`) being converted to numbers or booleans when used as a whole (e.g. `${vlan}`) (https://github.com/netascode/terraform-meraki-nac-meraki/pull/221)
+- Fix the model file (`write_model_file`) containing the resolved values of `!env` tags, which may be secrets: it now contains the `!env` tags instead (https://github.com/netascode/terraform-meraki-nac-meraki/pull/221)
+- Fix NetFlow configuration (`meraki_network_netflow`) failing on a fresh deployment with "This network does not support NetFlow traffic reporting" by waiting for devices to be claimed into the network (https://github.com/netascode/terraform-meraki-nac-meraki/pull/223)
+- Fix destroy failing with "Cannot delete a profile with radios assigned to it" by removing devices from the network before deleting wireless RF profiles (https://github.com/netascode/terraform-meraki-nac-meraki/pull/224)
+- Fix XDR networks integration (`meraki_organization_integrations_xdr_networks`) failing on a fresh deployment with "The following networks are not eligible for XDR" by waiting for devices to be claimed into the network (https://github.com/netascode/terraform-meraki-nac-meraki/pull/226)
 
 Breaking Changes:
 
-- Remove the `modules/model` submodule
+- Remove the `modules/model` submodule. State is migrated automatically via `moved` blocks for `local_sensitive_file.model` and `local_sensitive_file.defaults`; consumers referencing `module.meraki.module.model` directly must update their references (https://github.com/netascode/terraform-meraki-nac-meraki/pull/221)
 
 ## 0.12.0
 
