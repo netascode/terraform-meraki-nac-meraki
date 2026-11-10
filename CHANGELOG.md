@@ -10,6 +10,7 @@ Bug Fixes:
 
 - Fix template variables with string values that look like numbers or booleans (e.g. `"007"`) being converted to numbers or booleans when used as a whole (e.g. `${vlan}`)
 - Fix the model file (`write_model_file`) containing the resolved values of `!env` tags, which may be secrets: it now contains the `!env` tags instead
+- Fix NetFlow configuration (`meraki_network_netflow`) failing on a fresh deployment with "This network does not support NetFlow traffic reporting" by waiting for devices to be claimed into the network
 - Fix destroy failing with "Cannot delete a profile with radios assigned to it" by removing devices from the network before deleting wireless RF profiles
 
 Breaking Changes:

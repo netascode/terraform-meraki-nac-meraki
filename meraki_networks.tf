@@ -555,6 +555,9 @@ resource "meraki_network_netflow" "networks_netflow" {
   collector_port    = each.value.collector_port
   eta_enabled       = each.value.eta_enabled
   eta_dst_port      = each.value.eta_dst_port
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
 }
 
 locals {
