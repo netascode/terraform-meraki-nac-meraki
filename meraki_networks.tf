@@ -382,6 +382,11 @@ resource "meraki_network_device_claim" "networks_devices_claim" {
   for_each   = { for v in local.networks_devices_claim : v.key => v }
   network_id = each.value.network_id
   serials    = each.value.serials
+  # RF profiles can only be deleted once no device uses them; radio settings are not reset on destroy,
+  # so devices must be removed from the network before their RF profiles are deleted.
+  depends_on = [
+    meraki_wireless_rf_profile.networks_wireless_rf_profiles,
+  ]
 }
 
 locals {
