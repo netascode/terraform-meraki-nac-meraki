@@ -85,6 +85,7 @@ module "meraki" {
 | [meraki_appliance_ports.networks_appliance_ports](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_ports) | resource |
 | [meraki_appliance_radio_settings.devices_appliance_radio_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_radio_settings) | resource |
 | [meraki_appliance_rf_profile.networks_appliance_rf_profiles](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_rf_profile) | resource |
+| [meraki_appliance_routing_vrfs_settings.organizations_appliance_routing_vrfs_settings_enabled](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_routing_vrfs_settings) | resource |
 | [meraki_appliance_sdwan_internet_policies.networks_appliance_sdwan_internet_policies](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_sdwan_internet_policies) | resource |
 | [meraki_appliance_security_malware.networks_appliance_security_malware](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_security_malware) | resource |
 | [meraki_appliance_settings.networks_appliance_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_settings) | resource |
@@ -105,6 +106,7 @@ module "meraki" {
 | [meraki_appliance_vlans_settings.networks_appliance_vlans_settings](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vlans_settings) | resource |
 | [meraki_appliance_vpn_bgp.networks_appliance_vpn_bgp](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vpn_bgp) | resource |
 | [meraki_appliance_vpn_firewall_rules.organizations_appliance_vpn_firewall_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vpn_firewall_rules) | resource |
+| [meraki_appliance_vpn_site_to_site_hub_vrfs.networks_appliance_vpn_site_to_site_hub_vrfs](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vpn_site_to_site_hub_vrfs) | resource |
 | [meraki_appliance_vpn_site_to_site_ipsec_peers_slas.organizations_appliance_vpn_site_to_site_ipsec_peers_slas](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_vpn_site_to_site_ipsec_peers_slas) | resource |
 | [meraki_appliance_warm_spare.networks_appliance_warm_spare](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/appliance_warm_spare) | resource |
 | [meraki_cellular_gateway_connectivity_monitoring_destinations.networks_cellular_gateway_connectivity_monitoring_destinations](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/cellular_gateway_connectivity_monitoring_destinations) | resource |
@@ -146,6 +148,7 @@ module "meraki" {
 | [meraki_organization_policy_object.organizations_policy_objects](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_policy_object) | resource |
 | [meraki_organization_policy_object_group.organizations_policy_objects_groups](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_policy_object_group) | resource |
 | [meraki_organization_snmp.organizations_snmp](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/organization_snmp) | resource |
+| [meraki_routing_vrf.organizations_routing_vrfs](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/routing_vrf) | resource |
 | [meraki_switch_access_control_lists.networks_switch_access_control_lists_rules](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_access_control_lists) | resource |
 | [meraki_switch_access_policy.networks_switch_access_policies](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_access_policy) | resource |
 | [meraki_switch_alternate_management_interface.networks_switch_alternate_management_interface](https://registry.terraform.io/providers/CiscoDevNet/meraki/latest/docs/resources/switch_alternate_management_interface) | resource |
