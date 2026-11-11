@@ -69,6 +69,10 @@ Define the group policy in the same network, or fix the name:
     @classmethod
     def match(cls, inventory):
         meraki = inventory.get("meraki") or {}
+        # Rendering applies the templates and drops the `templates` section,
+        # but keeps each network's `templates` list: without the section,
+        # the networks are already complete.
+        rendered = "templates" not in meraki
         model_templates = {
             template.get("name"): template.get("configuration") or {}
             for template in (meraki.get("templates") or {}).get("networks") or []
@@ -90,7 +94,7 @@ Define the group policy in the same network, or fix the name:
                         f".organizations[name={context['organization']}]"
                         f".networks[name={context['network']}]"
                     )
-                    template_names = network.get("templates") or []
+                    template_names = [] if rendered else network.get("templates") or []
                     # File templates are only known once rendered
                     if any(name not in model_templates for name in template_names):
                         continue
