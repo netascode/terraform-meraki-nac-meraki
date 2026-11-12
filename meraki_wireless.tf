@@ -946,7 +946,7 @@ locals {
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : [
           for wireless_air_marshal_rule in try(network.wireless.air_marshal_rules, []) : {
-            key          = format("%s/%s/%s/%s", domain.name, organization.name, network.name, wireless_air_marshal_rule.name)
+            key          = format("%s/%s/%s/%s", domain.name, organization.name, network.name, wireless_air_marshal_rule.rule_name)
             network_id   = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
             type         = try(wireless_air_marshal_rule.type, local.defaults.meraki.domains.organizations.networks.wireless.air_marshal_rules.type, null)
             match_type   = try(wireless_air_marshal_rule.match.type, local.defaults.meraki.domains.organizations.networks.wireless.air_marshal_rules.match.type, null)
