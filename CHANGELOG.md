@@ -1,14 +1,3 @@
-## Unreleased
-
-New Features:
-
-- Add template inheritance via the `templates` attribute of network and device templates
-- Add default template variables via the `variables` attribute of network and device templates
-
-Minimum Required Providers:
-
-- Require `netascode/utils` `>= 2.3.0, < 3.0.0` in `versions.tf`
-
 ## 0.13.0-beta.1
 
 New Features:

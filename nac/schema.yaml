@@ -17,15 +17,11 @@ templates_networks:
   name: str()
   type: enum('model', 'file')
   file: str(required=False)
-  templates: list(str(), required=False)
-  variables: map(key=str(), required=False)
   configuration: include('networks', required=False)
 templates_devices:
   name: str()
   type: enum('model', 'file')
   file: str(required=False)
-  templates: list(str(), required=False)
-  variables: map(key=str(), required=False)
   configuration: include('devices', required=False)
 organizations:
   name: str(min=1, max=127, required=False)

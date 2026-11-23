@@ -66,29 +66,6 @@ Define the group policy in the same network, or fix the name:
             if policy.get("name") is not None
         }
 
-    @staticmethod
-    def _expand(templates, names):
-        """Return the names of the templates applied for *names*, including
-        inherited ones, or None if a template is unknown or the inheritance
-        is cyclic (rendering fails in both cases)."""
-        result = []
-
-        def visit(name, stack):
-            if name in result:
-                return True
-            if name in stack or name not in templates:
-                return False
-            for parent in templates[name].get("templates") or []:
-                if not visit(parent, stack + [name]):
-                    return False
-            result.append(name)
-            return True
-
-        for name in names:
-            if not visit(name, []):
-                return None
-        return result
-
     @classmethod
     def match(cls, inventory):
         meraki = inventory.get("meraki") or {}
@@ -96,10 +73,11 @@ Define the group policy in the same network, or fix the name:
         # but keeps each network's `templates` list: without the section,
         # the networks are already complete.
         rendered = "templates" not in meraki
-        templates = {}
-        for template in (meraki.get("templates") or {}).get("networks") or []:
-            # The first definition of a name wins, as when rendered
-            templates.setdefault(template.get("name"), template)
+        model_templates = {
+            template.get("name"): template.get("configuration") or {}
+            for template in (meraki.get("templates") or {}).get("networks") or []
+            if template.get("type") == "model"
+        }
 
         violations = []
         reported = set()
@@ -116,24 +94,18 @@ Define the group policy in the same network, or fix the name:
                         f".organizations[name={context['organization']}]"
                         f".networks[name={context['network']}]"
                     )
-                    template_names = cls._expand(
-                        templates, [] if rendered else network.get("templates") or []
-                    )
+                    template_names = [] if rendered else network.get("templates") or []
                     # File templates are only known once rendered
-                    if template_names is None or any(
-                        templates[name].get("type") != "model"
-                        for name in template_names
-                    ):
+                    if any(name not in model_templates for name in template_names):
                         continue
 
-                    # The network and its model templates (incl. inherited ones)
-                    # are merged when rendered, so a reference may point to a
-                    # group policy of either
+                    # The network and its model templates are merged when rendered,
+                    # so a reference may point to a group policy of either
                     sources = [(network_path, {}, network)] + [
                         (
                             f"meraki.templates.networks[name={name}].configuration",
                             {"template": name},
-                            templates[name].get("configuration") or {},
+                            model_templates[name],
                         )
                         for name in template_names
                     ]
