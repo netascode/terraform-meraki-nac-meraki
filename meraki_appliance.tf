@@ -1208,6 +1208,7 @@ resource "meraki_appliance_traffic_shaping_vpn_exclusions" "networks_appliance_t
     meraki_appliance_single_lan.networks_appliance_single_lan,
     meraki_appliance_site_to_site_vpn.networks_appliance_vpn_site_to_site_vpn,
     meraki_appliance_third_party_vpn_peers.organizations_appliance_third_party_vpn_peers,
+    meraki_organization_early_access_features_opt_in.organizations_early_access_features_opt_ins,
   ]
 }
 
