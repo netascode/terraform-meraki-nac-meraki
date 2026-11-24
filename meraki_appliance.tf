@@ -1165,16 +1165,23 @@ locals {
               source_vlan_id = try(custom.source.vlan_id, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.vpn_exclusions.custom.source.vlan_id, null)
             }
           ]
-          major_applications = try(network.appliance.traffic_shaping.vpn_exclusions.major_applications, null) == null ? null : [
-            for major_application in try(network.appliance.traffic_shaping.vpn_exclusions.major_applications, []) : {
-              id             = try(major_application.id, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.vpn_exclusions.major_applications.id, null)
-              name           = try(major_application.name, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.vpn_exclusions.major_applications.name, null)
-              protocol       = try(major_application.protocol, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.vpn_exclusions.major_applications.protocol, null)
-              source_cidr    = try(major_application.source.cidr, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.vpn_exclusions.major_applications.source.cidr, null)
-              source_port    = try(major_application.source.port, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.vpn_exclusions.major_applications.source.port, null)
-              source_vlan_id = try(major_application.source.vlan_id, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.vpn_exclusions.major_applications.source.vlan_id, null)
-            }
-          ]
+          major_applications = try(network.appliance.traffic_shaping.vpn_exclusions.major_applications, null) == null && try(network.appliance.traffic_shaping.vpn_exclusions.major_application_rules, null) == null ? null : concat(
+            [
+              for major_application in try(network.appliance.traffic_shaping.vpn_exclusions.major_applications, []) : {
+                id = major_application
+              }
+            ],
+            [
+              for major_application in try(network.appliance.traffic_shaping.vpn_exclusions.major_application_rules, []) : {
+                id             = try(major_application.id, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.vpn_exclusions.major_application_rules.id, null)
+                name           = try(major_application.name, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.vpn_exclusions.major_application_rules.name, null)
+                protocol       = try(major_application.protocol, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.vpn_exclusions.major_application_rules.protocol, null)
+                source_cidr    = try(major_application.source.cidr, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.vpn_exclusions.major_application_rules.source.cidr, null)
+                source_port    = try(major_application.source.port, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.vpn_exclusions.major_application_rules.source.port, null)
+                source_vlan_id = try(major_application.source.vlan_id, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.vpn_exclusions.major_application_rules.source.vlan_id, null)
+              }
+            ],
+          )
           applications = try(network.appliance.traffic_shaping.vpn_exclusions.applications, null) == null ? null : [
             for application in try(network.appliance.traffic_shaping.vpn_exclusions.applications, []) : {
               id             = try(application.id, local.defaults.meraki.domains.organizations.networks.appliance.traffic_shaping.vpn_exclusions.applications.id, null)
