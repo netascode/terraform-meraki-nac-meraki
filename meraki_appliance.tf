@@ -784,9 +784,13 @@ locals {
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
         for network in try(organization.networks, []) : {
-          key        = format("%s/%s/%s", domain.name, organization.name, network.name)
-          network_id = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
-          mode       = try(network.appliance.vpn_site_to_site_vpn.mode, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.mode, null)
+          key                       = format("%s/%s/%s", domain.name, organization.name, network.name)
+          network_id                = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
+          confirmed                 = try(network.appliance.vpn_site_to_site_vpn.confirmed, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.confirmed, null)
+          mode                      = try(network.appliance.vpn_site_to_site_vpn.mode, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.mode, null)
+          nat_traversal_mode        = try(network.appliance.vpn_site_to_site_vpn.nat_traversal.mode, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.nat_traversal.mode, null)
+          nat_traversal_public_ip   = try(network.appliance.vpn_site_to_site_vpn.nat_traversal.public_ip, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.nat_traversal.public_ip, null)
+          nat_traversal_public_port = try(network.appliance.vpn_site_to_site_vpn.nat_traversal.public_port, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.nat_traversal.public_port, null)
           hubs = try(network.appliance.vpn_site_to_site_vpn.hubs, null) == null ? null : [
             for hub in try(network.appliance.vpn_site_to_site_vpn.hubs, []) : {
               hub_id            = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, hub.hub_network_name)]
@@ -801,7 +805,15 @@ locals {
               nat_remote_subnet = try(subnet.nat.remote_subnet, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.subnets.nat.remote_subnet, null)
             }
           ]
+          sgt_enabled           = try(network.appliance.vpn_site_to_site_vpn.peer_sgt_capable, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.peer_sgt_capable, null)
           subnet_nat_is_allowed = try(network.appliance.vpn_site_to_site_vpn.subnet_nat, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.subnet_nat, null)
+          host_translations = try(network.appliance.vpn_site_to_site_vpn.host_translations, null) == null ? null : [
+            for host_translation in try(network.appliance.vpn_site_to_site_vpn.host_translations, []) : {
+              name           = try(host_translation.name, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.host_translations.name, null)
+              local_address  = try(host_translation.local_address, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.host_translations.local_address, null)
+              remote_address = try(host_translation.remote_address, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.host_translations.remote_address, null)
+            }
+          ]
         } if try(network.appliance.vpn_site_to_site_vpn, null) != null
       ]
     ]
@@ -809,12 +821,18 @@ locals {
 }
 
 resource "meraki_appliance_site_to_site_vpn" "networks_appliance_vpn_site_to_site_vpn" {
-  for_each              = { for v in local.networks_appliance_vpn_site_to_site_vpn : v.key => v }
-  network_id            = each.value.network_id
-  mode                  = each.value.mode
-  hubs                  = each.value.hubs
-  subnets               = each.value.subnets
-  subnet_nat_is_allowed = each.value.subnet_nat_is_allowed
+  for_each                  = { for v in local.networks_appliance_vpn_site_to_site_vpn : v.key => v }
+  network_id                = each.value.network_id
+  confirmed                 = each.value.confirmed
+  mode                      = each.value.mode
+  nat_traversal_mode        = each.value.nat_traversal_mode
+  nat_traversal_public_ip   = each.value.nat_traversal_public_ip
+  nat_traversal_public_port = each.value.nat_traversal_public_port
+  hubs                      = each.value.hubs
+  subnets                   = each.value.subnets
+  sgt_enabled               = each.value.sgt_enabled
+  subnet_nat_is_allowed     = each.value.subnet_nat_is_allowed
+  host_translations         = each.value.host_translations
   depends_on = [
     meraki_network_device_claim.networks_devices_claim,
     meraki_appliance_single_lan.networks_appliance_single_lan,
