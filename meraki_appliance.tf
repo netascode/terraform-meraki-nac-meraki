@@ -786,7 +786,6 @@ locals {
         for network in try(organization.networks, []) : {
           key                       = format("%s/%s/%s", domain.name, organization.name, network.name)
           network_id                = local.organizations_network_ids[format("%s/%s/%s", domain.name, organization.name, network.name)]
-          confirmed                 = try(network.appliance.vpn_site_to_site_vpn.confirmed, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.confirmed, null)
           mode                      = try(network.appliance.vpn_site_to_site_vpn.mode, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.mode, null)
           nat_traversal_mode        = try(network.appliance.vpn_site_to_site_vpn.nat_traversal.mode, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.nat_traversal.mode, null)
           nat_traversal_public_ip   = try(network.appliance.vpn_site_to_site_vpn.nat_traversal.public_ip, local.defaults.meraki.domains.organizations.networks.appliance.vpn_site_to_site_vpn.nat_traversal.public_ip, null)
@@ -823,7 +822,6 @@ locals {
 resource "meraki_appliance_site_to_site_vpn" "networks_appliance_vpn_site_to_site_vpn" {
   for_each                  = { for v in local.networks_appliance_vpn_site_to_site_vpn : v.key => v }
   network_id                = each.value.network_id
-  confirmed                 = each.value.confirmed
   mode                      = each.value.mode
   nat_traversal_mode        = each.value.nat_traversal_mode
   nat_traversal_public_ip   = each.value.nat_traversal_public_ip
