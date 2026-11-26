@@ -833,8 +833,9 @@ resource "meraki_appliance_site_to_site_vpn" "networks_appliance_vpn_site_to_sit
   host_translations         = each.value.host_translations
   depends_on = [
     meraki_network_device_claim.networks_devices_claim,
-    meraki_appliance_single_lan.networks_appliance_single_lan,
     meraki_appliance_vlan.networks_appliance_vlans,
+    meraki_appliance_single_lan.networks_appliance_single_lan,
+    meraki_organization_adaptive_policy_settings.organizations_adaptive_policy_settings_enabled_networks,
   ]
 }
 
