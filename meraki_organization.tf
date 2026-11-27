@@ -665,6 +665,59 @@ resource "meraki_appliance_vpn_firewall_rules" "organizations_appliance_vpn_fire
 }
 
 locals {
+  organizations_appliance_routing_vrfs_settings_enabled = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : {
+        key             = format("%s/%s", domain.name, organization.name)
+        organization_id = local.organization_ids[format("%s/%s", domain.name, organization.name)]
+        enabled         = try(organization.appliance.routing_vrfs_settings_enabled, local.defaults.meraki.domains.organizations.appliance.routing_vrfs_settings_enabled, null)
+      } if try(organization.appliance.routing_vrfs_settings_enabled, null) != null
+    ]
+  ])
+}
+
+resource "meraki_appliance_routing_vrfs_settings" "organizations_appliance_routing_vrfs_settings_enabled" {
+  for_each        = { for v in local.organizations_appliance_routing_vrfs_settings_enabled : v.key => v }
+  organization_id = each.value.organization_id
+  enabled         = each.value.enabled
+  depends_on = [
+    meraki_network_device_claim.networks_devices_claim,
+  ]
+}
+
+locals {
+  organizations_routing_vrfs = flatten([
+    for domain in try(local.meraki.domains, []) : [
+      for organization in try(domain.organizations, []) : [
+        for routing_vrf in try(organization.routing_vrfs, []) : {
+          key                 = format("%s/%s/%s", domain.name, organization.name, routing_vrf.name)
+          organization_id     = local.organization_ids[format("%s/%s", domain.name, organization.name)]
+          name                = try(routing_vrf.name, local.defaults.meraki.domains.organizations.routing_vrfs.name, null)
+          description         = try(routing_vrf.description, local.defaults.meraki.domains.organizations.routing_vrfs.description, null)
+          route_distinguisher = try(routing_vrf.route_distinguisher, local.defaults.meraki.domains.organizations.routing_vrfs.route_distinguisher, null)
+          route_target        = try(routing_vrf.route_target, local.defaults.meraki.domains.organizations.routing_vrfs.route_target, null)
+          appliance_enabled   = try(routing_vrf.appliance_enabled, local.defaults.meraki.domains.organizations.routing_vrfs.appliance_enabled, null)
+        }
+      ]
+    ]
+  ])
+}
+
+resource "meraki_routing_vrf" "organizations_routing_vrfs" {
+  for_each            = { for v in local.organizations_routing_vrfs : v.key => v }
+  organization_id     = each.value.organization_id
+  name                = each.value.name
+  description         = each.value.description
+  route_distinguisher = each.value.route_distinguisher
+  route_target        = each.value.route_target
+  appliance_enabled   = each.value.appliance_enabled
+  depends_on = [
+    meraki_organization_early_access_features_opt_in.organizations_early_access_features_opt_ins,
+    meraki_appliance_routing_vrfs_settings.organizations_appliance_routing_vrfs_settings_enabled,
+  ]
+}
+
+locals {
   organizations_early_access_features_opt_ins = flatten([
     for domain in try(local.meraki.domains, []) : [
       for organization in try(domain.organizations, []) : [
